@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.*
+!.env.mini
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+node_modules.*
+uploads/*
+!uploads/.gitkeep
+.DS_Store
+.vscode/
+.idea/
+*.local
