@@ -1,9 +1,9 @@
 import React from 'react';
 
 const Privacy: React.FC = () => {
-  const LAST_UPDATED = '21 Juni 2026';
-  const SITE_URL     = 'https://maktabah.my.id';
-  const CONTACT      = '085743399595';
+  const LAST_UPDATED = '5 November 2026';
+  const SITE_URL     = 'https://maktab.my.id';
+  const CONTACT      = '6285743399595';
 
   return (
     <div className="w-full bg-white p-6 md:p-10 rounded-2xl shadow-md text-slate-700 leading-relaxed my-4">

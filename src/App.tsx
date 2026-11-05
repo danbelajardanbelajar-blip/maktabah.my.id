@@ -386,10 +386,10 @@ function App() {
                 <span className="flex items-center gap-3"><Info className="text-[var(--app-primary)]" /> Tentang</span>
                 <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
               </button>
-              <button onClick={() => setActiveTab('privacy')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
+              <a href="/privacy-policy" className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
                 <span className="flex items-center gap-3"><Shield className="text-[var(--app-primary)]" /> Privasi</span>
                 <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
+              </a>
                             <button onClick={() => setActiveTab('feedback')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
                 <span className="flex items-center gap-3"><MessageSquare className="text-[var(--app-primary)]" /> Feedback</span>
                 <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
@@ -827,12 +827,12 @@ function App() {
             >
               <Info size={16} /> Tentang Kami
             </button>
-            <button 
-              onClick={() => { setActiveTab('privacy'); window.scrollTo(0,0); }}
+            <a
+              href="/privacy-policy"
               className={`hover:text-white transition-colors pb-1 flex items-center gap-2 ${activeTab === 'privacy' ? 'text-white border-b-2 border-white' : 'text-white/70 border-b-2 border-transparent'}`}
             >
               <Shield size={16} /> Kebijakan Privasi
-            </button>
+            </a>
           </div>
         </div>
       </footer>
