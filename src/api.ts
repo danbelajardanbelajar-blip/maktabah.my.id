@@ -67,7 +67,7 @@ export const webAPI = {
   getAdminBooks: async (token: string, page = 1, query = '', catId?: number, limit = 30) => {
     let url = `${API_BASE}/admin/books?page=${page}&limit=${limit}`;
     if (query) url += `&q=${encodeURIComponent(query)}`;
-    if (catId) url += `&cat=${catId}`;
+    if (catId !== undefined) url += `&cat=${catId}`;
     const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
     if (!res.ok) throw new Error(`${res.status}`);
     return res.json();

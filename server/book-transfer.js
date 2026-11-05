@@ -11,6 +11,16 @@ const nullableInt = value => value == null || integer(value);
 const nullableText = value => value == null || typeof value === 'string';
 const historicalDate = value => nullableInt(value) || typeof value === 'string';
 
+export const bookCatalogueSql = additional => additional
+  ? '(SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta UNION ALL SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta)'
+  : 'main.books_meta';
+export const categoryCatalogueSql = additional => additional
+  ? `(SELECT id,name,catord,lvl FROM main.categories UNION ALL
+      SELECT DISTINCT b.cat AS id, 'Kategori sumber #' || b.cat AS name, 0 AS catord, 0 AS lvl
+      FROM ${bookCatalogueSql(true)} b WHERE b.cat IS NOT NULL
+      AND NOT EXISTS (SELECT 1 FROM main.categories c WHERE c.id=b.cat))`
+  : 'main.categories';
+
 export function validateBookPackage(payload) {
   const categoryPackage = isCategory(payload);
   if ((!categoryPackage && payload?.format !== 'maktabah-books') || payload.version !== 1 || !Array.isArray(payload.books)
@@ -54,22 +64,27 @@ export function validateBookPackage(payload) {
   return payload;
 }
 
-export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS) {
+export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS, includeAdditional = false) {
   if (!Array.isArray(bookIds) || !bookIds.length || bookIds.length > maxBooks
     || bookIds.some(id => !integer(id) || id < 1)) fail(`Paket melebihi batas ${maxBooks} kitab atau pilihan kitab tidak valid.`);
   const result = { format: 'maktabah-books', version: 1, exported_at: new Date().toISOString(), books: [] };
   let bytes = 0;
   for (const id of new Set(bookIds)) {
-    const book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta WHERE bkid=?').get(id);
+    let schema = 'main';
+    let book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta WHERE bkid=?').get(id);
+    if (!book && includeAdditional) {
+      book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta WHERE bkid=?').get(id);
+      schema = 'tambahan';
+    }
     if (!book) fail(`Kitab ${id} tidak ditemukan di database utama.`);
-    const textBytes = db.prepare('SELECT coalesce(sum(length(CAST(nass AS BLOB))),0) AS n FROM main.pages WHERE book_id=?').get(id).n;
+    const textBytes = db.prepare(`SELECT coalesce(sum(length(CAST(nass AS BLOB))),0) AS n FROM ${schema}.pages WHERE book_id=?`).get(id).n;
     if (textBytes > MAX_TRANSFER_BYTES) fail('Isi kitab terlalu besar. Batas export 50 MB per file.');
     const item = {
       book,
-      category: book.cat == null ? null : db.prepare('SELECT id,name,catord,lvl FROM main.categories WHERE id=?').get(book.cat) ?? null,
+      category: book.cat == null ? null : db.prepare(`SELECT id,name,catord,lvl FROM ${categoryCatalogueSql(includeAdditional)} WHERE id=?`).get(book.cat) ?? null,
       author: book.authno == null ? null : db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE authid=?').get(book.authno) ?? null,
-      pages: db.prepare('SELECT id,book_id,part,page,seal,nass FROM main.pages WHERE book_id=? ORDER BY rowid').all(id),
-      titles: db.prepare('SELECT id,book_id,lvl,sub,tit FROM main.titles WHERE book_id=? ORDER BY rowid').all(id),
+      pages: db.prepare(`SELECT id,book_id,part,page,seal,nass FROM ${schema}.pages WHERE book_id=? ORDER BY rowid`).all(id),
+      titles: db.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${schema}.titles WHERE book_id=? ORDER BY rowid`).all(id),
     };
     // Older catalogues may refer to a category or author that no longer exists.
     if (!item.category) item.book.cat = null;
@@ -81,17 +96,17 @@ export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS) {
   return result;
 }
 
-export function exportCategories(db, categoryIds) {
+export function exportCategories(db, categoryIds, includeAdditional = false) {
   if (!Array.isArray(categoryIds) || !categoryIds.length || categoryIds.length > 100 || categoryIds.some(id => !integer(id))) fail('Pilih 1–100 kategori untuk diexport.');
   const categories = [...new Set(categoryIds)].map(id => {
-    const c = db.prepare('SELECT id,name,catord,lvl FROM main.categories WHERE id=?').get(id);
+    const c = db.prepare(`SELECT id,name,catord,lvl FROM ${categoryCatalogueSql(includeAdditional)} WHERE id=?`).get(id);
     if (!c) fail(`Kategori ${id} tidak ditemukan.`);
     return c;
   });
   const placeholders = categories.map(() => '?').join(',');
-  const ids = db.prepare(`SELECT bkid FROM main.books_meta WHERE cat IN (${placeholders}) ORDER BY bkid LIMIT ?`).all(...categories.map(c => c.id), MAX_CATEGORY_BOOKS + 1).map(b => b.bkid);
+  const ids = db.prepare(`SELECT DISTINCT bkid FROM ${bookCatalogueSql(includeAdditional)} WHERE cat IN (${placeholders}) ORDER BY bkid LIMIT ?`).all(...categories.map(c => c.id), MAX_CATEGORY_BOOKS + 1).map(b => b.bkid);
   if (ids.length > MAX_CATEGORY_BOOKS) fail('Kategori pilihan melebihi 5.000 kitab. Pilih lebih sedikit kategori atau gunakan export per kitab.');
-  const result = ids.length ? exportBooks(db, ids, MAX_CATEGORY_BOOKS) : { version: 1, exported_at: new Date().toISOString(), books: [] };
+  const result = ids.length ? exportBooks(db, ids, MAX_CATEGORY_BOOKS, includeAdditional) : { version: 1, exported_at: new Date().toISOString(), books: [] };
   result.format = 'maktabah-categories';
   result.categories = categories;
   if (Buffer.byteLength(JSON.stringify(result)) > MAX_TRANSFER_BYTES) fail('Kategori beserta isinya melebihi 50 MB. Pilih lebih sedikit kategori atau gunakan export per kitab.');
@@ -147,25 +162,24 @@ export function importBooks(db, payload, existsInAdditional = () => false) {
   })();
 }
 
-export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasAdditional, clearCache }) {
-  let importing = false;
+export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasAdditional, clearCache, runtime = { importing: false } }) {
   app.post('/api/admin/books/export', requireAdmin, (req, res) => {
     try {
       const db = getDb();
       if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
-      const data = req.body.categoryIds !== undefined ? exportCategories(db, req.body.categoryIds) : exportBooks(db, req.body.bookIds);
+      const data = req.body.categoryIds !== undefined ? exportCategories(db, req.body.categoryIds, hasAdditional()) : exportBooks(db, req.body.bookIds, MAX_BOOKS, hasAdditional());
       res.attachment(`maktabah-${isCategory(data) ? 'kategori' : 'kitab'}-${new Date().toISOString().slice(0, 10)}.json`).json(data);
     } catch (error) { res.status(400).json({ error: error.message }); }
   });
   app.post('/api/admin/books/import', requireAdmin, async (req, res) => {
-    if (importing) return res.status(409).json({ error: 'Import lain sedang berjalan. Tunggu hingga selesai.' });
+    if (runtime.importing) return res.status(409).json({ error: 'Import lain sedang berjalan. Tunggu hingga selesai.' });
     let backup = null;
     try {
       const db = getDb();
       if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
       if (Buffer.byteLength(JSON.stringify(req.body)) > MAX_TRANSFER_BYTES) return res.status(413).json({ error: 'Batas file import adalah 50 MB.' });
       validateBookPackage(req.body);
-      importing = true;
+      runtime.importing = true;
       const directory = path.join(path.dirname(path.resolve(getDbPath())), 'book-import-backups');
       fs.mkdirSync(directory, { recursive: true });
       const required = fs.statSync(getDbPath()).size + Buffer.byteLength(JSON.stringify(req.body)) * 4 + MAX_TRANSFER_BYTES;
@@ -177,6 +191,6 @@ export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA
       clearCache();
       res.json({ success: true, ...result, backup });
     } catch (error) { res.status(400).json({ error: error.message, backup }); }
-    finally { importing = false; }
+    finally { runtime.importing = false; }
   });
 }

@@ -9,7 +9,8 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('./vendor/docx.cjs');
 import 'dotenv/config';
-import { registerBookTransfer } from './book-transfer.js';
+import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
+import { registerLargeTransfer } from './large-transfer.js';
 
 import https from 'https';
 
@@ -122,6 +123,19 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 let db;
+let stateDb;
+const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
+const transferRuntime = { importing: false };
+app.use((req, res, next) => {
+  if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
+    && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/log/visit', '/api/log/download'].includes(req.path)) {
+    return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
+  }
+  if (transferRuntime.importing && !['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !['/api/admin/login', '/api/admin/logout'].includes(req.path)) {
+    return res.status(409).json({ error: 'Import sedang berjalan. Tunggu selesai sebelum mengubah data.' });
+  }
+  next();
+});
 // Gunakan variabel environment DB_PATH, atau fallback ke alamat PC
 // Cari database secara berurutan
 let dbError = null;
@@ -153,7 +167,16 @@ const askCache = new Map();
 
 try {
   if (fs.existsSync(dbPath)) {
-    db = new Database(dbPath, { fileMustExist: true });
+    db = new Database(dbPath, { fileMustExist: true, readonly: localExportMode });
+    stateDb = localExportMode ? new Database(path.join(rootDir, 'dev-data', 'local-web-state.db')) : db;
+    if (localExportMode) {
+      db.pragma('query_only = ON');
+      stateDb.exec('CREATE TEMP TABLE categories (id INTEGER PRIMARY KEY, name TEXT)');
+      const insert = stateDb.prepare('INSERT INTO temp.categories (id,name) VALUES (?,?)');
+      stateDb.transaction(() => {
+        for (const c of db.prepare('SELECT id,name FROM main.categories').all()) insert.run(c.id, c.name);
+      })();
+    }
     console.log("Database utama connected at:", dbPath);
 
     // === ATTACH DATABASE TAMBAHAN ===
@@ -194,7 +217,7 @@ try {
     
     // Bikin tabel log otomatis (HANYA di main database)
     try {
-        db.exec(`
+        stateDb.exec(`
           CREATE TABLE IF NOT EXISTS search_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             query TEXT NOT NULL,
@@ -270,12 +293,12 @@ try {
         // Migrate logs to add ip and user_agent if not exists
         const logTables = ['search_logs', 'download_logs', 'visit_logs', 'quran_logs', 'rowa_logs', 'ask_logs'];
         for (const tbl of logTables) {
-            try { db.exec(`ALTER TABLE ${tbl} ADD COLUMN ip TEXT;`); } catch(e) {}
-            try { db.exec(`ALTER TABLE ${tbl} ADD COLUMN user_agent TEXT;`); } catch(e) {}
+            try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN ip TEXT;`); } catch(e) {}
+            try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN user_agent TEXT;`); } catch(e) {}
         }
         
         // Migrate book_submissions to add file_type
-        try { db.exec(`ALTER TABLE book_submissions ADD COLUMN file_type TEXT;`); } catch(e) {}
+        try { stateDb.exec(`ALTER TABLE book_submissions ADD COLUMN file_type TEXT;`); } catch(e) {}
         
     } catch(e) { console.error("Gagal membuat tabel log:", e.message); }
   } else {
@@ -318,6 +341,12 @@ function titlesUnion() {
 }
 
 // === LOGGING ENDPOINTS ===
+app.get('/api/local/status', (req, res) => {
+  if (!localExportMode) return res.sendStatus(404);
+  if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
+  res.json({ app: 'maktabah-local-export', readOnly: true, sources: [dbPath, tambDbPath, tafsirDbPath] });
+});
+
 app.get('/api/stats', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
     try {
@@ -326,12 +355,12 @@ app.get('/api/stats', (req, res) => {
         const totalCategories = db.prepare("SELECT COUNT(id) as count FROM main.categories").get().count;
         let totalSearches = 0;
         try {
-            totalSearches = db.prepare("SELECT COUNT(id) as count FROM main.search_logs").get().count;
+            totalSearches = stateDb.prepare("SELECT COUNT(id) as count FROM main.search_logs").get().count;
         } catch(e) { } // Table might not exist
         
         let totalVisits = 0;
         try {
-            totalVisits = db.prepare("SELECT COUNT(id) as count FROM main.visit_logs").get().count;
+            totalVisits = stateDb.prepare("SELECT COUNT(id) as count FROM main.visit_logs").get().count;
         } catch(e) {}
         let onlineUsers = Math.floor(Math.random() * 15) + 5;
         
@@ -353,7 +382,7 @@ app.get('/api/recent-searches', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
     try {
         const limit = parseInt(req.query.limit) || 10;
-        const data = db.prepare("SELECT query FROM search_logs WHERE length(trim(query)) >= 3 ORDER BY id DESC LIMIT 200").all();
+        const data = stateDb.prepare("SELECT query FROM search_logs WHERE length(trim(query)) >= 3 ORDER BY id DESC LIMIT 200").all();
         const unique = [];
         const result = [];
         for (const row of data) {
@@ -372,7 +401,7 @@ app.get('/api/popular-searches', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     try {
         const limit = parseInt(req.query.limit) || 10;
-        const data = db.prepare("SELECT query, COUNT(*) as count FROM search_logs WHERE length(trim(query)) >= 3 GROUP BY LOWER(trim(query)) ORDER BY count DESC LIMIT ?").all(limit);
+        const data = stateDb.prepare("SELECT query, COUNT(*) as count FROM search_logs WHERE length(trim(query)) >= 3 GROUP BY LOWER(trim(query)) ORDER BY count DESC LIMIT ?").all(limit);
         res.json({ data });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -383,7 +412,7 @@ app.get('/api/popular-books', (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         // Kita anggap download_logs mewakili interaksi buku untuk saat ini
         // Cari dari visit_logs dan download_logs gabungan. Karena rumit, kita ambil dari visit_logs saja yang prefixnya /book/
-        const data = db.prepare(`
+        const data = stateDb.prepare(`
           SELECT bkid, bk, SUM(count) as count FROM (
             SELECT 
               CAST(SUBSTR(path, 7, INSTR(SUBSTR(path, 7), ' ') - 1) AS INTEGER) as bkid,
@@ -413,7 +442,7 @@ app.get('/api/recent-questions', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
     try {
         const limit = parseInt(req.query.limit) || 10;
-        const data = db.prepare("SELECT question FROM ask_logs WHERE length(trim(question)) >= 5 ORDER BY id DESC LIMIT 200").all();
+        const data = stateDb.prepare("SELECT question FROM ask_logs WHERE length(trim(question)) >= 5 ORDER BY id DESC LIMIT 200").all();
         const unique = [];
         const result = [];
         for (const row of data) {
@@ -475,7 +504,7 @@ function requireAdmin(req, res, next) {
   if (token) {
     if (activeTokens.has(token)) return next();
     try {
-        const row = db.prepare("SELECT * FROM admin_tokens WHERE token = ?").get(token);
+        const row = stateDb.prepare("SELECT * FROM admin_tokens WHERE token = ?").get(token);
         if (row) {
             activeTokens.add(token);
             return next();
@@ -491,7 +520,7 @@ app.post('/api/admin/login', (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     activeTokens.add(token);
     try {
-        db.prepare("INSERT INTO admin_tokens (token) VALUES (?)").run(token);
+        stateDb.prepare("INSERT INTO admin_tokens (token) VALUES (?)").run(token);
     } catch(e) {}
     res.json({ success: true, token });
   } else {
@@ -505,7 +534,7 @@ app.post('/api/admin/logout', requireAdmin, (req, res) => {
       const token = authHeader.split(' ')[1];
       activeTokens.delete(token);
       try {
-          db.prepare("DELETE FROM admin_tokens WHERE token = ?").run(token);
+          stateDb.prepare("DELETE FROM admin_tokens WHERE token = ?").run(token);
       } catch(e) {}
   }
   res.json({ success: true });
@@ -542,7 +571,7 @@ app.post('/api/log/download', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     try {
         const { book_id, book_title } = req.body;
-        db.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(book_id || null, book_title || 'Unknown', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+        stateDb.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(book_id || null, book_title || 'Unknown', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         res.json({ success: true });
     } catch(err) {
         res.status(500).json({ error: err.message });
@@ -554,7 +583,7 @@ app.post('/api/log/visit', (req, res) => {
     try {
         const { path } = req.body;
         if (path) {
-            db.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(path, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(path, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
         res.json({ success: true });
     } catch(err) {
@@ -568,15 +597,15 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
         const stats = {
             categories: db.prepare("SELECT COUNT(*) as c FROM main.categories").get().c,
             books: db.prepare(`SELECT COUNT(*) as c FROM ${booksMeta()}`).get().c,
-            feedback: db.prepare("SELECT COUNT(*) as c FROM feedback").get().c,
-            requests: db.prepare("SELECT COUNT(*) as c FROM book_requests").get().c,
-            submissions: db.prepare("SELECT COUNT(*) as c FROM book_submissions").get().c,
-            log_search: db.prepare("SELECT COUNT(*) as c FROM search_logs").get().c,
-            log_download: db.prepare("SELECT COUNT(*) as c FROM download_logs").get().c,
-            log_visit: db.prepare("SELECT COUNT(*) as c FROM visit_logs").get().c,
-            log_quran: db.prepare("SELECT COUNT(*) as c FROM quran_logs").get().c,
-            log_rowa: db.prepare("SELECT COUNT(*) as c FROM rowa_logs").get().c,
-            log_ask: db.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c
+            feedback: stateDb.prepare("SELECT COUNT(*) as c FROM feedback").get().c,
+            requests: stateDb.prepare("SELECT COUNT(*) as c FROM book_requests").get().c,
+            submissions: stateDb.prepare("SELECT COUNT(*) as c FROM book_submissions").get().c,
+            log_search: stateDb.prepare("SELECT COUNT(*) as c FROM search_logs").get().c,
+            log_download: stateDb.prepare("SELECT COUNT(*) as c FROM download_logs").get().c,
+            log_visit: stateDb.prepare("SELECT COUNT(*) as c FROM visit_logs").get().c,
+            log_quran: stateDb.prepare("SELECT COUNT(*) as c FROM quran_logs").get().c,
+            log_rowa: stateDb.prepare("SELECT COUNT(*) as c FROM rowa_logs").get().c,
+            log_ask: stateDb.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c
         };
         res.json({ success: true, data: stats });
     } catch(err) {
@@ -597,7 +626,7 @@ app.get('/api/admin/logs/:type', requireAdmin, (req, res) => {
         else if (type === 'ask') query = "SELECT * FROM ask_logs ORDER BY id DESC LIMIT 500";
         else return res.status(400).json({ error: 'Invalid log type' });
 
-        const data = db.prepare(query).all();
+        const data = stateDb.prepare(query).all();
         res.json(data);
     } catch(err) {
         console.error(err);
@@ -610,8 +639,8 @@ app.get('/api/admin/categories', requireAdmin, (req, res) => {
   try {
     const cats = db.prepare(`
       SELECT c.id, c.name, c.catord, c.lvl, COUNT(b.bkid) as book_count
-      FROM categories c
-      LEFT JOIN books_meta b ON b.cat = c.id
+      FROM ${categoryCatalogueSql(hasTambahan)} c
+      LEFT JOIN ${booksMeta()} b ON b.cat = c.id
       GROUP BY c.id
       ORDER BY c.name ASC
     `).all();
@@ -657,18 +686,24 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
 
     let whereClause = '';
     let params = [];
-    if (catId) { whereClause += (whereClause ? ' AND' : ' WHERE') + ' b.cat = ?'; params.push(catId); }
+    if (catId !== null && Number.isInteger(catId)) { whereClause += (whereClause ? ' AND' : ' WHERE') + ' b.cat = ?'; params.push(catId); }
     if (query) { whereClause += (whereClause ? ' AND' : ' WHERE') + ' b.bk LIKE ?'; params.push(`%${query}%`); }
 
-    const data = db.prepare(`SELECT b.bkid, b.bk, b.cat, c.name as cat_name FROM books_meta b LEFT JOIN categories c ON b.cat = c.id ${whereClause} ORDER BY b.bk ASC LIMIT ? OFFSET ?`).all(...params, limit, offset);
-    const total = db.prepare(`SELECT COUNT(*) as total FROM books_meta b ${whereClause}`).get(...params).total;
+    const data = db.prepare(`SELECT b.bkid, b.bk, b.cat, c.name as cat_name FROM ${booksMeta()} b LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id ${whereClause} ORDER BY b.bk ASC LIMIT ? OFFSET ?`).all(...params, limit, offset);
+    const total = db.prepare(`SELECT COUNT(*) as total FROM ${booksMeta()} b ${whereClause}`).get(...params).total;
     res.json({ data, total, page, limit });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
 registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
-  hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(),
+  hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(), runtime: transferRuntime,
+});
+registerLargeTransfer(app, {
+  getDb: () => db, getDbPath: () => dbPath, requireAdmin,
+  getAdditionalPath: () => hasTambahan ? path.resolve(tambDbPath) : null,
+  localExportMode, runtime: transferRuntime, clearCache: () => askCache.clear(),
+  directory: path.join(rootDir, 'dev-data', 'large-transfer'),
 });
 
 app.put('/api/admin/book/:id', requireAdmin, (req, res) => {
@@ -778,7 +813,7 @@ app.post('/api/book-submit', (req, res) => {
        }
     }
 
-    db.prepare('INSERT INTO book_submissions (email, name, book_title, book_author, category_id, file_path, file_name, file_type, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
+    stateDb.prepare('INSERT INTO book_submissions (email, name, book_title, book_author, category_id, file_path, file_name, file_type, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
       email, name || null, book_title, book_author || null, category_id || null,
       savedFilePath, finalFileName, fileType, notes || null
     );
@@ -794,7 +829,7 @@ app.post('/api/feedback', (req, res) => {
   const { email, name, message, rating } = req.body;
   if (!email || !message) return res.status(400).json({ error: 'Email dan pesan wajib diisi' });
   try {
-    db.prepare('INSERT INTO feedback (email, name, message, rating) VALUES (?, ?, ?, ?)').run(email, name, message, rating);
+    stateDb.prepare('INSERT INTO feedback (email, name, message, rating) VALUES (?, ?, ?, ?)').run(email, name, message, rating);
     res.json({ message: 'Feedback berhasil dikirim' });
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
@@ -804,7 +839,7 @@ app.post('/api/book-request', (req, res) => {
   const { email, name, book_title, book_author, category_id, notes } = req.body;
   if (!email || !book_title) return res.status(400).json({ error: 'Email dan Judul Kitab wajib diisi' });
   try {
-    db.prepare('INSERT INTO book_requests (email, name, book_title, book_author, category_id, notes) VALUES (?, ?, ?, ?, ?, ?)').run(email, name, book_title, book_author, category_id || null, notes);
+    stateDb.prepare('INSERT INTO book_requests (email, name, book_title, book_author, category_id, notes) VALUES (?, ?, ?, ?, ?, ?)').run(email, name, book_title, book_author, category_id || null, notes);
     res.json({ message: 'Request kitab berhasil dikirim' });
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
@@ -816,8 +851,8 @@ app.get('/api/admin/feedback', requireAdmin, (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
     const offset = (page - 1) * limit;
-    const data = db.prepare('SELECT * FROM feedback ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
-    const total = db.prepare('SELECT COUNT(*) as total FROM feedback').get().total;
+    const data = stateDb.prepare('SELECT * FROM feedback ORDER BY created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+    const total = stateDb.prepare('SELECT COUNT(*) as total FROM feedback').get().total;
     res.json({ data, total, page, limit });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -825,7 +860,7 @@ app.get('/api/admin/feedback', requireAdmin, (req, res) => {
 app.delete('/api/admin/feedback/:id', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
-    db.prepare('DELETE FROM feedback WHERE id = ?').run(parseInt(req.params.id));
+    stateDb.prepare('DELETE FROM feedback WHERE id = ?').run(parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -837,8 +872,8 @@ app.get('/api/admin/book-requests', requireAdmin, (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
     const offset = (page - 1) * limit;
-    const data = db.prepare('SELECT r.*, c.name as category_name FROM book_requests r LEFT JOIN categories c ON r.category_id = c.id ORDER BY r.created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
-    const total = db.prepare('SELECT COUNT(*) as total FROM book_requests').get().total;
+    const data = stateDb.prepare('SELECT r.*, c.name as category_name FROM book_requests r LEFT JOIN categories c ON r.category_id = c.id ORDER BY r.created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+    const total = stateDb.prepare('SELECT COUNT(*) as total FROM book_requests').get().total;
     res.json({ data, total, page, limit });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -847,7 +882,7 @@ app.put('/api/admin/book-request/:id', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
     const { status } = req.body;
-    db.prepare('UPDATE book_requests SET status = ? WHERE id = ?').run(status, parseInt(req.params.id));
+    stateDb.prepare('UPDATE book_requests SET status = ? WHERE id = ?').run(status, parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -855,7 +890,7 @@ app.put('/api/admin/book-request/:id', requireAdmin, (req, res) => {
 app.delete('/api/admin/book-request/:id', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
-    db.prepare('DELETE FROM book_requests WHERE id = ?').run(parseInt(req.params.id));
+    stateDb.prepare('DELETE FROM book_requests WHERE id = ?').run(parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -867,8 +902,8 @@ app.get('/api/admin/book-submissions', requireAdmin, (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 20;
     const offset = (page - 1) * limit;
-    const data = db.prepare('SELECT s.*, c.name as category_name FROM book_submissions s LEFT JOIN categories c ON s.category_id = c.id ORDER BY s.created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
-    const total = db.prepare('SELECT COUNT(*) as total FROM book_submissions').get().total;
+    const data = stateDb.prepare('SELECT s.*, c.name as category_name FROM book_submissions s LEFT JOIN categories c ON s.category_id = c.id ORDER BY s.created_at DESC LIMIT ? OFFSET ?').all(limit, offset);
+    const total = stateDb.prepare('SELECT COUNT(*) as total FROM book_submissions').get().total;
     res.json({ data, total, page, limit });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -877,7 +912,7 @@ app.put('/api/admin/book-submission/:id', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
     const { status } = req.body;
-    db.prepare('UPDATE book_submissions SET status = ? WHERE id = ?').run(status, parseInt(req.params.id));
+    stateDb.prepare('UPDATE book_submissions SET status = ? WHERE id = ?').run(status, parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -885,9 +920,9 @@ app.put('/api/admin/book-submission/:id', requireAdmin, (req, res) => {
 app.delete('/api/admin/book-submission/:id', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
-    const row = db.prepare('SELECT file_path FROM book_submissions WHERE id = ?').get(parseInt(req.params.id));
+    const row = stateDb.prepare('SELECT file_path FROM book_submissions WHERE id = ?').get(parseInt(req.params.id));
     if (row?.file_path && fs.existsSync(row.file_path)) fs.unlinkSync(row.file_path);
-    db.prepare('DELETE FROM book_submissions WHERE id = ?').run(parseInt(req.params.id));
+    stateDb.prepare('DELETE FROM book_submissions WHERE id = ?').run(parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -904,7 +939,7 @@ app.get('/api/search', (req, res) => {
 
     // Log pencarian (hanya ke main database)
     if (page === 1 && query && query.length >= 3) {
-        try { db.prepare("INSERT INTO main.search_logs (query, ip, user_agent) VALUES (?, ?, ?)").run(query, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']); } catch(e) {}
+        try { stateDb.prepare("INSERT INTO main.search_logs (query, ip, user_agent) VALUES (?, ?, ?)").run(query, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']); } catch(e) {}
     }
 
     let cat_ids = [];
@@ -1110,7 +1145,7 @@ app.get('/api/download/:id', async (req, res) => {
         const bookStmt = db.prepare(`SELECT bk as title FROM books_meta WHERE bkid = ?`);
         const book = bookStmt.get(bookId);
         if (book) {
-            db.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            stateDb.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
     } catch(e) {}
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
@@ -1200,7 +1235,7 @@ app.get('/api/book/:id', (req, res) => {
 
     if (data) {
       try {
-        db.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(
+        stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(
           `/book/${bookId} - ${data.bk}`, 
           req.ip || req.headers['x-forwarded-for'], 
           req.headers['user-agent']
@@ -1357,7 +1392,7 @@ app.get('/api/quran/surahs', (req, res) => {
 
 app.get('/api/quran/surah/:id', (req, res) => {
     try {
-        db.prepare("INSERT INTO quran_logs (surah_id, ip, user_agent) VALUES (?, ?, ?)").run(parseInt(req.params.id), req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+        stateDb.prepare("INSERT INTO quran_logs (surah_id, ip, user_agent) VALUES (?, ?, ?)").run(parseInt(req.params.id), req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
     } catch(e) {}
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
@@ -1458,7 +1493,7 @@ app.get('/api/rowa/:id', (req, res) => {
 
     // Log kunjungan (non-blocking)
     try {
-      db.prepare("INSERT INTO rowa_logs (rowa_id, rowa_name, ip, user_agent) VALUES (?, ?, ?, ?)").run(
+      stateDb.prepare("INSERT INTO rowa_logs (rowa_id, rowa_name, ip, user_agent) VALUES (?, ?, ?, ?)").run(
         rowaId, data.Name || data.name || '', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']
       );
     } catch(e) {}
@@ -1782,7 +1817,7 @@ app.post('/api/ask', express.json(), async (req, res) => {
       
       // Simpan ke db
       try {
-          db.prepare("INSERT INTO ask_logs (question, response, ip, user_agent) VALUES (?, ?, ?, ?)").run(question, aiResponse, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+          stateDb.prepare("INSERT INTO ask_logs (question, response, ip, user_agent) VALUES (?, ?, ?, ?)").run(question, aiResponse, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
       } catch(e) {}
 
       // Jika cache terlalu besar, hapus entry pertama (FIFO)
@@ -2000,7 +2035,8 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-app.listen(port, process.env.HOST || '0.0.0.0', () => {
+const httpServer = app.listen(port, process.env.HOST || '0.0.0.0', () => {
   console.log(`Web Server running at http://localhost:${port}`);
 });
+httpServer.requestTimeout = 0;
 

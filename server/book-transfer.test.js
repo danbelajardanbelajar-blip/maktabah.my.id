@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 import express from 'express';
-import { exportBooks, exportCategories, importBooks, registerBookTransfer } from './book-transfer.js';
+import { exportBooks, exportCategories, importBooks, registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 
 const seed = fileURLToPath(new URL('../dev-data/seed/maktabah.db', import.meta.url));
 function fixture(t) {
@@ -161,4 +161,27 @@ test('category exports include more than 100 books without truncation', t => {
   assert.equal(payload.books.length, 111);
   clearBooks(db);
   assert.equal(importBooks(db, payload).imported, 111);
+});
+
+test('additional books export with complete pages even without category or author tables', t => {
+  const { db, ids } = fixture(t);
+  db.exec(`ATTACH DATABASE ':memory:' AS tambahan;
+    CREATE TABLE tambahan.books_meta AS SELECT * FROM main.books_meta WHERE 0;
+    CREATE TABLE tambahan.pages AS SELECT * FROM main.pages WHERE 0;
+    CREATE TABLE tambahan.titles AS SELECT * FROM main.titles WHERE 0;`);
+  db.prepare('INSERT INTO tambahan.books_meta (bkid,bk,cat,authno) VALUES (?,?,?,?)').run(999999, 'Kitab tambahan lengkap', 888888, 0);
+  db.prepare('INSERT INTO tambahan.pages (id,book_id,part,page,seal,nass) VALUES (?,?,?,?,?,?)').run(1, 999999, 1, 1, '', 'نص عربي من المصدر الإضافي');
+  db.prepare('INSERT INTO tambahan.titles (id,book_id,lvl,sub,tit) VALUES (?,?,?,?,?)').run(1, 999999, 1, 0, 'عنوان');
+  const payload = exportBooks(db, [ids[0], 999999], 100, true);
+  assert.equal(payload.books.length, 2);
+  assert.equal(payload.books[1].pages[0].nass, 'نص عربي من المصدر الإضافي');
+  assert.equal(payload.books[1].titles.length, 1);
+  assert.equal(payload.books[1].category.name, 'Kategori sumber #888888');
+  assert.equal(payload.books[1].book.authno, null);
+  const category = db.prepare(`SELECT * FROM ${categoryCatalogueSql(true)} WHERE id=?`).get(888888);
+  assert.equal(category.name, 'Kategori sumber #888888');
+  assert.deepEqual(exportCategories(db, [888888], true).books, [payload.books[1]]);
+  clearBooks(db);
+  assert.equal(importBooks(db, payload).imported, 2);
+  assert.equal(db.prepare('SELECT nass FROM main.pages WHERE book_id=999999').get().nass, 'نص عربي من المصدر الإضافي');
 });
