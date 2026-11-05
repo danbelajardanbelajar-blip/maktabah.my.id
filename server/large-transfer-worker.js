@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
-import { bookCatalogueSql, categoryCatalogueSql, importBooks } from './book-transfer.js';
+import { bookCatalogueSql, categoryCatalogueSql, importBooks, validPageReference } from './book-transfer.js';
 
 const RESERVE = 256 * 1024 * 1024;
 const fields = {
@@ -145,7 +145,7 @@ export async function importLargePackage(options, progress = () => {}) {
         if (result.imported) {
           imported++;
           for (const p of source.prepare('SELECT id,book_id,part,page,seal,nass FROM pages WHERE book_id=?').iterate(book.bkid)) {
-            if ((p.id !== null && !Number.isSafeInteger(p.id)) || (p.nass !== null && typeof p.nass !== 'string') || [p.part, p.page].some(v => v !== null && !Number.isSafeInteger(v)) || (p.seal !== null && typeof p.seal !== 'string')) throw new Error(`Halaman kitab ${book.bkid} tidak valid.`);
+            if ((p.id !== null && !Number.isSafeInteger(p.id)) || (p.nass !== null && typeof p.nass !== 'string') || [p.part, p.page].some(v => !validPageReference(v)) || (p.seal !== null && typeof p.seal !== 'string')) throw new Error(`Halaman kitab ${book.bkid} tidak valid (ID halaman ${p.id}).`);
             insertPage.run(...values(p, 'pages')); pagesDone++;
             if (Date.now() - lastProgress > 500) { checkDisk(options.dbPath); progress({ phase: 'import', totalBooks: info.books, booksDone, totalPages: info.pages, pagesDone }); lastProgress = Date.now(); }
           }

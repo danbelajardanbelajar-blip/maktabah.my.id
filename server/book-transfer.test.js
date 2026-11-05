@@ -34,6 +34,18 @@ test('round trip preserves Arabic pages, contents, authors and search index', t 
   db.prepare("INSERT INTO pages_fts(pages_fts,rank) VALUES('integrity-check',1)").run();
 });
 
+test('JSON transfer preserves textual volume and page labels and rejects objects', t => {
+  const { db, ids } = fixture(t);
+  db.prepare('UPDATE pages SET part=?,page=? WHERE book_id=?').run('مقدمة', 'الغلاف', ids[0]);
+  const payload = exportBooks(db, [ids[0]]);
+  clearBooks(db);
+  const invalid = structuredClone(payload);
+  invalid.books[0].pages[0].part = { label: 'invalid' };
+  assert.throws(() => importBooks(db, invalid), /tidak valid/);
+  assert.equal(importBooks(db, payload).imported, 1);
+  assert.deepEqual(exportBooks(db, [ids[0]]).books, payload.books);
+});
+
 test('existing book IDs are skipped without overwriting content, including additional database IDs', t => {
   const { db, ids } = fixture(t);
   const payload = exportBooks(db, ids);

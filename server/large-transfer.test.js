@@ -25,6 +25,7 @@ test('large SQLite package round trip preserves complete books and empty categor
   const src = new Database(f.source);
   src.prepare('INSERT INTO categories (id,name) VALUES (999999,?)').run('Empty category');
   const cat = src.prepare('SELECT cat FROM books_meta WHERE bkid=1').get().cat;
+  src.prepare('UPDATE pages SET part=?,page=? WHERE book_id=1 AND id=(SELECT min(id) FROM pages WHERE book_id=1)').run('مقدمة', 'الغلاف');
   const pages = src.prepare('SELECT * FROM pages WHERE book_id=1 ORDER BY rowid').all();
   src.close();
   const before = fs.statSync(f.source);

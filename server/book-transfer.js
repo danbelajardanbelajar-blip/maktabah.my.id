@@ -9,6 +9,8 @@ const fail = message => { throw new Error(message); };
 const integer = value => Number.isSafeInteger(value);
 const nullableInt = value => value == null || integer(value);
 const nullableText = value => value == null || typeof value === 'string';
+// Legacy sources also use labels such as مقدمة for volume/page references.
+export const validPageReference = value => nullableInt(value) || typeof value === 'string';
 const historicalDate = value => nullableInt(value) || typeof value === 'string';
 
 export const bookCatalogueSql = additional => additional
@@ -56,7 +58,7 @@ export function validateBookPackage(payload) {
       for (const row of rows) {
         if (!row || (row.id !== null && !integer(row.id)) || row.book_id !== b.bkid || (row.id !== null && rowIds.has(row.id))) fail(`ID halaman/daftar isi kitab ${b.bkid} tidak valid atau berulang.`);
         if (row.id !== null) rowIds.add(row.id);
-        if (isPage ? (!nullableInt(row.part) || !nullableInt(row.page) || !nullableText(row.seal) || (row.nass !== null && typeof row.nass !== 'string'))
+        if (isPage ? (!validPageReference(row.part) || !validPageReference(row.page) || !nullableText(row.seal) || (row.nass !== null && typeof row.nass !== 'string'))
           : (!nullableInt(row.lvl) || !nullableInt(row.sub) || !nullableText(row.tit))) fail(`Isi halaman/daftar isi kitab ${b.bkid} tidak valid.`);
       }
     }
