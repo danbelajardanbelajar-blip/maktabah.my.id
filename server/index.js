@@ -1994,7 +1994,7 @@ if (fs.existsSync(distPath)) {
   });
 }
 
-app.listen(port, () => {
+app.listen(port, process.env.HOST || '0.0.0.0', () => {
   console.log(`Web Server running at http://localhost:${port}`);
 });
 
