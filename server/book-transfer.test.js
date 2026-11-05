@@ -6,7 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 import express from 'express';
-import { exportBooks, importBooks, registerBookTransfer } from './book-transfer.js';
+import { exportBooks, exportCategories, importBooks, registerBookTransfer } from './book-transfer.js';
 
 const seed = fileURLToPath(new URL('../dev-data/seed/maktabah.db', import.meta.url));
 function fixture(t) {
@@ -111,4 +111,54 @@ test('HTTP endpoints require admin and create a readable pre-import backup', asy
     assert.match(exported.headers.get('content-disposition'), /attachment/);
     assert.deepEqual((await exported.json()).books, payload.books);
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('category packages preserve all books and pages, and empty categories', t => {
+  const { db, ids } = fixture(t);
+  const cat = db.prepare('SELECT cat FROM books_meta WHERE bkid=?').get(ids[0]).cat;
+  db.prepare('UPDATE books_meta SET cat=? WHERE bkid=?').run(cat, ids[1]);
+  db.prepare('INSERT INTO categories (id,name,catord,lvl) VALUES (999999,?,?,?)').run('Kategori kosong', 9, 2);
+  const payload = exportCategories(db, [cat, 999999]);
+  const bookIds = payload.books.map(b => b.book.bkid);
+  assert.ok(bookIds.includes(ids[0]) && bookIds.includes(ids[1]));
+  assert.equal(payload.categories.length, 2);
+  clearBooks(db);
+  const imported = importBooks(db, JSON.parse(JSON.stringify(payload)));
+  assert.equal(imported.importedCategories, 2);
+  assert.equal(imported.imported, payload.books.length);
+  const roundtrip = exportCategories(db, [cat, 999999]);
+  assert.deepEqual(roundtrip.categories, payload.categories);
+  assert.deepEqual(roundtrip.books, payload.books);
+  assert.equal(importBooks(db, payload).importedCategories, 0);
+});
+
+test('a package containing only empty categories can be exported and imported', t => {
+  const { db } = fixture(t);
+  db.prepare('INSERT INTO categories (id,name) VALUES (?,?)').run(999999, 'Kosong');
+  const payload = exportCategories(db, [999999]);
+  assert.equal(payload.books.length, 0);
+  clearBooks(db);
+  assert.equal(importBooks(db, payload).importedCategories, 1);
+  assert.equal(db.prepare('SELECT name FROM categories WHERE id=999999').get().name, 'Kosong');
+});
+
+test('category import rejects books outside selected categories before writing anything', t => {
+  const { db, ids } = fixture(t);
+  const cat = db.prepare('SELECT cat FROM books_meta WHERE bkid=?').get(ids[0]).cat;
+  const payload = exportCategories(db, [cat]);
+  clearBooks(db);
+  payload.categories[0].name = 'Inconsistent metadata';
+  assert.throws(() => importBooks(db, payload), /tidak sesuai/);
+  assert.equal(db.prepare('SELECT count(*) n FROM categories').get().n, 0);
+});
+
+test('category exports include more than 100 books without truncation', t => {
+  const { db, ids } = fixture(t);
+  const cat = db.prepare('SELECT cat FROM books_meta WHERE bkid=?').get(ids[0]).cat;
+  const insert = db.prepare('INSERT INTO books_meta (bkid,bk,cat) VALUES (?,?,?)');
+  for (let i = 0; i < 110; i++) insert.run(900000 + i, `Kitab ${i}`, cat);
+  const payload = exportCategories(db, [cat]);
+  assert.equal(payload.books.length, 111);
+  clearBooks(db);
+  assert.equal(importBooks(db, payload).imported, 111);
 });

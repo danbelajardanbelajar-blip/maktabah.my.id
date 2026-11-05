@@ -3,7 +3,7 @@ import { Download, Upload, Search, ArrowLeft, CheckCircle2, AlertTriangle } from
 import { webAPI } from '../api';
 
 type Book = { bkid: number; bk: string; cat_name: string };
-type Package = { format: string; version: number; books: { book: { bkid: number; bk: string }; pages: unknown[]; titles: unknown[] }[] };
+type Package = { format: string; version: number; categories?: { id: number; name: string }[]; books: { book: { bkid: number; bk: string; cat?: number }; pages: unknown[]; titles: unknown[] }[] };
 const LIMIT = 50 * 1024 * 1024;
 const saveFile = (blob: Blob, name: string) => {
   const url = URL.createObjectURL(blob);
@@ -15,9 +15,11 @@ const saveFile = (blob: Blob, name: string) => {
 export function BookTransfer({ token, onLogout, onBack, onChanged }: {
   token: string; onLogout: () => void; onBack: () => void; onChanged: () => void;
 }) {
-  const [tab, setTab] = useState<'export' | 'import'>('export');
+  const [tab, setTab] = useState<'export' | 'categories' | 'import'>('export');
   const [books, setBooks] = useState<Book[]>([]);
-  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: number; name: string; book_count: number }[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Set<number>>(new Set());
+  const [categoryQuery, setCategoryQuery] = useState('');
   const [selected, setSelected] = useState<Map<number, Book>>(new Map());
   const [query, setQuery] = useState('');
   const [cat, setCat] = useState('');
@@ -69,9 +71,9 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
   const exportSelected = async () => {
     setBusy(true); setError(''); setMessage('');
     try {
-      const r = await request('export', { bookIds: [...selected.keys()] });
-      saveFile(await r.blob(), `maktabah-kitab-${new Date().toISOString().slice(0, 10)}.json`);
-      setMessage(`${selected.size} kitab berhasil diexport beserta halaman dan daftar isinya.`);
+      const r = await request('export', tab === 'categories' ? { categoryIds: [...selectedCategories] } : { bookIds: [...selected.keys()] });
+      saveFile(await r.blob(), `maktabah-${tab === 'categories' ? 'kategori' : 'kitab'}-${new Date().toISOString().slice(0, 10)}.json`);
+      setMessage(tab === 'categories' ? `${selectedCategories.size} kategori berhasil diexport beserta seluruh kitab dan isinya.` : `${selected.size} kitab berhasil diexport beserta halaman dan daftar isinya.`);
     } catch (e) { setError(e instanceof Error ? e.message : 'Export gagal.'); }
     finally { setBusy(false); }
   };
@@ -83,10 +85,12 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
     try {
       if (file.size > LIMIT) throw new Error('Ukuran file melebihi batas 50 MB.');
       const data: Package = JSON.parse((await file.text()).replace(/^\uFEFF/, ''));
-      if (data.format !== 'maktabah-books' || data.version !== 1 || !Array.isArray(data.books)
-        || !data.books.length || data.books.length > 100
+      const isCategory = data?.format === 'maktabah-categories';
+      if ((!isCategory && data?.format !== 'maktabah-books') || data.version !== 1 || !Array.isArray(data.books)
+        || (!isCategory && !data.books.length) || data.books.length > (isCategory ? 5000 : 100)
+        || (isCategory && (!Array.isArray(data.categories) || !data.categories.length || data.categories.length > 100 || data.categories.some(c => !c || typeof c.name !== 'string')))
         || data.books.some(item => !item.book || typeof item.book.bk !== 'string' || !Array.isArray(item.pages) || !Array.isArray(item.titles))) {
-        throw new Error('Pilih file JSON hasil export kitab Maktabah (versi 1, maksimal 100 kitab).');
+        throw new Error('Pilih file JSON hasil export kitab atau kategori Maktabah versi 1.');
       }
       setPayload(data);
     } catch (e) { setError(e instanceof SyntaxError ? 'File bukan JSON yang valid.' : e instanceof Error ? e.message : 'File tidak dapat dibaca.'); }
@@ -99,8 +103,8 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
     try {
       const r = await request('import', payload);
       const result = await r.json();
-      setMessage(`${result.imported} kitab dan ${result.pages} halaman berhasil diimport. ${result.skipped.length} kitab dilewati karena ID sudah ada. Cadangan otomatis: ${result.backup}.`);
-      setPayload(null); setConfirmed(false); setRefresh(v => v + 1); setSelected(new Map()); onChanged();
+      setMessage(`${result.importedCategories} kategori baru, ${result.imported} kitab, dan ${result.pages} halaman berhasil diimport. ${result.skipped.length} kitab dilewati karena ID sudah ada. Cadangan otomatis: ${result.backup}.`);
+      setPayload(null); setConfirmed(false); setRefresh(v => v + 1); setSelected(new Map()); setSelectedCategories(new Set()); onChanged();
     } catch (e) { setError(e instanceof Error ? e.message : 'Import gagal.'); }
     finally { setBusy(false); }
   };
@@ -114,11 +118,11 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
   const button = 'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed';
   return <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
     <div className="p-5 border-b flex flex-wrap items-center justify-between gap-3">
-      <div><h2 className="font-bold text-xl text-gray-800">Import / Export Kitab</h2><p className="text-sm text-gray-500 mt-1">Pindahkan kitab pilihan beserta penulis, kategori, isi halaman, dan daftar isi.</p></div>
+      <div><h2 className="font-bold text-xl text-gray-800">Import / Export Kitab & Kategori</h2><p className="text-sm text-gray-500 mt-1">Pindahkan kitab pilihan atau kategori beserta seluruh kitab, isi halaman, dan daftar isi.</p></div>
       <button className={`${button} bg-gray-100 text-gray-700`} onClick={onBack} disabled={busy}><ArrowLeft size={16} /> Database Kitab</button>
     </div>
     <div className="flex border-b px-5 gap-5" role="tablist" aria-label="Transfer kitab">
-      {(['export', 'import'] as const).map(value => <button key={value} role="tab" aria-selected={tab === value} disabled={busy} onClick={() => { setTab(value); setError(''); setMessage(''); }} className={`py-3 border-b-2 font-semibold text-sm ${tab === value ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>{value === 'export' ? 'Export Kitab' : 'Import Kitab'}</button>)}
+      {(['export', 'categories', 'import'] as const).map(value => <button key={value} role="tab" aria-selected={tab === value} disabled={busy} onClick={() => { setTab(value); setError(''); setMessage(''); }} className={`py-3 border-b-2 font-semibold text-sm ${tab === value ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>{value === 'export' ? 'Export Kitab' : value === 'categories' ? 'Export Kategori' : 'Import Kitab / Kategori'}</button>)}
     </div>
     <div className="p-5 space-y-4">
       {error && <div role="alert" className="p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 flex gap-2 text-sm"><AlertTriangle size={18} className="shrink-0" />{error}</div>}
@@ -134,11 +138,17 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
           {loading ? <tr><td colSpan={4} className="p-8 text-center text-gray-400">Memuat kitab...</td></tr> : !books.length ? <tr><td colSpan={4} className="p-8 text-center text-gray-400">Tidak ada kitab yang cocok.</td></tr> : books.map(b => <tr key={b.bkid} className="hover:bg-gray-50"><td className="p-3"><input type="checkbox" aria-label={`Pilih ${b.bk}`} checked={selected.has(b.bkid)} disabled={busy || (!selected.has(b.bkid) && selected.size >= 100)} onChange={() => toggle(b)} /></td><td className="p-3 text-gray-400">{b.bkid}</td><td dir="auto" className="p-3 text-lg" style={{ fontFamily: 'var(--arabic-font)' }}>{b.bk}</td><td dir="auto" className="p-3">{b.cat_name || '—'}</td></tr>)}
         </tbody></table></div>
         <div className="flex justify-between items-center gap-3 text-sm text-gray-500"><span>{total} kitab · Halaman {page} / {Math.max(1, Math.ceil(total / 20))}</span><div className="flex gap-2"><button className={`${button} border`} disabled={page <= 1 || loading || busy} onClick={() => setPage(p => p - 1)}>Sebelumnya</button><button className={`${button} border`} disabled={page * 20 >= total || loading || busy} onClick={() => setPage(p => p + 1)}>Berikutnya</button></div></div>
+      </> : tab === 'categories' ? <>
+        <div className="rounded-xl bg-gray-50 border p-4 text-sm text-gray-600">Export kategori mencakup seluruh kitab di database utama pada kategori pilihan, termasuk penulis, semua halaman, dan daftar isi. Kategori kosong juga disertakan. Batas 100 kategori, 5.000 kitab, dan 50 MB per file. Jika melebihi batas, export ditolak tanpa memotong isinya.</div>
+        <label className="flex items-center gap-2 border rounded-lg px-3"><Search size={17} className="text-gray-400" /><input aria-label="Cari kategori untuk export" placeholder="Cari kategori..." value={categoryQuery} disabled={busy} onChange={e => setCategoryQuery(e.target.value)} className="w-full py-2 outline-none" /></label>
+        <div className="flex flex-wrap justify-between items-center gap-3"><span className="text-sm font-semibold text-gray-600">{selectedCategories.size} kategori · {categories.filter(c => selectedCategories.has(c.id)).reduce((n, c) => n + c.book_count, 0)} kitab</span><div className="flex gap-2"><button onClick={() => setSelectedCategories(new Set())} disabled={!selectedCategories.size || busy} className={`${button} bg-gray-100 text-gray-600`}>Kosongkan pilihan</button><button onClick={exportSelected} disabled={!selectedCategories.size || busy} className={`${button} bg-[var(--app-primary)] text-white`}><Download size={16} />{busy ? 'Menyiapkan file...' : 'Export kategori & isinya'}</button></div></div>
+        <div className="border rounded-xl max-h-[32rem] overflow-auto"><table className="w-full text-sm text-left"><thead className="bg-gray-50 text-gray-500"><tr><th className="p-3">Pilih</th><th className="p-3">Kategori</th><th className="p-3">Kitab</th></tr></thead><tbody className="divide-y">{categories.filter(c => c.name.toLowerCase().includes(categoryQuery.toLowerCase())).map(c => <tr key={c.id}><td className="p-3"><input type="checkbox" aria-label={`Export kategori ${c.name}`} checked={selectedCategories.has(c.id)} disabled={busy || (!selectedCategories.has(c.id) && selectedCategories.size >= 100)} onChange={() => setSelectedCategories(previous => { const next = new Set(previous); if (next.has(c.id)) next.delete(c.id); else next.add(c.id); return next; })} /></td><td className="p-3 text-lg" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{c.name}</td><td className="p-3">{c.book_count}</td></tr>)}{!categories.filter(c => c.name.toLowerCase().includes(categoryQuery.toLowerCase())).length && <tr><td colSpan={3} className="p-6 text-center text-gray-400">Tidak ada kategori yang cocok.</td></tr>}</tbody></table></div>
       </> : <>
-        <div className="rounded-xl bg-gray-50 border p-4 text-sm text-gray-600">Gunakan file <strong>.json hasil export Maktabah</strong> (maksimal 50 MB / 100 kitab). Kitab dengan ID yang sudah ada akan dilewati. Database dicadangkan otomatis sebelum import; data yang sudah ada tetap disimpan.</div>
-        <label className="block rounded-xl border-2 border-dashed p-6 bg-gray-50 text-sm"><span className="font-semibold block mb-3">Pilih file kitab</span><input type="file" accept=".json,application/json" disabled={busy || reading} onChange={e => { void readFile(e.target.files?.[0]); }} className="block w-full" />{fileName && <span className="block text-gray-500 mt-2 break-all">{fileName}</span>}</label>
+        <div className="rounded-xl bg-gray-50 border p-4 text-sm text-gray-600">Gunakan file <strong>.json hasil export kitab atau kategori Maktabah</strong> (maksimal 50 MB). Paket kategori memuat kategori beserta seluruh isinya, termasuk kategori kosong. Kategori bernama sama akan digunakan kembali; ID kitab yang sudah ada dilewati. Database dicadangkan otomatis sebelum import.</div>
+        <label className="block rounded-xl border-2 border-dashed p-6 bg-gray-50 text-sm"><span className="font-semibold block mb-3">Pilih file kitab / kategori</span><input type="file" accept=".json,application/json" disabled={busy || reading} onChange={e => { void readFile(e.target.files?.[0]); }} className="block w-full" />{fileName && <span className="block text-gray-500 mt-2 break-all">{fileName}</span>}</label>
         {reading && <p role="status" className="text-sm text-gray-500">Membaca file...</p>}
-        {payload && <div className="space-y-4"><div className="border rounded-xl p-4"><h3 className="font-bold text-gray-800 mb-3">Pratinjau: {payload.books.length} kitab · {payload.books.reduce((sum, b) => sum + b.pages.length, 0)} halaman</h3><ul className="space-y-2 max-h-64 overflow-y-auto">{payload.books.map((b, index) => <li key={index} className="flex justify-between gap-3 text-sm border-b pb-2"><span dir="auto">{b.book.bk}</span><span className="text-gray-500 shrink-0">ID {b.book.bkid} · {b.pages.length} halaman</span></li>)}</ul></div><label className="flex gap-2 items-start text-sm text-gray-700"><input type="checkbox" className="mt-1" checked={confirmed} disabled={busy} onChange={e => setConfirmed(e.target.checked)} /><span>Saya sudah memeriksa daftar kitab dan ingin menambahkannya ke database.</span></label><button onClick={importFile} disabled={!confirmed || busy} className={`${button} bg-[var(--app-primary)] text-white`}><Upload size={16} />{busy ? 'Mencadangkan dan mengimport...' : 'Import kitab'}</button></div>}
+        {payload?.format === 'maktabah-categories' && <div className="border rounded-xl p-4"><h3 className="font-bold text-gray-800 mb-3">Pratinjau kategori: {payload.categories?.length}</h3><ul className="max-h-48 overflow-auto space-y-2">{payload.categories?.map(c => <li key={c.id} className="flex justify-between gap-3 text-sm"><span dir="auto">{c.name}</span><span className="text-gray-500">{payload.books.filter(b => b.book.cat === c.id).length} kitab</span></li>)}</ul></div>}
+        {payload && <div className="space-y-4"><div className="border rounded-xl p-4"><h3 className="font-bold text-gray-800 mb-3">Pratinjau: {payload.books.length} kitab · {payload.books.reduce((sum, b) => sum + b.pages.length, 0)} halaman</h3><ul className="space-y-2 max-h-64 overflow-y-auto">{payload.books.map((b, index) => <li key={index} className="flex justify-between gap-3 text-sm border-b pb-2"><span dir="auto">{b.book.bk}</span><span className="text-gray-500 shrink-0">ID {b.book.bkid} · {b.pages.length} halaman</span></li>)}</ul></div><label className="flex gap-2 items-start text-sm text-gray-700"><input type="checkbox" className="mt-1" checked={confirmed} disabled={busy} onChange={e => setConfirmed(e.target.checked)} /><span>Saya sudah memeriksa kategori dan daftar kitab yang akan ditambahkan ke database.</span></label><button onClick={importFile} disabled={!confirmed || busy} className={`${button} bg-[var(--app-primary)] text-white`}><Upload size={16} />{busy ? 'Mencadangkan dan mengimport...' : 'Import kitab'}</button></div>}
       </>}
     </div>
   </section>;

@@ -16,6 +16,8 @@ Database contoh di `dev-data/seed` disertakan: 12 kitab lengkap, 616 halaman, da
 
 Di admin, buka **Database Kitab → Import / Export Kitab**. Pilih kitab dari database utama untuk mengunduh JSON `maktabah-books` versi 1. Setiap file memuat metadata kitab, penulis, kategori, semua halaman, dan daftar isi; batasnya 100 kitab dan 50 MB. Format ini bukan file SQLite, CSV, atau Word. Data Al-Qur'an, perawi, relasi tafsir/matan-syarah, log, dan unggahan tidak termasuk dalam paket kitab.
 
+Tab **Export Kategori** membuat JSON `maktabah-categories` versi 1 yang berisi metadata kategori dan seluruh kitab beserta isinya pada kategori pilihan di database utama. Kategori kosong ikut dipertahankan. Batas per paket kategori: 100 kategori, 5.000 kitab, dan 50 MB. Export ditolak jika batas terlampaui, bukan dipotong. Tab **Import Kitab / Kategori** menerima kedua format dan menampilkan pratinjau kategori serta kitab. Nama kategori yang sudah ada digunakan kembali; kategori baru mendapat ID yang tidak bentrok.
+
 Import menerima file JSON hasil export tersebut dan menampilkan pratinjau sebelum dijalankan. ID kitab yang sudah ada di database utama atau tambahan dilewati. ID kategori dan penulis yang bentrok dipetakan ulang tanpa mengubah data lama. Penambahan dilakukan dalam satu transaksi; bila gagal, seluruh penambahan dibatalkan. Indeks pencarian mengikuti trigger halaman pada database Maktabah.
 
 Sebelum import, database utama dicadangkan melalui SQLite backup ke folder `book-import-backups` di sebelah database aktif. File cadangan tidak disajikan melalui web. Import ditolak bila ruang disk tidak cukup. Cadangan disimpan sampai pengelola menghapusnya setelah memastikan hasil import benar.

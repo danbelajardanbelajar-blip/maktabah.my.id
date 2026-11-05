@@ -3,6 +3,8 @@ import path from 'node:path';
 
 export const MAX_TRANSFER_BYTES = 50 * 1024 * 1024;
 const MAX_BOOKS = 100;
+const MAX_CATEGORY_BOOKS = 5000;
+const isCategory = payload => payload?.format === 'maktabah-categories';
 const fail = message => { throw new Error(message); };
 const integer = value => Number.isSafeInteger(value);
 const nullableInt = value => value == null || integer(value);
@@ -10,9 +12,18 @@ const nullableText = value => value == null || typeof value === 'string';
 const historicalDate = value => nullableInt(value) || typeof value === 'string';
 
 export function validateBookPackage(payload) {
-  if (payload?.format !== 'maktabah-books' || payload.version !== 1 || !Array.isArray(payload.books)
-    || payload.books.length < 1 || payload.books.length > MAX_BOOKS) {
-    fail('File harus berupa export JSON Maktabah versi 1, berisi 1–100 kitab.');
+  const categoryPackage = isCategory(payload);
+  if ((!categoryPackage && payload?.format !== 'maktabah-books') || payload.version !== 1 || !Array.isArray(payload.books)
+    || payload.books.length < (categoryPackage ? 0 : 1) || payload.books.length > (categoryPackage ? MAX_CATEGORY_BOOKS : MAX_BOOKS)) {
+    fail('File harus berupa export JSON kitab atau kategori Maktabah versi 1.');
+  }
+  const categoryIds = new Set();
+  if (categoryPackage) {
+    if (!Array.isArray(payload.categories) || !payload.categories.length || payload.categories.length > 100) fail('Paket harus berisi 1–100 kategori.');
+    for (const c of payload.categories) {
+      if (!c || !integer(c.id) || typeof c.name !== 'string' || !nullableInt(c.catord) || !nullableInt(c.lvl) || categoryIds.has(c.id)) fail('Metadata kategori tidak valid atau ID berulang.');
+      categoryIds.add(c.id);
+    }
   }
   const ids = new Set();
   for (const item of payload.books) {
@@ -23,6 +34,10 @@ export function validateBookPackage(payload) {
     ids.add(b.bkid);
     if (b.cat != null && (!item.category || item.category.id !== b.cat || typeof item.category.name !== 'string'
       || !nullableInt(item.category.catord) || !nullableInt(item.category.lvl))) fail(`Kategori kitab ${b.bkid} tidak valid.`);
+    if (categoryPackage) {
+      const c = payload.categories.find(c => c.id === b.cat);
+      if (!c || ['id', 'name', 'catord', 'lvl'].some(key => c[key] !== item.category?.[key])) fail(`Kategori kitab ${b.bkid} tidak sesuai dengan paket kategori.`);
+    }
     if (b.authno != null && (!item.author || item.author.authid !== b.authno || typeof item.author.auth !== 'string'
       || !nullableText(item.author.inf) || !historicalDate(item.author.HigriD) || !historicalDate(item.author.AD))) fail(`Penulis kitab ${b.bkid} tidak valid.`);
     if (!Array.isArray(item.pages) || !Array.isArray(item.titles)) fail(`Halaman/daftar isi kitab ${b.bkid} tidak valid.`);
@@ -39,9 +54,9 @@ export function validateBookPackage(payload) {
   return payload;
 }
 
-export function exportBooks(db, bookIds) {
-  if (!Array.isArray(bookIds) || !bookIds.length || bookIds.length > MAX_BOOKS
-    || bookIds.some(id => !integer(id) || id < 1)) fail('Pilih 1–100 kitab untuk diexport.');
+export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS) {
+  if (!Array.isArray(bookIds) || !bookIds.length || bookIds.length > maxBooks
+    || bookIds.some(id => !integer(id) || id < 1)) fail(`Paket melebihi batas ${maxBooks} kitab atau pilihan kitab tidak valid.`);
   const result = { format: 'maktabah-books', version: 1, exported_at: new Date().toISOString(), books: [] };
   let bytes = 0;
   for (const id of new Set(bookIds)) {
@@ -66,12 +81,40 @@ export function exportBooks(db, bookIds) {
   return result;
 }
 
+export function exportCategories(db, categoryIds) {
+  if (!Array.isArray(categoryIds) || !categoryIds.length || categoryIds.length > 100 || categoryIds.some(id => !integer(id))) fail('Pilih 1–100 kategori untuk diexport.');
+  const categories = [...new Set(categoryIds)].map(id => {
+    const c = db.prepare('SELECT id,name,catord,lvl FROM main.categories WHERE id=?').get(id);
+    if (!c) fail(`Kategori ${id} tidak ditemukan.`);
+    return c;
+  });
+  const placeholders = categories.map(() => '?').join(',');
+  const ids = db.prepare(`SELECT bkid FROM main.books_meta WHERE cat IN (${placeholders}) ORDER BY bkid LIMIT ?`).all(...categories.map(c => c.id), MAX_CATEGORY_BOOKS + 1).map(b => b.bkid);
+  if (ids.length > MAX_CATEGORY_BOOKS) fail('Kategori pilihan melebihi 5.000 kitab. Pilih lebih sedikit kategori atau gunakan export per kitab.');
+  const result = ids.length ? exportBooks(db, ids, MAX_CATEGORY_BOOKS) : { version: 1, exported_at: new Date().toISOString(), books: [] };
+  result.format = 'maktabah-categories';
+  result.categories = categories;
+  if (Buffer.byteLength(JSON.stringify(result)) > MAX_TRANSFER_BYTES) fail('Kategori beserta isinya melebihi 50 MB. Pilih lebih sedikit kategori atau gunakan export per kitab.');
+  return result;
+}
+
 export function importBooks(db, payload, existsInAdditional = () => false) {
   validateBookPackage(payload);
   return db.transaction(() => {
-    let imported = 0, pages = 0;
+    let imported = 0, pages = 0, importedCategories = 0;
     const skipped = [];
     const categoryMap = new Map(), authorMap = new Map();
+    const ensureCategory = c => {
+      const key = JSON.stringify([c.id, c.name]);
+      if (!categoryMap.has(key)) {
+        const existing = db.prepare('SELECT id FROM main.categories WHERE name=? ORDER BY id LIMIT 1').get(c.name);
+        const idAvailable = !db.prepare('SELECT 1 FROM main.categories WHERE id=?').get(c.id);
+        if (!existing) importedCategories++;
+        categoryMap.set(key, existing?.id ?? Number(db.prepare('INSERT INTO main.categories (id,name,catord,lvl) VALUES (?,?,?,?)').run(idAvailable ? c.id : null, c.name, c.catord ?? null, c.lvl ?? null).lastInsertRowid));
+      }
+      return categoryMap.get(key);
+    };
+    for (const c of isCategory(payload) ? payload.categories : []) ensureCategory(c);
     for (const item of payload.books) {
       const b = item.book;
       if (db.prepare('SELECT 1 FROM main.books_meta WHERE bkid=?').get(b.bkid) || existsInAdditional(b.bkid)) {
@@ -80,14 +123,7 @@ export function importBooks(db, payload, existsInAdditional = () => false) {
       }
       let cat = null, authno = null;
       if (b.cat != null) {
-        const c = item.category;
-        const key = JSON.stringify([c.id, c.name]);
-        if (!categoryMap.has(key)) {
-          const existing = db.prepare('SELECT id FROM main.categories WHERE name=? ORDER BY id LIMIT 1').get(c.name);
-          const idAvailable = !db.prepare('SELECT 1 FROM main.categories WHERE id=?').get(c.id);
-          categoryMap.set(key, existing?.id ?? Number(db.prepare('INSERT INTO main.categories (id,name,catord,lvl) VALUES (?,?,?,?)').run(idAvailable ? c.id : null, c.name, c.catord ?? null, c.lvl ?? null).lastInsertRowid));
-        }
-        cat = categoryMap.get(key);
+        cat = ensureCategory(item.category);
       }
       if (b.authno != null) {
         const a = item.author;
@@ -107,7 +143,7 @@ export function importBooks(db, payload, existsInAdditional = () => false) {
       imported++;
       pages += item.pages.length;
     }
-    return { imported, pages, skipped };
+    return { imported, pages, skipped, importedCategories };
   })();
 }
 
@@ -117,8 +153,8 @@ export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA
     try {
       const db = getDb();
       if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
-      const data = exportBooks(db, req.body.bookIds);
-      res.attachment(`maktabah-kitab-${new Date().toISOString().slice(0, 10)}.json`).json(data);
+      const data = req.body.categoryIds !== undefined ? exportCategories(db, req.body.categoryIds) : exportBooks(db, req.body.bookIds);
+      res.attachment(`maktabah-${isCategory(data) ? 'kategori' : 'kitab'}-${new Date().toISOString().slice(0, 10)}.json`).json(data);
     } catch (error) { res.status(400).json({ error: error.message }); }
   });
   app.post('/api/admin/books/import', requireAdmin, async (req, res) => {
