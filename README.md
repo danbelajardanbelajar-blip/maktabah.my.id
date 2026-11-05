@@ -12,6 +12,16 @@ Database contoh di `dev-data/seed` disertakan: 12 kitab lengkap, 616 halaman, da
 
 `.env.mini` hanya berisi path database contoh dan port lokal. `.env`, database besar, unggahan, dan kredensial tidak disertakan dalam Git. Database gabungan produksi tetap berada di luar proyek, di D:/db/new db/maktabah_gabungan.db.
 
+## Import dan export kitab
+
+Di admin, buka **Database Kitab → Import / Export Kitab**. Pilih kitab dari database utama untuk mengunduh JSON `maktabah-books` versi 1. Setiap file memuat metadata kitab, penulis, kategori, semua halaman, dan daftar isi; batasnya 100 kitab dan 50 MB. Format ini bukan file SQLite, CSV, atau Word. Data Al-Qur'an, perawi, relasi tafsir/matan-syarah, log, dan unggahan tidak termasuk dalam paket kitab.
+
+Import menerima file JSON hasil export tersebut dan menampilkan pratinjau sebelum dijalankan. ID kitab yang sudah ada di database utama atau tambahan dilewati. ID kategori dan penulis yang bentrok dipetakan ulang tanpa mengubah data lama. Penambahan dilakukan dalam satu transaksi; bila gagal, seluruh penambahan dibatalkan. Indeks pencarian mengikuti trigger halaman pada database Maktabah.
+
+Sebelum import, database utama dicadangkan melalui SQLite backup ke folder `book-import-backups` di sebelah database aktif. File cadangan tidak disajikan melalui web. Import ditolak bila ruang disk tidak cukup. Cadangan disimpan sampai pengelola menghapusnya setelah memastikan hasil import benar.
+
+Pengujian fitur: `node --test server/book-transfer.test.js`.
+
 ## Build dan hosting
 
 Jalankan `npm run build` di komputer lokal. Hasil frontend tersedia di `dist`; backend berada di `server/index.js`, dengan entry point cPanel/Passenger `app.cjs`.

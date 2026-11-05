@@ -9,6 +9,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('./vendor/docx.cjs');
 import 'dotenv/config';
+import { registerBookTransfer } from './book-transfer.js';
 
 import https from 'https';
 
@@ -663,6 +664,11 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
     const total = db.prepare(`SELECT COUNT(*) as total FROM books_meta b ${whereClause}`).get(...params).total;
     res.json({ data, total, page, limit });
   } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+registerBookTransfer(app, {
+  getDb: () => db, getDbPath: () => dbPath, requireAdmin,
+  hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(),
 });
 
 app.put('/api/admin/book/:id', requireAdmin, (req, res) => {

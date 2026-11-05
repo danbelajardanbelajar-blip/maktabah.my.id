@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { webAPI } from '../api';
+import { BookTransfer } from './BookTransfer';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2 } from 'lucide-react';
 
 // ==================== TYPES ====================
-type AdminView = 'categories' | 'books' | 'pages' | 'edit_page' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
+type AdminView = 'categories' | 'books' | 'pages' | 'edit_page' | 'transfer' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
 interface Book { bkid: number; bk: string; cat: number; cat_name: string; }
 interface PageRow { id: number; book_id: number; part: number; page: number; preview: string; }
@@ -998,7 +999,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   ];
 
   const goBack = () => {
-    if (view === 'edit_page') { setView('pages'); setSelectedPage(null); }
+    if (view === 'transfer') { setView('categories'); }
+    else if (view === 'edit_page') { setView('pages'); setSelectedPage(null); }
     else if (view === 'pages') { setView('books'); setSelectedBook(null); }
     else if (view === 'books') { setView('categories'); setSelectedCategory(null); }
   };
@@ -1034,7 +1036,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       
       {/* Sub Navigation */}
       <div className="bg-white border-b px-6 flex gap-4 overflow-x-auto shadow-sm">
-        <button onClick={() => { setView('categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${['categories', 'books', 'pages', 'edit_page'].includes(view) ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Database Kitab {stats.books !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ ['categories', 'books', 'pages', 'edit_page'].includes(view) ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.books}</span>}</button>
+        <button onClick={() => { setView('categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${['categories', 'books', 'pages', 'edit_page', 'transfer'].includes(view) ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Database Kitab {stats.books !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ ['categories', 'books', 'pages', 'edit_page', 'transfer'].includes(view) ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.books}</span>}</button>
         <button onClick={() => { setView('feedback'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'feedback' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Feedback {stats.feedback !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'feedback' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.feedback}</span>}</button>
         <button onClick={() => { setView('requests'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'requests' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Request Kitab {stats.requests !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'requests' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.requests}</span>}</button>
         <button onClick={() => { setView('submissions'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'submissions' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Submit Kitab {stats.submissions !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'submissions' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.submissions}</span>}</button>
@@ -1050,6 +1052,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       {/* Content */}
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
+          {['categories', 'books', 'pages', 'edit_page'].includes(view) && <div className="flex justify-end mb-4"><button onClick={() => { setView('transfer'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className="inline-flex items-center gap-2 bg-[var(--app-primary)] text-white font-semibold text-sm px-4 py-2.5 rounded-xl"><FolderSync size={18} /> Import / Export Kitab</button></div>}
+          {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} />}
           {view === 'categories' && (
             <CategoriesView token={token} onLogout={onLogout} onSelectCategory={(cat) => { setSelectedCategory(cat); setView('books'); }} />
           )}
