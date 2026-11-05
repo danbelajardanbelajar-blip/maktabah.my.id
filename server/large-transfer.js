@@ -73,7 +73,7 @@ export function registerLargeTransfer(app, { getDb, getDbPath, getAdditionalPath
     if (uploading || runtime.importing) return res.status(409).json({ error: 'Upload/import lain sedang berjalan.' });
     const length = Number(req.headers['content-length']);
     const disk = fs.statfsSync(directory);
-    const budget = Math.floor((disk.bavail * disk.bsize - fs.statSync(getDbPath()).size - 256 * 1024 * 1024) / 4);
+    const budget = Math.floor((disk.bavail * disk.bsize - fs.statSync(getDbPath()).size - 256 * 1024 * 1024) / 5);
     if (!Number.isSafeInteger(length) || length < 1) return res.status(411).json({ error: 'Ukuran upload harus diketahui.' });
     if (length > budget) return res.status(507).json({ error: 'Ruang disk VPS tidak cukup untuk upload, cadangan, dan isi hasil import.' });
     const job = createJob('import'); job.status = 'uploading'; persist(job); uploading = true;
