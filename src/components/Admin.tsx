@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
-import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2 } from 'lucide-react';
+import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
 
 // ==================== TYPES ====================
 type AdminView = 'categories' | 'books' | 'pages' | 'edit_page' | 'transfer' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
@@ -135,6 +135,46 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
   );
 };
 
+// Keep deletion feedback visible even when the deleted row disappears or the user has scrolled.
+const useDeletionFeedback = (onLogout: () => void, setError: (message: string) => void) => {
+  const locked = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [notice, setNotice] = useState<{ kind: 'pending' | 'success' | 'error'; message: string } | null>(null);
+  const run = async (action: () => Promise<any>, message: (result: any) => string, onSuccess: () => void) => {
+    if (locked.current) return;
+    locked.current = true;
+    setPending(true);
+    setError('');
+    setNotice({ kind: 'pending', message: 'Sedang menghapus data. Mohon tunggu…' });
+    let result;
+    try {
+      result = await action();
+      if (!result?.success) throw new Error(result?.error || 'Server belum mengonfirmasi penghapusan.');
+    } catch (error: any) {
+      const message = error.message === '401' ? 'Sesi berakhir. Silakan masuk kembali.' : error.message || 'Penghapusan tidak berhasil dikonfirmasi. Silakan periksa koneksi dan muat ulang daftar.';
+      setError(message);
+      setNotice({ kind: 'error', message });
+      if (error.message === '401') onLogout();
+      return;
+    } finally {
+      locked.current = false;
+      setPending(false);
+    }
+    setNotice({ kind: 'success', message: message(result) });
+    onSuccess();
+  };
+  const feedback = notice && (
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-xl" aria-live="polite" aria-atomic="true">
+      <div role={notice.kind === 'error' ? 'alert' : 'status'} className={`flex items-start gap-3 p-4 rounded-xl border shadow-lg ${notice.kind === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : notice.kind === 'error' ? 'bg-red-50 border-red-300 text-red-900' : 'bg-blue-50 border-blue-300 text-blue-900'}`}>
+        {notice.kind === 'pending' ? <Loader2 className="animate-spin shrink-0" size={22} /> : notice.kind === 'success' ? <CheckCircle2 className="shrink-0" size={22} /> : <AlertTriangle className="shrink-0" size={22} />}
+        <p className="flex-1 text-sm font-semibold break-words">{notice.message}</p>
+        {notice.kind !== 'pending' && <button type="button" onClick={() => setNotice(null)} aria-label="Tutup pemberitahuan" className="p-1 rounded hover:bg-black/5"><X size={18} /></button>}
+      </div>
+    </div>
+  );
+  return { pending, run, feedback };
+};
+
 // ==================== CATEGORIES VIEW ====================
 const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { token: string, onLogout: () => void, onSelectCategory: (cat: Category) => void, onChanged: () => void }) => {
   const [cats, setCats] = useState<Category[]>([]);
@@ -157,6 +197,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   const [limit, setLimit] = useState(15);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const deletion = useDeletionFeedback(onLogout, setError);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [query, setQuery] = useState('');
@@ -183,14 +224,17 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   };
 
   const handleDelete = async (cat: Category) => {
+    if (deletion.pending) return;
     if (!confirm(`Hapus kategori "${cat.name}" beserta seluruh ${cat.book_count} kitab di dalamnya? Semua teks halaman, daftar isi, dan relasi kitab akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
-    const res = await adminFetch(token, () => webAPI.deleteAdminCategory(token, cat.id), onLogout, setError);
-    if (res?.success) { setSelected(items => items.filter(item => item.id !== cat.id)); load(); onChanged(); }
+    await deletion.run(() => webAPI.deleteAdminCategory(token, cat.id),
+      res => `Kategori "${cat.name}" berhasil dihapus beserta ${res.deleted.books} kitab, ${res.deleted.pages} halaman, dan ${res.deleted.titles} entri daftar isi.`,
+      () => { setSelected(items => items.filter(item => item.id !== cat.id)); load(); onChanged(); });
   };
 
   const paginated = filtered.slice((currentPage - 1) * limit, currentPage * limit);
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {deletion.feedback}
       <div className="p-5 border-b bg-gray-50/50 flex flex-col md:flex-row gap-3 justify-between items-center">
         <h2 className="font-bold text-gray-800 flex items-center gap-2"><FolderOpen size={20} className="text-[var(--app-primary)]" /> Kategori ({cats.length})</h2>
         <div className="relative w-full md:w-64">
@@ -239,7 +283,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
                     ) : (
                       <>
                         <button onClick={() => handleEdit(cat)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded-lg" title="Edit"><Edit2 size={16} /></button>
-                        <button onClick={() => handleDelete(cat)} className="text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus"><Trash2 size={16} /></button>
+                        <button onClick={() => handleDelete(cat)} disabled={deletion.pending} className="disabled:opacity-40 disabled:cursor-wait text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus"><Trash2 size={16} /></button>
                         <button onClick={() => onSelectCategory(cat)} className="text-[var(--app-primary)] hover:bg-[var(--app-primary)]/10 p-1.5 rounded-lg" title="Lihat Kitab"><BookOpen size={16} /></button>
                       </>
                     )}
@@ -286,10 +330,12 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
   }, [bulkMoveMode]);
 
   const handleBulkDelete = async () => {
+    if (deletion.pending) return;
     if (!window.confirm(`Hapus ${selected.length} kitab beserta seluruh teks halaman, daftar isi, dan relasinya? Tindakan ini tidak dapat dibatalkan.`)) return;
     const ids = selected.map(s => s.bkid);
-    const res = await adminFetch(token, () => webAPI.bulkDeleteBooks(token, ids), onLogout, setError);
-    if (res?.success) { setSelected([]); load(); onChanged(); }
+    await deletion.run(() => webAPI.bulkDeleteBooks(token, ids),
+      res => `${res.deleted.books} kitab berhasil dihapus beserta ${res.deleted.pages} halaman dan ${res.deleted.titles} entri daftar isi.`,
+      () => { setSelected([]); load(); onChanged(); });
   };
   
   const handleBulkMove = async () => {
@@ -303,6 +349,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const deletion = useDeletionFeedback(onLogout, setError);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [query, setQuery] = useState('');
@@ -332,13 +379,16 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
   };
 
   const handleDelete = async (book: Book) => {
+    if (deletion.pending) return;
     if (!confirm(`Hapus kitab "${book.bk}"? Seluruh teks halaman, daftar isi, dan relasinya akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
-    const res = await adminFetch(token, () => webAPI.deleteAdminBook(token, book.bkid), onLogout, setError);
-    if (res?.success) { setSelected(items => items.filter(item => item.bkid !== book.bkid)); load(page); onChanged(); }
+    await deletion.run(() => webAPI.deleteAdminBook(token, book.bkid),
+      res => `Kitab "${book.bk}" berhasil dihapus beserta ${res.deleted.pages} halaman dan ${res.deleted.titles} entri daftar isi.`,
+      () => { setSelected(items => items.filter(item => item.bkid !== book.bkid)); load(page); onChanged(); });
   };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {deletion.feedback}
       <div className="p-5 border-b bg-gray-50/50 flex flex-col md:flex-row gap-3 justify-between items-center">
         <h2 className="font-bold text-gray-800 flex items-center gap-2">
           <BookOpen size={20} className="text-[var(--app-primary)]" />
@@ -355,7 +405,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'books_export.csv')} extraActions={
         <>
           <button onClick={() => setBulkMoveMode(true)} className="bg-yellow-500 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-yellow-600 transition-colors"><FolderSync size={16}/> Pindah Kategori</button>
-          <button onClick={handleBulkDelete} className="bg-red-500 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-red-600 transition-colors"><Trash2 size={16}/> Hapus</button>
+          <button onClick={handleBulkDelete} disabled={deletion.pending} className="disabled:opacity-40 disabled:cursor-wait bg-red-500 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-red-600 transition-colors"><Trash2 size={16}/> Hapus</button>
         </>
       } />
       {bulkMoveMode && (
@@ -405,7 +455,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
                     ) : (
                       <>
                         <button onClick={() => handleEdit(book)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded-lg" title="Edit Judul"><Edit2 size={16} /></button>
-                        <button onClick={() => handleDelete(book)} className="text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus Kitab"><Trash2 size={16} /></button>
+                        <button onClick={() => handleDelete(book)} disabled={deletion.pending} className="disabled:opacity-40 disabled:cursor-wait text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus Kitab"><Trash2 size={16} /></button>
                         <button onClick={() => onSelectBook(book)} className="text-[var(--app-primary)] hover:bg-[var(--app-primary)]/10 p-1.5 rounded-lg" title="Lihat Isi"><Eye size={16} /></button>
                       </>
                     )}
@@ -441,6 +491,7 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const deletion = useDeletionFeedback(onLogout, setError);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(20);
@@ -455,13 +506,16 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
   useEffect(() => { load(1, limit); }, [book.bkid]);
 
   const handleDeletePage = async (pg: PageRow) => {
+    if (deletion.pending) return;
     if (!confirm(`Hapus halaman Juz ${pg.part} Hal ${pg.page}?`)) return;
-    const res = await adminFetch(token, () => webAPI.deleteAdminPage(token, book.bkid, pg.id), onLogout, setError);
-    if (res?.success) load(page);
+    await deletion.run(() => webAPI.deleteAdminPage(token, book.bkid, pg.id),
+      () => `Halaman Juz ${pg.part} Hal ${pg.page} berhasil dihapus.`,
+      () => { setSelected(items => items.filter(item => item.id !== pg.id)); load(page); });
   };
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {deletion.feedback}
       <div className="p-5 border-b bg-gray-50/50">
         <h2 className="font-bold text-gray-800 flex items-center gap-2 text-sm">
           <FileText size={18} className="text-[var(--app-primary)]" />
@@ -495,7 +549,7 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
                 <td className="px-4 py-3">
                   <div className="flex justify-center gap-1">
                     <button onClick={() => onEditPage(pg)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded-lg" title="Edit Isi"><Edit2 size={16} /></button>
-                    <button onClick={() => handleDeletePage(pg)} className="text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus Halaman"><Trash2 size={16} /></button>
+                    <button onClick={() => handleDeletePage(pg)} disabled={deletion.pending} className="disabled:opacity-40 disabled:cursor-wait text-red-400 hover:bg-red-50 p-1.5 rounded-lg" title="Hapus Halaman"><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
