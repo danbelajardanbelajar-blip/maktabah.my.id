@@ -11,6 +11,7 @@ const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('./vendo
 import 'dotenv/config';
 import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerLargeTransfer } from './large-transfer.js';
+import { registerBookDeletion } from './book-deletion.js';
 
 import https from 'https';
 
@@ -552,16 +553,8 @@ app.put('/api/admin/books/bulk-move', requireAdmin, (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-app.delete('/api/admin/books/bulk-delete', requireAdmin, (req, res) => {
-    const { bookIds } = req.body;
-    if (!Array.isArray(bookIds)) return res.status(400).json({error: 'Invalid data'});
-    try {
-        const placeholders = bookIds.map(() => '?').join(',');
-        db.prepare(`DELETE FROM books_meta WHERE bkid IN (${placeholders})`).run(...bookIds);
-        db.prepare(`DELETE FROM pages WHERE book_id IN (${placeholders})`).run(...bookIds);
-        res.json({success: true});
-    } catch(e) { res.status(500).json({error: e.message}); }
-});
+registerBookDeletion(app, { getDb: () => db, requireAdmin, clearCache: () => askCache.clear(),
+  hasAdditional: () => hasTambahan, hasTafsir: () => hasTafsir });
 
 // ========= ADMIN: CATEGORIES =========
 
@@ -659,20 +652,6 @@ app.put('/api/admin/category/:id', requireAdmin, (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-app.delete('/api/admin/category/:id', requireAdmin, (req, res) => {
-  if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
-  try {
-    const id = parseInt(req.params.id);
-    const bookCount = db.prepare(`SELECT COUNT(*) as cnt FROM books_meta WHERE cat = ?`).get(id).cnt;
-    if (bookCount > 0) {
-      return res.status(400).json({ error: `Kategori memiliki ${bookCount} kitab. Pindahkan kitab terlebih dahulu.` });
-    }
-    const info = db.prepare(`DELETE FROM categories WHERE id = ?`).run(id);
-    if (info.changes > 0) res.json({ success: true });
-    else res.status(404).json({ error: 'Category not found' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
-});
-
 // ========= ADMIN: BOOKS =========
 
 app.get('/api/admin/books', requireAdmin, (req, res) => {
@@ -712,17 +691,6 @@ app.put('/api/admin/book/:id', requireAdmin, (req, res) => {
     const { bk, cat, inf } = req.body;
     const bookId = parseInt(req.params.id);
     const info = db.prepare(`UPDATE books_meta SET bk = ?, cat = ?, inf = ? WHERE bkid = ?`).run(bk, cat || null, inf || null, bookId);
-    if (info.changes > 0) res.json({ success: true });
-    else res.status(404).json({ error: 'Book not found' });
-  } catch (error) { res.status(500).json({ error: error.message }); }
-});
-
-app.delete('/api/admin/book/:id', requireAdmin, (req, res) => {
-  if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
-  try {
-    const bookId = parseInt(req.params.id);
-    db.prepare(`DELETE FROM pages WHERE book_id = ?`).run(bookId);
-    const info = db.prepare(`DELETE FROM books_meta WHERE bkid = ?`).run(bookId);
     if (info.changes > 0) res.json({ success: true });
     else res.status(404).json({ error: 'Book not found' });
   } catch (error) { res.status(500).json({ error: error.message }); }

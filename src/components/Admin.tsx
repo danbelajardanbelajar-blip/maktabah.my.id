@@ -136,7 +136,7 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
 };
 
 // ==================== CATEGORIES VIEW ====================
-const CategoriesView = ({ token, onLogout, onSelectCategory }: { token: string, onLogout: () => void, onSelectCategory: (cat: Category) => void }) => {
+const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { token: string, onLogout: () => void, onSelectCategory: (cat: Category) => void, onChanged: () => void }) => {
   const [cats, setCats] = useState<Category[]>([]);
   const [selected, setSelected] = useState<any[]>([]);
   const toggleAll = (e: any, list: any[]) => {
@@ -183,9 +183,9 @@ const CategoriesView = ({ token, onLogout, onSelectCategory }: { token: string, 
   };
 
   const handleDelete = async (cat: Category) => {
-    if (!confirm(`Hapus kategori "${cat.name}"? (Hanya bisa jika tidak ada kitab)`)) return;
+    if (!confirm(`Hapus kategori "${cat.name}" beserta seluruh ${cat.book_count} kitab di dalamnya? Semua teks halaman, daftar isi, dan relasi kitab akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
     const res = await adminFetch(token, () => webAPI.deleteAdminCategory(token, cat.id), onLogout, setError);
-    if (res?.success) load();
+    if (res?.success) { setSelected(items => items.filter(item => item.id !== cat.id)); load(); onChanged(); }
   };
 
   const paginated = filtered.slice((currentPage - 1) * limit, currentPage * limit);
@@ -257,7 +257,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory }: { token: string, 
 };
 
 // ==================== BOOKS VIEW ====================
-const BooksView = ({ token, onLogout, category, onSelectBook }: { token: string, onLogout: () => void, category: Category, onSelectBook: (book: Book) => void }) => {
+const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { token: string, onLogout: () => void, category: Category, onSelectBook: (book: Book) => void, onChanged: () => void }) => {
   const [books, setBooks] = useState<Book[]>([]);
   const [selected, setSelected] = useState<any[]>([]);
   const toggleAll = (e: any, list: any[]) => {
@@ -286,10 +286,10 @@ const BooksView = ({ token, onLogout, category, onSelectBook }: { token: string,
   }, [bulkMoveMode]);
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Yakin ingin menghapus ${selected.length} kitab?`)) return;
+    if (!window.confirm(`Hapus ${selected.length} kitab beserta seluruh teks halaman, daftar isi, dan relasinya? Tindakan ini tidak dapat dibatalkan.`)) return;
     const ids = selected.map(s => s.bkid);
     const res = await adminFetch(token, () => webAPI.bulkDeleteBooks(token, ids), onLogout, setError);
-    if (res?.success) { setSelected([]); load(); }
+    if (res?.success) { setSelected([]); load(); onChanged(); }
   };
   
   const handleBulkMove = async () => {
@@ -332,9 +332,9 @@ const BooksView = ({ token, onLogout, category, onSelectBook }: { token: string,
   };
 
   const handleDelete = async (book: Book) => {
-    if (!confirm(`Hapus kitab "${book.bk}"? Semua halaman isinya akan TERHAPUS PERMANEN!`)) return;
+    if (!confirm(`Hapus kitab "${book.bk}"? Seluruh teks halaman, daftar isi, dan relasinya akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
     const res = await adminFetch(token, () => webAPI.deleteAdminBook(token, book.bkid), onLogout, setError);
-    if (res?.success) load(page);
+    if (res?.success) { setSelected(items => items.filter(item => item.bkid !== book.bkid)); load(page); onChanged(); }
   };
 
   return (
@@ -1055,10 +1055,10 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {['categories', 'books', 'pages', 'edit_page'].includes(view) && <div className="flex justify-end mb-4"><button onClick={() => { setView('transfer'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className="inline-flex items-center gap-2 bg-[var(--app-primary)] text-white font-semibold text-sm px-4 py-2.5 rounded-xl"><FolderSync size={18} /> Import / Export Kitab</button></div>}
           {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} />}
           {view === 'categories' && (
-            <CategoriesView token={token} onLogout={onLogout} onSelectCategory={(cat) => { setSelectedCategory(cat); setView('books'); }} />
+            <CategoriesView token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={(cat) => { setSelectedCategory(cat); setView('books'); }} />
           )}
           {view === 'books' && selectedCategory && (
-            <BooksView token={token} onLogout={onLogout} category={selectedCategory} onSelectBook={(book) => { setSelectedBook(book); setView('pages'); }} />
+            <BooksView token={token} onLogout={onLogout} onChanged={fetchStats} category={selectedCategory} onSelectBook={(book) => { setSelectedBook(book); setView('pages'); }} />
           )}
           {view === 'pages' && selectedBook && (
             <PagesView token={token} onLogout={onLogout} book={selectedBook} onEditPage={(pg) => { setSelectedPage(pg); setView('edit_page'); }} />

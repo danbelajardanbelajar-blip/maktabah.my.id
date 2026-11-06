@@ -96,7 +96,7 @@ export const webAPI = {
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookIds })
     });
-    if (!res.ok) throw new Error(`${res.status}`);
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
     return res.json();
   },
   deleteAdminBook: async (token: string, bookId: number) => {
