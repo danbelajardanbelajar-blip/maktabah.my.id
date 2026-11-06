@@ -87,6 +87,14 @@ export const webAPI = {
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
     return waitForDeletion(token, await res.json(), onProgress);
   },
+  bulkDeleteCategories: async (token: string, categoryIds: number[], onProgress?: (message: string) => void) => {
+    const res = await fetch(`${API_BASE}/admin/categories/bulk-delete`, {
+      method: 'DELETE', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ categoryIds }),
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
+    return waitForDeletion(token, await res.json(), onProgress);
+  },
   // ===== ADMIN SUBMISSIONS =====
   getFeedback: async (token: string, page = 1) => { const r = await fetch(`${API_BASE}/admin/feedback?page=${page}`, { headers: { 'Authorization': `Bearer ${token}` } }); return r.json(); },
   deleteFeedback: async (token: string, id: number) => { const r = await fetch(`${API_BASE}/admin/feedback/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); return r.json(); },

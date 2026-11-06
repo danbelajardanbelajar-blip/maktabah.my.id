@@ -31,9 +31,9 @@ const downloadCSV = (data: any[], filename: string) => {
 const SelectionBar = ({ count, onDownload, extraActions }: { count: number, onDownload: () => void, extraActions?: React.ReactNode }) => {
   if (count === 0) return null;
   return (
-    <div className="bg-[var(--app-primary)] text-white px-4 py-3 flex items-center justify-between mb-4 rounded-xl shadow-md">
+    <div className="bg-[var(--app-primary)] text-white px-4 py-3 flex flex-wrap gap-3 items-center justify-between mb-4 rounded-xl shadow-md">
       <span className="font-bold">{count} item dipilih</span>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {extraActions}
         <button onClick={onDownload} className="bg-white text-[var(--app-primary)] px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-gray-50 transition-colors">
           <Download size={16}/> Download CSV
@@ -248,6 +248,15 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   };
 
   const paginated = filtered.slice((currentPage - 1) * limit, currentPage * limit);
+  const handleBulkDelete = async () => {
+    if (deletion.pending || !selected.length) return;
+    const ids = selected.map(item => item.id);
+    const bookCount = selected.reduce((count, item) => count + item.book_count, 0);
+    if (!window.confirm(`Hapus ${ids.length} kategori terpilih beserta seluruh ${bookCount} kitab di dalamnya? Semua teks halaman, daftar isi, dan relasi kitab ikut dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
+    await deletion.run(progress => webAPI.bulkDeleteCategories(token, ids, progress),
+      res => `${res.deleted.categories} kategori berhasil dihapus beserta ${res.deleted.books} kitab, ${res.deleted.pages} halaman, dan ${res.deleted.titles} entri daftar isi.`,
+      () => { setSelected([]); setCurrentPage(1); load(); onChanged(); });
+  };
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       {deletion.feedback}
@@ -260,11 +269,16 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
       </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       
-      <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'categoriesview_export.csv')} />
+      <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'categoriesview_export.csv')} extraActions={
+        <>
+          <button onClick={handleBulkDelete} disabled={deletion.pending} className="bg-red-600 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-red-700 disabled:opacity-40 disabled:cursor-wait"><Trash2 size={16} />{deletion.pending ? 'Menghapus…' : 'Hapus terpilih'}</button>
+          <button onClick={() => setSelected([])} disabled={deletion.pending} className="bg-white/15 text-white px-3 py-1.5 rounded font-bold text-sm disabled:opacity-40">Batalkan pilihan</button>
+        </>
+      } />
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-gray-50 text-gray-500 text-xs uppercase border-b">
-            <tr><th className="p-3 w-10 text-center"><input type="checkbox" checked={filtered.length > 0 && filtered.every((item: any) => selected.find((s: any) => s.id === item.id))} onChange={(e) => toggleAll(e, filtered)} /></th><th className="px-4 py-3 w-12">ID</th><th className="px-4 py-3">Nama Kategori</th><th className="px-4 py-3 w-20 text-center">Kitab</th><th className="px-4 py-3 w-28 text-center">Aksi</th></tr>
+            <tr><th className="p-3 w-10 text-center"><input type="checkbox" disabled={deletion.pending} aria-label="Pilih semua kategori hasil pencarian" checked={filtered.length > 0 && filtered.every((item: any) => selected.find((s: any) => s.id === item.id))} onChange={(e) => toggleAll(e, filtered)} /></th><th className="px-4 py-3 w-12">ID</th><th className="px-4 py-3">Nama Kategori</th><th className="px-4 py-3 w-20 text-center">Kitab</th><th className="px-4 py-3 w-28 text-center">Aksi</th></tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
@@ -273,7 +287,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
               <tr><td colSpan={4} className="p-8 text-center text-gray-400">Tidak ada kategori</td></tr>
             ) : paginated.map(cat => (
               <tr key={cat.id} className="hover:bg-gray-50/50">
-                <td className="p-3 text-center"><input type="checkbox" checked={!!selected.find(s => s.id === cat.id)} onChange={(e) => toggleOne(e, cat)} onClick={(e) => e.stopPropagation()} /></td>
+                <td className="p-3 text-center"><input type="checkbox" disabled={deletion.pending} aria-label={`Pilih kategori ${cat.name}`} checked={!!selected.find(s => s.id === cat.id)} onChange={(e) => toggleOne(e, cat)} onClick={(e) => e.stopPropagation()} /></td>
                 <td className="px-4 py-3 text-gray-400 text-sm">{cat.id}</td>
                 <td className="px-4 py-3">
                   {editingId === cat.id ? (

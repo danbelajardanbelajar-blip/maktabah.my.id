@@ -73,6 +73,28 @@ test('invalid IDs, missing categories and read-only additional sources cannot de
   assert.ok(db.prepare('SELECT 1 FROM books_meta WHERE bkid=1').get());
 });
 
+test('bulk category deletion includes category zero, deduplicates IDs and commits one combined receipt', t => {
+  const db=fixture(t);
+  db.exec("INSERT INTO categories(id,name) VALUES(0,'Zero category'); UPDATE books_meta SET cat=0 WHERE bkid=3;");
+  const untouched=db.prepare('SELECT count(*) n FROM books_meta WHERE bkid NOT IN (1,2,3)').get().n;
+  const result=deleteCatalogue(db,{categoryIds:[99001,0,99001],hasTafsir:true,jobId:'bulk-test'});
+  assert.equal(result.categories,2);assert.equal(result.books,3);assertClean(db);
+  assert.equal(db.prepare('SELECT count(*) n FROM books_meta WHERE bkid NOT IN (1,2,3)').get().n,untouched);
+  assert.deepEqual(JSON.parse(db.prepare('SELECT result FROM catalogue_deletion_receipts WHERE id=?').get('bulk-test').result),result);
+});
+
+test('invalid or failing later categories roll back the entire bulk deletion', t => {
+  const db=fixture(t);
+  for(const categoryIds of [[],[-1],['1'],[1.5],Array(1001).fill(1)])assert.throws(()=>deleteCatalogue(db,{categoryIds}),/kategori yang valid/);
+  assert.throws(()=>deleteCatalogue(db,{categoryIds:[99001,999999],hasTafsir:true}),/tidak ditemukan/);
+  assert.ok(db.prepare('SELECT 1 FROM books_meta WHERE bkid=1').get());
+  db.exec("INSERT INTO categories(id,name) VALUES(0,'Zero category'); UPDATE books_meta SET cat=0 WHERE bkid=3; CREATE TRIGGER fail_later_category BEFORE DELETE ON books_meta WHEN old.bkid=3 BEGIN SELECT raise(ABORT,'bulk rollback'); END;");
+  assert.throws(()=>deleteCatalogue(db,{categoryIds:[99001,0],hasTafsir:true}),/bulk rollback/);
+  for(const id of [1,2,3])assert.ok(db.prepare('SELECT 1 FROM books_meta WHERE bkid=?').get(id));
+  assert.ok(db.prepare('SELECT 1 FROM tafsir.tafsir_ayah_mapping WHERE tafsir_bkid=1').get());
+  assert.ok(db.prepare("SELECT rowid FROM pages_fts WHERE pages_fts MATCH 'deletionuniqueword'").get());
+});
+
 test('HTTP deletion requires admin, validates exact IDs and clears cache only on success', async t => {
   const db=fixture(t), app=express();app.use(express.json());let cleared=0;
   const runtime={importing:true};
@@ -81,12 +103,14 @@ test('HTTP deletion requires admin, validates exact IDs and clears cache only on
   try {
     const base=`http://127.0.0.1:${server.address().port}/api/admin`;
     assert.equal((await fetch(`${base}/category/99001`,{method:'DELETE'})).status,401);
+    assert.equal((await fetch(`${base}/categories/bulk-delete`,{method:'DELETE'})).status,401);
     const headers={Authorization:'Bearer test','Content-Type':'application/json'};
     assert.equal((await fetch(`${base}/category/99001`,{method:'DELETE',headers})).status,409);
     runtime.importing=false;
     assert.equal((await fetch(`${base}/book/1junk`,{method:'DELETE',headers})).status,400);
     assert.equal(cleared,0);
-    const response=await fetch(`${base}/category/99001`,{method:'DELETE',headers});
+    assert.equal((await fetch(`${base}/categories/bulk-delete`,{method:'DELETE',headers,body:JSON.stringify({categoryIds:[]})})).status,400);
+    const response=await fetch(`${base}/categories/bulk-delete`,{method:'DELETE',headers,body:JSON.stringify({categoryIds:[99001]})});
     assert.equal(response.status,202);
     const started=await response.json();
     assert.equal((await fetch(`${base}/deletion-jobs/${started.id}`)).status,401);

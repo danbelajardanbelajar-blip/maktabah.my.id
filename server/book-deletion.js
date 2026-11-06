@@ -5,6 +5,7 @@ import { Worker } from 'node:worker_threads';
 
 const error = (message, status = 400) => Object.assign(new Error(message), { status });
 const validId = (id, zero = false) => Number.isSafeInteger(id) && id >= (zero ? 0 : 1);
+const validCategoryIds = ids => Array.isArray(ids) && ids.length > 0 && ids.length <= 1000 && ids.every(id => validId(id, true));
 const parseId = (value, zero = false) => {
   if (!/^\d+$/.test(value) || !validId(Number(value), zero)) throw error('ID tidak valid.');
   return Number(value);
@@ -17,7 +18,26 @@ const relations = {
   tafsir_mapping: ['tafsir_bkid'], tafsir_ayah_mapping: ['tafsir_bkid'],
 };
 
-export function deleteCatalogue(db, { bookIds, categoryId, hasAdditional = false, hasTafsir = false, jobId }, progress = () => {}) {
+export function deleteCatalogue(db, { bookIds, categoryId, categoryIds, hasAdditional = false, hasTafsir = false, jobId }, progress = () => {}) {
+  if (categoryIds !== undefined) {
+    if (!validCategoryIds(categoryIds)) throw error('Pilih 1–1000 kategori yang valid.');
+    if (jobId) db.exec('CREATE TABLE IF NOT EXISTS catalogue_deletion_receipts (id TEXT PRIMARY KEY, result TEXT NOT NULL)');
+    return db.transaction(() => {
+      const ids = [...new Set(categoryIds)];
+      let totalBooks = 0;
+      for (let offset = 0; offset < ids.length; offset += 500) {
+        const batch = ids.slice(offset, offset + 500);
+        totalBooks += db.prepare(`SELECT count(*) n FROM main.books_meta WHERE cat IN (${batch.map(() => '?').join(',')})`).get(...batch).n;
+      }
+      const total = { books: 0, pages: 0, titles: 0, related: 0, categories: 0 };
+      for (const id of ids) {
+        const deleted = deleteCatalogue(db, { categoryId: id, hasAdditional, hasTafsir }, p => progress({ totalBooks, booksDone: total.books + p.booksDone, pagesDone: total.pages + p.pagesDone }));
+        for (const key of Object.keys(total)) total[key] += deleted[key];
+      }
+      if (jobId) db.prepare('INSERT INTO main.catalogue_deletion_receipts VALUES (?,?)').run(jobId, JSON.stringify(total));
+      return total;
+    }).immediate();
+  }
   if (categoryId !== undefined ? !validId(categoryId, true)
     : !Array.isArray(bookIds) || !bookIds.length || bookIds.length > 50000 || bookIds.some(id => !validId(id))) {
     throw error('Pilihan kitab/kategori tidak valid.');
@@ -107,7 +127,9 @@ export function registerBookDeletion(app, { getDb, requireAdmin, clearCache, has
     let job;
     try {
       const options = selection(req);
-      if (options.categoryId === undefined && (!Array.isArray(options.bookIds) || !options.bookIds.length || options.bookIds.length > 50000 || options.bookIds.some(id => !validId(id)))) throw error('Pilihan kitab tidak valid.');
+      if (options.categoryIds !== undefined) {
+        if (!validCategoryIds(options.categoryIds)) throw error('Pilih 1–1000 kategori yang valid.');
+      } else if (options.categoryId === undefined && (!Array.isArray(options.bookIds) || !options.bookIds.length || options.bookIds.length > 50000 || options.bookIds.some(id => !validId(id)))) throw error('Pilihan kitab tidak valid.');
       job = { id: crypto.randomBytes(24).toString('hex'), status: 'running', progress: {}, createdAt: Date.now() };
       persist(job); jobs.set(job.id, job);
       runtime.deleting = true; db.pragma('busy_timeout=100');
@@ -138,6 +160,7 @@ export function registerBookDeletion(app, { getDb, requireAdmin, clearCache, has
     }
   };
   app.delete('/api/admin/books/bulk-delete', requireAdmin, handle(req => ({ bookIds: req.body?.bookIds })));
+  app.delete('/api/admin/categories/bulk-delete', requireAdmin, handle(req => ({ categoryIds: req.body?.categoryIds ?? [] })));
   app.delete('/api/admin/category/:id', requireAdmin, handle(req => ({ categoryId: parseId(req.params.id, true) })));
   app.delete('/api/admin/book/:id', requireAdmin, handle(req => ({ bookIds: [parseId(req.params.id)] })));
 }
