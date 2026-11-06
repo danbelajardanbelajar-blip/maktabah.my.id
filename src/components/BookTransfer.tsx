@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Download, Upload, Search, ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { webAPI } from '../api';
 import { LargeTransfer } from './LargeTransfer';
+import { StorageCleanup } from './StorageCleanup';
 
 type Book = { bkid: number; bk: string; cat_name: string };
 type Package = { format: string; version: number; categories?: { id: number; name: string }[]; books: { book: { bkid: number; bk: string; cat?: number }; pages: unknown[]; titles: unknown[] }[] };
@@ -37,6 +38,7 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
   const [reading, setReading] = useState(false);
   const [localExport, setLocalExport] = useState(false);
   const [largeMode, setLargeMode] = useState(true);
+  const [transferVersion, setTransferVersion] = useState(0);
 
   useEffect(() => {
     let current = true;
@@ -136,8 +138,9 @@ export function BookTransfer({ token, onLogout, onBack, onChanged }: {
       {(['export', 'categories', 'import'] as const).filter(value => !localExport || value !== 'import').map(value => <button key={value} role="tab" aria-selected={tab === value} disabled={busy} onClick={() => { setTab(value); setError(''); setMessage(''); }} className={`py-3 border-b-2 font-semibold text-sm ${tab === value ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>{value === 'export' ? 'Export Kitab' : value === 'categories' ? 'Export Kategori' : 'Import Kitab / Kategori'}</button>)}
     </div>
     <div className="p-5 space-y-4">
+      {!localExport && <StorageCleanup token={token} busy={busy} onLogout={onLogout} onCleaned={() => setTransferVersion(v => v + 1)} />}
       <label className="flex gap-2 items-center text-sm font-semibold text-gray-700"><input type="checkbox" checked={largeMode} disabled={busy} onChange={e => setLargeMode(e.target.checked)} />Mode file besar (.db), tanpa batas 50 MB. Nonaktifkan untuk memakai JSON lama.</label>
-      {largeMode && <LargeTransfer token={token} mode={tab === 'import' ? 'import' : 'export'} selection={tab === 'categories' ? { categoryIds: [...selectedCategories] } : { bookIds: [...selected.keys()] }} onLogout={onLogout} onChanged={onChanged} onBusyChange={setBusy} />}
+      {largeMode && <LargeTransfer key={transferVersion} token={token} mode={tab === 'import' ? 'import' : 'export'} selection={tab === 'categories' ? { categoryIds: [...selectedCategories] } : { bookIds: [...selected.keys()] }} onLogout={onLogout} onChanged={onChanged} onBusyChange={setBusy} />}
       {localExport && <div className="p-4 rounded-xl border border-green-200 bg-green-50 text-green-800 text-sm"><strong>Sumber lokal D:\db · mode baca saja.</strong> Daftar export mencakup maktabah.db dan maktabah_tambahan.db. tafsir_relasi.db terhubung untuk pembacaan tafsir. Unduh paket pilihan di sini, lalu import file tersebut di admin web online.</div>}
       {error && <div role="alert" className="p-3 rounded-lg border border-red-200 bg-red-50 text-red-700 flex gap-2 text-sm"><AlertTriangle size={18} className="shrink-0" />{error}</div>}
       {message && <div role="status" className="p-3 rounded-lg border border-green-200 bg-green-50 text-green-800 flex gap-2 text-sm break-words"><CheckCircle2 size={18} className="shrink-0" />{message}</div>}

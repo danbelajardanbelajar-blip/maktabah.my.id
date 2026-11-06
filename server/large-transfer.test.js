@@ -118,5 +118,13 @@ test('upload, background validation, import status and download routes require a
     const exportJob = await wait((await exported.json()).id); assert.equal(exportJob.status, 'ready', exportJob.error);
     const download = await fetch(new URL(exportJob.downloadUrl, base).href); assert.equal(download.status, 200); assert.match(download.headers.get('content-disposition'), /\.db/); await download.arrayBuffer();
     assert.equal((await fetch(`${base}/file/${'0'.repeat(48)}`)).status, 404);
+    const cleanupUrl = new URL('/api/admin/storage/cleanup',base).href;
+    assert.equal((await fetch(cleanupUrl)).status,401);
+    const plan = await (await fetch(cleanupUrl,{headers})).json();
+    assert.equal(plan.transferFiles,1);
+    const cleaned = await fetch(cleanupUrl,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({planId:plan.planId})});
+    assert.equal(cleaned.status,200);
+    assert.equal((await fetch(`${base}/jobs/${uploaded.id}`,{headers})).status,404);
+    const retained = await fetch(new URL(exportJob.downloadUrl,base).href);assert.equal(retained.status,200);await retained.arrayBuffer();
   } finally { api.close(); await new Promise(resolve => server.close(resolve)); db.close(); }
 });

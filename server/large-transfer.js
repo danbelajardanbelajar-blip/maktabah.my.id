@@ -4,10 +4,12 @@ import crypto from 'node:crypto';
 import { Worker } from 'node:worker_threads';
 import { Transform } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { registerStorageCleanup } from './storage-cleanup.js';
 
 export function registerLargeTransfer(app, { getDb, getDbPath, getAdditionalPath, requireAdmin, localExportMode, runtime, directory, clearCache }) {
   fs.mkdirSync(directory, { recursive: true });
   const jobs = new Map();
+  const activeDownloads = new Map();
   const idPattern = /^[a-f0-9]{48}$/;
   const jobPath = id => path.join(directory, `${id}.json`);
   for (const filename of fs.readdirSync(directory).filter(n => /^[a-f0-9]{48}\.json$/.test(n))) {
@@ -65,9 +67,16 @@ export function registerLargeTransfer(app, { getDb, getDbPath, getAdditionalPath
     const job = getJob(req, res); if (!job) return;
     if (job.kind !== 'export' || job.status !== 'ready' || Date.now() - job.createdAt > 24 * 60 * 60 * 1000) return res.status(410).json({ error: 'Tautan unduhan sudah kedaluwarsa. Export ulang paketnya.' });
     res.set('Cache-Control', 'no-store'); res.set('Referrer-Policy', 'no-referrer');
+    activeDownloads.set(job.id, (activeDownloads.get(job.id) || 0) + 1);
+    res.once('close', () => {
+      const remaining = (activeDownloads.get(job.id) || 1) - 1;
+      if (remaining) activeDownloads.set(job.id, remaining); else activeDownloads.delete(job.id);
+    });
     res.download(packagePath(job), `maktabah-paket-${new Date(job.createdAt).toISOString().slice(0, 10)}.db`);
   });
   let uploading = false;
+  registerStorageCleanup(app, { getDbPath, directory, jobs, requireAdmin, localExportMode, protectedIds: activeDownloads,
+    isBusy: () => Boolean(uploading || runtime.importing || runtime.deleting || [...jobs.values()].some(j => ['running', 'uploading'].includes(j.status))) });
   app.post('/api/admin/large-transfer/upload', requireAdmin, async (req, res) => {
     if (localExportMode) return res.status(403).json({ error: 'Upload/import dilakukan pada web online.' });
     if (uploading || runtime.importing) return res.status(409).json({ error: 'Upload/import lain sedang berjalan.' });
@@ -108,7 +117,7 @@ export function registerLargeTransfer(app, { getDb, getDbPath, getAdditionalPath
   });
   // Completed/failed temporary packages expire; database backups are retained separately.
   const cleanup = setInterval(() => {
-    for (const [id, job] of jobs) if (Date.now() - job.createdAt > 24 * 60 * 60 * 1000 && !['running', 'uploading'].includes(job.status)) {
+    for (const [id, job] of jobs) if (Date.now() - job.createdAt > 24 * 60 * 60 * 1000 && !['running', 'uploading'].includes(job.status) && !activeDownloads.has(id)) {
       fs.rmSync(packagePath(job), { force: true }); fs.rmSync(jobPath(id), { force: true }); jobs.delete(id);
     }
   }, 60 * 60 * 1000);
