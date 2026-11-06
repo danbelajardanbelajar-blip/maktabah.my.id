@@ -136,11 +136,11 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
 };
 
 // Keep deletion feedback visible even when the deleted row disappears or the user has scrolled.
-const useDeletionFeedback = (onLogout: () => void, setError: (message: string) => void) => {
+const useDeletionFeedback = (token: string, onLogout: () => void, setError: (message: string) => void, onRecovered: () => void) => {
   const locked = useRef(false);
   const [pending, setPending] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'pending' | 'success' | 'error'; message: string } | null>(null);
-  const run = async (action: () => Promise<any>, message: (result: any) => string, onSuccess: () => void) => {
+  const run = async (action: (onProgress: (message: string) => void) => Promise<any>, message: (result: any) => string, onSuccess: () => void) => {
     if (locked.current) return;
     locked.current = true;
     setPending(true);
@@ -148,7 +148,7 @@ const useDeletionFeedback = (onLogout: () => void, setError: (message: string) =
     setNotice({ kind: 'pending', message: 'Sedang menghapus data. Mohon tunggu…' });
     let result;
     try {
-      result = await action();
+      result = await action(message => setNotice({ kind: 'pending', message }));
       if (!result?.success) throw new Error(result?.error || 'Server belum mengonfirmasi penghapusan.');
     } catch (error: any) {
       const message = error.message === '401' ? 'Sesi berakhir. Silakan masuk kembali.' : error.message || 'Penghapusan tidak berhasil dikonfirmasi. Silakan periksa koneksi dan muat ulang daftar.';
@@ -163,6 +163,22 @@ const useDeletionFeedback = (onLogout: () => void, setError: (message: string) =
     setNotice({ kind: 'success', message: message(result) });
     onSuccess();
   };
+  const recoveryCallback = useRef(onRecovered);
+  recoveryCallback.current = onRecovered;
+  useEffect(() => {
+    let disposed = false;
+    webAPI.resumeDeletion(token, message => {
+      if (!disposed) { locked.current = true; setPending(true); setNotice({ kind: 'pending', message }); }
+    }).then(result => {
+      if (!disposed && result) {
+        setNotice({ kind: 'success', message: `Penghapusan selesai: ${result.deleted.books} kitab, ${result.deleted.pages} halaman, dan ${result.deleted.titles} entri daftar isi dihapus.` });
+        recoveryCallback.current();
+      }
+    }).catch(error => {
+      if (!disposed) { setNotice({ kind: 'error', message: error.message }); if (error.message === '401') onLogout(); }
+    }).finally(() => { if (!disposed) { locked.current = false; setPending(false); } });
+    return () => { disposed = true; };
+  }, [token]);
   const feedback = notice && (
     <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-xl" aria-live="polite" aria-atomic="true">
       <div role={notice.kind === 'error' ? 'alert' : 'status'} className={`flex items-start gap-3 p-4 rounded-xl border shadow-lg ${notice.kind === 'success' ? 'bg-emerald-50 border-emerald-300 text-emerald-900' : notice.kind === 'error' ? 'bg-red-50 border-red-300 text-red-900' : 'bg-blue-50 border-blue-300 text-blue-900'}`}>
@@ -197,7 +213,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   const [limit, setLimit] = useState(15);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const deletion = useDeletionFeedback(onLogout, setError);
+  const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); onChanged(); });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [query, setQuery] = useState('');
@@ -226,7 +242,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   const handleDelete = async (cat: Category) => {
     if (deletion.pending) return;
     if (!confirm(`Hapus kategori "${cat.name}" beserta seluruh ${cat.book_count} kitab di dalamnya? Semua teks halaman, daftar isi, dan relasi kitab akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
-    await deletion.run(() => webAPI.deleteAdminCategory(token, cat.id),
+    await deletion.run(progress => webAPI.deleteAdminCategory(token, cat.id, progress),
       res => `Kategori "${cat.name}" berhasil dihapus beserta ${res.deleted.books} kitab, ${res.deleted.pages} halaman, dan ${res.deleted.titles} entri daftar isi.`,
       () => { setSelected(items => items.filter(item => item.id !== cat.id)); load(); onChanged(); });
   };
@@ -333,7 +349,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
     if (deletion.pending) return;
     if (!window.confirm(`Hapus ${selected.length} kitab beserta seluruh teks halaman, daftar isi, dan relasinya? Tindakan ini tidak dapat dibatalkan.`)) return;
     const ids = selected.map(s => s.bkid);
-    await deletion.run(() => webAPI.bulkDeleteBooks(token, ids),
+    await deletion.run(progress => webAPI.bulkDeleteBooks(token, ids, progress),
       res => `${res.deleted.books} kitab berhasil dihapus beserta ${res.deleted.pages} halaman dan ${res.deleted.titles} entri daftar isi.`,
       () => { setSelected([]); load(); onChanged(); });
   };
@@ -349,7 +365,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const deletion = useDeletionFeedback(onLogout, setError);
+  const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); onChanged(); });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [query, setQuery] = useState('');
@@ -381,7 +397,7 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
   const handleDelete = async (book: Book) => {
     if (deletion.pending) return;
     if (!confirm(`Hapus kitab "${book.bk}"? Seluruh teks halaman, daftar isi, dan relasinya akan dihapus. Tindakan ini tidak dapat dibatalkan.`)) return;
-    await deletion.run(() => webAPI.deleteAdminBook(token, book.bkid),
+    await deletion.run(progress => webAPI.deleteAdminBook(token, book.bkid, progress),
       res => `Kitab "${book.bk}" berhasil dihapus beserta ${res.deleted.pages} halaman dan ${res.deleted.titles} entri daftar isi.`,
       () => { setSelected(items => items.filter(item => item.bkid !== book.bkid)); load(page); onChanged(); });
   };
@@ -491,7 +507,7 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const deletion = useDeletionFeedback(onLogout, setError);
+  const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); });
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(20);

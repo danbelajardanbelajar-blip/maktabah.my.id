@@ -18,7 +18,8 @@ function fixture(t) {
   db.prepare("INSERT INTO categories(id,name) VALUES(99001,'Delete test')").run();
   db.prepare("UPDATE pages SET nass='deletionuniqueword' WHERE book_id=1").run();
   db.exec("INSERT INTO book_pdf VALUES(1,'shared.pdf',1); INSERT INTO book_shorts VALUES(1,'x','note'); INSERT INTO user_comments VALUES(1,1,'comment'); INSERT INTO matn_sharh_books VALUES(1,1,3,1); INSERT INTO matn_sharh_pages VALUES(3,1,1,1); INSERT INTO tafsir_mapping VALUES(1,1,1,1); INSERT INTO tafsir_ayah_mapping VALUES(1,1,1,1,0);");
-  db.exec("ATTACH DATABASE ':memory:' AS tafsir; CREATE TABLE tafsir.tafsir_ayah_mapping(tafsir_bkid INTEGER); INSERT INTO tafsir.tafsir_ayah_mapping VALUES(1),(3);");
+  db.prepare("ATTACH DATABASE ? AS tafsir").run(path.join(directory, "tafsir.db"));
+  db.exec("CREATE TABLE tafsir.tafsir_ayah_mapping(tafsir_bkid INTEGER); INSERT INTO tafsir.tafsir_ayah_mapping VALUES(1),(3);");
   return db;
 }
 
@@ -74,16 +75,64 @@ test('invalid IDs, missing categories and read-only additional sources cannot de
 
 test('HTTP deletion requires admin, validates exact IDs and clears cache only on success', async t => {
   const db=fixture(t), app=express();app.use(express.json());let cleared=0;
-  registerBookDeletion(app,{getDb:()=>db,requireAdmin:(req,res,next)=>req.headers.authorization==='Bearer test'?next():res.sendStatus(401),clearCache:()=>cleared++,hasAdditional:()=>false,hasTafsir:()=>true});
+  const runtime={importing:true};
+  registerBookDeletion(app,{getDb:()=>db,requireAdmin:(req,res,next)=>req.headers.authorization==='Bearer test'?next():res.sendStatus(401),clearCache:()=>cleared++,hasAdditional:()=>false,hasTafsir:()=>true,runtime});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
   try {
     const base=`http://127.0.0.1:${server.address().port}/api/admin`;
     assert.equal((await fetch(`${base}/category/99001`,{method:'DELETE'})).status,401);
     const headers={Authorization:'Bearer test','Content-Type':'application/json'};
+    assert.equal((await fetch(`${base}/category/99001`,{method:'DELETE',headers})).status,409);
+    runtime.importing=false;
     assert.equal((await fetch(`${base}/book/1junk`,{method:'DELETE',headers})).status,400);
     assert.equal(cleared,0);
     const response=await fetch(`${base}/category/99001`,{method:'DELETE',headers});
-    assert.equal(response.status,200);assert.equal((await response.json()).deleted.books,2);assert.equal(cleared,1);assertClean(db);
+    assert.equal(response.status,202);
+    const started=await response.json();
+    assert.equal((await fetch(`${base}/deletion-jobs/${started.id}`)).status,401);
+    let job=started;
+    for(let i=0;i<200 && job.status==='running';i++) {
+      await new Promise(r=>setTimeout(r,30));
+      job=await (await fetch(`${base}/deletion-jobs/${started.id}`,{headers})).json();
+    }
+    assert.equal(job.status,'done',job.error);assert.equal(job.deleted.books,2);assert.equal(cleared,1);assertClean(db);
+    assert.deepEqual(JSON.parse(db.prepare('SELECT result FROM catalogue_deletion_receipts WHERE id=?').get(started.id).result),job.deleted);
     assert.equal((await fetch(`${base}/books/bulk-delete`,{method:'DELETE',headers,body:JSON.stringify({bookIds:[]})})).status,400);
   } finally {await new Promise(r=>server.close(r));}
+});
+
+test('background SQL failure reports failed status and rolls back all deletions', async t => {
+  const db=fixture(t), app=express();app.use(express.json());
+  db.exec("CREATE TRIGGER fail_worker BEFORE DELETE ON books_meta WHEN old.bkid=1 BEGIN SELECT raise(ABORT,'worker rollback'); END;");
+  registerBookDeletion(app,{getDb:()=>db,requireAdmin:(req,res,next)=>next(),clearCache:()=>{},hasAdditional:()=>false,hasTafsir:()=>true});
+  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+  try {
+    const base=`http://127.0.0.1:${server.address().port}/api/admin`;
+    const started=await (await fetch(`${base}/category/99001`,{method:'DELETE'})).json();
+    let job=started;
+    for(let i=0;i<200 && job.status==='running';i++) {
+      await new Promise(r=>setTimeout(r,30));
+      job=await (await fetch(`${base}/deletion-jobs/${started.id}`)).json();
+    }
+    assert.equal(job.status,'failed');assert.match(job.error,/worker rollback/);
+    assert.ok(db.prepare('SELECT 1 FROM books_meta WHERE bkid=1').get());
+    assert.ok(db.prepare('SELECT 1 FROM pages WHERE book_id=1').get());
+    assert.ok(db.prepare('SELECT 1 FROM tafsir.tafsir_ayah_mapping WHERE tafsir_bkid=1').get());
+    assert.equal(db.prepare('SELECT count(*) n FROM catalogue_deletion_receipts').get().n,0);
+  }finally{await new Promise(r=>server.close(r));}
+});
+
+test('restart recovery distinguishes committed deletion from rolled-back work', async t => {
+  const db=fixture(t), app=express();
+  const folder=path.join(path.dirname(db.name),'deletion-jobs');fs.mkdirSync(folder);
+  const committed='a'.repeat(48), interrupted='b'.repeat(48);
+  const expected=deleteCatalogue(db,{bookIds:[1],jobId:committed});
+  for(const id of [committed,interrupted])fs.writeFileSync(path.join(folder,`${id}.json`),JSON.stringify({id,status:'running'}));
+  registerBookDeletion(app,{getDb:()=>db,requireAdmin:(req,res,next)=>next(),clearCache:()=>{},hasAdditional:()=>false,hasTafsir:()=>true});
+  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+  try {
+    const base=`http://127.0.0.1:${server.address().port}/api/admin/deletion-jobs/`;
+    const done=await(await fetch(base+committed)).json();assert.equal(done.status,'done');assert.deepEqual(done.deleted,expected);
+    const failed=await(await fetch(base+interrupted)).json();assert.equal(failed.status,'failed');
+  }finally{await new Promise(r=>server.close(r));}
 });

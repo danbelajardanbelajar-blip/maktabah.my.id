@@ -13,7 +13,41 @@ async function fetchAPI(endpoint: string) {
   return res.json();
 }
 
+const deletionStorageKey = 'maktabah-pending-deletion';
+const rememberDeletion = (id: string | null) => {
+  try { if (id) localStorage.setItem(deletionStorageKey, id); else localStorage.removeItem(deletionStorageKey); } catch {}
+};
+async function waitForDeletion(token: string, job: any, onProgress?: (message: string) => void): Promise<any> {
+  if (!job?.id) return job;
+  rememberDeletion(job.id);
+  while (job.status === 'running') {
+    const progress = job.progress;
+    onProgress?.(progress?.totalBooks !== undefined
+      ? `Sedang menghapus: ${progress.booksDone} dari ${progress.totalBooks} kitab, ${progress.pagesDone} halaman diproses. Menunggu transaksi selesai…`
+      : 'Penghapusan berjalan di latar belakang. Mohon tunggu…');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch(`${API_BASE}/admin/deletion-jobs/${job.id}`, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15000) });
+      if (response.status === 401) throw new Error('401');
+      if (response.status === 404) throw new Error('Status penghapusan tidak ditemukan. Muat ulang daftar sebelum mencoba lagi.');
+      if (!response.ok) { onProgress?.('Koneksi status terganggu. Penghapusan di server mungkin masih berjalan; mencoba memantau kembali…'); continue; }
+      job = await response.json();
+    } catch (error: any) {
+      if (error.message === '401' || error.message.includes('tidak ditemukan')) throw error;
+      onProgress?.('Koneksi terputus. Penghapusan di server mungkin masih berjalan; mencoba memantau kembali…');
+    }
+  }
+  rememberDeletion(null);
+  if (job.status !== 'done') throw new Error(job.error || 'Penghapusan dibatalkan.');
+  return { success: true, deleted: job.deleted };
+}
+
 export const webAPI = {
+  resumeDeletion: async (token: string, onProgress: (message: string) => void) => {
+    let id;
+    try { id = localStorage.getItem(deletionStorageKey); } catch {}
+    return id ? waitForDeletion(token, { id, status: 'running' }, onProgress) : null;
+  },
 
   // ===== ADMIN AUTH =====
   adminLogin: async (credentials: any) => {
@@ -46,12 +80,12 @@ export const webAPI = {
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
     return res.json();
   },
-  deleteAdminCategory: async (token: string, id: number) => {
+  deleteAdminCategory: async (token: string, id: number, onProgress?: (message: string) => void) => {
     const res = await fetch(`${API_BASE}/admin/category/${id}`, {
       method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
-    return res.json();
+    return waitForDeletion(token, await res.json(), onProgress);
   },
   // ===== ADMIN SUBMISSIONS =====
   getFeedback: async (token: string, page = 1) => { const r = await fetch(`${API_BASE}/admin/feedback?page=${page}`, { headers: { 'Authorization': `Bearer ${token}` } }); return r.json(); },
@@ -90,21 +124,21 @@ export const webAPI = {
     if (!res.ok) throw new Error(`${res.status}`);
     return res.json();
   },
-  bulkDeleteBooks: async (token: string, bookIds: number[]) => {
+  bulkDeleteBooks: async (token: string, bookIds: number[], onProgress?: (message: string) => void) => {
     const res = await fetch(`${API_BASE}/admin/books/bulk-delete`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookIds })
     });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
-    return res.json();
+    return waitForDeletion(token, await res.json(), onProgress);
   },
-  deleteAdminBook: async (token: string, bookId: number) => {
+  deleteAdminBook: async (token: string, bookId: number, onProgress?: (message: string) => void) => {
     const res = await fetch(`${API_BASE}/admin/book/${bookId}`, {
       method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
-    return res.json();
+    return waitForDeletion(token, await res.json(), onProgress);
   },
 
   // ===== ADMIN PAGES =====

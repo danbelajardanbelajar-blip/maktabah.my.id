@@ -132,8 +132,8 @@ app.use((req, res, next) => {
     && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/log/visit', '/api/log/download'].includes(req.path)) {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
   }
-  if (transferRuntime.importing && !['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !['/api/admin/login', '/api/admin/logout'].includes(req.path)) {
-    return res.status(409).json({ error: 'Import sedang berjalan. Tunggu selesai sebelum mengubah data.' });
+  if ((transferRuntime.importing || transferRuntime.deleting) && !['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !['/api/admin/login', '/api/admin/logout'].includes(req.path)) {
+    return res.status(409).json({ error: 'Import atau penghapusan sedang berjalan. Tunggu selesai sebelum mengubah data.' });
   }
   next();
 });
@@ -554,7 +554,8 @@ app.put('/api/admin/books/bulk-move', requireAdmin, (req, res) => {
 });
 
 registerBookDeletion(app, { getDb: () => db, requireAdmin, clearCache: () => askCache.clear(),
-  hasAdditional: () => hasTambahan, hasTafsir: () => hasTafsir });
+  hasAdditional: () => hasTambahan, hasTafsir: () => hasTafsir, runtime: transferRuntime,
+  directory: path.join(rootDir, 'dev-data', 'deletion-jobs'), getTafsirPath: () => tafsirDbPath });
 
 // ========= ADMIN: CATEGORIES =========
 
