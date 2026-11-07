@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { webAPI } from '../api';
 import { showOpeningBismillah } from '../lib/quran-content';
-import { ChevronRight, ChevronLeft, BookOpen, Loader2, X, BookMarked, Menu, Search } from 'lucide-react';
+import { ChevronRight, ChevronLeft, BookOpen, Loader2, X, Search, List, Type } from 'lucide-react';
+import {createPortal} from 'react-dom';
+import {useModalFocus} from '../lib/use-modal-focus';
+import surahMetadata from '../data/quran-surahs.json';
+import './QuranReader.css';
 
 // ============================================================
 // Type Definitions
@@ -28,6 +32,7 @@ interface TafsirMapping {
 }
 
 interface TafsirContent {
+  state?: 'ready'|'empty'|'error';
   bookId: number;
   pageId: number;
   tafsir_name: string;
@@ -193,13 +198,7 @@ const QuranReader: React.FC = () => {
   // ============================================================
   // Load isi tafsir
   // ============================================================
-  const toggleTafsirBook = useCallback((bookId: number, tafsirName: string) => {
-    if (activeTafsirBook?.bookId === bookId) {
-      setActiveTafsirBook(null);
-    } else {
-      setActiveTafsirBook({ bookId, tafsirName });
-    }
-  }, [activeTafsirBook]);
+  const selectTafsirBook = (bookId:number,tafsirName:string) => {setActiveTafsirBook({bookId,tafsirName});setView('tafsir');setPanel(null);};
 
   useEffect(() => {
     if (!activeTafsirBook || loadedSurah !== selectedSurah) {
@@ -216,11 +215,11 @@ const QuranReader: React.FC = () => {
 
     if (!mapping) {
       setTafsirLoading(false);
-      setOpenTafsir({ 
-        bookId: activeTafsirBook.bookId, 
-        pageId: 0, 
-        tafsir_name: activeTafsirBook.tafsirName, 
-        text: 'لا يوجد تفسير لهذه الآية في هذا الكتاب' 
+      setOpenTafsir({
+        bookId: activeTafsirBook.bookId,
+        pageId: 0,state:'empty',
+        tafsir_name: activeTafsirBook.tafsirName,
+        text: 'Tafsir untuk ayat ini belum tersedia dalam kitab yang dipilih.'
       });
       return;
     }
@@ -235,394 +234,108 @@ const QuranReader: React.FC = () => {
         if (res.data) {
           setOpenTafsir({
             bookId: activeTafsirBook.bookId,
-            pageId: mapping.page_id,
+            pageId: mapping.page_id,state:'ready',
             tafsir_name: activeTafsirBook.tafsirName,
             text: stripHtml(res.data.text || ''),
             part: res.data.part,
             page: res.data.page,
           });
         } else {
-          setOpenTafsir({ bookId: activeTafsirBook.bookId, pageId: mapping.page_id, tafsir_name: activeTafsirBook.tafsirName, text: 'لم يتم العثور على نص التفسير.' });
+          setOpenTafsir({ bookId: activeTafsirBook.bookId, pageId: mapping.page_id, state:'empty',tafsir_name: activeTafsirBook.tafsirName, text: 'Teks tafsir untuk ayat ini belum tersedia.' });
         }
       })
       .catch((err: any) => {
         console.error('Gagal memuat tafsir:', err);
-        if (isMounted) setOpenTafsir({ bookId: activeTafsirBook.bookId, pageId: mapping.page_id, tafsir_name: activeTafsirBook.tafsirName, text: 'حدث خطأ أثناء تحميل التفسير.' });
+        if (isMounted) setOpenTafsir({ bookId: activeTafsirBook.bookId, pageId: mapping.page_id, state:'error',tafsir_name: activeTafsirBook.tafsirName, text: 'Teks tafsir gagal dimuat. Silakan coba lagi.' });
       })
       .finally(() => {
         if (isMounted) setTafsirLoading(false);
       });
 
     return () => { isMounted = false; };
-  }, [activeTafsirBook, currentAyahIndex, ayahs, tafsirMappings,loadedSurah,selectedSurah]);
+  }, [activeTafsirBook, currentAyahIndex, ayahs, tafsirMappings,loadedSurah,selectedSurah,retry]);
 
-  const [showMobileSurah, setShowMobileSurah] = useState(false);
-  const [showMobileTafsir, setShowMobileTafsir] = useState(false);
-
-  const [surahSearch, setSurahSearch] = useState('');
-  const [tafsirSearch, setTafsirSearch] = useState('');
-
-  // ============================================================
-  // Derived
-  // ============================================================
+  const [panel,setPanel] = useState<'surah'|'tafsir'|null>(null);
+  const [view,setView] = useState<'ayat'|'tafsir'>('ayat');
+  const [surahSearch,setSurahSearch] = useState('');
+  const [tafsirSearch,setTafsirSearch] = useState('');
+  const [fontSize,setFontSize] = useState(28);
+  const [focusMode,setFocusMode]=useState(false);
+  const rootRef = useRef<HTMLElement>(null);
+  const focusRef=useModalFocus(()=>setFocusMode(false),focusMode && panel===null);
+  const panelRef = useModalFocus(()=>setPanel(null),panel!==null);
   const currentAyah = loadedSurah === selectedSurah ? ayahs[currentAyahIndex] ?? null : null;
-  const selectedSurahData = surahs.find(s => s.id === selectedSurah);
+  const selectedSurahData = surahs.find(s=>s.id===selectedSurah);
+  const latinName = (id:number) => surahMetadata.find(s=>s.id===id)?.latin || `Surah ${id}`;
+  const normalize = (value:string) => value.normalize('NFD').replace(/[\u0300-\u036f\u0610-\u061a\u064b-\u065f\u0670]/g,'').toLowerCase().replace(/[^a-z0-9\u0621-\u064a]/g,'');
+  const filteredSurahs = surahs.filter(s=>[s.name,latinName(s.id),surahMetadata.find(m=>m.id===s.id)?.alias||'',String(s.id)].some(v=>normalize(v).includes(normalize(surahSearch))));
+  const filteredBooks = tafsirBooks.filter(b=>normalize(b.tafsir_name).includes(normalize(tafsirSearch)));
+  const ready = !!currentAyah && !ayahLoading;
+  const hasMapping = (bookId:number) => ready && tafsirMappings.some(m=>m.book_id===bookId && m.ayah_no===currentAyah.ayah_no);
   const hasBismillah = showOpeningBismillah(selectedSurah,currentAyah?.ayah_no);
+  useEffect(()=>{
+    const update=()=>{
+      const root=rootRef.current;if(!root)return;
+      const bottom=document.querySelector('[data-app-bottom-nav]')?.getBoundingClientRect().height || 0;
+      const padding=parseFloat(getComputedStyle(root.parentElement!).paddingBottom)||0;
+      const height=window.visualViewport?.height || window.innerHeight;
+      root.style.setProperty('--q-height',`${Math.max(240,height-root.getBoundingClientRect().top-bottom-padding)}px`);
+    };
+    update();const observer=new ResizeObserver(update);if(rootRef.current?.parentElement)observer.observe(rootRef.current.parentElement);
+    window.addEventListener('resize',update);window.visualViewport?.addEventListener('resize',update);
+    return()=>{observer.disconnect();window.removeEventListener('resize',update);window.visualViewport?.removeEventListener('resize',update);};
+  },[focusMode]);
+  useEffect(()=>{
+    if(!panel && !focusMode)return;
+    const old=document.body.style.overflow;document.body.style.overflow='hidden';
+    return()=>{document.body.style.overflow=old;};
+  },[panel,focusMode]);
+  useEffect(()=>{mainAreaRef.current?.scrollTo({top:0});},[view]);
 
-  const filteredSurahs = surahs.filter(s => 
-    s.name.toLowerCase().includes(surahSearch.toLowerCase()) || 
-    s.id.toString().includes(surahSearch)
-  );
+  const retryButton = <button type="button" className="q-button" onClick={()=>setRetry(v=>v+1)}>Coba lagi</button>;
+  const surahList = <>
+    <label className="q-search"><Search size={18} aria-hidden="true"/><input type="search" aria-label="Cari surah" placeholder="Nama Arab, Latin, atau nomor surah" value={surahSearch} onChange={e=>setSurahSearch(e.target.value)}/></label>
+    {surahLoading?<p role="status" className="q-status">Memuat daftar surah…</p>:surahError?<div role="alert" className="q-status">{surahError}{retryButton}</div>:<div className="q-choice-list">{filteredSurahs.map(s=><button type="button" key={s.id} aria-current={selectedSurah===s.id?'true':undefined} className={`q-choice ${selectedSurah===s.id?'is-selected':''}`} onClick={()=>{setSelectedSurah(s.id);setPanel(null);setView('ayat');}}><span className="q-number">{s.id}</span><span className="q-choice-label"><strong>{latinName(s.id)}</strong><span lang="ar" dir="rtl" className="q-arabic">{s.name}</span></span></button>)}{!filteredSurahs.length&&<p className="q-status">Surah tidak ditemukan. Coba nama atau nomor lain.</p>}</div>}
+  </>;
+  const tafsirList = <>
+    <p className="q-muted q-small">Pilih rujukan untuk {selectedSurah?latinName(selectedSurah):'surah'} · Ayat {currentAyah?.ayah_no||'—'}.</p>
+    {tafsirListLoading?<p role="status" className="q-status">Memuat daftar tafsir…</p>:mappingError?<div role="alert" className="q-status">{mappingError}{retryButton}</div>:!tafsirBooks.length?<p className="q-status">Tafsir untuk surah ini belum tersedia.</p>:<>
+      <label className="q-search"><Search size={18} aria-hidden="true"/><input type="search" aria-label="Cari kitab tafsir" placeholder="Cari nama kitab tafsir" value={tafsirSearch} onChange={e=>setTafsirSearch(e.target.value)}/></label>
+      <div className="q-choice-list">{filteredBooks.map(book=><button key={book.book_id} type="button" className={`q-choice ${activeTafsirBook?.bookId===book.book_id?'is-selected':''}`} aria-current={activeTafsirBook?.bookId===book.book_id?'true':undefined} disabled={!hasMapping(book.book_id)} onClick={()=>selectTafsirBook(book.book_id,book.tafsir_name)}><BookOpen size={18} aria-hidden="true"/><span className="q-choice-label"><strong dir="auto" className="q-arabic">{book.tafsir_name}</strong>{!hasMapping(book.book_id)&&<span className="q-small q-muted">Belum tersedia untuk ayat ini</span>}</span></button>)}{!filteredBooks.length&&<p className="q-status">Kitab tidak ditemukan. Coba kata lain.</p>}</div>
+    </>}
+  </>;
+  const ayahControls = <div className="q-ayah-controls">
+    <button type="button" className="q-button" onClick={goToPrevAyah} disabled={!ready || currentAyahIndex===0} aria-label="Ayat sebelumnya"><ChevronLeft size={18} aria-hidden="true"/><span>Sebelumnya</span></button>
+    <span aria-live="polite" className="q-position">{currentAyah?.ayah_no||'—'} / {ayahs.length||'—'}</span>
+    <button type="button" className="q-button" onClick={goToNextAyah} disabled={!ready || currentAyahIndex>=ayahs.length-1} aria-label="Ayat berikutnya"><span>Berikutnya</span><ChevronRight size={18} aria-hidden="true"/></button>
+  </div>;
+  return <section className={`quran-reader${focusMode?' q-focus-mode':''}`} ref={node=>{rootRef.current=node;focusRef.current=node as HTMLDivElement;}} tabIndex={-1} role={focusMode && panel===null?'dialog':undefined} aria-modal={focusMode && panel===null?true:undefined} aria-label="Pembaca Al-Qur’an">
+    <aside className="q-desktop-sidebar" aria-label="Daftar surah"><h2 className="q-side-title">Daftar Surah</h2>{surahList}</aside>
+    <div className="q-reader-main">
+      <div className="q-toolbar">
+        <button type="button" className="q-button q-surah-trigger" aria-label={`Pilih surah, ${selectedSurah?latinName(selectedSurah):'belum dipilih'}`} aria-haspopup="dialog" aria-expanded={panel==='surah'} aria-controls="quran-choice-panel" onClick={()=>setPanel('surah')}><List size={18} aria-hidden="true"/><span><small>Surah</small><strong>{selectedSurah?latinName(selectedSurah):'Pilih surah'}</strong></span></button>
+        <label className="q-ayah-select"><span>Ayat</span><select aria-label="Pilih ayat" disabled={!ready} value={currentAyahIndex} onChange={e=>goToAyah(Number(e.target.value))}>{ayahs.length?ayahs.map((a,i)=><option key={a.id} value={i}>{a.ayah_no}</option>):<option value={0}>—</option>}</select></label>
 
-  const filteredTafsirBooks = tafsirBooks.filter(b => 
-    b.tafsir_name.toLowerCase().includes(tafsirSearch.toLowerCase())
-  );
-
-  // ============================================================
-  // Render
-  // ============================================================
-  return (
-    <div
-      className="flex w-full h-screen bg-[#faf6ef] overflow-hidden relative"
-      dir="rtl"
-      style={{ fontFamily: 'var(--arabic-font, "Amiri", serif)' }}
-    >
-      {/* ===== KANAN (20%): Sidebar Daftar Surah ===== */}
-      <div className={`fixed md:relative z-30 h-full w-[250px] md:w-[20%] md:min-w-[180px] flex flex-col bg-[#3e2723] text-white border-l border-[#5d4037] shadow-xl flex-shrink-0 transition-transform duration-300 ${showMobileSurah ? 'translate-x-0' : 'translate-x-[100%] md:translate-x-0'}`}>
-        <div className="bg-[#2e1a17] px-4 py-4 text-center sticky top-0 z-10 shadow-md flex justify-between items-center md:block">
-          <div className="text-[#d4a853] font-bold text-lg w-full text-center">القرآن الكريم</div>
-          <button className="md:hidden text-[#d4a853] absolute left-4" onClick={() => setShowMobileSurah(false)}>
-            <X size={20} />
-          </button>
-          <div className="text-[#a1887f] text-xs mt-1 md:block hidden" style={{ fontFamily: 'sans-serif' }}>فهرس السور</div>
-          <div className="mt-3 relative w-full hidden md:block">
-            <input 
-              type="text" 
-              placeholder="Cari Surah..." 
-              value={surahSearch}
-              onChange={e => setSurahSearch(e.target.value)}
-              className="w-full bg-[#3e2723] border border-[#5d4037] text-sm text-[#efebe9] px-3 py-1.5 rounded outline-none focus:border-[#d4a853] transition-colors placeholder-[#8d6e63]"
-              style={{ fontFamily: 'sans-serif' }}
-              dir="ltr"
-            />
-            <Search size={14} className="absolute right-2.5 top-2 text-[#8d6e63]" />
-          </div>
-        </div>
-        
-        {/* Mobile Search input */}
-        <div className="bg-[#2e1a17] px-4 pb-3 md:hidden sticky top-[60px] z-10 shadow-sm border-b border-[#3e2723]">
-          <div className="relative w-full">
-            <input 
-              type="text" 
-              placeholder="Cari Surah..." 
-              value={surahSearch}
-              onChange={e => setSurahSearch(e.target.value)}
-              className="w-full bg-[#3e2723] border border-[#5d4037] text-sm text-[#efebe9] px-3 py-1.5 rounded outline-none focus:border-[#d4a853] transition-colors placeholder-[#8d6e63]"
-              style={{ fontFamily: 'sans-serif' }}
-              dir="ltr"
-            />
-            <Search size={14} className="absolute right-2.5 top-2 text-[#8d6e63]" />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
-          {surahLoading ? (
-            <div className="flex justify-center items-center h-32"><Loader2 className="animate-spin text-[#a1887f]" size={24} /></div>
-          ) : filteredSurahs.length === 0 ? (
-            <div className="text-center text-[#8d6e63] text-xs p-4" style={{ fontFamily: 'sans-serif' }}>Surah tidak ditemukan</div>
-          ) : (
-            filteredSurahs.map(s => (
-              <button
-                key={s.id}
-                onClick={() => { setSelectedSurah(s.id); setShowMobileSurah(false); }}
-                className={`w-full text-right px-4 py-3 border-b border-[#4e342e]/50 transition-all duration-150 flex items-center justify-between gap-2 ${
-                  selectedSurah === s.id
-                    ? 'bg-[#d4a853] text-[#2e1a17] font-bold'
-                    : 'hover:bg-[#4e342e] text-[#efebe9]'
-                }`}
-              >
-                <span className="text-sm leading-tight" style={{ fontFamily: 'var(--arabic-font, serif)' }}>{s.name}</span>
-                <span
-                  className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${selectedSurah === s.id ? 'bg-[#2e1a17] text-[#d4a853]' : 'bg-[#4e342e] text-[#a1887f]'}`}
-                  style={{ fontFamily: 'monospace', direction: 'ltr' }}
-                >
-                  {s.id}
-                </span>
-              </button>
-            ))
-          )}
-        </div>
       </div>
-
-      {/* ===== TENGAH (20%): Sidebar Daftar Kitab Tafsir ===== */}
-      <div className={`fixed md:relative z-30 h-full w-[250px] md:w-[20%] md:min-w-[160px] flex flex-col bg-[#f0e9d6] border-l border-[#d7ccc8] flex-shrink-0 transition-transform duration-300 right-0 md:right-auto ${showMobileTafsir ? 'translate-x-0' : 'translate-x-[100%] md:translate-x-0'}`}
-           style={ { left: showMobileTafsir ? 0 : 'auto', right: showMobileTafsir ? 'auto' : 0 } }>
-        <div className="bg-[#5d4037] text-white px-3 py-4 sticky top-0 z-10 shadow-md flex justify-between items-center md:block">
-          <div className="font-bold text-sm text-center w-full" style={{ fontFamily: 'sans-serif' }}>
-            <BookOpen size={14} className="inline ml-1 mb-0.5" />
-            كتب التفسير
+      <div className="q-view-controls"><div className="q-tabs" role="tablist" aria-label="Tampilan bacaan">{(['ayat','tafsir'] as const).map(tab=><button key={tab} id={`q-tab-${tab}`} type="button" role="tab" aria-selected={view===tab} aria-controls={`q-panel-${tab}`} tabIndex={view===tab?0:-1} onClick={()=>setView(tab)} onKeyDown={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?'ayat':e.key==='End'?'tafsir':tab==='ayat'?'tafsir':'ayat';setView(next);document.getElementById(`q-tab-${next}`)?.focus();}}}>{tab==='ayat'?'Ayat':'Tafsir'}</button>)}</div><div className="q-font-controls" role="group" aria-label="Ukuran tulisan"><Type size={16} aria-hidden="true"/><button type="button" className="q-icon-button" onClick={()=>setFontSize(v=>Math.max(22,v-2))} disabled={fontSize<=22} aria-label="Perkecil tulisan">A−</button><button type="button" className="q-icon-button" onClick={()=>setFontSize(v=>Math.min(44,v+2))} disabled={fontSize>=44} aria-label="Perbesar tulisan">A+</button><button type="button" className="q-icon-button q-focus-toggle" aria-pressed={focusMode} aria-label={focusMode?'Keluar mode baca layar penuh':'Mode baca layar penuh'} title={focusMode?'Keluar mode baca layar penuh':'Mode baca layar penuh'} onClick={()=>setFocusMode(v=>!v)}>{focusMode?'Keluar':'Fokus'}</button></div></div>
+      <div ref={mainAreaRef} className="q-reading-area">
+        {surahError || ayahError ? <div role="alert" className="q-state q-error"><p>{surahError||ayahError}</p>{retryButton}</div>:!ready?<div role="status" className="q-state">{(surahLoading||ayahLoading)&&<Loader2 className="animate-spin" size={24}/>}<p>{surahLoading?'Memuat daftar surah…':ayahLoading?'Memuat ayat…':'Ayat untuk surah ini belum tersedia.'}</p></div>:<>
+          <div className="q-context"><h2>{latinName(selectedSurah!)} <span className="q-arabic" lang="ar" dir="rtl">{selectedSurahData?.name}</span></h2><p>Surah {selectedSurah} · Ayat {currentAyah.ayah_no}{currentAyah.page?` · Halaman ${currentAyah.page}`:''}</p></div>
+          <div id="q-panel-ayat" role="tabpanel" aria-labelledby="q-tab-ayat" hidden={view!=='ayat'} tabIndex={0}>
+            {hasBismillah&&<p className="q-basmalah q-arabic" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>}
+            <div className="q-verse q-arabic" lang="ar" dir="rtl" style={{fontSize:`${fontSize}px`}}>{currentAyah.text} <span className="q-verse-number" aria-label={`Ayat ${currentAyah.ayah_no}`}>﴿{toArabicNumber(currentAyah.ayah_no)}﴾</span></div>
+            <button type="button" className="q-button q-read-tafsir" onClick={()=>setView('tafsir')}><BookOpen size={18} aria-hidden="true"/>Baca tafsir ayat ini</button>
           </div>
-          <button className="md:hidden text-[#f0e9d6] absolute left-4" onClick={() => setShowMobileTafsir(false)}>
-            <X size={20} />
-          </button>
-          {currentAyah && (
-            <div className="text-[#d7ccc8] text-xs text-center mt-1 md:block hidden" style={{ fontFamily: 'sans-serif' }}>
-              الآية {currentAyah.ayah_no}
-            </div>
-          )}
-          <div className="mt-3 relative w-full hidden md:block">
-            <input 
-              type="text" 
-              placeholder="Cari Kitab..." 
-              value={tafsirSearch}
-              onChange={e => setTafsirSearch(e.target.value)}
-              className="w-full bg-[#4e342e] border border-[#3e2723] text-sm text-[#efebe9] px-3 py-1.5 rounded outline-none focus:border-[#d4a853] transition-colors placeholder-[#a1887f]"
-              style={{ fontFamily: 'sans-serif' }}
-              dir="ltr"
-            />
-            <Search size={14} className="absolute right-2.5 top-2 text-[#a1887f]" />
+          <div id="q-panel-tafsir" role="tabpanel" aria-labelledby="q-tab-tafsir" hidden={view!=='tafsir'} tabIndex={0}>
+            <button type="button" className="q-button q-source-trigger" aria-haspopup="dialog" aria-expanded={panel==='tafsir'} aria-controls="quran-choice-panel" onClick={()=>setPanel('tafsir')}><BookOpen size={18} aria-hidden="true"/><span>{activeTafsirBook?'Ganti kitab tafsir':'Pilih kitab tafsir'}</span></button>
+            {tafsirLoading?<div role="status" className="q-state"><Loader2 className="animate-spin" size={22}/><p>Memuat teks tafsir…</p></div>:mappingError?<div role="alert" className="q-state q-error"><p>{mappingError}</p>{retryButton}</div>:!tafsirBooks.length?<p className="q-state">Tafsir untuk surah ini belum tersedia.</p>:!activeTafsirBook?<p className="q-state">Pilih kitab tafsir untuk membaca penjelasan ayat ini.</p>:openTafsir?<article className="q-tafsir"><h3 className="q-arabic" dir="auto">{openTafsir.tafsir_name}</h3>{openTafsir.state==='ready'&&<p className="q-small q-muted">{latinName(selectedSurah!)} · Ayat {currentAyah.ayah_no}{openTafsir.part?` · Jilid ${openTafsir.part}`:''}{openTafsir.page?` · Halaman ${openTafsir.page}`:''}</p>}<p className={openTafsir.state==='ready'?'q-arabic q-tafsir-text':'q-status'} dir="auto" style={openTafsir.state==='ready'?{fontSize:`${Math.max(20,fontSize-4)}px`}:undefined}>{openTafsir.text}</p>{openTafsir.state==='error'&&retryButton}</article>:null}
           </div>
-        </div>
-
-        {/* Mobile Search input */}
-        <div className="bg-[#5d4037] px-3 pb-3 md:hidden sticky top-[60px] z-10 shadow-sm border-b border-[#4e342e]">
-          <div className="relative w-full">
-            <input 
-              type="text" 
-              placeholder="Cari Kitab..." 
-              value={tafsirSearch}
-              onChange={e => setTafsirSearch(e.target.value)}
-              className="w-full bg-[#4e342e] border border-[#3e2723] text-sm text-[#efebe9] px-3 py-1.5 rounded outline-none focus:border-[#d4a853] transition-colors placeholder-[#a1887f]"
-              style={{ fontFamily: 'sans-serif' }}
-              dir="ltr"
-            />
-            <Search size={14} className="absolute right-2.5 top-2 text-[#a1887f]" />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-          {tafsirListLoading ? (
-            <div className="flex justify-center items-center h-24"><Loader2 className="animate-spin text-[#8d6e63]" size={20} /></div>
-          ) : tafsirBooks.length === 0 ? (
-            <div className="text-center text-[#a1887f] text-xs p-4 leading-relaxed" style={{ fontFamily: 'sans-serif' }}>
-              لا توجد كتب تفسير
-              <br /><span className="text-[10px]">(يتطلب tafsir_relasi.db)</span>
-            </div>
-          ) : filteredTafsirBooks.length === 0 ? (
-            <div className="text-center text-[#8d6e63] text-xs p-4" style={{ fontFamily: 'sans-serif' }}>Kitab tidak ditemukan</div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {filteredTafsirBooks.map(book => {
-                const isActive = activeTafsirBook?.bookId === book.book_id;
-                const hasMapping = currentAyah
-                  ? tafsirMappings.some(m => m.book_id === book.book_id && m.ayah_no === currentAyah.ayah_no)
-                  : false;
-                return (
-                  <button
-                    key={book.book_id}
-                    onClick={() => toggleTafsirBook(book.book_id, book.tafsir_name)}
-                    className={`w-full text-right px-3 py-2.5 rounded-lg text-sm transition-all duration-150 border ${
-                      isActive
-                        ? 'bg-[#5d4037] text-white border-[#4e342e] shadow-md'
-                        : hasMapping
-                        ? 'bg-white text-[#4e342e] border-[#c8b89a] hover:bg-[#fdf5e6]'
-                        : 'bg-[#f5f0e8] text-[#a1887f] border-[#e0d8cc] hover:bg-[#ece7d8]'
-                    }`}
-                  >
-                    <div className="flex items-start gap-1.5">
-                      <BookMarked size={12} className={`flex-shrink-0 mt-0.5 ${isActive ? 'text-[#d4a853]' : hasMapping ? 'text-[#8d6e63]' : 'text-[#c8b8a8]'}`} />
-                      <span className="leading-snug break-words" style={{ fontFamily: 'var(--arabic-font, serif)', fontSize: '0.78rem' }}>
-                        {book.tafsir_name}
-                      </span>
-                    </div>
-                    {!hasMapping && currentAyah && (
-                      <div className="text-[10px] text-[#b0a090] mt-1" style={{ fontFamily: 'sans-serif' }}>لا تفسير لهذه الآية</div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        </>}
       </div>
-
-      {/* ===== KIRI (60%): Area Baca Utama ===== */}
-      <div className="flex-1 flex flex-col bg-[#fffdf7] overflow-hidden">
-
-        {(surahError || ayahError || mappingError) && <div role="alert" className="p-4 border-b bg-red-50 text-red-800 text-sm" dir="ltr"><p>{surahError || ayahError || mappingError}</p><button className="underline font-bold mt-2" onClick={()=>setRetry(v=>v+1)}>Coba lagi</button></div>}
-        {/* Header Navigation */}
-        <div className="bg-[#faf6ef] border-b border-[#e8dcc8] px-3 md:px-6 py-3 flex-shrink-0 shadow-sm relative">
-          <div className="flex items-center justify-between gap-2 md:gap-4" dir="ltr">
-            
-            {/* Mobile Toggle Surah List */}
-            <button 
-              onClick={() => setShowMobileSurah(prev => !prev)}
-              className="md:hidden flex items-center justify-center p-2 rounded-lg bg-[#3e2723] text-white hover:bg-[#2e1a17] transition-colors"
-            >
-              <Menu size={20} />
-            </button>
-
-            <button
-              onClick={goToPrevAyah}
-              disabled={currentAyahIndex === 0 || ayahLoading}
-              className="flex items-center gap-1.5 px-3 md:px-4 py-2 rounded-lg bg-[#5d4037] text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#4e342e] transition-colors text-sm"
-              style={{ fontFamily: 'sans-serif' }}
-            >
-              <ChevronRight size={16} />
-              <span className="hidden sm:inline">السابق</span>
-            </button>
-
-            <div className="flex flex-col items-center gap-1 flex-1" dir="rtl">
-              {selectedSurahData && (
-                <div className="text-[#4e342e] font-bold text-base md:text-lg" style={{ fontFamily: 'var(--arabic-font, serif)' }}>
-                  سورة {selectedSurahData.name}
-                </div>
-              )}
-              {ayahs.length > 0 && (
-                <select
-                  value={currentAyahIndex}
-                  onChange={e => goToAyah(parseInt(e.target.value))}
-                  className="border border-[#d7ccc8] rounded-lg px-2 py-1 md:px-3 md:py-1.5 bg-white text-[#4e342e] text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-[#8d6e63] w-[100px] md:w-auto"
-                  style={{ fontFamily: 'var(--arabic-font, serif)', direction: 'rtl' }}
-                >
-                  {ayahs.map((a, idx) => (
-                    <option key={a.id} value={idx}>
-                      الآية {toArabicNumber(a.ayah_no)} ({a.ayah_no})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            <button
-              onClick={goToNextAyah}
-              disabled={currentAyahIndex >= ayahs.length - 1 || ayahLoading}
-              className="flex items-center gap-1.5 px-3 md:px-4 py-2 rounded-lg bg-[#5d4037] text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#4e342e] transition-colors text-sm"
-              style={{ fontFamily: 'sans-serif' }}
-            >
-              <span className="hidden sm:inline">التالي</span>
-              <ChevronLeft size={16} />
-            </button>
-            
-            {/* Mobile Toggle Tafsir List */}
-            <button 
-              onClick={() => setShowMobileTafsir(prev => !prev)}
-              className="md:hidden flex items-center justify-center p-2 rounded-lg bg-[#f0e9d6] border border-[#d7ccc8] text-[#5d4037] hover:bg-[#e0d8cc] transition-colors"
-            >
-              <BookOpen size={20} />
-            </button>
-            
-          </div>
-        </div>
-
-        {/* Scrollable Content */}
-        <div ref={mainAreaRef} className="flex-1 overflow-y-auto custom-scrollbar">
-          {hasBismillah && !ayahLoading && currentAyah && (
-            <div
-              className="text-center py-6 text-3xl text-[#3e2723] border-b border-[#e8dcc8] bg-[#fdf5e6]"
-              dir="rtl"
-              style={{ fontFamily: 'var(--arabic-font, serif)' }}
-            >
-              بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-            </div>
-          )}
-
-          <div className="px-8 py-8">
-            {ayahLoading ? (
-              <div className="flex flex-col justify-center items-center h-48 gap-4 text-[#a1887f]">
-                <Loader2 className="animate-spin" size={36} />
-                <span style={{ fontFamily: 'sans-serif' }} className="text-sm">جاري التحميل...</span>
-              </div>
-            ) : currentAyah ? (
-              <>
-                {/* Teks Ayat */}
-                <div
-                  className="text-right leading-[2.8] text-[#1a0f0a] mb-6 p-6 bg-white rounded-2xl shadow-lg border border-[#e8dcc8]"
-                  dir="rtl"
-                  style={{ fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', fontFamily: 'var(--arabic-font, "Amiri", serif)' }}
-                >
-                  {currentAyah.text}{' '}
-                  <span
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#5d4037] text-white mx-2"
-                    style={{ fontFamily: 'var(--arabic-font, serif)', fontSize: '0.9rem' }}
-                  >
-                    ﴿{toArabicNumber(currentAyah.ayah_no)}﴾
-                  </span>
-                </div>
-
-                {/* Info Ayat */}
-                <div className="flex justify-center gap-6 mb-6 text-sm text-[#8d6e63]" style={{ fontFamily: 'sans-serif' }}>
-                  <span>السورة: <strong>{selectedSurahData?.name ?? '-'}</strong></span>
-                  <span>•</span>
-                  <span>الآية: <strong>{currentAyah.ayah_no}</strong> / <strong>{ayahs.length}</strong></span>
-                  {currentAyah.page && <><span>•</span><span>الصفحة: <strong>{currentAyah.page}</strong></span></>}
-                </div>
-
-                {/* Tafsir Loading */}
-                {tafsirLoading && (
-                  <div className="flex items-center justify-center gap-3 py-6 text-[#8d6e63]">
-                    <Loader2 className="animate-spin" size={20} />
-                    <span style={{ fontFamily: 'sans-serif' }} className="text-sm">جاري تحميل التفسير...</span>
-                  </div>
-                )}
-
-                {/* Inline Tafsir Panel */}
-                {!tafsirLoading && openTafsir && (
-                  <div className="mt-2 rounded-2xl border border-[#c8b89a] bg-[#fdf9f0] shadow-inner overflow-hidden" dir="rtl">
-                    <div className="flex items-center justify-between px-5 py-3 bg-[#5d4037] text-white">
-                      <div className="flex items-center gap-2">
-                        <BookOpen size={16} className="text-[#d4a853]" />
-                        <span className="font-bold text-base" style={{ fontFamily: 'var(--arabic-font, serif)' }}>{openTafsir.tafsir_name}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {openTafsir.page && <span className="text-[#a1887f] text-xs" style={{ fontFamily: 'sans-serif' }}>ص. {openTafsir.page}</span>}
-                        <button onClick={() => setActiveTafsirBook(null)} className="text-[#d7ccc8] hover:text-white transition-colors"><X size={18} /></button>
-                      </div>
-                    </div>
-                    <div
-                      className="px-6 py-5 text-[#2c1810] leading-[2.4] whitespace-pre-wrap"
-                      style={{ fontFamily: 'var(--arabic-font, "Amiri", serif)', fontSize: 'clamp(1rem, 1.8vw, 1.25rem)', textAlign: 'justify' }}
-                    >
-                      {openTafsir.text}
-                    </div>
-                  </div>
-                )}
-
-                {/* Hint */}
-                {!tafsirLoading && !activeTafsirBook && tafsirBooks.length > 0 && (
-                  <div className="text-center text-[#b0a090] text-sm py-4" style={{ fontFamily: 'sans-serif' }} dir="rtl">
-                    <BookMarked size={18} className="inline ml-1 mb-0.5 text-[#c8b8a8]" />
-                    اختر كتاباً من قائمة التفسير لعرض تفسير هذه الآية
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="flex justify-center items-center h-48 text-[#a1887f] text-sm" style={{ fontFamily: 'sans-serif' }}>
-                اختر سورة من القائمة
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer Progress Bar */}
-        {ayahs.length > 0 && (
-          <div className="flex-shrink-0 px-6 py-2 bg-[#f5f0e8] border-t border-[#e8dcc8]" dir="ltr">
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-[#8d6e63] w-16 text-right" style={{ fontFamily: 'sans-serif' }}>{currentAyahIndex + 1} / {ayahs.length}</span>
-              <div className="flex-1 h-1.5 bg-[#e0d8cc] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#8d6e63] rounded-full transition-all duration-300"
-                  style={{ width: `${((currentAyahIndex + 1) / ayahs.length) * 100}%` }}
-                />
-              </div>
-              <span className="text-xs text-[#8d6e63] w-16" style={{ fontFamily: 'sans-serif' }}>{Math.round(((currentAyahIndex + 1) / ayahs.length) * 100)}%</span>
-            </div>
-          </div>
-        )}
-      </div>
+      {ayahControls}
     </div>
-  );
+    <aside className="q-desktop-sidebar" aria-label="Daftar kitab tafsir"><h2 className="q-side-title">Kitab Tafsir</h2>{tafsirList}</aside>
+    {panel&&createPortal(<div ref={panelRef} className="q-modal" role="dialog" aria-modal="true" aria-labelledby="quran-panel-title" tabIndex={-1} id="quran-choice-panel"><div className="q-modal-backdrop" onClick={()=>setPanel(null)} aria-hidden="true"/><div className="q-modal-sheet"><div className="q-modal-header"><h2 id="quran-panel-title">{panel==='surah'?'Pilih Surah':'Pilih Kitab Tafsir'}</h2><button type="button" className="q-icon-button" aria-label="Tutup panel pilihan" onClick={()=>setPanel(null)}><X size={22}/></button></div><div className="q-modal-content">{panel==='surah'?surahList:tafsirList}</div></div></div>,document.body)}
+  </section>;
 };
-
 export default QuranReader;
-

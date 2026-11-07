@@ -1,0 +1,572 @@
+[
+  {
+    "id": 1,
+    "latin": "Al-Fatihah",
+    "alias": "Al-Fātiĥah"
+  },
+  {
+    "id": 2,
+    "latin": "Al-Baqarah",
+    "alias": "Al-Baqarah"
+  },
+  {
+    "id": 3,
+    "latin": "Ali 'Imran",
+    "alias": "Āli `Imrān"
+  },
+  {
+    "id": 4,
+    "latin": "An-Nisa",
+    "alias": "An-Nisā"
+  },
+  {
+    "id": 5,
+    "latin": "Al-Ma'idah",
+    "alias": "Al-Mā'idah"
+  },
+  {
+    "id": 6,
+    "latin": "Al-An'am",
+    "alias": "Al-'An`ām"
+  },
+  {
+    "id": 7,
+    "latin": "Al-A'raf",
+    "alias": "Al-'A`rāf"
+  },
+  {
+    "id": 8,
+    "latin": "Al-Anfal",
+    "alias": "Al-'Anfāl"
+  },
+  {
+    "id": 9,
+    "latin": "At-Tawbah",
+    "alias": "At-Tawbah"
+  },
+  {
+    "id": 10,
+    "latin": "Yunus",
+    "alias": "Yūnus"
+  },
+  {
+    "id": 11,
+    "latin": "Hud",
+    "alias": "Hūd"
+  },
+  {
+    "id": 12,
+    "latin": "Yusuf",
+    "alias": "Yūsuf"
+  },
+  {
+    "id": 13,
+    "latin": "Ar-Ra'd",
+    "alias": "Ar-Ra`d"
+  },
+  {
+    "id": 14,
+    "latin": "Ibrahim",
+    "alias": "Ibrāhīm"
+  },
+  {
+    "id": 15,
+    "latin": "Al-Hijr",
+    "alias": "Al-Ĥijr"
+  },
+  {
+    "id": 16,
+    "latin": "An-Nahl",
+    "alias": "An-Naĥl"
+  },
+  {
+    "id": 17,
+    "latin": "Al-Isra",
+    "alias": "Al-'Isrā"
+  },
+  {
+    "id": 18,
+    "latin": "Al-Kahf",
+    "alias": "Al-Kahf"
+  },
+  {
+    "id": 19,
+    "latin": "Maryam",
+    "alias": "Maryam"
+  },
+  {
+    "id": 20,
+    "latin": "Taha",
+    "alias": "Ţāhā"
+  },
+  {
+    "id": 21,
+    "latin": "Al-Anbya",
+    "alias": "Al-'Anbyā"
+  },
+  {
+    "id": 22,
+    "latin": "Al-Hajj",
+    "alias": "Al-Ĥajj"
+  },
+  {
+    "id": 23,
+    "latin": "Al-Mu'minun",
+    "alias": "Al-Mu'minūn"
+  },
+  {
+    "id": 24,
+    "latin": "An-Nur",
+    "alias": "An-Nūr"
+  },
+  {
+    "id": 25,
+    "latin": "Al-Furqan",
+    "alias": "Al-Furqān"
+  },
+  {
+    "id": 26,
+    "latin": "Ash-Shu'ara",
+    "alias": "Ash-Shu`arā"
+  },
+  {
+    "id": 27,
+    "latin": "An-Naml",
+    "alias": "An-Naml"
+  },
+  {
+    "id": 28,
+    "latin": "Al-Qasas",
+    "alias": "Al-Qaşaş"
+  },
+  {
+    "id": 29,
+    "latin": "Al-'Ankabut",
+    "alias": "Al-`Ankabūt"
+  },
+  {
+    "id": 30,
+    "latin": "Ar-Rum",
+    "alias": "Ar-Rūm"
+  },
+  {
+    "id": 31,
+    "latin": "Luqman",
+    "alias": "Luqmān"
+  },
+  {
+    "id": 32,
+    "latin": "As-Sajdah",
+    "alias": "As-Sajdah"
+  },
+  {
+    "id": 33,
+    "latin": "Al-Ahzab",
+    "alias": "Al-'Aĥzāb"
+  },
+  {
+    "id": 34,
+    "latin": "Saba",
+    "alias": "Saba"
+  },
+  {
+    "id": 35,
+    "latin": "Fatir",
+    "alias": "Fāţir"
+  },
+  {
+    "id": 36,
+    "latin": "Ya-Sin",
+    "alias": "Yā-Sīn"
+  },
+  {
+    "id": 37,
+    "latin": "As-Saffat",
+    "alias": "Aş-Şāffāt"
+  },
+  {
+    "id": 38,
+    "latin": "Sad",
+    "alias": "Şād"
+  },
+  {
+    "id": 39,
+    "latin": "Az-Zumar",
+    "alias": "Az-Zumar"
+  },
+  {
+    "id": 40,
+    "latin": "Ghafir",
+    "alias": "Ghāfir"
+  },
+  {
+    "id": 41,
+    "latin": "Fussilat",
+    "alias": "Fuşşilat"
+  },
+  {
+    "id": 42,
+    "latin": "Ash-Shuraa",
+    "alias": "Ash-Shūraá"
+  },
+  {
+    "id": 43,
+    "latin": "Az-Zukhruf",
+    "alias": "Az-Zukhruf"
+  },
+  {
+    "id": 44,
+    "latin": "Ad-Dukhan",
+    "alias": "Ad-Dukhān"
+  },
+  {
+    "id": 45,
+    "latin": "Al-Jathiyah",
+    "alias": "Al-Jāthiyah"
+  },
+  {
+    "id": 46,
+    "latin": "Al-Ahqaf",
+    "alias": "Al-'Aĥqāf"
+  },
+  {
+    "id": 47,
+    "latin": "Muhammad",
+    "alias": "Muĥammad"
+  },
+  {
+    "id": 48,
+    "latin": "Al-Fath",
+    "alias": "Al-Fatĥ"
+  },
+  {
+    "id": 49,
+    "latin": "Al-Hujurat",
+    "alias": "Al-Ĥujurāt"
+  },
+  {
+    "id": 50,
+    "latin": "Qaf",
+    "alias": "Qāf"
+  },
+  {
+    "id": 51,
+    "latin": "Adh-Dhariyat",
+    "alias": "Adh-Dhāriyāt"
+  },
+  {
+    "id": 52,
+    "latin": "At-Tur",
+    "alias": "Aţ-Ţūr"
+  },
+  {
+    "id": 53,
+    "latin": "An-Najm",
+    "alias": "An-Najm"
+  },
+  {
+    "id": 54,
+    "latin": "Al-Qamar",
+    "alias": "Al-Qamar"
+  },
+  {
+    "id": 55,
+    "latin": "Ar-Rahman",
+    "alias": "Ar-Raĥmān"
+  },
+  {
+    "id": 56,
+    "latin": "Al-Waqi'ah",
+    "alias": "Al-Wāqi`ah"
+  },
+  {
+    "id": 57,
+    "latin": "Al-Hadid",
+    "alias": "Al-Ĥadīd"
+  },
+  {
+    "id": 58,
+    "latin": "Al-Mujadila",
+    "alias": "Al-Mujādila"
+  },
+  {
+    "id": 59,
+    "latin": "Al-Hashr",
+    "alias": "Al-Ĥashr"
+  },
+  {
+    "id": 60,
+    "latin": "Al-Mumtahanah",
+    "alias": "Al-Mumtaĥanah"
+  },
+  {
+    "id": 61,
+    "latin": "As-Saf",
+    "alias": "Aş-Şaf"
+  },
+  {
+    "id": 62,
+    "latin": "Al-Jumu'ah",
+    "alias": "Al-Jumu`ah"
+  },
+  {
+    "id": 63,
+    "latin": "Al-Munafiqun",
+    "alias": "Al-Munāfiqūn"
+  },
+  {
+    "id": 64,
+    "latin": "At-Taghabun",
+    "alias": "At-Taghābun"
+  },
+  {
+    "id": 65,
+    "latin": "At-Talaq",
+    "alias": "Aţ-Ţalāq"
+  },
+  {
+    "id": 66,
+    "latin": "At-Tahrim",
+    "alias": "At-Taĥrīm"
+  },
+  {
+    "id": 67,
+    "latin": "Al-Mulk",
+    "alias": "Al-Mulk"
+  },
+  {
+    "id": 68,
+    "latin": "Al-Qalam",
+    "alias": "Al-Qalam"
+  },
+  {
+    "id": 69,
+    "latin": "Al-Haqqah",
+    "alias": "Al-Ĥāqqah"
+  },
+  {
+    "id": 70,
+    "latin": "Al-Ma'arij",
+    "alias": "Al-Ma`ārij"
+  },
+  {
+    "id": 71,
+    "latin": "Nuh",
+    "alias": "Nūĥ"
+  },
+  {
+    "id": 72,
+    "latin": "Al-Jinn",
+    "alias": "Al-Jinn"
+  },
+  {
+    "id": 73,
+    "latin": "Al-Muzzammil",
+    "alias": "Al-Muzzammil"
+  },
+  {
+    "id": 74,
+    "latin": "Al-Muddaththir",
+    "alias": "Al-Muddaththir"
+  },
+  {
+    "id": 75,
+    "latin": "Al-Qiyamah",
+    "alias": "Al-Qiyāmah"
+  },
+  {
+    "id": 76,
+    "latin": "Al-Insan",
+    "alias": "Al-'Insān"
+  },
+  {
+    "id": 77,
+    "latin": "Al-Mursalat",
+    "alias": "Al-Mursalāt"
+  },
+  {
+    "id": 78,
+    "latin": "An-Naba",
+    "alias": "An-Naba"
+  },
+  {
+    "id": 79,
+    "latin": "An-Nazi'at",
+    "alias": "An-Nāzi`āt"
+  },
+  {
+    "id": 80,
+    "latin": "'Abasa",
+    "alias": "`Abasa"
+  },
+  {
+    "id": 81,
+    "latin": "At-Takwir",
+    "alias": "At-Takwīr"
+  },
+  {
+    "id": 82,
+    "latin": "Al-Infitar",
+    "alias": "Al-'Infiţār"
+  },
+  {
+    "id": 83,
+    "latin": "Al-Mutaffifin",
+    "alias": "Al-Muţaffifīn"
+  },
+  {
+    "id": 84,
+    "latin": "Al-Inshiqaq",
+    "alias": "Al-'Inshiqāq"
+  },
+  {
+    "id": 85,
+    "latin": "Al-Buruj",
+    "alias": "Al-Burūj"
+  },
+  {
+    "id": 86,
+    "latin": "At-Tariq",
+    "alias": "Aţ-Ţāriq"
+  },
+  {
+    "id": 87,
+    "latin": "Al-A'la",
+    "alias": "Al-'A`lá"
+  },
+  {
+    "id": 88,
+    "latin": "Al-Ghashiyah",
+    "alias": "Al-Ghāshiyah"
+  },
+  {
+    "id": 89,
+    "latin": "Al-Fajr",
+    "alias": "Al-Fajr"
+  },
+  {
+    "id": 90,
+    "latin": "Al-Balad",
+    "alias": "Al-Balad"
+  },
+  {
+    "id": 91,
+    "latin": "Ash-Shams",
+    "alias": "Ash-Shams"
+  },
+  {
+    "id": 92,
+    "latin": "Al-Layl",
+    "alias": "Al-Layl"
+  },
+  {
+    "id": 93,
+    "latin": "Ad-Duhaa",
+    "alias": "Ađ-Đuĥaá"
+  },
+  {
+    "id": 94,
+    "latin": "Ash-Sharh",
+    "alias": "Ash-Sharĥ"
+  },
+  {
+    "id": 95,
+    "latin": "At-Tin",
+    "alias": "At-Tīn"
+  },
+  {
+    "id": 96,
+    "latin": "Al-'Alaq",
+    "alias": "Al-`Alaq"
+  },
+  {
+    "id": 97,
+    "latin": "Al-Qadr",
+    "alias": "Al-Qadr"
+  },
+  {
+    "id": 98,
+    "latin": "Al-Bayyinah",
+    "alias": "Al-Bayyinah"
+  },
+  {
+    "id": 99,
+    "latin": "Az-Zalzalah",
+    "alias": "Az-Zalzalah"
+  },
+  {
+    "id": 100,
+    "latin": "Al-'Adiyat",
+    "alias": "Al-`Ādiyāt"
+  },
+  {
+    "id": 101,
+    "latin": "Al-Qari'ah",
+    "alias": "Al-Qāri`ah"
+  },
+  {
+    "id": 102,
+    "latin": "At-Takathur",
+    "alias": "At-Takāthur"
+  },
+  {
+    "id": 103,
+    "latin": "Al-'Asr",
+    "alias": "Al-`Aşr"
+  },
+  {
+    "id": 104,
+    "latin": "Al-Humazah",
+    "alias": "Al-Humazah"
+  },
+  {
+    "id": 105,
+    "latin": "Al-Fil",
+    "alias": "Al-Fīl"
+  },
+  {
+    "id": 106,
+    "latin": "Quraysh",
+    "alias": "Quraysh"
+  },
+  {
+    "id": 107,
+    "latin": "Al-Ma'un",
+    "alias": "Al-Mā`ūn"
+  },
+  {
+    "id": 108,
+    "latin": "Al-Kawthar",
+    "alias": "Al-Kawthar"
+  },
+  {
+    "id": 109,
+    "latin": "Al-Kafirun",
+    "alias": "Al-Kāfirūn"
+  },
+  {
+    "id": 110,
+    "latin": "An-Nasr",
+    "alias": "An-Naşr"
+  },
+  {
+    "id": 111,
+    "latin": "Al-Masad",
+    "alias": "Al-Masad"
+  },
+  {
+    "id": 112,
+    "latin": "Al-Ikhlas",
+    "alias": "Al-'Ikhlāş"
+  },
+  {
+    "id": 113,
+    "latin": "Al-Falaq",
+    "alias": "Al-Falaq"
+  },
+  {
+    "id": 114,
+    "latin": "An-Nas",
+    "alias": "An-Nās"
+  }
+]

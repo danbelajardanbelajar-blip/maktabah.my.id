@@ -356,7 +356,7 @@ function App() {
   const totalPages = Math.ceil(totalResults / limit);
 
   return (
-    <div className="flex flex-col min-h-screen font-sans pb-[70px] xl:pb-0 transition-colors duration-300" dir="ltr" style={{ backgroundColor: 'var(--app-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
+    <div className="flex flex-col min-h-screen font-sans pb-[calc(70px+env(safe-area-inset-bottom))] xl:pb-0 transition-colors duration-300" dir="ltr" style={{ backgroundColor: 'var(--app-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
       {!readingConfig && (
         <>
           <header className="hidden xl:block bg-transparent md:bg-[var(--app-primary)] md:text-white md:shadow-lg relative z-40 md:sticky md:top-0 transition-colors duration-300 md:backdrop-blur-md md:bg-opacity-95" style={{ fontFamily: 'var(--latin-font)' }}>
@@ -843,7 +843,7 @@ function App() {
       {aiBusy && activeTab !== 'ask' && <button onClick={() => openAiQuestion()} role="status" className="fixed bottom-20 lg:bottom-4 left-4 z-40 rounded-xl bg-emerald-800 text-white shadow-lg px-4 py-3 text-sm">Tanya AI sedang menyiapkan jawaban… Buka percakapan</button>}
 
       {/* Footer (Hidden on mobile because it's replaced by Lainnya menu) */}
-      <footer className="hidden md:block bg-[var(--app-primary)] text-white py-6 md:py-8 mt-auto shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] transition-colors duration-300">
+      {activeTab !== 'quran' && <footer className="hidden md:block bg-[var(--app-primary)] text-white py-6 md:py-8 mt-auto shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-sm md:text-base font-medium opacity-90 flex items-center gap-2">
             &copy; {new Date().getFullYear()} al Maktabah as Sunniyyah.
@@ -863,10 +863,10 @@ function App() {
             </a>
           </div>
         </div>
-      </footer>
+      </footer>}
 
       {/* Mobile Bottom Navigation */}
-      <div dir="ltr" className="xl:hidden fixed bottom-0 left-0 w-full bg-[var(--reader-bg)] border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 h-[70px] pb-safe flex justify-around items-center transition-colors duration-300">
+      <div data-app-bottom-nav role="navigation" aria-label="Navigasi utama" dir="ltr" className="xl:hidden fixed bottom-0 left-0 w-full bg-[var(--reader-bg)] border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 h-[calc(70px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] flex justify-around items-center transition-colors duration-300">
         <button 
           onClick={() => { setActiveTab('home'); window.scrollTo(0,0); }}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'home' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
