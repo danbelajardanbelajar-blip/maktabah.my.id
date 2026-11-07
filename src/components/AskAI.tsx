@@ -67,15 +67,20 @@ function inlineMarkdown(text: string): string {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function AskAI({ openBook }: { openBook: (id: number, pageId?: number) => void }) {
+export default function AskAI({ openBook, initialQuestion = '' }: { openBook: (id: number, pageId?: number) => void; initialQuestion?: string }) {
   const [messages, setMessages] = useState<Message[]>([
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
   ]);
   const [available, setAvailable] = useState<boolean | null>(null);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(initialQuestion);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    setInput(initialQuestion);
+    if (initialQuestion) inputRef.current?.focus({ preventScroll: true });
+  }, [initialQuestion]);
 
   useEffect(() => {
     fetch('/api/ai/status').then(r => r.json()).then(data => setAvailable(data.available)).catch(() => {});
@@ -211,6 +216,7 @@ export default function AskAI({ openBook }: { openBook: (id: number, pageId?: nu
       <form onSubmit={handleSubmit} className="p-3 md:p-4 bg-white border-t border-gray-200">
         <div className="relative flex items-center">
           <input 
+            ref={inputRef}
             type="text" 
             maxLength={1500}
             value={input}

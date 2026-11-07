@@ -45,6 +45,9 @@ function App() {
       .catch(err => console.error("Failed to load stats:", err));
   }, []);
   const [recentSearches, setRecentSearches] = useState<{query:string}[]>([]);
+  const [recentAiQuestions, setRecentAiQuestions] = useState<{query:string}[]>([]);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const openAiQuestion = (question = '') => { setAiQuestion(question); setActiveTab('ask'); };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
   const [recentBooks, setRecentBooks] = useState<any[]>(() => {
@@ -159,10 +162,6 @@ function App() {
       if (res.data) setCategories(res.data);
     }).catch(console.error);
 
-    // Fetch recent searches
-    webAPI.getRecentSearches().then(res => {
-      if (res.data) setRecentSearches(res.data);
-    }).catch(console.error);
     fetch('/api/popular-searches').then(r => r.json()).then(res => {
       if (res && res.data) setPopularSearches(res.data);
     }).catch(()=>{});
@@ -170,6 +169,15 @@ function App() {
       if (res && res.data) setPopularBooks(res.data);
     }).catch(()=>{});
   }, []);
+
+  const homeHistoryVisible = (activeTab === 'search' || activeTab === 'advanced_search') && query.trim() === '';
+  useEffect(() => {
+    if (!homeHistoryVisible) return;
+    let current = true;
+    webAPI.getRecentSearches().then(res => { if (current && res.data) setRecentSearches(res.data); }).catch(() => {});
+    webAPI.getRecentQuestions().then(res => { if (current && res.data) setRecentAiQuestions(res.data); }).catch(() => {});
+    return () => { current = false; };
+  }, [homeHistoryVisible]);
 
   const executeSearch = async (searchQuery: string, page: number, mode = searchMode) => {
     if (!searchQuery.trim()) return;
@@ -300,7 +308,7 @@ function App() {
               <Library size={18} /> Katalog
             </button>
               <button 
-                onClick={() => { setActiveTab('ask'); }}
+                onClick={() => openAiQuestion()}
                 className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'ask' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
               >
                 <Bot size={18} /> Tanya AI
@@ -363,7 +371,7 @@ function App() {
         ) : activeTab === 'catalog' ? (
           <Catalog openBook={openBookInfo} readBook={(bookId) => openReader({ bookId })} />
         ) : activeTab === 'ask' ? (
-            <AskAI openBook={(bookId, pageId) => openReader({ bookId, pageId })} />
+            <AskAI initialQuestion={aiQuestion} openBook={(bookId, pageId) => openReader({ bookId, pageId })} />
           ) : activeTab === 'more' ? (
           <div className="w-full bg-[var(--reader-bg)] p-6 rounded-2xl shadow-xl border border-[var(--app-primary)]/10 my-4 transition-all">
             <h2 className="text-2xl font-bold mb-6 text-[var(--app-text)] border-b pb-4 flex items-center gap-3">
@@ -566,16 +574,17 @@ function App() {
               <div className="space-y-6 mb-8">
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4">
                   {/* Pencarian Terakhir */}
-                  <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Search size={18} /> Pencarian Terakhir (Personal)</h3>
+                  <div className="p-5 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Search size={18} /> Pencarian Terakhir</h3>
                     {recentSearches.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {recentSearches.slice(0, 5).map((rs, idx) => (
                           <button 
                             key={idx}
                             onClick={() => { setQuery(rs.query); executeSearch(rs.query, 1); }}
-                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
+                            className="max-w-full break-words text-left bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
                             dir="auto"
                           >
                             {rs.query}
@@ -585,6 +594,21 @@ function App() {
                     ) : (
                       <p className="text-sm text-gray-400 italic">Belum ada riwayat pencarian.</p>
                     )}
+                  </div>
+
+                  <div className="p-5 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Bot size={18} className="shrink-0" /> Tanya AI Terakhir</h3>
+                    {recentAiQuestions.length > 0 ? (
+                      <div className="flex flex-col gap-2">
+                        {recentAiQuestions.slice(0, 5).map((item, idx) => (
+                          <button key={idx} type="button" onClick={() => openAiQuestion(item.query)}
+                            className="text-left break-words bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-2 rounded-xl text-sm transition-all shadow-sm" dir="auto">
+                            {item.query}
+                          </button>
+                        ))}
+                      </div>
+                    ) : <p className="text-sm text-gray-400 italic">Belum ada riwayat Tanya AI.</p>}
+                  </div>
                   </div>
 
                   {/* Pencarian Terbanyak */}
@@ -862,7 +886,7 @@ function App() {
         </button>
         
         <button 
-          onClick={() => { setActiveTab('ask'); window.scrollTo(0, 0); }}
+          onClick={() => { openAiQuestion(); window.scrollTo(0, 0); }}
           className={`flex flex-col items-center justify-center flex-1 h-full space-y-1 transition-colors ${activeTab === 'ask' ? 'text-[var(--app-primary)]' : 'text-gray-500 hover:text-gray-900'}`}
         >
           <Bot size={22} className={activeTab === 'ask' ? 'fill-[var(--app-primary)]/20' : ''} />
