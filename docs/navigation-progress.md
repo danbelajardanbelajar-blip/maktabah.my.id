@@ -57,3 +57,9 @@ Seluruh 52 tes server/logika lulus, termasuk pemulihan kategori 0, halaman 0, re
 Komponen bersama berbentuk kapsul, ikon panah, warna tema, fokus keyboard, area sentuh minimal 44 px dan reduced motion. Halaman publik mempunyai toolbar Kembali; admin, login, pembaca (termasuk mode fokus/gagal memuat), detail kitab, profil perawi, katalog dan transfer memakai komponen yang sama. Halaman privasi mandiri menyediakan tautan serupa tanpa JavaScript.
 
 Semua push navigasi menandai lokasi sebelumnya di dalam aplikasi; tombol publik memulihkan riwayat tersebut beserta query/halaman. Tautan langsung kembali ke induk katalog atau beranda, sementara admin memakai hierarki kategori/kitab/halaman. Di beranda tanpa riwayat internal tombol nonaktif. Seluruh 55 tes lulus; build/TypeScript dan SSR tombol normal/terang/nonaktif serta tautan privasi lulus. Runtime browser masih gagal dimulai sehingga verifikasi visual interaktif belum dilakukan.
+
+## Klik riwayat Tanya AI langsung mengirim
+
+Klik riwayat di beranda membuka Tanya AI dan langsung mengirim pertanyaan melalui alur yang sama dengan submit form. Riwayat di dalam Tanya AI juga langsung mengirim. Versi klik dikonsumsi sekali dan request dikunci sampai selesai; membuka tab, render ulang, serta pemulihan sesi tidak mengirim ulang. Jika ada permintaan aktif, pilihan terakhir menunggu otomatis dengan pemberitahuan antrean.
+
+Build produksi dan 10 tes AI/sesi lulus. Pengujian interaksi React dengan respons API tiruan memverifikasi pengiriman tanpa klik Send, indikator menunggu, input kosong setelah terkirim, pengaman render ulang, klik ulang pertanyaan sama, antrean saat sibuk dan navigasi tanpa pengiriman ulang. Runtime pengujian tambahan dipasang hanya di cache lokal, tanpa menambah dependensi produksi atau memakai kuota Gemini.

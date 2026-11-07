@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { webAPI } from '../api';
 import { AI_SESSION_KEY, readAiSession } from '../lib/ai-session';
 import { Send, Bot, User, BookOpen, AlertCircle } from 'lucide-react';
@@ -79,6 +79,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
   const lastQuestion = useRef('');
+  const requestActive = useRef(false);
+  const handledQuestionVersion = useRef(0);
   useEffect(() => {
     try { sessionStorage.setItem(AI_SESSION_KEY,JSON.stringify({messages,input,pending:loading,lastQuestion:lastQuestion.current})); } catch {}
   },[messages,input,loading]);
@@ -101,11 +103,11 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading || available === false) return;
-
-    const q = input.trim();
+  const sendQuestion = useCallback(async (question:string) => {
+    const q = question.trim();
+    if (!q || requestActive.current || available === false) return;
+    // A ref closes the gap before React renders loading=true (double clicks/effect replay).
+    requestActive.current = true;
     lastQuestion.current = q;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: q }]);
@@ -122,7 +124,23 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     } catch (err: any) {
       setMessages(prev => [...prev, { role: 'error', content: 'Gagal terhubung ke server: ' + err.message }]);
     }
-    setLoading(false);
+    finally {
+      requestActive.current = false;
+      setLoading(false);
+    }
+  },[available]);
+
+  useEffect(() => {
+    if (!initialQuestion.trim() || questionVersion <= handledQuestionVersion.current || loading || requestActive.current || available === false) return;
+    // Only an explicit history click creates a new version. Opening the tab or restoring
+    // a saved conversation must never resend a question or duplicate a provider request.
+    handledQuestionVersion.current = questionVersion;
+    void sendQuestion(initialQuestion);
+  },[initialQuestion,questionVersion,loading,available,sendQuestion]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void sendQuestion(input);
   };
 
   return (
@@ -140,6 +158,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
       </div>
 
       {available === false && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">Tanya AI belum diaktifkan. Administrator dapat menambahkan API key melalui menu Pengaturan AI di halaman admin.</p>}
+      {loading && initialQuestion.trim() && questionVersion > handledQuestionVersion.current && <p role="status" className="bg-emerald-50 text-emerald-800 text-sm p-4 border-b">Pertanyaan yang dipilih akan dikirim otomatis setelah jawaban sebelumnya selesai.</p>}
       <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
@@ -190,7 +209,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                   {recentQuestions.map((rq, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => { setInput(rq.query); }}
+                      onClick={() => { void sendQuestion(rq.query); }}
+                      disabled={loading || available === false}
                       className="bg-white hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 border border-gray-200 hover:border-emerald-200 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
                       dir="auto"
                     >
@@ -205,7 +225,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
           </div>
         )}
         {loading && (
-          <div className="flex gap-3">
+          <div className="flex gap-3" role="status" aria-live="polite">
             <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600">
               <Bot size={16} />
             </div>
