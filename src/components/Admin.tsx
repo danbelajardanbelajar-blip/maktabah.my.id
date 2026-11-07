@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
+import { AiSettings } from './AiSettings';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
 
 // ==================== TYPES ====================
-type AdminView = 'categories' | 'books' | 'pages' | 'edit_page' | 'transfer' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
+type AdminView = 'ai_settings' | 'categories' | 'books' | 'pages' | 'edit_page' | 'transfer' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
 interface Book { bkid: number; bk: string; cat: number; cat_name: string; }
 interface PageRow { id: number; book_id: number; part: number; page: number; preview: string; }
@@ -1130,6 +1131,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
         <button onClick={() => { setView('log_visit'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_visit' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Kunjungan {stats.log_visit !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_visit' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_visit}</span>}</button>
         <button onClick={() => { setView('log_quran'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_quran' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Qur'an {stats.log_quran !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_quran' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_quran}</span>}</button>
         <button onClick={() => { setView('log_rowa'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_rowa' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Perawi {stats.log_rowa !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_rowa' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_rowa}</span>}</button>
+        <button onClick={() => { setView('ai_settings'); setSelectedCategory(null); setSelectedBook(null); }} className={`py-3 font-semibold text-sm border-b-2 whitespace-nowrap ${view === 'ai_settings' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>Pengaturan AI</button>
         <button onClick={() => { setView('log_ask'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_ask' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Tanya AI {stats.log_ask !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_ask' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_ask}</span>}</button>
       </div>
 
@@ -1137,6 +1139,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       <div className="flex-1 overflow-auto p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
           {['categories', 'books', 'pages', 'edit_page'].includes(view) && <div className="flex justify-end mb-4"><button onClick={() => { setView('transfer'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className="inline-flex items-center gap-2 bg-[var(--app-primary)] text-white font-semibold text-sm px-4 py-2.5 rounded-xl"><FolderSync size={18} /> Import / Export Kitab</button></div>}
+          {view === 'ai_settings' && <AiSettings token={token} onLogout={onLogout} />}
           {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} />}
           {view === 'categories' && (
             <CategoriesView token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={(cat) => { setSelectedCategory(cat); setView('books'); }} />

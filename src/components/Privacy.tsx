@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Privacy: React.FC = () => {
-  const LAST_UPDATED = '5 November 2026';
+  const LAST_UPDATED = '7 November 2026';
   const SITE_URL     = 'https://maktab.my.id';
   const CONTACT      = '6285743399595';
 
@@ -23,7 +23,7 @@ const Privacy: React.FC = () => {
           <p className="mb-4">Saat Anda masuk menggunakan akun Google, kami menerima informasi dasar seperti Nama Lengkap, Alamat Email, Foto Profil, dan ID Google.</p>
 
           <p className="mb-2"><strong>Riwayat & Preferensi Pencarian</strong></p>
-          <p className="mb-4">Sistem mencatat riwayat pencarian Anda secara anonim untuk meningkatkan akurasi sistem rekomendasi pencarian perpustakaan.</p>
+          <p className="mb-4">Sistem mencatat pencarian serta pertanyaan dan jawaban Tanya AI. Log layanan juga dapat memuat alamat IP dan informasi peramban untuk operasional, statistik, dan perbaikan layanan.</p>
         </section>
 
         <section>
@@ -40,7 +40,7 @@ const Privacy: React.FC = () => {
           <h2 className="text-xl font-bold text-[#5d4037] mb-3">3. Berbagi Data dengan Pihak Ketiga</h2>
           <p className="mb-2">Kami <strong>tidak menjual, menyewakan, atau membagikan</strong> data pribadi Anda kepada pihak ketiga, kecuali:</p>
           <ul className="list-disc pl-5 space-y-2">
-            <li>Google LLC — sebagai penyedia layanan autentikasi pihak ketiga.</li>
+            <li>Google LLC — sebagai penyedia layanan autentikasi (jika digunakan) dan model Gemini untuk Tanya AI. Saat Tanya AI digunakan, pertanyaan dan kutipan kitab yang relevan dikirim ke Gemini untuk menyusun jawaban.</li>
             <li>Penyedia hosting server — hanya memiliki akses teknis ke infrastruktur, bukan data pengguna secara individual.</li>
             <li>Kewajiban hukum — apabila diwajibkan oleh peraturan perundang-undangan yang berlaku.</li>
           </ul>

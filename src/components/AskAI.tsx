@@ -5,7 +5,7 @@ import { Send, Bot, User, BookOpen, AlertCircle } from 'lucide-react';
 interface Message {
   role: 'user' | 'ai' | 'error';
   content: string;
-  references?: Array<{bkid: number, title: string, juz: number | string, page: number | string}>;
+  references?: Array<{bkid: number, title: string, juz: number | string | null, page: number | string | null; pageId?: number | null; excerpt?: string}>;
 }
 
 // ── Lightweight Markdown renderer (no external lib needed) ──────────────────
@@ -67,16 +67,18 @@ function inlineMarkdown(text: string): string {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function AskAI({ openBook }: { openBook: (id: number) => void }) {
+export default function AskAI({ openBook }: { openBook: (id: number, pageId?: number) => void }) {
   const [messages, setMessages] = useState<Message[]>([
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
   ]);
+  const [available, setAvailable] = useState<boolean | null>(null);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    fetch('/api/ai/status').then(r => r.json()).then(data => setAvailable(data.available)).catch(() => {});
     webAPI.getRecentQuestions().then(res => {
       if (res.data) setRecentQuestions(res.data);
     }).catch(() => {});
@@ -88,7 +90,7 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || available === false) return;
 
     const q = input.trim();
     setInput('');
@@ -97,6 +99,7 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
 
     try {
       const res = await webAPI.askAI(q);
+      webAPI.getRecentQuestions().then(data => { if (data.data) setRecentQuestions(data.data); }).catch(() => {});
       if (res.status === 'success') {
         setMessages(prev => [...prev, { role: "ai", content: res.answer, references: res.references }]);
       } else {
@@ -118,10 +121,11 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
         </div>
         <div>
           <h2 className="font-bold text-gray-800 text-lg">Tanya AI Maktabah</h2>
-          <p className="text-xs text-gray-500">Gemini Flash AI + Database Kitab Lokal</p>
+          <p className="text-xs text-gray-500">Gemini AI + Rujukan Kitab Perpustakaan</p>
         </div>
       </div>
 
+      {available === false && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">Tanya AI belum diaktifkan. Administrator dapat menambahkan API key melalui menu Pengaturan AI di halaman admin.</p>}
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.map((m, i) => (
@@ -144,13 +148,14 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
                   {m.references.map((ref, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => openBook(ref.bkid)}
+                      onClick={() => openBook(ref.bkid, ref.pageId ?? undefined)}
                       className="w-full text-left bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-200 p-2 rounded-lg text-sm flex items-start gap-2 transition-colors"
                     >
                       <BookOpen size={16} className="shrink-0 mt-0.5 text-emerald-600" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-700 truncate" dir="auto">{ref.title}</p>
-                        <p className="text-xs text-gray-500">Juz {ref.juz} • Halaman {ref.page}</p>
+                        <p className="font-bold text-gray-700 truncate" dir="auto">[{idx + 1}] {ref.title}</p>
+                        <p className="text-xs text-gray-500">{ref.pageId == null ? 'Informasi katalog kitab' : `Juz ${ref.juz ?? '—'} • Halaman ${ref.page ?? '—'}`}</p>
+                        {ref.excerpt && ref.pageId != null && <p className="text-xs text-gray-600 mt-1" dir="auto">{ref.excerpt.slice(0, 240)}…</p>}
                       </div>
                     </button>
                   ))}
@@ -207,6 +212,7 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
         <div className="relative flex items-center">
           <input 
             type="text" 
+            maxLength={1500}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
@@ -215,7 +221,7 @@ export default function AskAI({ openBook }: { openBook: (id: number) => void }) 
           />
           <button 
             type="submit"
-            disabled={!input.trim() || loading}
+            disabled={input.trim().length < 5 || loading || available === false}
             className="absolute right-2 w-10 h-10 md:w-12 md:h-12 bg-[var(--app-primary)] hover:bg-[var(--app-primary-hover)] text-white rounded-full flex items-center justify-center transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100"
           >
             <Send size={18} className={input.trim() && !loading ? "translate-x-0.5" : ""} />

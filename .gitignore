@@ -16,3 +16,5 @@ uploads/*
 *.local
 dev-data/large-transfer/
 dev-data/deletion-jobs/
+
+dev-data/ai-config.local.json*

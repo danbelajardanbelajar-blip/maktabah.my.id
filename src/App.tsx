@@ -363,7 +363,7 @@ function App() {
         ) : activeTab === 'catalog' ? (
           <Catalog openBook={openBookInfo} readBook={(bookId) => openReader({ bookId })} />
         ) : activeTab === 'ask' ? (
-            <AskAI openBook={(bookId) => openReader({ bookId })} />
+            <AskAI openBook={(bookId, pageId) => openReader({ bookId, pageId })} />
           ) : activeTab === 'more' ? (
           <div className="w-full bg-[var(--reader-bg)] p-6 rounded-2xl shadow-xl border border-[var(--app-primary)]/10 my-4 transition-all">
             <h2 className="text-2xl font-bold mb-6 text-[var(--app-text)] border-b pb-4 flex items-center gap-3">
