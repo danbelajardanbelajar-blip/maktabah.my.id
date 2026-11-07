@@ -1,3 +1,4 @@
+import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
 import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
 import './App.css';
@@ -19,9 +20,12 @@ import { readingPositions } from './lib/reading-position';
 import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
 import { Collection } from './components/Collection';
+import { BackButton } from './components/BackButton';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
+
+const pageTitles:Record<AppTab,string> = {home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
 
 function App() {
   const [activeTab, setActiveTabState] = useState<AppTab>(() => parseNavigation(window.location.hash, window.location.search).tab);
@@ -91,10 +95,17 @@ function App() {
     const hash = tab === 'catalog' && lastTabLocations.current.catalog ? lastTabLocations.current.catalog : navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(',')} : {});
     if (hash !== window.location.hash) {
       window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
-      window.history.pushState(null,'',hash);
+      pushLocation(hash);
     }
     if (tab === 'home') setHomeQuery('');
     navigationHandler.current();
+    window.scrollTo(0,0);
+  };
+  const goBack = () => {
+    if (previousLocation(window.history.state,window.location.href)) {window.history.back();return;}
+    // A direct catalogue detail link still has a useful parent without browser history.
+    window.history.replaceState(null,'',backFallback(window.location.hash));
+    window.dispatchEvent(new Event('maktabah:navigate'));
     window.scrollTo(0,0);
   };
 
@@ -128,14 +139,15 @@ function App() {
     setReadingConfig(config);
     window.history.replaceState({...window.history.state, scrollY:window.scrollY},'');
     const hash = `#/read/${config.bookId}${config.pageId !== undefined ? '/' + config.pageId : ''}`;
-    window.history.pushState({ ...config, maktabahReader: true }, '', hash);
+    pushLocation(hash,{ ...config, maktabahReader: true });
   };
 
   const closeReader = () => {
     if (window.history.state?.maktabahReader) window.history.back();
     else {
-      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      window.history.replaceState(null, '', navigationHash('home'));
       setReadingConfig(null);
+      navigationHandler.current();
     }
   };
 
@@ -231,7 +243,7 @@ function App() {
     if (historyMode === 'push') {
       window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
       const hash = navigationHash(targetTab,{q:searchQuery,mode,page,cats:categoryFilter.join(',')});
-      if (hash !== window.location.hash) window.history.pushState(null,'',hash);
+      if (hash !== window.location.hash) pushLocation(hash);
     }
     setActiveTabState(targetTab); setQuery(searchQuery); setSearchMode(mode); setSelectedCategories(categoryFilter);
     setLoading(true);
@@ -393,6 +405,10 @@ function App() {
       </header>
       
       <main className="flex-1 w-full mx-auto p-4 md:px-8 md:py-6 max-w-7xl relative">
+        {activeTab !== 'admin' && <nav aria-label="Navigasi halaman" className="flex items-center gap-3 mb-5">
+          <BackButton onClick={goBack} disabled={activeTab==='home' && !previousLocation(window.history.state,window.location.href)} title={activeTab==='home' && !previousLocation(window.history.state,window.location.href)?'Anda berada di beranda':'Kembali ke halaman sebelumnya'}/>
+          <span className="text-sm font-semibold text-[var(--app-text)] opacity-70 truncate">{pageTitles[activeTab]}</span>
+        </nav>}
         <div hidden={activeTab !== 'ask'}><AskAI initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} /></div>
         {activeTab === 'quran' ? (
           <QuranReader />
@@ -891,9 +907,9 @@ function App() {
       {selectedBook && (
         <div ref={bookDialogRef} role="dialog" aria-modal="true" aria-label="Detail kitab" tabIndex={-1} className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-[60] transition-opacity">
           <div className="bg-[var(--reader-paper)] rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-[var(--app-primary)]/20 animate-in fade-in zoom-in duration-200">
-            <div className="bg-[var(--app-primary)] text-white p-5 flex justify-between items-center shadow-md z-10">
-              <h2 className="text-2xl font-bold flex items-center gap-2"><BookOpen size={24} /> <span dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo ? bookInfo.bk : 'Memuat...'}</span></h2>
-              <button onClick={() => setSelectedBook(null)} className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-1 transition-all"><ChevronRight size={28} /></button>
+            <div className="bg-[var(--app-primary)] text-white p-5 flex justify-between items-center gap-3 shadow-md z-10">
+              <h2 className="text-2xl font-bold flex items-center gap-2 min-w-0"><BookOpen size={24} className="shrink-0"/> <span className="truncate" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo ? bookInfo.bk : 'Memuat...'}</span></h2>
+              <BackButton onClick={() => setSelectedBook(null)} light title="Kembali dari detail kitab"/>
             </div>
             
             <div className="overflow-y-auto p-6 text-right scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">

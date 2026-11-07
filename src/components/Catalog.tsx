@@ -1,6 +1,8 @@
+import { pushLocation } from '../lib/back-navigation';
 import { useEffect, useState } from 'react';
 import { Folder, ChevronLeft, ChevronRight, BookOpen, User, Info, Download, Search } from 'lucide-react';
 import { webAPI } from '../api';
+import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 
 const location = () => {
@@ -24,7 +26,7 @@ export default function Catalog({openBook,readBook}:{openBook:(id:number)=>void;
   const go = (cat:number|null,query='',page=1,filter=route.filter,replace=false) => {
     window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
     const hash=navigationHash('catalog',{cat:cat===null?undefined:cat,q:query,page:cat===null?undefined:page,filter});
-    if(replace)window.history.replaceState(window.history.state,'',hash);else window.history.pushState(null,'',hash);
+    if(replace)window.history.replaceState(window.history.state,'',hash);else pushLocation(hash);
     window.dispatchEvent(new Event('maktabah:navigate'));
     if(!replace)window.scrollTo(0,0);
   };
@@ -59,7 +61,7 @@ export default function Catalog({openBook,readBook}:{openBook:(id:number)=>void;
       {categoriesLoading?<p role="status">Memuat kategori…</p>:<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{filtered.map(cat=><button key={cat.id} onClick={()=>go(cat.id)} className="flex items-center gap-3 text-right bg-[var(--reader-paper)] border rounded-xl p-4 hover:border-[var(--app-primary)]"><Folder className="shrink-0"/><span className="font-bold text-lg flex-1" dir="auto">{cat.name}</span></button>)}</div>}
       {!categoriesLoading&&!error&&!filtered.length&&<p className="py-6 text-gray-500">Kategori tidak ditemukan.</p>}
     </> : <>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4"><button onClick={()=>go(null)} className="inline-flex items-center gap-2 border rounded-lg p-2"><ChevronLeft size={18}/>Kembali ke kategori</button><span>{total} kitab</span></div>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4"><BackButton onClick={()=>go(null)} label="Kembali ke kategori"/><span>{total} kitab</span></div>
       <h2 className="text-xl font-bold mb-4" dir="auto">{categories.find(c=>c.id===route.cat)?.name||`Kategori #${route.cat}`}</h2>
       <form onSubmit={e=>{e.preventDefault();go(route.cat,draft,1);}} className="flex gap-2 mb-5"><input type="search" aria-label="Cari judul kitab dalam kategori" value={draft} maxLength={200} onChange={e=>setDraft(e.target.value)} placeholder="Cari judul dalam kategori ini…" className="flex-1 min-w-0 border rounded-lg px-3 py-2"/><button className="bg-[var(--app-primary)] text-white rounded-lg px-4 py-2" aria-label="Cari kitab"><Search size={18}/></button></form>
       {loading?<p role="status" className="py-8 text-center">Memuat daftar kitab…</p>:!bookError&&<div className="space-y-3">{books.map(book=><article key={book.bkid} className="bg-[var(--reader-paper)] border rounded-xl p-4 flex flex-col md:flex-row gap-3 items-start md:items-center">

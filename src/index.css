@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+.app-back-button {
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;flex-shrink:0;
+  min-height:44px;padding:6px 15px 6px 6px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--app-primary,#047857) 24%,transparent);
+  background:var(--reader-paper,#fff);color:var(--app-primary,#047857);
+  box-shadow:0 2px 8px #00000008;font:600 14px/1.25 var(--latin-font,system-ui,sans-serif);
+  cursor:pointer;transition:background .18s,box-shadow .18s,transform .18s;
+}
+.app-back-icon {display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,currentColor 10%,transparent);transition:transform .18s;}
+.app-back-button:hover:not(:disabled) {box-shadow:0 4px 12px #00000012;background:color-mix(in srgb,var(--app-primary,#047857) 6%,var(--reader-paper,#fff));}
+.app-back-button:hover:not(:disabled) .app-back-icon {transform:translateX(-2px);}
+.app-back-button:active:not(:disabled) {transform:translateY(1px);}
+.app-back-button:focus-visible {outline:3px solid var(--app-primary,#047857);outline-offset:3px;}
+.app-back-button:disabled {opacity:.45;cursor:default;box-shadow:none;}
+.app-back-button-light {background:#ffffff18;border-color:#ffffff50;color:white;}
+.app-back-button-light:hover:not(:disabled) {background:#ffffff28;}
+.app-back-button-light:focus-visible {outline-color:white;}
+@media(prefers-reduced-motion:reduce) {.app-back-button,.app-back-icon {transition:none;}.app-back-button:hover:not(:disabled) .app-back-icon {transform:none;}}
+
 @theme {
   --color-primary: #5d4037;
   --color-secondary: #8d6e63;

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Search, User, BookOpen, Users, GraduationCap, ChevronLeft, ChevronRight, X, AlertCircle, Info, ExternalLink } from 'lucide-react';
 import { webAPI } from '../api';
+import { BackButton } from './BackButton';
 
 // ============================================================
 // TYPES
@@ -205,13 +206,7 @@ const ProfileModal = ({
               </p>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="shrink-0 w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
-            aria-label="Tutup"
-          >
-            <X size={18} />
-          </button>
+          <BackButton onClick={onClose} light title="Kembali ke daftar perawi"/>
         </div>
 
         {/* Scrollable content */}
@@ -343,12 +338,7 @@ const ProfileModal = ({
 
         {/* Footer */}
         <div className="border-t px-5 py-3 flex justify-end shrink-0">
-          <button
-            onClick={onClose}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
-          >
-            Tutup
-          </button>
+          <BackButton onClick={onClose} title="Kembali ke daftar perawi"/>
         </div>
       </div>
     </div>

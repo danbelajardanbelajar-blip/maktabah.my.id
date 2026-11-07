@@ -25,10 +25,13 @@ const html = `<!doctype html>
 header,main,footer{max-width:900px;margin:auto;padding:24px}header a,footer a{color:#047857}
 main{background:white;border-radius:16px;box-shadow:0 2px 12px #0001;margin-bottom:24px;padding:32px}
 h1{font-size:30px;color:#065f46;line-height:1.3}h2{font-size:21px;color:#065f46;margin-top:32px}
-a{color:#047857;overflow-wrap:anywhere}li{margin:8px 0}section{margin-top:28px}p{margin:12px 0}
+a{color:#047857;overflow-wrap:anywhere}
+.back-link{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:6px 16px 6px 6px;border:1px solid #a7d8c6;border-radius:999px;background:white;box-shadow:0 2px 8px #00000008;text-decoration:none;font-size:14px;font-weight:600}
+.back-link svg{box-sizing:content-box;padding:7px;background:#ecfdf5;border-radius:50%}
+.back-link:hover{background:#ecfdf5;box-shadow:0 4px 12px #00000012}.back-link:focus-visible{outline:3px solid #047857;outline-offset:3px}li{margin:8px 0}section{margin-top:28px}p{margin:12px 0}
 @media(max-width:600px){main{padding:20px;border-radius:0}header,footer{padding:20px}h1{font-size:26px}}
 </style></head><body>
-<header><a href="/">← Kembali ke al Maktabah as Sunniyyah</a></header>
+<header><a class="back-link" href="/#/beranda" aria-label="Kembali ke beranda"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M5 12h14"/></svg>Kembali ke beranda</a></header>
 <main>${renderToStaticMarkup(React.createElement(Privacy))}</main>
 <footer><a href="/">maktab.my.id</a></footer></body></html>`;
 await fs.mkdir(path.join(root, 'dist/privacy-policy'), { recursive: true });

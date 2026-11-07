@@ -1,3 +1,4 @@
+import { pushLocation } from '../lib/back-navigation';
 import {useEffect,useState} from 'react';
 import {BookOpen,Heart,Bookmark,Trash2} from 'lucide-react';
 import {navigationHash,parseNavigation} from '../lib/navigation';
@@ -10,7 +11,7 @@ export function Collection({positions,favorites,bookmarks,readBook,removeFavorit
 }) {
   const [section,setSection]=useState(currentSection),[query,setQuery]=useState('');
   useEffect(()=>{const sync=()=>{if(parseNavigation(window.location.hash).tab==='collection')setSection(currentSection());};for(const name of ['popstate','hashchange','maktabah:navigate'])window.addEventListener(name,sync);return()=>{for(const name of ['popstate','hashchange','maktabah:navigate'])window.removeEventListener(name,sync);};},[]);
-  const choose=(value:Section)=>{window.history.pushState(null,'',navigationHash('collection',{section:value}));window.dispatchEvent(new Event('maktabah:navigate'));};
+  const choose=(value:Section)=>{pushLocation(navigationHash('collection',{section:value}));window.dispatchEvent(new Event('maktabah:navigate'));};
   const entries=section==='continue'?positions.map(p=>({bookId:p.bookId,pageId:p.pageId,title:p.title,page:p.page,part:p.part})):section==='favorites'?favorites.map(p=>({bookId:p.bkid,pageId:undefined,title:p.bk,page:null,part:null})):bookmarks.map(p=>({bookId:p.bkid,pageId:p.id,title:p.bk,page:p.page,part:p.juz}));
   const filtered=entries.filter(p=>p.title.toLowerCase().includes(query.toLowerCase()));
   return <section className="rounded-2xl border bg-[var(--reader-bg)] p-5 space-y-4">

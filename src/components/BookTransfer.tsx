@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Download, Upload, Search, ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Download, Upload, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { BackButton } from './BackButton';
 import { webAPI } from '../api';
 import { LargeTransfer } from './LargeTransfer';
 
@@ -130,7 +131,7 @@ export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: 
   return <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
     <div className="p-5 border-b flex flex-wrap items-center justify-between gap-3">
       <div><h2 className="font-bold text-xl text-gray-800">Import / Export Kitab & Kategori</h2><p className="text-sm text-gray-500 mt-1">Pindahkan kitab pilihan atau kategori beserta seluruh kitab, isi halaman, dan daftar isi.</p></div>
-      <button className={`${button} bg-gray-100 text-gray-700`} onClick={onBack} disabled={busy}><ArrowLeft size={16} /> Database Kitab</button>
+      <BackButton onClick={onBack} disabled={busy} label="Database Kitab" title="Kembali ke Database Kitab"/>
     </div>
     <div className="flex border-b px-5 gap-5" role="tablist" aria-label="Transfer kitab">
       {(['export', 'categories', 'import'] as const).filter(value => !localExport || value !== 'import').map(value => <button key={value} role="tab" aria-selected={tab === value} disabled={busy} onClick={() => { setTab(value); setError(''); setMessage(''); }} className={`py-3 border-b-2 font-semibold text-sm ${tab === value ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>{value === 'export' ? 'Export Kitab' : value === 'categories' ? 'Export Kategori' : 'Import Kitab / Kategori'}</button>)}

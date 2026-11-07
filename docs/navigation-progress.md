@@ -51,3 +51,9 @@ Koleksi Saya tersedia dari Lainnya dan beranda, berisi lanjut membaca/favorit/bo
 Admin memakai sidebar lima kelompok dan drawer pada ponsel. Breadcrumb serta URL memuat kategori/kitab/editor; refresh dan riwayat browser memulihkan metadata dengan status memuat, gagal dan coba lagi. Query/pagination kategori, kitab dan halaman dipertahankan ketika membuka anak lalu kembali. Backup & Penyimpanan memiliki tujuan tersendiri, dengan pintasan dari transfer. Mode pencarian hanya tampil pada halaman Cari agar beranda tidak menjalankan ulang query lama.
 
 Seluruh 52 tes server/logika lulus, termasuk pemulihan kategori 0, halaman 0, respons metadata asli `{data}`, konteks lama dan entitas hilang. TypeScript/build produksi dan pemeriksaan sintaks server lulus; render SSR menu memverifikasi lima kelompok serta penanda lokasi aktif. Pengujian database memakai fixture sementara. Uji visual/gestur pada browser nyata belum dapat dilakukan karena runtime alat browser gagal dimulai.
+
+## Tombol Kembali di seluruh halaman
+
+Komponen bersama berbentuk kapsul, ikon panah, warna tema, fokus keyboard, area sentuh minimal 44 px dan reduced motion. Halaman publik mempunyai toolbar Kembali; admin, login, pembaca (termasuk mode fokus/gagal memuat), detail kitab, profil perawi, katalog dan transfer memakai komponen yang sama. Halaman privasi mandiri menyediakan tautan serupa tanpa JavaScript.
+
+Semua push navigasi menandai lokasi sebelumnya di dalam aplikasi; tombol publik memulihkan riwayat tersebut beserta query/halaman. Tautan langsung kembali ke induk katalog atau beranda, sementara admin memakai hierarki kategori/kitab/halaman. Di beranda tanpa riwayat internal tombol nonaktif. Seluruh 55 tes lulus; build/TypeScript dan SSR tombol normal/terang/nonaktif serta tautan privasi lulus. Runtime browser masih gagal dimulai sehingga verifikasi visual interaktif belum dilakukan.

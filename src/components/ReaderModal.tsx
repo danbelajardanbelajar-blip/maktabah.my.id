@@ -3,7 +3,8 @@ import { webAPI } from '../api';
 import { loadReaderData } from '../lib/reader-loader';
 import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
 import { useModalFocus } from '../lib/use-modal-focus';
-import { ChevronLeft, ChevronRight, X, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
+import { BackButton } from './BackButton';
+import { ChevronLeft, ChevronRight, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
   bookId: number;
@@ -319,7 +320,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
           <div role={loadError ? 'alert' : 'status'} className="text-[#5d4037] text-xl font-bold">{loadError || 'Memuat Kitab…'}</div>
           <div className="flex flex-wrap justify-center gap-3">
             {loadError && <button onClick={() => void loadBookAndPage()} disabled={loading} className="rounded-lg bg-emerald-700 text-white px-4 py-2 disabled:opacity-50">Coba lagi</button>}
-            <button onClick={onClose} className="rounded-lg border border-[#8d6e63] text-[#5d4037] px-4 py-2">Kembali</button>
+            <BackButton onClick={onClose} title="Kembali dari pembaca"/>
           </div>
         </div>
       </div>
@@ -329,17 +330,11 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Pembaca kitab" tabIndex={-1} className="fixed inset-0 flex flex-col z-[70] shadow-2xl" dir="auto" style={{ backgroundColor: 'var(--reader-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
       
-      {!showUi && <div className="absolute top-3 right-3 z-50 flex gap-2 rounded-xl bg-white/95 shadow p-2"><button onClick={onClose} className="px-3 py-2 text-sm" aria-label="Kembali dari pembaca">Kembali</button><button onClick={() => setShowUi(true)} className="px-3 py-2 text-sm font-semibold">Tampilkan kontrol</button></div>}
+      {!showUi && <div className="absolute top-3 right-3 z-50 flex gap-2 rounded-xl bg-white/95 shadow p-2"><BackButton onClick={onClose} title="Kembali dari pembaca"/><button onClick={() => setShowUi(true)} className="px-3 py-2 text-sm font-semibold">Tampilkan kontrol</button></div>}
       {/* Sleek Header */}
-      <div className={`bg-white/80 backdrop-blur-md text-[#3e2723] h-auto min-h-16 flex justify-between items-center px-2 md:px-6 py-2 shadow-sm border-b border-[#d7ccc8] z-30 transition-all duration-300 w-full shrink-0 ${showUi ? "relative" : "-translate-y-full opacity-0 absolute pointer-events-none"}`}>
-        <div className="flex items-center gap-2 md:gap-4 w-auto md:w-1/3">
-          <button 
-            onClick={onClose} 
-            className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-gray-200 transition-colors text-xl md:text-2xl text-gray-600"
-            title="Tutup (Kembali)"
-          >
-            <X size={24} />
-          </button>
+      <div className={`bg-white/80 backdrop-blur-md text-[#3e2723] h-auto min-h-16 flex flex-wrap gap-y-2 justify-between items-center px-2 md:px-6 py-2 shadow-sm border-b border-[#d7ccc8] z-30 transition-all duration-300 w-full shrink-0 ${showUi ? "relative" : "-translate-y-full opacity-0 absolute pointer-events-none"}`}>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 w-full lg:w-auto">
+          <BackButton onClick={onClose} title="Kembali dari pembaca"/>
           <div className="flex bg-gray-100 rounded-lg p-1 gap-1">
             <button 
               onClick={() => setFontSize((f: number) => Math.min(f + 4, 64))}
@@ -377,7 +372,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
         </div>
         
         <button onClick={() => setShowUi(false)} className="px-2 py-1 text-xs border rounded mr-2" title="Sembunyikan kontrol pembaca">Mode fokus</button>
-        <h2 className="text-lg md:text-2xl font-bold flex-1 text-center truncate px-2" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo.bk}</h2>
+        <h2 className="text-lg md:text-2xl font-bold flex-1 min-w-0 text-center truncate px-2" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo.bk}</h2>
         
         <div className="hidden md:flex w-1/3 justify-end text-sm font-sans text-gray-500 font-medium truncate">
           {bookInfo.author_inf ? bookInfo.auth : 'al Maktabah As Sunniyyah'}

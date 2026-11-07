@@ -1,3 +1,4 @@
+import { pushLocation } from '../lib/back-navigation';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
@@ -7,9 +8,10 @@ import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin
 import { AdminNavigation } from './AdminNavigation';
 import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
+import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
-import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
+import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
 
 // ==================== TYPES ====================
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
@@ -117,6 +119,7 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Login administrator" tabIndex={-1} className="fixed inset-0 bg-black/50 flex justify-center items-center z-[80] p-4">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl relative">
+        <div className="px-6 pt-5"><BackButton onClick={onClose} title="Kembali ke beranda"/></div>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-1"><X size={20} /></button>
         <div className="p-8">
           <div className="text-center mb-8">
@@ -1150,7 +1153,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       }
     }
     const hash = navigationHash('admin', params);
-    if (hash !== window.location.hash) window.history.pushState({},'',hash);
+    if (hash !== window.location.hash) pushLocation(hash);
     restoreRef.current(context);
   };
   useEffect(() => {
@@ -1184,16 +1187,12 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Panel administrator" tabIndex={-1} className="fixed inset-0 bg-gray-100 flex flex-col z-[80] overflow-hidden font-sans">
       {/* Header */}
-      <div className="bg-white border-b px-3 md:px-6 py-3 flex justify-between items-center gap-2 shadow-sm flex-shrink-0">
+      <div className="bg-white border-b px-3 md:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-sm flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <button onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="admin-menu" className="lg:hidden px-3 py-2 rounded-lg bg-gray-100 text-sm font-semibold">Menu</button>
-          {view !== 'categories' && (
-            <button onClick={goBack} aria-label={`Kembali ke ${adminTitle(adminParent(view))}`} className="text-gray-500 hover:text-[var(--app-primary)] p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
-              <ArrowLeft size={20} />
-            </button>
-          )}
+          <BackButton onClick={view==='categories'?onClose:goBack} title={view==='categories'?'Kembali ke beranda':`Kembali ke ${adminTitle(adminParent(view))}`}/>
           {/* Breadcrumb */}
-          <nav aria-label="Lokasi administrator" className="flex items-center gap-1 text-sm overflow-x-auto min-w-0">
+          <nav aria-label="Lokasi administrator" className="hidden sm:flex items-center gap-1 text-sm overflow-x-auto min-w-0">
             {breadcrumb.map((b, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <ChevronRight size={14} className="text-gray-400" />}
@@ -1214,7 +1213,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       <div className="flex flex-1 min-h-0 relative">
         {menuOpen && <button className="absolute inset-0 z-40 bg-black/40 lg:hidden" aria-label="Tutup menu admin" onClick={() => setMenuOpen(false)} />}
         <div ref={drawerRef} id="admin-menu" tabIndex={-1} role={menuOpen?'dialog':undefined} aria-modal={menuOpen?true:undefined} aria-label="Menu admin" className={`${menuOpen?'absolute inset-y-0 left-0 z-50':'hidden'} lg:static lg:block w-64 max-w-[85vw] shrink-0 bg-white border-r overflow-y-auto`}>
-          <button onClick={() => setMenuOpen(false)} className="lg:hidden m-4 px-3 py-2 bg-gray-100 rounded-lg text-sm">Tutup menu</button>
+          <div className="lg:hidden m-4"><BackButton onClick={() => setMenuOpen(false)} title="Kembali ke halaman admin"/></div>
           <AdminNavigation view={view} onNavigate={next => setView(next)} stats={stats} />
         </div>
         <div className="flex-1 min-w-0 overflow-auto p-4 md:p-6">
