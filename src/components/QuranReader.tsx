@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { webAPI } from '../api';
+import { showOpeningBismillah } from '../lib/quran-content';
 import { ChevronRight, ChevronLeft, BookOpen, Loader2, X, BookMarked, Menu, Search } from 'lucide-react';
 
 // ============================================================
@@ -82,6 +83,12 @@ const QuranReader: React.FC = () => {
   const [ayahLoading, setAyahLoading] = useState(false);
   const [tafsirListLoading, setTafsirListLoading] = useState(false);
 
+  const [surahError,setSurahError] = useState('');
+  const [ayahError,setAyahError] = useState('');
+  const [mappingError,setMappingError] = useState('');
+  const [retry,setRetry] = useState(0);
+  const [loadedSurah,setLoadedSurah] = useState<number|null>(null);
+
   // === Refs ===
   const mainAreaRef = useRef<HTMLDivElement>(null);
 
@@ -89,21 +96,24 @@ const QuranReader: React.FC = () => {
   // Load Surahs saat mount
   // ============================================================
   useEffect(() => {
+    let active=true;
     const loadSurahs = async () => {
-      setSurahLoading(true);
+      setSurahLoading(true);setSurahError('');
       try {
         const res = await (webAPI as any).getQuranSurahs();
+        if (!active) return;
         if (res.data && res.data.length > 0) {
           setSurahs(res.data);
-          setSelectedSurah(res.data[0].id);
+          setSelectedSurah(current => current ?? res.data[0].id);
         }
       } catch (err) {
-        console.error('Gagal memuat daftar surah:', err);
+        if(active)setSurahError('Daftar surah gagal dimuat. Periksa koneksi lalu coba lagi.');
       }
-      setSurahLoading(false);
+      if(active)setSurahLoading(false);
     };
     loadSurahs();
-  }, []);
+    return ()=>{active=false;};
+  }, [retry]);
 
   // ============================================================
   // Load Ayahs + Tafsir Mappings saat Surah berubah
@@ -111,7 +121,9 @@ const QuranReader: React.FC = () => {
   useEffect(() => {
     if (selectedSurah === null) return;
 
+    let active=true;
     const loadSurahData = async () => {
+      setAyahError('');setMappingError('');setLoadedSurah(null);
       setAyahLoading(true);
       setTafsirListLoading(true);
       setCurrentAyahIndex(0);
@@ -123,9 +135,12 @@ const QuranReader: React.FC = () => {
       try {
         const [ayahRes, tafsirRes] = await Promise.all([
           (webAPI as any).getQuranAyahs(selectedSurah),
-          (webAPI as any).getTafsirBySurah(selectedSurah).catch(() => ({ data: [] })),
+          (webAPI as any).getTafsirBySurah(selectedSurah).catch(() => ({ data: [],failed:true })),
         ]);
 
+        if (!active) return;
+        if(tafsirRes.failed)setMappingError('Daftar tafsir gagal dimuat. Silakan coba lagi.');
+        setLoadedSurah(selectedSurah);
         if (ayahRes.data) {
           setAyahs(ayahRes.data);
         }
@@ -143,15 +158,15 @@ const QuranReader: React.FC = () => {
           setTafsirBooks(uniqueBooks);
         }
       } catch (err) {
-        console.error('Gagal memuat data surah:', err);
+        if(active)setAyahError('Ayat gagal dimuat. Periksa koneksi lalu coba lagi.');
       }
 
-      setAyahLoading(false);
-      setTafsirListLoading(false);
+      if(active){setAyahLoading(false);setTafsirListLoading(false);}
     };
 
     loadSurahData();
-  }, [selectedSurah]);
+    return ()=>{active=false;};
+  }, [selectedSurah,retry]);
 
   // Scroll to top saat ayah berubah
   useEffect(() => {
@@ -187,19 +202,20 @@ const QuranReader: React.FC = () => {
   }, [activeTafsirBook]);
 
   useEffect(() => {
-    if (!activeTafsirBook) {
-      setOpenTafsir(null);
+    if (!activeTafsirBook || loadedSurah !== selectedSurah) {
+      setOpenTafsir(null);setTafsirLoading(false);
       return;
     }
 
     const currentAyah = ayahs[currentAyahIndex];
-    if (!currentAyah) return;
+    if (!currentAyah) {setTafsirLoading(false);return;}
 
     const mapping = tafsirMappings.find(
       m => m.book_id === activeTafsirBook.bookId && m.ayah_no === currentAyah.ayah_no
     );
 
     if (!mapping) {
+      setTafsirLoading(false);
       setOpenTafsir({ 
         bookId: activeTafsirBook.bookId, 
         pageId: 0, 
@@ -238,7 +254,7 @@ const QuranReader: React.FC = () => {
       });
 
     return () => { isMounted = false; };
-  }, [activeTafsirBook, currentAyahIndex, ayahs, tafsirMappings]);
+  }, [activeTafsirBook, currentAyahIndex, ayahs, tafsirMappings,loadedSurah,selectedSurah]);
 
   const [showMobileSurah, setShowMobileSurah] = useState(false);
   const [showMobileTafsir, setShowMobileTafsir] = useState(false);
@@ -249,9 +265,9 @@ const QuranReader: React.FC = () => {
   // ============================================================
   // Derived
   // ============================================================
-  const currentAyah = ayahs[currentAyahIndex] ?? null;
+  const currentAyah = loadedSurah === selectedSurah ? ayahs[currentAyahIndex] ?? null : null;
   const selectedSurahData = surahs.find(s => s.id === selectedSurah);
-  const hasBismillah = selectedSurah !== 9;
+  const hasBismillah = showOpeningBismillah(selectedSurah,currentAyah?.ayah_no);
 
   const filteredSurahs = surahs.filter(s => 
     s.name.toLowerCase().includes(surahSearch.toLowerCase()) || 
@@ -433,6 +449,7 @@ const QuranReader: React.FC = () => {
       {/* ===== KIRI (60%): Area Baca Utama ===== */}
       <div className="flex-1 flex flex-col bg-[#fffdf7] overflow-hidden">
 
+        {(surahError || ayahError || mappingError) && <div role="alert" className="p-4 border-b bg-red-50 text-red-800 text-sm" dir="ltr"><p>{surahError || ayahError || mappingError}</p><button className="underline font-bold mt-2" onClick={()=>setRetry(v=>v+1)}>Coba lagi</button></div>}
         {/* Header Navigation */}
         <div className="bg-[#faf6ef] border-b border-[#e8dcc8] px-3 md:px-6 py-3 flex-shrink-0 shadow-sm relative">
           <div className="flex items-center justify-between gap-2 md:gap-4" dir="ltr">
