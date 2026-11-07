@@ -9,7 +9,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 - [x] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
 - [x] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
 - [x] 7. Katalog: kategori 0, pemulihan gagal, kategori/filter/pagination di URL.
-- [ ] 8. Koleksi Saya: favorit, bookmark, dan lanjut membaca, dengan keterangan penyimpanan perangkat.
+- [x] 8. Koleksi Saya: favorit, bookmark, dan lanjut membaca, dengan keterangan penyimpanan perangkat.
 - [ ] 9. Admin: pengelompokan Kitab, Transfer, Aktivitas, Masukan, Pengaturan dan breadcrumb konsisten.
 
 ## Verifikasi unit 1
@@ -41,3 +41,7 @@ Menu Lainnya desktop/mobile memakai definisi yang sama; mendukung klik, keyboard
 ## Verifikasi unit 7
 
 Katalog kategori 0 memakai pemeriksaan null. Kategori/filter/pagination memakai URL; daftar judul dipaginasi server dengan respons lama tetap didukung. Kegagalan menyediakan Coba lagi. Uji catalogue, navigasi dan build.
+
+## Verifikasi unit 8
+
+Koleksi Saya tersedia dari Lainnya dan beranda, berisi lanjut membaca/favorit/bookmark. Ada pencarian dan penghapusan item dari daftar perangkat tanpa mengubah database kitab. Posisi terakhir tampil di beranda. Build dan tes posisi baca.

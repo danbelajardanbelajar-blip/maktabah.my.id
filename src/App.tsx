@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, Heart, GitPullRequest } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -18,6 +18,7 @@ import type { AppTab } from './lib/navigation';
 import { readingPositions } from './lib/reading-position';
 import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
+import { Collection } from './components/Collection';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
@@ -63,6 +64,12 @@ function App() {
   const openAiQuestion = (question = '') => { setAiQuestion(question); setAiQuestionVersion(v=>v+1); setActiveTab('ask'); };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
+  const [positions,setPositions] = useState(() => readingPositions(localStorage));
+  useEffect(() => {
+    const update = () => setPositions(readingPositions(localStorage));
+    window.addEventListener('readingPositionsUpdated',update); window.addEventListener('storage',update);
+    return () => {window.removeEventListener('readingPositionsUpdated',update);window.removeEventListener('storage',update);};
+  },[]);
   const [recentBooks, setRecentBooks] = useState<any[]>(() => {
     try { return JSON.parse(localStorage.getItem('recentBooks') || '[]'); } catch { return []; }
   });
@@ -391,6 +398,11 @@ function App() {
           <QuranReader />
         ) : activeTab === 'rowa' ? (
           <RowaDictionary />
+        ) : activeTab === 'collection' ? (
+          <Collection positions={positions} favorites={favorites} bookmarks={bookmarks} readBook={(bookId,pageId)=>openReader({bookId,pageId})}
+            removeFavorite={id=>setFavorites((items:any[])=>items.filter(item=>item.bkid!==id))}
+            removeBookmark={(id,pageId)=>setBookmarks((items:any[])=>items.filter(item=>item.bkid!==id||item.id!==pageId))}
+            removePosition={id=>{const next=positions.filter(item=>item.bookId!==id);try{localStorage.setItem('maktabah-reading-positions',JSON.stringify(next));}catch{}setPositions(next);}} />
         ) : activeTab === 'about' ? (
           <About />
         ) : activeTab === 'admin' ? (
@@ -450,39 +462,11 @@ function App() {
                  </div>
               )}
               
-              {/* Favorites & Bookmarks */}
-              {activeTab === 'home' && (favorites.length > 0 || bookmarks.length > 0) && (
-                   <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {favorites.length > 0 && (
-                        <div className="bg-[var(--reader-bg)] p-5 rounded-2xl shadow-sm border border-[var(--app-primary)]/10">
-                           <h3 className="font-bold text-[var(--app-primary)] mb-4 flex items-center gap-2"><Heart size={20} className="text-red-500" fill="currentColor" /> Kitab Favorit</h3>
-                           <div className="flex flex-col gap-2 max-h-64 overflow-y-auto custom-scrollbar">
-                             {favorites.map(f => (
-                                <div key={f.bkid} onClick={() => openReader({ bookId: f.bkid })} className="p-3 bg-white hover:bg-[var(--app-primary)]/5 rounded-lg cursor-pointer border border-gray-100 shadow-sm transition-all text-right group">
-                                  <div className="font-bold text-[#4e342e] group-hover:text-[var(--app-primary)] text-lg" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{f.bk}</div>
-                                  <div className="text-sm text-gray-500 truncate mt-1" dir="auto">{f.author || '-'}</div>
-                                </div>
-                             ))}
-                           </div>
-                        </div>
-                      )}
-                      
-                      {bookmarks.length > 0 && (
-                        <div className="bg-[var(--reader-bg)] p-5 rounded-2xl shadow-sm border border-[var(--app-primary)]/10">
-                           <h3 className="font-bold text-[var(--app-primary)] mb-4 flex items-center gap-2"><BookMarked size={20} className="text-yellow-500" fill="currentColor" /> Markah Buku</h3>
-                           <div className="flex flex-col gap-2 max-h-64 overflow-y-auto custom-scrollbar">
-                             {bookmarks.map(b => (
-                                <div key={`${b.bkid}-${b.id}`} onClick={() => { openReader({ bookId: b.bkid, pageId: b.id }) }} className="p-3 bg-white hover:bg-[var(--app-primary)]/5 rounded-lg cursor-pointer border border-gray-100 shadow-sm transition-all text-right group">
-                                  <div className="font-bold text-[var(--app-primary)] mb-1" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{b.bk}</div>
-                                  <div className="text-xs font-semibold text-gray-500 mb-2">Juz {b.juz || 1} - Halaman {b.page || 1}</div>
-                                  <div className="text-sm text-gray-600 truncate opacity-80" dir="auto">{b.snippet}</div>
-                                </div>
-                             ))}
-                           </div>
-                        </div>
-                      )}
-                   </div>
-              )}
+              {activeTab === 'home' && <section className="mb-6 rounded-2xl border bg-[var(--reader-bg)] p-5">
+                <div className="flex justify-between gap-3 items-center mb-3"><h2 className="font-bold text-lg">Lanjutkan Membaca</h2><button onClick={()=>setActiveTab('collection')} className="text-sm font-semibold text-[var(--app-primary)]">Koleksi Saya →</button></div>
+                <p className="text-xs text-gray-500 mb-3">Tersimpan di perangkat ini · {favorites.length} favorit · {bookmarks.length} bookmark</p>
+                {positions.length>0?<div className="grid grid-cols-1 md:grid-cols-3 gap-3">{positions.slice(0,3).map(item=><button key={item.bookId} onClick={()=>openReader({bookId:item.bookId,pageId:item.pageId})} className="text-left rounded-xl border p-3 bg-[var(--reader-paper)]"><span className="block font-bold" dir="auto">{item.title}</span><span className="text-xs text-gray-500">Juz {item.part??'—'} · Halaman {item.page??'—'}</span></button>)}</div>:<p className="text-sm text-gray-500">Posisi bacaan akan muncul setelah membuka kitab.</p>}
+              </section>}
               {activeTab !== 'home' && <button type="button" onClick={() => setActiveTab(activeTab === 'advanced_search' ? 'search' : 'advanced_search')} aria-expanded={activeTab === 'advanced_search'} className="mb-4 rounded-lg border px-4 py-2 text-sm font-semibold">{activeTab === 'advanced_search' ? 'Tutup filter kategori' : 'Filter kategori / Cari lanjut'}</button>}
               {activeTab === 'advanced_search' && (
               <div className="mb-6 bg-[var(--reader-bg)] p-5 rounded-2xl border border-[var(--app-primary)]/20 shadow-sm">
