@@ -13,12 +13,19 @@ import BookRequest from './components/BookRequest';
 import BookSubmit from './components/BookSubmit';
 import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
+import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
+import type { AppTab } from './lib/navigation';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'search' | 'advanced_search' | 'catalog' | 'quran' | 'rowa' | 'about' | 'privacy' | 'settings' | 'more' | 'ask' | 'admin' | 'feedback' | 'book_request' | 'book_submit'>(new URLSearchParams(window.location.search).get('admin') === '1' ? 'admin' : 'search');
+  const [activeTab, setActiveTabState] = useState<AppTab>(() => parseNavigation(window.location.hash, window.location.search).tab);
+  const [homeQuery, setHomeQuery] = useState('');
+  const navigationHandler = useRef<() => void>(() => {});
+  const loadedSearch = useRef('');
+  const pendingSearch = useRef('');
+  const searchRequest = useRef(0);
 
   // Search States
   const [searchMode, setSearchMode] = useState<'text' | 'title' | 'pdf'>('text');
@@ -66,6 +73,17 @@ function App() {
   // Advanced Search States
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+
+  const setActiveTab = (tab: AppTab) => {
+    const hash = navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(',')} : {});
+    if (hash !== window.location.hash) {
+      window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
+      window.history.pushState(null,'',hash);
+    }
+    if (tab === 'home') setHomeQuery('');
+    navigationHandler.current();
+    window.scrollTo(0,0);
+  };
 
   // States for Book Modal
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
@@ -178,7 +196,7 @@ function App() {
     }).catch(()=>{});
   }, []);
 
-  const homeHistoryVisible = (activeTab === 'search' || activeTab === 'advanced_search') && query.trim() === '';
+  const homeHistoryVisible = activeTab === 'home';
   useEffect(() => {
     if (!homeHistoryVisible) return;
     let current = true;
@@ -187,20 +205,28 @@ function App() {
     return () => { current = false; };
   }, [homeHistoryVisible]);
 
-  const executeSearch = async (searchQuery: string, page: number, mode = searchMode) => {
+  const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', categoryFilter = selectedCategories) => {
     if (!searchQuery.trim()) return;
+    const requestId = ++searchRequest.current;
+    const key = JSON.stringify([searchQuery, page, mode, categoryFilter]);
+    pendingSearch.current = key;
+    const targetTab = (historyMode === 'none' ? parseNavigation(window.location.hash).tab : activeTab) === 'advanced_search' ? 'advanced_search' : 'search';
+    if (historyMode === 'push') {
+      window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
+      const hash = navigationHash(targetTab,{q:searchQuery,mode,page,cats:categoryFilter.join(',')});
+      if (hash !== window.location.hash) window.history.pushState(null,'',hash);
+    }
+    setActiveTabState(targetTab); setQuery(searchQuery); setSearchMode(mode); setSelectedCategories(categoryFilter);
     setLoading(true);
     setError('');
     try {
-      let res;
+      let res; let fetchedResults: any[] = []; let fetchedTotal = 0;
       if (mode === 'text') {
-        res = await webAPI.search(searchQuery, page, limit, selectedCategories.length > 0 ? selectedCategories.join(',') : undefined);
-        setResults(res.results || []);
-        setTotalResults(res.total || 0);
+        res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
+        fetchedResults = res.results || []; fetchedTotal = res.total || 0;
       } else if (mode === 'title') {
-        res = await webAPI.searchTitles(searchQuery, page, limit, selectedCategories.length > 0 ? selectedCategories.join(',') : undefined);
-        setResults(res.data || []);
-        setTotalResults(res.total || 0);
+        res = await webAPI.searchTitles(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
+        fetchedResults = res.data || []; fetchedTotal = res.total || 0;
       } else if (mode === 'pdf') {
         const [scholariumRes, archiveRes] = await Promise.all([
           webAPI.searchScholarium(searchQuery, page).catch(() => ({ data: [] })),
@@ -212,25 +238,49 @@ function App() {
           ...(archiveRes.response?.docs || []).map((r: any) => ({ ...r, _source: 'archive' }))
         ];
         
-        setResults(combinedResults);
-        setTotalResults((scholariumRes.total || (scholariumRes.data?.length || 0)) + (archiveRes.response?.numFound || 0));
+        fetchedResults = combinedResults;
+        fetchedTotal = (scholariumRes.total || (scholariumRes.data?.length || 0)) + (archiveRes.response?.numFound || 0);
       }
+      if (requestId !== searchRequest.current) return;
+      setResults(fetchedResults); setTotalResults(fetchedTotal); loadedSearch.current = key;
       setCurrentPage(page);
       setHasSearched(true);
     } catch (err: any) {
+      if (requestId !== searchRequest.current) return;
       setError(err.message);
       setResults([]);
       setTotalResults(0);
     }
-    setLoading(false);
+    if (requestId === searchRequest.current) { pendingSearch.current = ''; setLoading(false); }
   };
+
+  navigationHandler.current = () => {
+    if (window.location.hash.startsWith('#/read/')) return;
+    const route = parseNavigation(window.location.hash,window.location.search);
+    setActiveTabState(route.tab);
+    if (route.tab === 'search' || route.tab === 'advanced_search') {
+      const q = route.params.get('q') || '';
+      const mode = ['text','title','pdf'].includes(route.params.get('mode') || '') ? route.params.get('mode') as 'text'|'title'|'pdf' : 'text';
+      const page = routePage(route.params.get('page')), cats = routeCategories(route.params.get('cats'));
+      setQuery(q); setSearchMode(mode); setCurrentPage(page); setSelectedCategories(cats);
+      const key = JSON.stringify([q,page,mode,cats]);
+      if (q && key !== loadedSearch.current && key !== pendingSearch.current) void executeSearch(q,page,mode,'none',cats);
+    }
+  };
+  useEffect(() => {
+    const handle = () => { navigationHandler.current(); const y = window.history.state?.scrollY; if (typeof y === 'number') setTimeout(() => window.scrollTo(0,y),80); };
+    handle();
+    window.addEventListener('popstate',handle); window.addEventListener('hashchange',handle); window.addEventListener('maktabah:navigate',handle);
+    return () => { window.removeEventListener('popstate',handle); window.removeEventListener('hashchange',handle); window.removeEventListener('maktabah:navigate',handle); };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    executeSearch(query, 1, searchMode).then(() => {
+    executeSearch(activeTab === 'home' ? homeQuery : query, 1, activeTab === 'home' ? 'text' : searchMode).then(() => {
+      if (!['search','advanced_search'].includes(parseNavigation(window.location.hash).tab)) return;
       setTimeout(() => {
         const resultsEl = document.getElementById('search-results');
         if (resultsEl) {
@@ -283,10 +333,7 @@ function App() {
             href="/" 
             onClick={(e) => { 
               e.preventDefault(); 
-              setActiveTab('search'); 
-              setQuery(''); 
-              setResults([]);
-              setTotalResults(0);
+              setActiveTab('home');
               window.scrollTo(0, 0); 
             }} 
             className="flex items-center gap-3 shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
@@ -298,16 +345,16 @@ function App() {
           {/* Navigation Menu (Hidden on mobile, uses bottom tabs instead) */}
           <nav className="hidden md:flex flex-row gap-4 lg:gap-6 font-sans h-full">
             <button 
-              onClick={() => { setActiveTab('search'); }}
-              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'search' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
+              onClick={() => { setActiveTab('home'); }}
+              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'home' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
             >
-              <Search size={18} /> Pencarian
+              <Search size={18} /> Beranda
             </button>
             <button 
-              onClick={() => { setActiveTab('advanced_search'); }}
-              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'advanced_search' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
+              onClick={() => { setActiveTab('search'); }}
+              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${(activeTab === 'search' || activeTab === 'advanced_search') ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
             >
-              <FolderSearch size={18} /> Cari Lanjut
+              <FolderSearch size={18} /> Cari
             </button>
             <button 
               onClick={() => { setActiveTab('catalog'); }}
@@ -365,7 +412,7 @@ function App() {
         ) : activeTab === 'about' ? (
           <About />
         ) : activeTab === 'admin' ? (
-          <Admin onClose={() => { const url = new URL(window.location.href); url.searchParams.delete('admin'); window.history.replaceState(null, '', url.pathname + url.search + url.hash); setActiveTab('search'); }} />
+          <Admin onClose={() => { const url = new URL(window.location.href); url.searchParams.delete('admin'); window.history.replaceState(null, '', url.pathname + url.search + url.hash); setActiveTab('home'); }} />
         ) : activeTab === 'privacy' ? (
           <Privacy />
         ) : activeTab === 'settings' ? (
@@ -422,7 +469,7 @@ function App() {
           </div>
         ) : (
           <div className="w-full">
-            {activeTab === 'search' && results.length === 0 && !loading && query.trim() === '' && (
+            {activeTab === 'home' && (
                  <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--app-primary)] to-[#0f3d20] text-white shadow-2xl border border-white/10">
                     <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% -20%, rgba(201,162,39,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 100%, rgba(22,101,52,0.4) 0%, transparent 60%)' }}></div>
                     <div className="relative z-10 px-6 py-12 md:py-20 text-center">
@@ -460,7 +507,7 @@ function App() {
               )}
               
               {/* Favorites & Bookmarks */}
-              {activeTab === 'search' && results.length === 0 && !loading && query.trim() === '' && (favorites.length > 0 || bookmarks.length > 0) && (
+              {activeTab === 'home' && (favorites.length > 0 || bookmarks.length > 0) && (
                    <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                       {favorites.length > 0 && (
                         <div className="bg-[var(--reader-bg)] p-5 rounded-2xl shadow-sm border border-[var(--app-primary)]/10">
@@ -492,6 +539,7 @@ function App() {
                       )}
                    </div>
               )}
+              {activeTab !== 'home' && <button type="button" onClick={() => setActiveTab(activeTab === 'advanced_search' ? 'search' : 'advanced_search')} aria-expanded={activeTab === 'advanced_search'} className="mb-4 rounded-lg border px-4 py-2 text-sm font-semibold">{activeTab === 'advanced_search' ? 'Tutup filter kategori' : 'Filter kategori / Cari lanjut'}</button>}
               {activeTab === 'advanced_search' && (
               <div className="mb-6 bg-[var(--reader-bg)] p-5 rounded-2xl border border-[var(--app-primary)]/20 shadow-sm">
                 <h3 className="font-bold text-[var(--app-primary)] mb-3 flex items-center gap-2">
@@ -536,8 +584,8 @@ function App() {
                 </div>
                 <input 
                   type="text" 
-                  value={query}
-                  onChange={(e) => { setQuery(e.target.value); setHasSearched(false); }}
+                  value={activeTab === 'home' ? homeQuery : query}
+                  onChange={(e) => { if (activeTab === 'home') setHomeQuery(e.target.value); else { setQuery(e.target.value); setHasSearched(false); } }}
                   placeholder="Cari di sini..." 
                   className="w-full pl-4 pr-12 py-4 rounded-xl border-2 border-black/10 text-lg md:text-xl focus:outline-none focus:border-[var(--app-primary)] bg-[var(--reader-paper)] shadow-inner transition-all"
                 />
@@ -576,9 +624,9 @@ function App() {
 
 
             <div id="search-results">
-              {error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-xl mb-6 shadow-sm">{error}</div>}
+              {activeTab !== 'home' && error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-xl mb-6 shadow-sm">{error}</div>}
 
-            {results.length === 0 && !loading && query.trim() === '' && (
+            {activeTab === 'home' && (
               <div className="space-y-6 mb-8">
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -714,7 +762,7 @@ function App() {
               </div>
             )}
 
-            {totalResults > 0 && (
+            {activeTab !== 'home' && totalResults > 0 && (
               <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-[var(--reader-bg)] p-4 rounded-xl shadow-sm border border-black/5 gap-2">
                 <span className="font-semibold text-sm md:text-base text-[var(--app-text)]">Total Hasil: <span className="font-bold text-[var(--app-primary)]">{totalResults.toLocaleString()}</span></span>
                 <span className="text-sm md:text-base text-[var(--app-text)] opacity-80">Halaman {currentPage} dari {totalPages}</span>
@@ -723,7 +771,7 @@ function App() {
 
             
             <div className="space-y-4 md:space-y-6">
-              {searchMode === 'text' && results.map((r, i) => (
+              {activeTab !== 'home' && searchMode === 'text' && results.map((r, i) => (
                 <div key={i} className="bg-[var(--reader-bg)] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md border border-black/5 transition-all">
                   <div className="text-xs md:text-sm text-[var(--app-text)] opacity-70 mb-4 font-sans flex flex-col sm:flex-row sm:justify-between border-b border-black/5 pb-3 gap-3">
                     <div className="flex gap-4">
@@ -759,7 +807,7 @@ function App() {
                 </div>
               ))}
 
-              {searchMode === 'title' && results.map((r, i) => (
+              {activeTab !== 'home' && searchMode === 'title' && results.map((r, i) => (
                 <div key={i} onClick={() => openReader({ bookId: r.bkid })} className="bg-[var(--reader-bg)] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md border border-black/5 transition-all cursor-pointer group">
                   <div className="flex flex-col gap-3">
                     <h3 dir="auto" style={{ fontFamily: 'var(--arabic-font)' }} className="text-2xl font-bold text-[var(--app-primary)] group-hover:text-[var(--app-primary-hover)]">{r.bk}</h3>
@@ -782,7 +830,7 @@ function App() {
                 </div>
               ))}
 
-              {searchMode === 'pdf' && results.map((r, i) => {
+              {activeTab !== 'home' && searchMode === 'pdf' && results.map((r, i) => {
                 if (r._source === 'scholarium') {
                   return (
                     <div key={i} onClick={() => { webAPI.logDownload('[PDF Scholarium] ' + r.name).catch(()=>{}); window.open(r.link, '_blank'); }} className="bg-yellow-50 p-5 rounded-2xl shadow-sm hover:shadow-md border border-yellow-200 transition-all relative overflow-hidden cursor-pointer group">
@@ -810,7 +858,7 @@ function App() {
                 }
               })}
 
-              {hasSearched && !loading && results.length === 0 && query && !error && (
+              {activeTab !== 'home' && hasSearched && !loading && results.length === 0 && query && !error && (
                 <div className="text-center py-12 bg-[var(--reader-bg)] rounded-2xl border border-black/5">
                   <Search className="mx-auto text-gray-300 mb-3" size={48} />
                   <p className="text-[var(--app-text)] opacity-60 text-lg">Tidak ada hasil ditemukan.</p>
@@ -819,7 +867,7 @@ function App() {
             </div>
             </div>
 
-            {totalResults > 0 && (
+            {activeTab !== 'home' && totalResults > 0 && (
               <div className="flex justify-center items-center gap-4 mt-8 bg-[var(--reader-bg)] p-2 rounded-2xl shadow-sm border border-black/5 w-fit mx-auto">
                 <button
                   onClick={handlePrevPage}
@@ -872,18 +920,18 @@ function App() {
       {/* Mobile Bottom Navigation */}
       <div dir="ltr" className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--reader-bg)] border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 h-[70px] pb-safe flex justify-around items-center transition-colors duration-300">
         <button 
-          onClick={() => { setActiveTab('search'); window.scrollTo(0,0); }} 
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'search' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
+          onClick={() => { setActiveTab('home'); window.scrollTo(0,0); }}
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'home' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
         >
           <Search size={24} className="mb-1" />
-          <span className="text-[10px] font-bold">Home</span>
+          <span className="text-[10px] font-bold">Beranda</span>
         </button>
         <button 
-          onClick={() => { setActiveTab('advanced_search'); window.scrollTo(0,0); }} 
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'advanced_search' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
+          onClick={() => { setActiveTab('search'); window.scrollTo(0,0); }}
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${(activeTab === 'search' || activeTab === 'advanced_search') ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
         >
           <FolderSearch size={24} className="mb-1" />
-          <span className="text-[10px] font-bold">Lanjut</span>
+          <span className="text-[10px] font-bold">Cari</span>
         </button>
         <button 
           onClick={() => { setActiveTab('catalog'); window.scrollTo(0,0); }} 

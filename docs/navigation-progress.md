@@ -4,7 +4,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 
 - [x] 1. Pembaca: status gagal/tidak ditemukan, coba lagi, keluar aman dari tautan langsung, Escape.
 - [x] 2. Admin: tujuan Kembali setiap halaman dan cakupan pilihan kategori yang jelas.
-- [ ] 3. Lokasi berbasis URL, Kembali/Maju browser, Beranda terpisah dari Cari, konteks pencarian.
+- [x] 3. Lokasi berbasis URL, Kembali/Maju browser, Beranda terpisah dari Cari, konteks pencarian.
 - [ ] 4. Pembaca: URL halaman aktif, posisi terakhir, kontrol ponsel dan gestur.
 - [ ] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
 - [ ] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
@@ -21,3 +21,7 @@ Pemeriksaan browser otomatis pada sesi ini terhalang kegagalan runtime alat; tid
 ## Verifikasi unit 2
 
 `node --test server/admin-navigation.test.js` dan `npm run build`. Semua subhalaman admin memiliki tujuan Kembali; checkbox header kategori dibatasi pada halaman terlihat dengan aksi terpisah untuk semua hasil.
+
+## Verifikasi unit 3
+
+URL hash menjaga kompatibilitas build web/Electron dan tautan pembaca lama. Beranda dan Cari dipisah; query, mode, kategori, halaman hasil dan Kembali/Maju dipulihkan dari URL. `server/navigation.test.js` dan build lulus.
