@@ -122,20 +122,15 @@ const ErrorBanner = ({ message }: { message: string }) => (
     <div>
       <p className="font-semibold">Terjadi Kesalahan</p>
       <p className="text-sm mt-1">{message}</p>
-      {message.includes('tidak tersedia') && (
-        <p className="text-xs mt-2 text-red-500">
-          Database perawi hanya tersedia di server produksi.
-        </p>
-      )}
     </div>
   </div>
 );
 
-const InfoBanner = () => (
-  <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl mt-4">
+const SearchHint = () => (
+  <div id="rowa-search-hint" className="flex items-start gap-2 text-gray-500 mt-3">
     <Info className="shrink-0 mt-0.5" size={18} />
     <p className="text-sm">
-      Data kamus perawi tersedia di server. Silakan cari nama perawi dalam huruf Arab maupun latin.
+      Cari nama perawi dalam huruf Arab, lalu pilih Lihat Profil untuk membaca biografinya.
     </p>
   </div>
 );
@@ -460,7 +455,9 @@ const RowaDictionary: React.FC = () => {
               type="text"
               value={inputValue}
               onChange={e => setInputValue(e.target.value)}
-              placeholder="Cari nama perawi... (contoh: مالك بن أنس atau Malik)"
+              placeholder="Cari nama perawi, misalnya أحمد بن إبراهيم"
+              aria-label="Nama perawi"
+              aria-describedby="rowa-search-hint"
               className="w-full pl-4 pr-10 py-3 rounded-xl border-2 border-gray-200 focus:border-[var(--app-primary)] focus:outline-none text-base bg-white transition-colors"
               dir="auto"
               autoComplete="off"
@@ -484,7 +481,7 @@ const RowaDictionary: React.FC = () => {
             <span className="hidden sm:inline">Cari</span>
           </button>
         </form>
-        <InfoBanner />
+        <SearchHint />
       </div>
 
       {/* Error */}
