@@ -365,7 +365,7 @@ function App() {
         ) : activeTab === 'about' ? (
           <About />
         ) : activeTab === 'admin' ? (
-          <Admin onClose={() => setActiveTab('search')} />
+          <Admin onClose={() => { const url = new URL(window.location.href); url.searchParams.delete('admin'); window.history.replaceState(null, '', url.pathname + url.search + url.hash); setActiveTab('search'); }} />
         ) : activeTab === 'privacy' ? (
           <Privacy />
         ) : activeTab === 'settings' ? (

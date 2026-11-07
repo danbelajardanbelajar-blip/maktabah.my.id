@@ -2,10 +2,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
 import { AiSettings } from './AiSettings';
+import { adminParent, adminTitle } from '../lib/admin-navigation';
+import type { AdminView } from '../lib/admin-navigation';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
 
 // ==================== TYPES ====================
-type AdminView = 'ai_settings' | 'categories' | 'books' | 'pages' | 'edit_page' | 'transfer' | 'feedback' | 'requests' | 'submissions' | 'log_search' | 'log_download' | 'log_visit' | 'log_quran' | 'log_rowa' | 'log_ask';
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
 interface Book { bkid: number; bk: string; cat: number; cat_name: string; }
 interface PageRow { id: number; book_id: number; part: number; page: number; preview: string; }
@@ -270,8 +271,10 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
       </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       
+      <p className="px-5 py-2 text-xs text-gray-500">Checkbox judul tabel memilih kategori pada halaman ini.{selected.length > 0 && ` ${selected.length} kategori dipilih, termasuk ${selected.filter(item => !paginated.some(c => c.id === item.id)).length} di luar halaman ini.`}</p>
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'categoriesview_export.csv')} extraActions={
         <>
+          {filtered.some(cat => !selected.some(item => item.id === cat.id)) && filtered.length > paginated.length && <button disabled={deletion.pending} onClick={() => setSelected(current => [...current, ...filtered.filter(cat => !current.some(item => item.id === cat.id))])} className="bg-white/15 px-3 py-1.5 rounded text-sm font-bold disabled:opacity-40">Pilih semua {filtered.length} hasil</button>}
           <button onClick={handleBulkDelete} disabled={deletion.pending} className="bg-red-600 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-red-700 disabled:opacity-40 disabled:cursor-wait"><Trash2 size={16} />{deletion.pending ? 'Menghapus…' : 'Hapus terpilih'}</button>
           <button onClick={() => setSelected([])} disabled={deletion.pending} className="bg-white/15 text-white px-3 py-1.5 rounded font-bold text-sm disabled:opacity-40">Batalkan pilihan</button>
         </>
@@ -279,13 +282,13 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
       <div className="overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-gray-50 text-gray-500 text-xs uppercase border-b">
-            <tr><th className="p-3 w-10 text-center"><input type="checkbox" disabled={deletion.pending} aria-label="Pilih semua kategori hasil pencarian" checked={filtered.length > 0 && filtered.every((item: any) => selected.find((s: any) => s.id === item.id))} onChange={(e) => toggleAll(e, filtered)} /></th><th className="px-4 py-3 w-12">ID</th><th className="px-4 py-3">Nama Kategori</th><th className="px-4 py-3 w-20 text-center">Kitab</th><th className="px-4 py-3 w-28 text-center">Aksi</th></tr>
+            <tr><th className="p-3 w-10 text-center"><input type="checkbox" disabled={deletion.pending} aria-label="Pilih semua kategori di halaman ini" checked={paginated.length > 0 && paginated.every((item: any) => selected.find((s: any) => s.id === item.id))} onChange={(e) => toggleAll(e, paginated)} /></th><th className="px-4 py-3 w-12">ID</th><th className="px-4 py-3">Nama Kategori</th><th className="px-4 py-3 w-20 text-center">Kitab</th><th className="px-4 py-3 w-28 text-center">Aksi</th></tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {loading ? (
-              <tr><td colSpan={4} className="p-8 text-center text-gray-400">Memuat...</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-gray-400">Memuat...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={4} className="p-8 text-center text-gray-400">Tidak ada kategori</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-gray-400">Tidak ada kategori</td></tr>
             ) : paginated.map(cat => (
               <tr key={cat.id} className="hover:bg-gray-50/50">
                 <td className="p-3 text-center"><input type="checkbox" disabled={deletion.pending} aria-label={`Pilih kategori ${cat.name}`} checked={!!selected.find(s => s.id === cat.id)} onChange={(e) => toggleOne(e, cat)} onClick={(e) => e.stopPropagation()} /></td>
@@ -1077,17 +1080,17 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   }, [fetchStats]);
 
   const breadcrumb = [
-    { label: view.startsWith('log_') ? 'Logs' : view === 'feedback' ? 'Feedback' : view === 'requests' ? 'Request Kitab' : view === 'submissions' ? 'Submit Kitab' : 'Database Kitab', onClick: () => { setView(view.startsWith('log_') ? view : view === 'feedback' ? 'feedback' : view === 'requests' ? 'requests' : view === 'submissions' ? 'submissions' : 'categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); } },
-    ...(!view.startsWith('log_') && view !== 'feedback' && view !== 'requests' && view !== 'submissions' && selectedCategory ? [{ label: selectedCategory.name, onClick: () => { setView('books'); setSelectedBook(null); setSelectedPage(null); } }] : []),
-    ...(!view.startsWith('log_') && view !== 'feedback' && view !== 'requests' && view !== 'submissions' && selectedBook ? [{ label: selectedBook.bk, onClick: () => { setView('pages'); setSelectedPage(null); } }] : []),
-    ...(!view.startsWith('log_') && view !== 'feedback' && view !== 'requests' && view !== 'submissions' && selectedPage ? [{ label: `Juz ${selectedPage.part} Hal ${selectedPage.page}`, onClick: () => {} }] : []),
+    { label: adminTitle(view), onClick: () => { setView('categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); } },
+    ...(['books','pages','edit_page'].includes(view) && selectedCategory ? [{ label: selectedCategory.name, onClick: () => { setView('books'); setSelectedBook(null); setSelectedPage(null); } }] : []),
+    ...(['pages','edit_page'].includes(view) && selectedBook ? [{ label: selectedBook.bk, onClick: () => { setView('pages'); setSelectedPage(null); } }] : []),
+    ...(view === 'edit_page' && selectedPage ? [{ label: `Juz ${selectedPage.part} Hal ${selectedPage.page}`, onClick: () => {} }] : []),
   ];
-
   const goBack = () => {
-    if (view === 'transfer') { setView('categories'); }
-    else if (view === 'edit_page') { setView('pages'); setSelectedPage(null); }
-    else if (view === 'pages') { setView('books'); setSelectedBook(null); }
-    else if (view === 'books') { setView('categories'); setSelectedCategory(null); }
+    const parent = adminParent(view);
+    setView(parent);
+    if (parent === 'categories') { setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }
+    else if (parent === 'books') { setSelectedBook(null); setSelectedPage(null); }
+    else if (parent === 'pages') setSelectedPage(null);
   };
 
   return (
@@ -1096,7 +1099,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       <div className="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm flex-shrink-0">
         <div className="flex items-center gap-3">
           {view !== 'categories' && (
-            <button onClick={goBack} className="text-gray-500 hover:text-[var(--app-primary)] p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+            <button onClick={goBack} aria-label={`Kembali ke ${adminTitle(adminParent(view))}`} className="text-gray-500 hover:text-[var(--app-primary)] p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
               <ArrowLeft size={20} />
             </button>
           )}
