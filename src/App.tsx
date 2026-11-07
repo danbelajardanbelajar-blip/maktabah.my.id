@@ -93,7 +93,15 @@ function App() {
   const openReader = (config: any) => {
     setReadingConfig(config);
     const hash = `#/read/${config.bookId}${config.pageId ? '/' + config.pageId : ''}`;
-    window.history.pushState(config, '', hash);
+    window.history.pushState({ ...config, maktabahReader: true }, '', hash);
+  };
+
+  const closeReader = () => {
+    if (window.history.state?.maktabahReader) window.history.back();
+    else {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      setReadingConfig(null);
+    }
   };
 
   useEffect(() => {
@@ -1013,7 +1021,7 @@ function App() {
           setFavorites={setFavorites}
           bookmarks={bookmarks}
           setBookmarks={setBookmarks}
-          onClose={() => { window.history.back(); }} 
+          onClose={closeReader}
         />
       )}
     </div>

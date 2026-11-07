@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { webAPI } from '../api';
+import { loadReaderData } from '../lib/reader-loader';
 import { ChevronLeft, ChevronRight, X, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
@@ -61,6 +62,8 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   const [currentPage, setCurrentPage] = useState<any>(null);
   const [currentPageId, setCurrentPageId] = useState<number | undefined>(initialPageId);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const loadRequest = useRef(0);
   
   // Customization states
   const [fontSize, setFontSize] = useState(settings?.fontSize || 32);
@@ -141,8 +144,20 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
 
 
   useEffect(() => {
-    loadBookAndPage();
+    if (bookInfo?.bkid === bookId && currentPage?.id === currentPageId) return;
+    void loadBookAndPage();
+    return () => { loadRequest.current++; };
   }, [bookId, currentPageId]);
+
+  useEffect(() => {
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      if (showSidebar) setShowSidebar(false); else onClose();
+    };
+    window.addEventListener('keydown', escape);
+    return () => window.removeEventListener('keydown', escape);
+  }, [showSidebar, onClose]);
 
   
   const touchStartX = useRef<number | null>(null);
@@ -182,38 +197,34 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   };
 
   const loadBookAndPage = async () => {
+    const request = ++loadRequest.current;
     setLoading(true);
+    setLoadError('');
     try {
-      if (!bookInfo) {
-        // @ts-ignore
-        const info = await webAPI.getBookInfo(bookId);
-        if (info.data) {
-          setBookInfo(info.data);
+      const data = await loadReaderData(webAPI, bookId, currentPageId, bookInfo);
+      if (request !== loadRequest.current) return;
+      if (bookInfo?.bkid !== bookId) {
+          setBookInfo(data.book);
           try {
             let recent = JSON.parse(localStorage.getItem('recentBooks') || '[]');
-            recent = recent.filter((r:any) => r.bkid !== info.data.bkid);
-            recent.unshift({ bkid: info.data.bkid, bk: info.data.bk, author: info.data.auth });
+            recent = recent.filter((r:any) => r.bkid !== data.book.bkid);
+            recent.unshift({ bkid: data.book.bkid, bk: data.book.bk, author: data.book.auth });
             if (recent.length > 10) recent = recent.slice(0, 10);
             localStorage.setItem('recentBooks', JSON.stringify(recent));
             window.dispatchEvent(new Event('recentBooksUpdated'));
           } catch(e) {}
-        }
       }
-
-      // @ts-ignore
-      const page = await webAPI.getPage(bookId, currentPageId);
-      if (page.data) {
-        setCurrentPage(page.data);
+        setCurrentPage(data.page);
         setPageKey(k => k + 1);
-        if (currentPageId === undefined || currentPageId !== page.data.id) {
-          setCurrentPageId(page.data.id);
+        if (currentPageId !== data.page.id) {
+          setCurrentPageId(data.page.id);
         }
-        checkRelations(page.data.id);
-      }
+        checkRelations(data.page.id);
     } catch (err) {
-      console.error(err);
+      if (request === loadRequest.current) setLoadError(err instanceof Error ? err.message : 'Kitab gagal dimuat. Periksa koneksi lalu coba lagi.');
+    } finally {
+      if (request === loadRequest.current) setLoading(false);
     }
-    setLoading(false);
   };
 
   const checkRelations = async (pageId: number) => {
@@ -309,12 +320,16 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   };
 
 
-  if (!bookInfo || !currentPage) {
+  if (loadError || !bookInfo || !currentPage) {
     return (
       <div className="fixed inset-0 bg-[#fbf8f1] flex justify-center items-center z-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#8d6e63] border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-[#5d4037] text-2xl font-bold animate-pulse">Memuat Kitab...</div>
+        <div className="flex flex-col items-center gap-4 max-w-lg p-6 text-center">
+          {!loadError && <div className="w-12 h-12 border-4 border-[#8d6e63] border-t-transparent rounded-full animate-spin" />}
+          <div role={loadError ? 'alert' : 'status'} className="text-[#5d4037] text-xl font-bold">{loadError || 'Memuat Kitab…'}</div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {loadError && <button onClick={() => void loadBookAndPage()} disabled={loading} className="rounded-lg bg-emerald-700 text-white px-4 py-2 disabled:opacity-50">Coba lagi</button>}
+            <button onClick={onClose} className="rounded-lg border border-[#8d6e63] text-[#5d4037] px-4 py-2">Kembali</button>
+          </div>
         </div>
       </div>
     );
