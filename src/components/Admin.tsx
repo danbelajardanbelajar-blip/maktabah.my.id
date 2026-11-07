@@ -3,7 +3,11 @@ import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
 import { AiSettings } from './AiSettings';
 import { useModalFocus } from '../lib/use-modal-focus';
-import { adminParent, adminTitle } from '../lib/admin-navigation';
+import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin-navigation';
+import { AdminNavigation } from './AdminNavigation';
+import { restoreAdminEntities } from '../lib/admin-loader';
+import { StorageCleanup } from './StorageCleanup';
+import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
 
@@ -213,14 +217,20 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
     else setSelected(selected.filter(s => s.id !== item.id));
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(15);
+  const [currentPage, setCurrentPage] = useState(() => routePage(parseNavigation(window.location.hash).params.get('cpage')));
+  const [limit, setLimit] = useState(() => {const n=Number(parseNavigation(window.location.hash).params.get('csize')); return [15,20,25,30,50,100,500].includes(n)?n:15;});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); onChanged(); });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(() => parseNavigation(window.location.hash).params.get('cq') || '');
+  useEffect(() => {
+    const current=parseNavigation(window.location.hash);
+    if (current.tab !== 'admin' || adminLocation(window.location.hash).view !== 'categories') return;
+    current.params.set('cpage',String(currentPage)); current.params.set('csize',String(limit)); current.params.set('cq',query);
+    window.history.replaceState(window.history.state,'',`#/admin?${current.params}`);
+  },[currentPage,limit,query]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -268,7 +278,7 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
         <h2 className="font-bold text-gray-800 flex items-center gap-2"><FolderOpen size={20} className="text-[var(--app-primary)]" /> Kategori ({cats.length})</h2>
         <div className="relative w-full md:w-64">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari kategori..." className="pl-9 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
+          <input value={query} onChange={e => {setQuery(e.target.value);setCurrentPage(1);}} placeholder="Cari kategori..." className="pl-9 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
         </div>
       </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
@@ -388,19 +398,26 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
   const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); onChanged(); });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState(() => parseNavigation(window.location.hash).params.get('bq') || '');
+  const [page, setPage] = useState(() => routePage(parseNavigation(window.location.hash).params.get('bpage')));
   const [total, setTotal] = useState(0);
-  const [limit, setLimit] = useState(30);
+  const [limit, setLimit] = useState(() => { const n = Number(parseNavigation(window.location.hash).params.get('bsize')); return [15,20,25,30,50,100,500].includes(n)?n:30; });
 
   const load = useCallback(async (p = 1, q = query, l = limit) => {
     setLoading(true);
     const res = await adminFetch(token, () => webAPI.getAdminBooks(token, p, q, category.id, l), onLogout, setError);
-    if (res) { setBooks(res.data); setTotal(res.total); setPage(res.page); }
+    if (res) {
+      setBooks(res.data); setTotal(res.total); setPage(res.page);
+      const current = parseNavigation(window.location.hash);
+      if (current.tab === 'admin' && current.params.get('view') === 'books' && Number(current.params.get('cat')) === category.id) {
+        current.params.set('bq',q); current.params.set('bpage',String(res.page)); current.params.set('bsize',String(l));
+        window.history.replaceState(window.history.state,'',`#/admin?${current.params}`);
+      }
+    }
     setLoading(false);
   }, [token, category.id, query, limit]);
 
-  useEffect(() => { load(1, '', limit); }, [category.id]);
+  useEffect(() => { load(page, query, limit); }, [category.id]);
 
   const handleSearch = (e: React.FormEvent) => { e.preventDefault(); load(1, query, limit); };
 
@@ -528,18 +545,25 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); });
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => routePage(parseNavigation(window.location.hash).params.get('ppage')));
   const [total, setTotal] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(() => {const n=Number(parseNavigation(window.location.hash).params.get('psize')); return [15,20,25,30,50,100,500].includes(n)?n:20;});
 
   const load = useCallback(async (p = 1, l = limit) => {
     setLoading(true);
     const res = await adminFetch(token, () => webAPI.getAdminBookPages(token, book.bkid, p, l), onLogout, setError);
-    if (res) { setPages(res.data); setTotal(res.total); setPage(res.page); }
+    if (res) {
+      setPages(res.data); setTotal(res.total); setPage(res.page);
+      const current=parseNavigation(window.location.hash);
+      if (current.tab === 'admin' && current.params.get('view') === 'pages' && Number(current.params.get('book')) === book.bkid) {
+        current.params.set('ppage',String(res.page)); current.params.set('psize',String(l));
+        window.history.replaceState(window.history.state,'',`#/admin?${current.params}`);
+      }
+    }
     setLoading(false);
   }, [token, book.bkid, limit]);
 
-  useEffect(() => { load(1, limit); }, [book.bkid]);
+  useEffect(() => { load(page, limit); }, [book.bkid]);
 
   const handleDeletePage = async (pg: PageRow) => {
     if (deletion.pending) return;
@@ -1065,12 +1089,77 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
 // ==================== DASHBOARD ====================
 
 const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: () => void, onClose: () => void }) => {
-  const dialogRef = useModalFocus();
-  const [view, setView] = useState<AdminView>('categories');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dialogRef = useModalFocus(undefined, !menuOpen);
+  const drawerRef = useModalFocus(() => setMenuOpen(false), menuOpen);
+  const [view, setViewState] = useState<AdminView>(() => adminLocation(window.location.hash).view);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [selectedPage, setSelectedPage] = useState<PageRow | null>(null);
   const [stats, setStats] = useState<any>({});
+  const [restoring, setRestoring] = useState(false);
+  const [routeError, setRouteError] = useState('');
+  const [restoredHash, setRestoredHash] = useState(window.location.hash);
+  const requestId = useRef(0);
+  type Context = {category?: Category; book?: Book; page?: PageRow};
+  const restoreRef = useRef<(context?: Context) => void>(() => {});
+  restoreRef.current = async (context = {}) => {
+    if (parseNavigation(window.location.hash, window.location.search).tab !== 'admin') return;
+    const route = adminLocation(window.location.hash), id = ++requestId.current;
+    setViewState(route.view); setRestoredHash(window.location.hash); setMenuOpen(false); setRouteError(''); setRestoring(false);
+    const nested = ['books','pages','edit_page'].includes(route.view);
+    if (!nested) { setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); return; }
+    setRestoring(true);
+    try {
+      const {category,book,page} = await restoreAdminEntities(route, {
+        category:context.category || selectedCategory || undefined,
+        book:context.book || selectedBook || undefined,
+        page:context.page || selectedPage || undefined,
+      }, {
+        book:webAPI.getBookInfo,
+        categories:() => webAPI.getAdminCategories(token),
+        page:(bookId,pageId) => webAPI.getAdminPage(token,bookId,pageId),
+      });
+      if (id !== requestId.current) return;
+      setSelectedCategory(category); setSelectedBook(book); setSelectedPage(page);
+    } catch (error) {
+      if (id !== requestId.current) return;
+      const message = error instanceof Error ? error.message : 'Gagal memulihkan lokasi admin.';
+      if (message === '401') onLogout(); else setRouteError(message);
+    } finally { if (id === requestId.current) setRestoring(false); }
+  };
+  const setView = (next:AdminView, context:Context = {}) => {
+    const previous = adminLocation(window.location.hash);
+    const nested = ['books','pages','edit_page'].includes(next);
+    const category = context.category || selectedCategory;
+    const book = context.book || selectedBook;
+    const page = context.page || selectedPage;
+    const params:Record<string,string|number|undefined> = {view:next};
+    if (nested || next === 'categories') {
+      const old=parseNavigation(window.location.hash).params;
+      for (const key of ['cq','cpage','csize']) params[key]=old.get(key) ?? undefined;
+    }
+    if (nested) {
+      params.cat = category?.id ?? previous.categoryId;
+      if (next !== 'books') params.book = book?.bkid ?? previous.bookId;
+      if (next === 'edit_page') params.pid = page?.id ?? previous.pageId;
+      if (params.cat === previous.categoryId) {
+        const old = parseNavigation(window.location.hash).params;
+        for (const key of ['bq','bpage','bsize']) params[key] = old.get(key) ?? undefined;
+        if (params.book === previous.bookId) for (const key of ['ppage','psize']) params[key] = old.get(key) ?? undefined;
+      }
+    }
+    const hash = navigationHash('admin', params);
+    if (hash !== window.location.hash) window.history.pushState({},'',hash);
+    restoreRef.current(context);
+  };
+  useEffect(() => {
+    const restore = () => restoreRef.current();
+    restore();
+    window.addEventListener('popstate',restore); window.addEventListener('hashchange',restore);
+    window.addEventListener('maktabah:navigate',restore);
+    return () => { ++requestId.current; window.removeEventListener('popstate',restore); window.removeEventListener('hashchange',restore); window.removeEventListener('maktabah:navigate',restore); };
+  },[token]);
 
   const fetchStats = useCallback(() => {
     adminFetch(token, () => webAPI.getAdminStats(token), onLogout, () => {}).then(res => {
@@ -1083,35 +1172,32 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   }, [fetchStats]);
 
   const breadcrumb = [
-    { label: adminTitle(view), onClick: () => { setView('categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); } },
-    ...(['books','pages','edit_page'].includes(view) && selectedCategory ? [{ label: selectedCategory.name, onClick: () => { setView('books'); setSelectedBook(null); setSelectedPage(null); } }] : []),
-    ...(['pages','edit_page'].includes(view) && selectedBook ? [{ label: selectedBook.bk, onClick: () => { setView('pages'); setSelectedPage(null); } }] : []),
-    ...(view === 'edit_page' && selectedPage ? [{ label: `Juz ${selectedPage.part} Hal ${selectedPage.page}`, onClick: () => {} }] : []),
+    {label:'Admin',onClick:() => setView('categories')},
+    {label:adminGroup(view),onClick:() => setView(['books','pages','edit_page'].includes(view)?'categories':view)},
+    ...(!['categories','books','pages','edit_page'].includes(view)?[{label:adminTitle(view),onClick:() => {}}]:[]),
+    ...(['books','pages','edit_page'].includes(view) && selectedCategory ? [{label:selectedCategory.name,onClick:() => setView('books')}] : []),
+    ...(['pages','edit_page'].includes(view) && selectedBook ? [{label:selectedBook.bk,onClick:() => setView('pages')}] : []),
+    ...(view === 'edit_page' && selectedPage ? [{label:`Juz ${selectedPage.part} Hal ${selectedPage.page}`,onClick:() => {}}] : []),
   ];
-  const goBack = () => {
-    const parent = adminParent(view);
-    setView(parent);
-    if (parent === 'categories') { setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }
-    else if (parent === 'books') { setSelectedBook(null); setSelectedPage(null); }
-    else if (parent === 'pages') setSelectedPage(null);
-  };
+  const goBack = () => setView(adminParent(view));
 
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Panel administrator" tabIndex={-1} className="fixed inset-0 bg-gray-100 flex flex-col z-[80] overflow-hidden font-sans">
       {/* Header */}
-      <div className="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm flex-shrink-0">
-        <div className="flex items-center gap-3">
+      <div className="bg-white border-b px-3 md:px-6 py-3 flex justify-between items-center gap-2 shadow-sm flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="admin-menu" className="lg:hidden px-3 py-2 rounded-lg bg-gray-100 text-sm font-semibold">Menu</button>
           {view !== 'categories' && (
             <button onClick={goBack} aria-label={`Kembali ke ${adminTitle(adminParent(view))}`} className="text-gray-500 hover:text-[var(--app-primary)] p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
               <ArrowLeft size={20} />
             </button>
           )}
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1 text-sm">
+          <nav aria-label="Lokasi administrator" className="flex items-center gap-1 text-sm overflow-x-auto min-w-0">
             {breadcrumb.map((b, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <ChevronRight size={14} className="text-gray-400" />}
-                <button onClick={b.onClick} className={`font-semibold transition-colors max-w-[200px] truncate ${i === breadcrumb.length - 1 ? 'text-[var(--app-primary)]' : 'text-gray-500 hover:text-gray-800'}`} dir="auto" style={i > 0 ? { fontFamily: 'var(--arabic-font)' } : {}}>
+                <button onClick={b.onClick} aria-current={i === breadcrumb.length - 1 ? 'page' : undefined} className={`shrink-0 font-semibold transition-colors max-w-[200px] truncate ${i === breadcrumb.length - 1 ? 'text-[var(--app-primary)]' : 'text-gray-500 hover:text-gray-800'}`} dir="auto" style={i > 0 ? { fontFamily: 'var(--arabic-font)' } : {}}>
                   {b.label}
                 </button>
               </React.Fragment>
@@ -1125,36 +1211,27 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
       </div>
 
       
-      {/* Sub Navigation */}
-      <div className="bg-white border-b px-6 flex gap-4 overflow-x-auto shadow-sm">
-        <button onClick={() => { setView('categories'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${['categories', 'books', 'pages', 'edit_page', 'transfer'].includes(view) ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Database Kitab {stats.books !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ ['categories', 'books', 'pages', 'edit_page', 'transfer'].includes(view) ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.books}</span>}</button>
-        <button onClick={() => { setView('feedback'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'feedback' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Feedback {stats.feedback !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'feedback' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.feedback}</span>}</button>
-        <button onClick={() => { setView('requests'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'requests' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Request Kitab {stats.requests !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'requests' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.requests}</span>}</button>
-        <button onClick={() => { setView('submissions'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'submissions' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Submit Kitab {stats.submissions !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'submissions' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.submissions}</span>}</button>
-      
-        <button onClick={() => { setView('log_search'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_search' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Pencarian {stats.log_search !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_search' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_search}</span>}</button>
-        <button onClick={() => { setView('log_download'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_download' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Download {stats.log_download !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_download' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_download}</span>}</button>
-        <button onClick={() => { setView('log_visit'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_visit' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Kunjungan {stats.log_visit !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_visit' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_visit}</span>}</button>
-        <button onClick={() => { setView('log_quran'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_quran' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Qur'an {stats.log_quran !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_quran' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_quran}</span>}</button>
-        <button onClick={() => { setView('log_rowa'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_rowa' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Perawi {stats.log_rowa !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_rowa' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_rowa}</span>}</button>
-        <button onClick={() => { setView('ai_settings'); setSelectedCategory(null); setSelectedBook(null); }} className={`py-3 font-semibold text-sm border-b-2 whitespace-nowrap ${view === 'ai_settings' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500'}`}>Pengaturan AI</button>
-        <button onClick={() => { setView('log_ask'); }} className={`py-3 font-semibold text-sm border-b-2 flex items-center whitespace-nowrap transition-colors ${view === 'log_ask' ? 'border-[var(--app-primary)] text-[var(--app-primary)]' : 'border-transparent text-gray-500 hover:text-gray-800'}`}>Log Tanya AI {stats.log_ask !== undefined && <span className={`ml-1.5 text-[10px] px-2 py-0.5 rounded-full ${ view === 'log_ask' ? 'bg-[var(--app-primary)] text-white' : 'bg-gray-100 text-gray-600' }`}>{stats.log_ask}</span>}</button>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-4 md:p-6">
+      <div className="flex flex-1 min-h-0 relative">
+        {menuOpen && <button className="absolute inset-0 z-40 bg-black/40 lg:hidden" aria-label="Tutup menu admin" onClick={() => setMenuOpen(false)} />}
+        <div ref={drawerRef} id="admin-menu" tabIndex={-1} role={menuOpen?'dialog':undefined} aria-modal={menuOpen?true:undefined} aria-label="Menu admin" className={`${menuOpen?'absolute inset-y-0 left-0 z-50':'hidden'} lg:static lg:block w-64 max-w-[85vw] shrink-0 bg-white border-r overflow-y-auto`}>
+          <button onClick={() => setMenuOpen(false)} className="lg:hidden m-4 px-3 py-2 bg-gray-100 rounded-lg text-sm">Tutup menu</button>
+          <AdminNavigation view={view} onNavigate={next => setView(next)} stats={stats} />
+        </div>
+        <div className="flex-1 min-w-0 overflow-auto p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
+          {restoring ? <p role="status" className="p-8 text-center">Memuat lokasi admin…</p> : routeError ? <div role="alert" className="p-5 bg-white border rounded-xl space-y-3"><p>{routeError}</p><button onClick={() => restoreRef.current()} className="underline mr-4">Coba lagi</button><button onClick={() => setView('categories')} className="underline">Kembali ke kategori</button></div> : <>
+          {view === 'storage' && <section><h1 className="text-xl font-bold mb-4">Backup & Penyimpanan</h1><StorageCleanup token={token} busy={false} onLogout={onLogout} onCleaned={fetchStats} /></section>}
           {['categories', 'books', 'pages', 'edit_page'].includes(view) && <div className="flex justify-end mb-4"><button onClick={() => { setView('transfer'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className="inline-flex items-center gap-2 bg-[var(--app-primary)] text-white font-semibold text-sm px-4 py-2.5 rounded-xl"><FolderSync size={18} /> Import / Export Kitab</button></div>}
           {view === 'ai_settings' && <AiSettings token={token} onLogout={onLogout} />}
-          {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} />}
+          {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} onStorage={() => setView('storage')} />}
           {view === 'categories' && (
-            <CategoriesView token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={(cat) => { setSelectedCategory(cat); setView('books'); }} />
+            <CategoriesView key={restoredHash} token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={cat => setView('books',{category:cat})} />
           )}
           {view === 'books' && selectedCategory && (
-            <BooksView token={token} onLogout={onLogout} onChanged={fetchStats} category={selectedCategory} onSelectBook={(book) => { setSelectedBook(book); setView('pages'); }} />
+            <BooksView key={restoredHash} token={token} onLogout={onLogout} onChanged={fetchStats} category={selectedCategory} onSelectBook={book => setView('pages',{book})} />
           )}
           {view === 'pages' && selectedBook && (
-            <PagesView token={token} onLogout={onLogout} book={selectedBook} onEditPage={(pg) => { setSelectedPage(pg); setView('edit_page'); }} />
+            <PagesView key={restoredHash} token={token} onLogout={onLogout} book={selectedBook} onEditPage={page => setView('edit_page',{page})} />
           )}
           {view === 'edit_page' && selectedBook && selectedPage && (
             <EditPageView token={token} onLogout={onLogout} book={selectedBook} pageRow={selectedPage} onSaved={() => { setView('pages'); setSelectedPage(null); }} />
@@ -1168,6 +1245,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {view === 'log_quran' && <LogsView token={token} onLogout={onLogout} type="quran" title="Log Penggunaan Al Qur'an" />}
           {view === 'log_rowa' && <LogsView token={token} onLogout={onLogout} type="rowa" title="Log Kamus Perawi" />}
           {view === 'log_ask' && <LogsView token={token} onLogout={onLogout} type="ask" title="Log Tanya AI" />}
+          </>}
+        </div>
         </div>
       </div>
     </div>

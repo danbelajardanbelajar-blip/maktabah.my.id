@@ -1,0 +1,6 @@
+import {adminGroups,adminTitle} from '../lib/admin-navigation';
+import type {AdminView} from '../lib/admin-navigation';
+export function AdminNavigation({view,onNavigate,stats}:{view:AdminView;onNavigate:(view:AdminView)=>void;stats:Record<string,number>}) {
+  const countKey:Record<string,string>={categories:'books',feedback:'feedback',requests:'requests',submissions:'submissions'};
+  return <nav aria-label="Menu administrator" className="space-y-4 p-4">{adminGroups.map(group=><section key={group.label}><h2 className="text-xs font-bold uppercase tracking-wide text-gray-500 px-2 mb-2">{group.label}</h2><div className="flex flex-col gap-1">{group.views.map(item=>{const active=view===item||(item==='categories'&&['books','pages','edit_page'].includes(view));const count=stats[countKey[item]||item];return <button key={item} onClick={()=>onNavigate(item)} aria-current={active?'page':undefined} className={`text-left rounded-lg px-3 py-2.5 text-sm font-semibold flex justify-between gap-2 ${active?'bg-[var(--app-primary)] text-white':'text-gray-700 hover:bg-gray-100'}`}><span>{item==='categories'?'Kategori & Kitab':adminTitle(item)}</span>{count!==undefined&&<span className="text-xs opacity-75">{count}</span>}</button>;})}</div></section>)}</nav>;
+}

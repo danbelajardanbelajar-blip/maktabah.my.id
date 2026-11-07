@@ -1160,7 +1160,7 @@ app.get('/api/book/:id', (req, res) => {
   try {
     const bookId = parseInt(req.params.id);
     const stmt = db.prepare(`
-      SELECT b.bkid, b.bk, b.inf as book_inf, b.betaka, c.name as category, a.auth, a.inf as author_inf, a.HigriD, a.AD
+      SELECT b.bkid, b.bk, b.cat, b.inf as book_inf, b.betaka, c.name as category, a.auth, a.inf as author_inf, a.HigriD, a.AD
       FROM ${booksMeta()} b
       LEFT JOIN main.categories c ON b.cat = c.id
       LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid

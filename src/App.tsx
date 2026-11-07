@@ -527,7 +527,7 @@ function App() {
               </button>
             </form>
 
-              <div className="flex flex-wrap gap-2 mb-6">
+              {activeTab !== 'home' && <div className="flex flex-wrap gap-2 mb-6">
                 {[
                   { id: 'text', label: 'Teks', icon: <Search size={16}/> },
                   { id: 'title', label: 'Judul Kitab', icon: <BookMarked size={16}/> },
@@ -548,7 +548,7 @@ function App() {
                   {tab.icon} {tab.label}
                 </button>
               ))}
-            </div>
+            </div>}
 
 
             <div id="search-results">

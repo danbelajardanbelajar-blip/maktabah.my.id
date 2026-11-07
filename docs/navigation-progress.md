@@ -10,7 +10,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 - [x] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
 - [x] 7. Katalog: kategori 0, pemulihan gagal, kategori/filter/pagination di URL.
 - [x] 8. Koleksi Saya: favorit, bookmark, dan lanjut membaca, dengan keterangan penyimpanan perangkat.
-- [ ] 9. Admin: pengelompokan Kitab, Transfer, Aktivitas, Masukan, Pengaturan dan breadcrumb konsisten.
+- [x] 9. Admin: pengelompokan Kitab, Transfer, Aktivitas, Masukan, Pengaturan dan breadcrumb konsisten.
 
 ## Verifikasi unit 1
 
@@ -45,3 +45,9 @@ Katalog kategori 0 memakai pemeriksaan null. Kategori/filter/pagination memakai 
 ## Verifikasi unit 8
 
 Koleksi Saya tersedia dari Lainnya dan beranda, berisi lanjut membaca/favorit/bookmark. Ada pencarian dan penghapusan item dari daftar perangkat tanpa mengubah database kitab. Posisi terakhir tampil di beranda. Build dan tes posisi baca.
+
+## Verifikasi unit 9 dan pemeriksaan gabungan
+
+Admin memakai sidebar lima kelompok dan drawer pada ponsel. Breadcrumb serta URL memuat kategori/kitab/editor; refresh dan riwayat browser memulihkan metadata dengan status memuat, gagal dan coba lagi. Query/pagination kategori, kitab dan halaman dipertahankan ketika membuka anak lalu kembali. Backup & Penyimpanan memiliki tujuan tersendiri, dengan pintasan dari transfer. Mode pencarian hanya tampil pada halaman Cari agar beranda tidak menjalankan ulang query lama.
+
+Seluruh 52 tes server/logika lulus, termasuk pemulihan kategori 0, halaman 0, respons metadata asli `{data}`, konteks lama dan entitas hilang. TypeScript/build produksi dan pemeriksaan sintaks server lulus; render SSR menu memverifikasi lima kelompok serta penanda lokasi aktif. Pengujian database memakai fixture sementara. Uji visual/gestur pada browser nyata belum dapat dilakukan karena runtime alat browser gagal dimulai.
