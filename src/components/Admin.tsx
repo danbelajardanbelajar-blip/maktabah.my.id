@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
 import { AiSettings } from './AiSettings';
+import { useModalFocus } from '../lib/use-modal-focus';
 import { adminParent, adminTitle } from '../lib/admin-navigation';
 import type { AdminView } from '../lib/admin-navigation';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, ArrowLeft, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
@@ -92,6 +93,7 @@ const ErrorBanner = ({ msg, onClose }: { msg: string, onClose: () => void }) => 
 
 // ==================== LOGIN ====================
 const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose: () => void }) => {
+  const dialogRef = useModalFocus(onClose);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -109,7 +111,7 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Login administrator" tabIndex={-1} className="fixed inset-0 bg-black/50 flex justify-center items-center z-[80] p-4">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 p-1"><X size={20} /></button>
         <div className="p-8">
@@ -1063,6 +1065,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
 // ==================== DASHBOARD ====================
 
 const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: () => void, onClose: () => void }) => {
+  const dialogRef = useModalFocus();
   const [view, setView] = useState<AdminView>('categories');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -1094,7 +1097,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-100 flex flex-col z-50 overflow-hidden font-sans">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Panel administrator" tabIndex={-1} className="fixed inset-0 bg-gray-100 flex flex-col z-[80] overflow-hidden font-sans">
       {/* Header */}
       <div className="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm flex-shrink-0">
         <div className="flex items-center gap-3">

@@ -126,7 +126,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-80px)] bg-gray-50 max-w-4xl mx-auto w-full border-x border-gray-200">
+    <div className="flex flex-col h-[calc(100dvh-150px)] xl:h-[calc(100dvh-140px)] min-h-[22rem] bg-gray-50 max-w-4xl mx-auto w-full border-x border-gray-200">
       
       {/* Header */}
       <div className="bg-white p-4 border-b border-gray-200 flex items-center gap-3 shrink-0 shadow-sm">

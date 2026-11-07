@@ -7,7 +7,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 - [x] 3. Lokasi berbasis URL, Kembali/Maju browser, Beranda terpisah dari Cari, konteks pencarian.
 - [x] 4. Pembaca: URL halaman aktif, posisi terakhir, kontrol ponsel dan gestur.
 - [x] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
-- [ ] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
+- [x] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
 - [ ] 7. Katalog: kategori 0, pemulihan gagal, kategori/filter/pagination di URL.
 - [ ] 8. Koleksi Saya: favorit, bookmark, dan lanjut membaca, dengan keterangan penyimpanan perangkat.
 - [ ] 9. Admin: pengelompokan Kitab, Transfer, Aktivitas, Masukan, Pengaturan dan breadcrumb konsisten.
@@ -33,3 +33,7 @@ Posisi buku dan URL halaman dipulihkan tanpa menambah riwayat setiap lembar. Kon
 ## Verifikasi unit 5
 
 Percakapan tetap terpasang ketika menu berubah, pulih dari sessionStorage sesudah refresh, dan pertanyaan terputus tidak dikirim ulang otomatis. Tersedia indikator proses serta aksi percakapan baru. Uji ai-session dan build.
+
+## Verifikasi unit 6
+
+Menu Lainnya desktop/mobile memakai definisi yang sama; mendukung klik, keyboard, Escape, klik luar, dan fokus. Modal menahan fokus dan berada di atas navigasi bawah. Header desktop mulai xl; tablet memakai lima tab bawah. Build/TypeScript, pemeriksaan SSR menu serta tes navigasi. Pengujian visual perangkat masih membutuhkan runtime browser yang berfungsi.

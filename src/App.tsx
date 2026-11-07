@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, FolderSearch, Library, BookOpen, UserCircle, Settings as SettingsIcon, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, Heart, MessageSquare, BookPlus, Upload, GitPullRequest } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, Heart, GitPullRequest } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -16,6 +16,8 @@ import AskAI from './components/AskAI';
 import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
 import { readingPositions } from './lib/reading-position';
+import { MoreDropdown, MoreLinks } from './components/MoreMenu';
+import { useModalFocus } from './lib/use-modal-focus';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
@@ -90,6 +92,7 @@ function App() {
 
   // States for Book Modal
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
+  const bookDialogRef = useModalFocus(() => setSelectedBook(null), selectedBook !== null);
   const [bookInfo, setBookInfo] = useState<any>(null);
   const [toc, setToc] = useState<any[]>([]);
   const [loadingBook, setLoadingBook] = useState(false);
@@ -329,10 +332,10 @@ function App() {
   const totalPages = Math.ceil(totalResults / limit);
 
   return (
-    <div className="flex flex-col min-h-screen font-sans pb-[70px] md:pb-0 transition-colors duration-300" dir="ltr" style={{ backgroundColor: 'var(--app-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
+    <div className="flex flex-col min-h-screen font-sans pb-[70px] xl:pb-0 transition-colors duration-300" dir="ltr" style={{ backgroundColor: 'var(--app-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
       {!readingConfig && (
         <>
-          <header className="hidden md:block bg-transparent md:bg-[var(--app-primary)] md:text-white md:shadow-lg relative z-40 md:sticky md:top-0 transition-colors duration-300 md:backdrop-blur-md md:bg-opacity-95" style={{ fontFamily: 'var(--latin-font)' }}>
+          <header className="hidden xl:block bg-transparent md:bg-[var(--app-primary)] md:text-white md:shadow-lg relative z-40 md:sticky md:top-0 transition-colors duration-300 md:backdrop-blur-md md:bg-opacity-95" style={{ fontFamily: 'var(--latin-font)' }}>
         <div className="flex justify-center md:justify-between items-center pt-6 pb-2 md:px-8 md:py-0 max-w-7xl mx-auto md:h-[80px]">
                     {/* Logo & Title */}
           <a 
@@ -349,7 +352,7 @@ function App() {
           </a>
 
           {/* Navigation Menu (Hidden on mobile, uses bottom tabs instead) */}
-          <nav className="hidden md:flex flex-row gap-4 lg:gap-6 font-sans h-full">
+          <nav className="hidden xl:flex flex-row gap-4 lg:gap-6 font-sans h-full">
             <button 
               onClick={() => { setActiveTab('home'); }}
               className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'home' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
@@ -375,37 +378,7 @@ function App() {
                 <Bot size={18} /> Tanya AI
               </button>
 
-            <div className="relative group h-full flex items-center">
-              <button 
-                className="flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] whitespace-nowrap text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent"
-              >
-                <Menu size={18} /> Lainnya
-              </button>
-              
-              {/* Dropdown Menu */}
-              <div className="absolute top-full mt-0 right-0 hidden group-hover:block bg-[var(--reader-bg)] shadow-xl rounded-b-xl border border-[var(--app-primary)]/10 min-w-[220px] overflow-hidden z-50 text-[var(--app-text)] animate-in fade-in slide-in-from-top-2 duration-200">
-                <button onClick={() => setActiveTab('quran')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <BookOpen size={18} className="text-[var(--app-primary)]" /> Al-Qur'an
-                </button>
-                <button onClick={() => setActiveTab('rowa')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <UserCircle size={18} className="text-[var(--app-primary)]" /> Kamus Perawi
-                </button>
-                <button onClick={() => setActiveTab('settings')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <SettingsIcon size={18} className="text-[var(--app-primary)]" /> Pengaturan
-                </button>
-                
-                                <button onClick={() => setActiveTab('feedback')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <MessageSquare size={18} className="text-[var(--app-primary)]" /> Feedback
-                </button>
-                <button onClick={() => setActiveTab('book_request')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <BookPlus size={18} className="text-[var(--app-primary)]" /> Request Kitab
-                </button>
-                <button onClick={() => setActiveTab('book_submit')} className="w-full text-left px-5 py-3 hover:bg-[var(--app-primary)]/10 font-semibold transition-colors flex items-center gap-3 border-b border-black/5">
-                  <Upload size={18} className="text-[var(--app-primary)]" /> Submit Kitab
-                </button>
-
-              </div>
-            </div>
+            <MoreDropdown onNavigate={setActiveTab} />
           </nav>
         </div>
       </header>
@@ -435,45 +408,7 @@ function App() {
         ) : activeTab === 'ask' ? (
             null
           ) : activeTab === 'more' ? (
-          <div className="w-full bg-[var(--reader-bg)] p-6 rounded-2xl shadow-xl border border-[var(--app-primary)]/10 my-4 transition-all">
-            <h2 className="text-2xl font-bold mb-6 text-[var(--app-text)] border-b pb-4 flex items-center gap-3">
-              <Menu className="text-[var(--app-primary)]" /> Lainnya
-            </h2>
-            <div className="flex flex-col gap-4">
-              <button onClick={() => setActiveTab('quran')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><BookOpen className="text-[var(--app-primary)]" /> Al-Qur'an</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <button onClick={() => setActiveTab('rowa')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><UserCircle className="text-[var(--app-primary)]" /> Kamus Perawi</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <button onClick={() => setActiveTab('settings')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><SettingsIcon className="text-[var(--app-primary)]" /> Pengaturan</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <button onClick={() => setActiveTab('about')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><Info className="text-[var(--app-primary)]" /> Tentang</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <a href="/privacy-policy" className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><Shield className="text-[var(--app-primary)]" /> Privasi</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </a>
-                            <button onClick={() => setActiveTab('feedback')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><MessageSquare className="text-[var(--app-primary)]" /> Feedback</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <button onClick={() => setActiveTab('book_request')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><BookPlus className="text-[var(--app-primary)]" /> Request Kitab</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-              <button onClick={() => setActiveTab('book_submit')} className="text-right p-4 bg-[var(--reader-paper)] rounded-xl font-bold text-lg border border-black/5 hover:border-[var(--app-primary)]/30 hover:shadow-md transition-all flex justify-between items-center group">
-                <span className="flex items-center gap-3"><Upload className="text-[var(--app-primary)]" /> Submit Kitab</span>
-                <ChevronLeft className="text-gray-400 group-hover:text-[var(--app-primary)] transition-colors" />
-              </button>
-            </div>
-          </div>
+          <section className="bg-[var(--reader-bg)] rounded-2xl border p-5"><h2 className="text-xl font-bold mb-4">Lainnya</h2><MoreLinks onNavigate={setActiveTab}/></section>
         ) : (
           <div className="w-full">
             {activeTab === 'home' && (
@@ -926,7 +861,7 @@ function App() {
       </footer>
 
       {/* Mobile Bottom Navigation */}
-      <div dir="ltr" className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--reader-bg)] border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 h-[70px] pb-safe flex justify-around items-center transition-colors duration-300">
+      <div dir="ltr" className="xl:hidden fixed bottom-0 left-0 w-full bg-[var(--reader-bg)] border-t border-black/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 h-[70px] pb-safe flex justify-around items-center transition-colors duration-300">
         <button 
           onClick={() => { setActiveTab('home'); window.scrollTo(0,0); }}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'home' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
@@ -968,7 +903,7 @@ function App() {
 
       {/* Book Info Modal */}
       {selectedBook && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-40 transition-opacity">
+        <div ref={bookDialogRef} role="dialog" aria-modal="true" aria-label="Detail kitab" tabIndex={-1} className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4 z-[60] transition-opacity">
           <div className="bg-[var(--reader-paper)] rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-[var(--app-primary)]/20 animate-in fade-in zoom-in duration-200">
             <div className="bg-[var(--app-primary)] text-white p-5 flex justify-between items-center shadow-md z-10">
               <h2 className="text-2xl font-bold flex items-center gap-2"><BookOpen size={24} /> <span dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo ? bookInfo.bk : 'Memuat...'}</span></h2>

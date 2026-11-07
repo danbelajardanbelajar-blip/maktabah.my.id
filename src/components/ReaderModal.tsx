@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { webAPI } from '../api';
 import { loadReaderData } from '../lib/reader-loader';
 import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
+import { useModalFocus } from '../lib/use-modal-focus';
 import { ChevronLeft, ChevronRight, X, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
@@ -74,6 +75,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   const [pageKey, setPageKey] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarTab, setSidebarTab] = useState<'toc'|'search'>('toc');
+  const dialogRef = useModalFocus(() => { if (showSidebar) setShowSidebar(false); else onClose(); });
   const [toc, setToc] = useState<any[]>([]);
   const [tocLoaded, setTocLoaded] = useState(false);
   
@@ -160,15 +162,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
     return () => { loadRequest.current++; };
   }, [bookId, currentPageId]);
 
-  useEffect(() => {
-    const escape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.preventDefault();
-      if (showSidebar) setShowSidebar(false); else onClose();
-    };
-    window.addEventListener('keydown', escape);
-    return () => window.removeEventListener('keydown', escape);
-  }, [showSidebar, onClose]);
+
 
   
   const touchStartX = useRef<number | null>(null);
@@ -319,7 +313,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
 
   if (loadError || !bookInfo || !currentPage) {
     return (
-      <div className="fixed inset-0 bg-[#fbf8f1] flex justify-center items-center z-[70]">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Pembaca kitab" tabIndex={-1} className="fixed inset-0 bg-[#fbf8f1] flex justify-center items-center z-[70]">
         <div className="flex flex-col items-center gap-4 max-w-lg p-6 text-center">
           {!loadError && <div className="w-12 h-12 border-4 border-[#8d6e63] border-t-transparent rounded-full animate-spin" />}
           <div role={loadError ? 'alert' : 'status'} className="text-[#5d4037] text-xl font-bold">{loadError || 'Memuat Kitab…'}</div>
@@ -333,7 +327,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col z-[70] shadow-2xl" dir="auto" style={{ backgroundColor: 'var(--reader-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Pembaca kitab" tabIndex={-1} className="fixed inset-0 flex flex-col z-[70] shadow-2xl" dir="auto" style={{ backgroundColor: 'var(--reader-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
       
       {!showUi && <div className="absolute top-3 right-3 z-50 flex gap-2 rounded-xl bg-white/95 shadow p-2"><button onClick={onClose} className="px-3 py-2 text-sm" aria-label="Kembali dari pembaca">Kembali</button><button onClick={() => setShowUi(true)} className="px-3 py-2 text-sm font-semibold">Tampilkan kontrol</button></div>}
       {/* Sleek Header */}
