@@ -15,6 +15,7 @@ import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
 import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
+import { readingPositions } from './lib/reading-position';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
@@ -109,8 +110,11 @@ function App() {
   // Settings State
   
   const openReader = (config: any) => {
+    const saved = config.pageId === undefined ? readingPositions(localStorage).find(p => p.bookId === config.bookId) : null;
+    config = {...config, pageId: config.pageId ?? saved?.pageId};
     setReadingConfig(config);
-    const hash = `#/read/${config.bookId}${config.pageId ? '/' + config.pageId : ''}`;
+    window.history.replaceState({...window.history.state, scrollY:window.scrollY},'');
+    const hash = `#/read/${config.bookId}${config.pageId !== undefined ? '/' + config.pageId : ''}`;
     window.history.pushState({ ...config, maktabahReader: true }, '', hash);
   };
 
@@ -129,7 +133,7 @@ function App() {
         const parts = hash.replace('#/read/', '').split('/');
         setReadingConfig({
           bookId: parseInt(parts[0]),
-          pageId: parts[1] ? parseInt(parts[1]) : undefined,
+          pageId: parts[1] !== undefined ? Number(parts[1]) : readingPositions(localStorage).find(p => p.bookId === Number(parts[0]))?.pageId,
           highlightQuery: e.state?.highlightQuery || ''
         });
       } else {
@@ -1069,6 +1073,7 @@ function App() {
           setFavorites={setFavorites}
           bookmarks={bookmarks}
           setBookmarks={setBookmarks}
+          onPageChange={(id, pageId) => { if (window.location.hash.startsWith('#/read/')) window.history.replaceState(window.history.state,'',`#/read/${id}/${pageId}`); }}
           onClose={closeReader}
         />
       )}

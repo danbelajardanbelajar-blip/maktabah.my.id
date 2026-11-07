@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { webAPI } from '../api';
 import { loadReaderData } from '../lib/reader-loader';
+import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
 import { ChevronLeft, ChevronRight, X, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
@@ -13,6 +14,7 @@ export interface ReaderModalProps {
   bookmarks?: any[];
   setBookmarks?: any;
   onClose: () => void;
+  onPageChange?: (bookId:number,pageId:number) => void;
 }
 
 const buildArabicRegex = (word: string) => {
@@ -57,7 +59,7 @@ const highlightText = (text: string, query?: string) => {
 };
 
 
-const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose }) => {
+const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange }) => {
   const [bookInfo, setBookInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<any>(null);
   const [currentPageId, setCurrentPageId] = useState<number | undefined>(initialPageId);
@@ -67,7 +69,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   
   // Customization states
   const [fontSize, setFontSize] = useState(settings?.fontSize || 32);
-  const [showUi, setShowUi] = useState(false);
+  const [showUi, setShowUi] = useState(true);
   const [slideDir, setSlideDir] = useState<'left'|'right'|''>('');
   const [pageKey, setPageKey] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -143,6 +145,15 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   };
 
 
+  useEffect(() => { setCurrentPageId(initialPageId); setLocalHighlight(highlightQuery); }, [bookId, initialPageId, highlightQuery]);
+  useEffect(() => { setToc([]); setTocLoaded(false); setSearchResults([]); setShowSidebar(false); }, [bookId]);
+  useEffect(() => {
+    if (bookInfo?.bkid !== bookId || !currentPage) return;
+    onPageChange?.(bookId,currentPage.id);
+    rememberReadingPosition(localStorage,{bookId,pageId:currentPage.id,page:currentPage.page,part:currentPage.part,title:bookInfo.bk,updatedAt:Date.now()});
+    window.dispatchEvent(new Event('readingPositionsUpdated'));
+  },[bookId,bookInfo?.bkid,currentPage?.id]);
+
   useEffect(() => {
     if (bookInfo?.bkid === bookId && currentPage?.id === currentPageId) return;
     void loadBookAndPage();
@@ -161,33 +172,19 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
 
   
   const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
+    touchStartX.current = e.touches[0].clientX; touchStartY.current = e.touches[0].clientY;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX.current === null || touchEndX.current === null) return;
-    const distance = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (distance > minSwipeDistance) {
-      // Swiped left -> Next Page
-      setSlideDir('left');
-      nextPage();
-    } else if (distance < -minSwipeDistance) {
-      // Swiped right -> Previous Page
-      setSlideDir('right');
-      prevPage();
-    }
-    
-    touchStartX.current = null;
-    touchEndX.current = null;
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const startX=touchStartX.current, startY=touchStartY.current;
+    touchStartX.current=null; touchStartY.current=null;
+    if (startX===null || startY===null || !e.changedTouches[0]) return;
+    const direction=swipeDirection(startX-e.changedTouches[0].clientX,startY-e.changedTouches[0].clientY,loading,Boolean(window.getSelection()?.toString()));
+    if(direction==='next'){setSlideDir('left');void nextPage();}
+    if(direction==='previous'){setSlideDir('right');void prevPage();}
   };
 
   const toggleUi = (e: React.MouseEvent) => {
@@ -322,7 +319,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
 
   if (loadError || !bookInfo || !currentPage) {
     return (
-      <div className="fixed inset-0 bg-[#fbf8f1] flex justify-center items-center z-50">
+      <div className="fixed inset-0 bg-[#fbf8f1] flex justify-center items-center z-[70]">
         <div className="flex flex-col items-center gap-4 max-w-lg p-6 text-center">
           {!loadError && <div className="w-12 h-12 border-4 border-[#8d6e63] border-t-transparent rounded-full animate-spin" />}
           <div role={loadError ? 'alert' : 'status'} className="text-[#5d4037] text-xl font-bold">{loadError || 'Memuat Kitab…'}</div>
@@ -336,10 +333,11 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col z-50 shadow-2xl" dir="auto" style={{ backgroundColor: 'var(--reader-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
+    <div className="fixed inset-0 flex flex-col z-[70] shadow-2xl" dir="auto" style={{ backgroundColor: 'var(--reader-bg)', color: 'var(--app-text)', fontFamily: 'var(--latin-font)' }}>
       
+      {!showUi && <div className="absolute top-3 right-3 z-50 flex gap-2 rounded-xl bg-white/95 shadow p-2"><button onClick={onClose} className="px-3 py-2 text-sm" aria-label="Kembali dari pembaca">Kembali</button><button onClick={() => setShowUi(true)} className="px-3 py-2 text-sm font-semibold">Tampilkan kontrol</button></div>}
       {/* Sleek Header */}
-      <div className={`bg-white/80 backdrop-blur-md text-[#3e2723] h-auto min-h-16 flex justify-between items-center px-2 md:px-6 py-2 shadow-sm border-b border-[#d7ccc8] z-30 transition-all duration-300 w-full ${showUi ? "translate-y-0 opacity-100 absolute" : "-translate-y-full opacity-0 absolute pointer-events-none"} lg:relative lg:translate-y-0 lg:opacity-100 lg:pointer-events-auto`}>
+      <div className={`bg-white/80 backdrop-blur-md text-[#3e2723] h-auto min-h-16 flex justify-between items-center px-2 md:px-6 py-2 shadow-sm border-b border-[#d7ccc8] z-30 transition-all duration-300 w-full shrink-0 ${showUi ? "relative" : "-translate-y-full opacity-0 absolute pointer-events-none"}`}>
         <div className="flex items-center gap-2 md:gap-4 w-auto md:w-1/3">
           <button 
             onClick={onClose} 
@@ -384,6 +382,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
           </div>
         </div>
         
+        <button onClick={() => setShowUi(false)} className="px-2 py-1 text-xs border rounded mr-2" title="Sembunyikan kontrol pembaca">Mode fokus</button>
         <h2 className="text-lg md:text-2xl font-bold flex-1 text-center truncate px-2" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{bookInfo.bk}</h2>
         
         <div className="hidden md:flex w-1/3 justify-end text-sm font-sans text-gray-500 font-medium truncate">
@@ -464,7 +463,6 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
         className={`flex-1 flex ${showSplit ? 'flex-col lg:flex-row' : 'flex-col'} overflow-hidden relative cursor-pointer lg:cursor-auto`}
         onClick={toggleUi}
         onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         
@@ -534,13 +532,14 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
 
       </div>
 
+      {showUi && <details className="sm:hidden absolute bottom-24 right-3 z-30"><summary className="bg-white rounded-xl shadow border px-3 py-2 text-sm cursor-pointer">Navigasi lainnya</summary><div className="absolute bottom-full right-0 mb-2 bg-white shadow-xl rounded-xl border p-2 w-52 flex flex-col text-sm"><button onClick={firstPage} disabled={loading} className="p-2 text-left">Halaman pertama</button><button onClick={prevJuz} disabled={loading} className="p-2 text-left">Jilid sebelumnya</button><button onClick={nextJuz} disabled={loading} className="p-2 text-left">Jilid selanjutnya</button><button onClick={lastPage} disabled={loading} className="p-2 text-left">Halaman terakhir</button></div></details>}
       {/* Floating Bottom Navigation */}
-      <div className={`absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-white/95 backdrop-blur-lg shadow-2xl rounded-full p-1 md:p-2 border border-[#e0e0e0] z-30 font-sans w-[95%] md:w-auto justify-between md:justify-center transition-all duration-300 ${showUi ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0 pointer-events-none"} lg:translate-y-0 lg:opacity-100 lg:pointer-events-auto`}>
+      <div className={`absolute bottom-4 md:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center bg-white/95 backdrop-blur-lg shadow-2xl rounded-full p-1 md:p-2 border border-[#e0e0e0] z-30 font-sans w-[95%] md:w-auto justify-between md:justify-center transition-all duration-300 ${showUi ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0 pointer-events-none"} `}>
         <div className="flex gap-1 md:gap-2">
-          <button onClick={(e) => { e.stopPropagation(); setSlideDir('right'); firstPage(); }} disabled={loading} className="bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" title="Halaman Pertama">
+          <button onClick={(e) => { e.stopPropagation(); setSlideDir('right'); firstPage(); }} disabled={loading} className="hidden sm:inline-flex bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" aria-label="Halaman Pertama" title="Halaman Pertama">
             <SkipBack size={20} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); setSlideDir('right'); prevJuz(); }} disabled={loading} className="bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" title="Juz/Jilid Sebelumnya">
+          <button onClick={(e) => { e.stopPropagation(); setSlideDir('right'); prevJuz(); }} disabled={loading} className="hidden sm:inline-flex bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" aria-label="Juz/Jilid Sebelumnya" title="Juz/Jilid Sebelumnya">
             <ChevronsLeft size={20} />
           </button>
           <button onClick={(e) => { e.stopPropagation(); setSlideDir('right'); prevPage(); }} disabled={loading} className="bg-[var(--app-primary)] text-white hover:bg-[var(--app-primary-hover)] p-2 md:p-3 rounded-full transition-all disabled:opacity-50 shadow-md" title="Halaman Sebelumnya">
@@ -550,17 +549,17 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
         
         <div className="px-2 md:px-6 font-bold text-[var(--app-primary)] flex flex-col items-center flex-1">
           <span className="text-[10px] md:text-sm text-gray-500 uppercase tracking-widest truncate max-w-full">Posisi</span>
-          <span className="text-sm md:text-base whitespace-nowrap">Hal {currentPage?.page || '-'}</span>
+          <span className="text-sm md:text-base whitespace-nowrap">Hal {currentPage?.page ?? '-'}</span>
         </div>
         
         <div className="flex gap-1 md:gap-2">
           <button onClick={(e) => { e.stopPropagation(); setSlideDir('left'); nextPage(); }} disabled={loading} className="bg-[var(--app-primary)] text-white hover:bg-[var(--app-primary-hover)] p-2 md:p-3 rounded-full transition-all disabled:opacity-50 shadow-md" title="Halaman Selanjutnya">
             <ChevronRight size={24} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); setSlideDir('left'); nextJuz(); }} disabled={loading} className="bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" title="Juz/Jilid Selanjutnya">
+          <button onClick={(e) => { e.stopPropagation(); setSlideDir('left'); nextJuz(); }} disabled={loading} className="hidden sm:inline-flex bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" aria-label="Juz/Jilid Selanjutnya" title="Juz/Jilid Selanjutnya">
             <ChevronsRight size={20} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); setSlideDir('left'); lastPage(); }} disabled={loading} className="bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" title="Halaman Terakhir">
+          <button onClick={(e) => { e.stopPropagation(); setSlideDir('left'); lastPage(); }} disabled={loading} className="hidden sm:inline-flex bg-black/5 text-[var(--app-primary)] hover:bg-[var(--app-primary)] hover:text-white p-2 md:p-3 rounded-full transition-all disabled:opacity-50" aria-label="Halaman Terakhir" title="Halaman Terakhir">
             <SkipForward size={20} />
           </button>
         </div>

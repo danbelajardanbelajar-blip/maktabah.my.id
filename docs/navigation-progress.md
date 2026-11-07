@@ -5,7 +5,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 - [x] 1. Pembaca: status gagal/tidak ditemukan, coba lagi, keluar aman dari tautan langsung, Escape.
 - [x] 2. Admin: tujuan Kembali setiap halaman dan cakupan pilihan kategori yang jelas.
 - [x] 3. Lokasi berbasis URL, Kembali/Maju browser, Beranda terpisah dari Cari, konteks pencarian.
-- [ ] 4. Pembaca: URL halaman aktif, posisi terakhir, kontrol ponsel dan gestur.
+- [x] 4. Pembaca: URL halaman aktif, posisi terakhir, kontrol ponsel dan gestur.
 - [ ] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
 - [ ] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
 - [ ] 7. Katalog: kategori 0, pemulihan gagal, kategori/filter/pagination di URL.
@@ -25,3 +25,7 @@ Pemeriksaan browser otomatis pada sesi ini terhalang kegagalan runtime alat; tid
 ## Verifikasi unit 3
 
 URL hash menjaga kompatibilitas build web/Electron dan tautan pembaca lama. Beranda dan Cari dipisah; query, mode, kategori, halaman hasil dan Kembali/Maju dipulihkan dari URL. `server/navigation.test.js` dan build lulus.
+
+## Verifikasi unit 4
+
+Posisi buku dan URL halaman dipulihkan tanpa menambah riwayat setiap lembar. Kontrol pembaca tampil sejak awal; mode fokus tetap punya tombol keluar. Gestur mengabaikan scroll vertikal, seleksi teks dan request aktif. Uji `reading-position.test.js` dan build.
