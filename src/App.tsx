@@ -21,6 +21,7 @@ import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
 import { Collection } from './components/Collection';
 import { BackButton } from './components/BackButton';
+import { loadSelectedFonts } from './lib/fonts';
 import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
@@ -210,6 +211,8 @@ function App() {
     root.style.setProperty('--latin-font', `"${settings.latinFont}", sans-serif`);
     root.style.setProperty('--app-font-size', `${settings.fontSize}px`);
   }, [settings]);
+
+  useEffect(() => loadSelectedFonts(settings.arabicFont,settings.latinFont),[settings.arabicFont,settings.latinFont]);
 
   useEffect(() => {
     // @ts-ignore

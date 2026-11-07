@@ -14,6 +14,7 @@ import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
 import { categoryBooks } from './catalogue.js';
+import { staticCacheControl } from './static-cache.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1632,8 +1633,9 @@ app.get('/api/search_archive', async (req, res) => {
 // Serve static frontend files in production
 const distPath = path.join(__dirname, '../dist');
 if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, {setHeaders:(res,filename)=>res.setHeader('Cache-Control',staticCacheControl(filename))}));
   app.use((req, res) => {
+    res.setHeader('Cache-Control','no-cache');
     res.sendFile(path.join(distPath, 'index.dev.html'));
   });
 }
