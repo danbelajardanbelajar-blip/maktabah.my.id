@@ -13,6 +13,7 @@ import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
+import { categoryBooks } from './catalogue.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1465,22 +1466,11 @@ app.get('/api/categories', (req, res) => {
   }
 });
 
-app.get('/api/category/:id/books', (req, res) => {
-  if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
-  try {
-    const catId = parseInt(req.params.id);
-    // Ambil kitab dari UNION ALL books_meta
-    const data = db.prepare(`
-      SELECT b.bkid, b.bk, a.auth as author_name
-      FROM ${booksMeta()} b
-      LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid
-      WHERE b.cat = ?
-      ORDER BY b.bk ASC
-    `).all(catId);
-    res.json({ data, error: null });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get('/api/category/:id/books', (req,res) => {
+  if(!db)return res.status(503).json({error:'Database belum tersedia.'});
+  try { res.json(categoryBooks(db,{categoryId:Number(req.params.id),page:req.query.page,limit:req.query.limit,query:req.query.q,
+    paging:req.query.page!==undefined||req.query.limit!==undefined||req.query.q!==undefined,booksSql:booksMeta(),authorsSql:authorsUnion()})); }
+  catch(e){res.status(e.status||500).json({error:e.message});}
 });
 
 

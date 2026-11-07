@@ -27,6 +27,7 @@ function App() {
   const [homeQuery, setHomeQuery] = useState('');
   const navigationHandler = useRef<() => void>(() => {});
   const loadedSearch = useRef('');
+  const lastTabLocations = useRef<Partial<Record<AppTab,string>>>({});
   const pendingSearch = useRef('');
   const searchRequest = useRef(0);
 
@@ -80,7 +81,7 @@ function App() {
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
   const setActiveTab = (tab: AppTab) => {
-    const hash = navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(',')} : {});
+    const hash = tab === 'catalog' && lastTabLocations.current.catalog ? lastTabLocations.current.catalog : navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(',')} : {});
     if (hash !== window.location.hash) {
       window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
       window.history.pushState(null,'',hash);
@@ -266,6 +267,7 @@ function App() {
   navigationHandler.current = () => {
     if (window.location.hash.startsWith('#/read/')) return;
     const route = parseNavigation(window.location.hash,window.location.search);
+    lastTabLocations.current[route.tab] = window.location.hash;
     setActiveTabState(route.tab);
     if (route.tab === 'search' || route.tab === 'advanced_search') {
       const q = route.params.get('q') || '';

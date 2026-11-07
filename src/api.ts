@@ -258,8 +258,9 @@ export const webAPI = {
   getCategories: async () => {
     return fetchAPI(`/categories`);
   },
-  getCategoryBooks: async (categoryId: number) => {
-    return fetchAPI(`/category/${categoryId}/books`);
+  getCategoryBooks: async (categoryId: number, page?: number, query = '', limit = 30) => {
+    const params = page === undefined ? '' : `?page=${page}&limit=${limit}&q=${encodeURIComponent(query)}`;
+    return fetchAPI(`/category/${categoryId}/books${params}`);
   },
   getRecentSearches: async () => {
     return fetchAPI(`/recent-searches`);
