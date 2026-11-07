@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { webAPI } from '../api';
 import { showOpeningBismillah } from '../lib/quran-content';
+import {readQuranPosition,quranLocation,quranHash,saveQuranPosition} from '../lib/quran-navigation';
+import type {QuranPosition} from '../lib/quran-navigation';
+import {pushLocation} from '../lib/back-navigation';
 import { ChevronRight, ChevronLeft, BookOpen, Loader2, X, Search, List, Type } from 'lucide-react';
 import {createPortal} from 'react-dom';
 import {useModalFocus} from '../lib/use-modal-focus';
@@ -69,13 +72,16 @@ const stripHtml = (html: string): string => {
 // Component Utama
 // ============================================================
 const QuranReader: React.FC = () => {
+  const [initialPosition]=useState(()=>quranLocation(window.location.hash,readQuranPosition(localStorage)));
+  const wantedPosition=useRef(initialPosition);
+  const routeHandler=useRef<()=>void>(()=>{});
   // === State: Data ===
   const [surahs, setSurahs] = useState<Surah[]>([]);
   const [ayahs, setAyahs] = useState<Ayah[]>([]);
   const [tafsirMappings, setTafsirMappings] = useState<TafsirMapping[]>([]);
 
   // === State: Navigasi ===
-  const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
+  const [selectedSurah, setSelectedSurahState] = useState(initialPosition.surah);
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number>(0);
 
   // === State: Tafsir ===
@@ -101,15 +107,15 @@ const QuranReader: React.FC = () => {
   // Load Surahs saat mount
   // ============================================================
   useEffect(() => {
-    let active=true;
+    let active=true;const controller=new AbortController();
     const loadSurahs = async () => {
       setSurahLoading(true);setSurahError('');
       try {
-        const res = await (webAPI as any).getQuranSurahs();
+        const res = await webAPI.getQuranSurahs(controller.signal);
         if (!active) return;
         if (res.data && res.data.length > 0) {
           setSurahs(res.data);
-          setSelectedSurah(current => current ?? res.data[0].id);
+          setSelectedSurahState(current => res.data.some((s:Surah)=>s.id===current)?current:res.data[0].id);
         }
       } catch (err) {
         if(active)setSurahError('Daftar surah gagal dimuat. Periksa koneksi lalu coba lagi.');
@@ -117,7 +123,7 @@ const QuranReader: React.FC = () => {
       if(active)setSurahLoading(false);
     };
     loadSurahs();
-    return ()=>{active=false;};
+    return ()=>{active=false;controller.abort();};
   }, [retry]);
 
   // ============================================================
@@ -126,52 +132,38 @@ const QuranReader: React.FC = () => {
   useEffect(() => {
     if (selectedSurah === null) return;
 
-    let active=true;
-    const loadSurahData = async () => {
-      setAyahError('');setMappingError('');setLoadedSurah(null);
-      setAyahLoading(true);
-      setTafsirListLoading(true);
-      setCurrentAyahIndex(0);
-      setOpenTafsir(null);
-      setAyahs([]);
-      setTafsirMappings([]);
-      setTafsirBooks([]);
-
+    let active=true;const controller=new AbortController();
+    setAyahError('');setMappingError('');setLoadedSurah(null);
+    setAyahLoading(true);setTafsirListLoading(true);setOpenTafsir(null);
+    setAyahs([]);setTafsirMappings([]);setTafsirBooks([]);
+    const loadAyahs=async()=>{
       try {
-        const [ayahRes, tafsirRes] = await Promise.all([
-          (webAPI as any).getQuranAyahs(selectedSurah),
-          (webAPI as any).getTafsirBySurah(selectedSurah).catch(() => ({ data: [],failed:true })),
-        ]);
-
-        if (!active) return;
-        if(tafsirRes.failed)setMappingError('Daftar tafsir gagal dimuat. Silakan coba lagi.');
-        setLoadedSurah(selectedSurah);
-        if (ayahRes.data) {
-          setAyahs(ayahRes.data);
-        }
-
-        if (tafsirRes.data && tafsirRes.data.length > 0) {
-          setTafsirMappings(tafsirRes.data);
-          const seen = new Set<number>();
-          const uniqueBooks: { book_id: number; tafsir_name: string }[] = [];
-          for (const m of tafsirRes.data as TafsirMapping[]) {
-            if (!seen.has(m.book_id)) {
-              seen.add(m.book_id);
-              uniqueBooks.push({ book_id: m.book_id, tafsir_name: m.tafsir_name });
-            }
-          }
-          setTafsirBooks(uniqueBooks);
-        }
-      } catch (err) {
-        if(active)setAyahError('Ayat gagal dimuat. Periksa koneksi lalu coba lagi.');
-      }
-
-      if(active){setAyahLoading(false);setTafsirListLoading(false);}
+        const result=await webAPI.getQuranAyahs(selectedSurah,controller.signal);
+        if(!active)return;
+        const data:Ayah[]=result.data || [];
+        setAyahs(data);setLoadedSurah(selectedSurah);
+        const index=data.findIndex(a=>a.ayah_no===wantedPosition.current.ayah);
+        setCurrentAyahIndex(index>=0?index:Math.max(0,Math.min(data.length-1,wantedPosition.current.ayah-1)));
+      } catch {if(active)setAyahError('Ayat gagal dimuat. Periksa koneksi lalu coba lagi.');}
+      finally {if(active)setAyahLoading(false);}
     };
-
-    loadSurahData();
-    return ()=>{active=false;};
-  }, [selectedSurah,retry]);
+    const loadMappings=async()=>{
+      try {
+        const result=await webAPI.getTafsirBySurah(selectedSurah,controller.signal);
+        if(!active)return;
+        const mappings:TafsirMapping[]=result.data || [];
+        setTafsirMappings(mappings);
+        const seen=new Set<number>(),books:{book_id:number;tafsir_name:string}[]=[];
+        for(const m of mappings)if(!seen.has(m.book_id)){seen.add(m.book_id);books.push({book_id:m.book_id,tafsir_name:m.tafsir_name});}
+        setTafsirBooks(books);
+        const chosen=books.find(b=>b.book_id===wantedPosition.current.book);
+        setActiveTafsirBook(previous=>chosen?(previous?.bookId===chosen.book_id?previous:{bookId:chosen.book_id,tafsirName:chosen.tafsir_name}):null);
+      } catch {if(active)setMappingError('Daftar tafsir gagal dimuat. Silakan coba lagi.');}
+      finally {if(active)setTafsirListLoading(false);}
+    };
+    void loadAyahs();void loadMappings();
+    return ()=>{active=false;controller.abort();};
+  },[selectedSurah,retry]);
 
   // Scroll to top saat ayah berubah
   useEffect(() => {
@@ -183,22 +175,25 @@ const QuranReader: React.FC = () => {
   // ============================================================
   // Navigasi Ayat
   // ============================================================
-  const goToPrevAyah = useCallback(() => {
-    setCurrentAyahIndex(i => Math.max(0, i - 1));
-  }, []);
-
-  const goToNextAyah = useCallback(() => {
-    setCurrentAyahIndex(i => Math.min(ayahs.length - 1, i + 1));
-  }, [ayahs.length]);
-
-  const goToAyah = useCallback((index: number) => {
-    setCurrentAyahIndex(index);
-  }, []);
+  const navigate = (patch:Partial<QuranPosition>) => {
+    const next={...wantedPosition.current,...patch};
+    const hash=quranHash(next);
+    if(['surah','tafsir'].includes(window.history.state?.quranPanel)) {
+      const state={...window.history.state};delete state.quranPanel;
+      window.history.replaceState(state,'',hash);
+    } else if(hash !== window.location.hash)pushLocation(hash);
+    window.dispatchEvent(new Event('maktabah:navigate'));
+  };
+  const goToAyah = (index:number) => {if(ayahs[index])navigate({ayah:ayahs[index].ayah_no});};
+  const goToPrevAyah = () => goToAyah(currentAyahIndex-1);
+  const goToNextAyah = () => goToAyah(currentAyahIndex+1);
+  const setView = (view:'ayat'|'tafsir') => navigate({view});
+  const chooseSurah = (surah:number) => navigate({surah,ayah:1,view:'ayat',book:undefined});
 
   // ============================================================
   // Load isi tafsir
   // ============================================================
-  const selectTafsirBook = (bookId:number,tafsirName:string) => {setActiveTafsirBook({bookId,tafsirName});setView('tafsir');setPanel(null);};
+  const selectTafsirBook = (bookId:number) => navigate({book:bookId,view:'tafsir'});
 
   useEffect(() => {
     if (!activeTafsirBook || loadedSurah !== selectedSurah) {
@@ -224,11 +219,11 @@ const QuranReader: React.FC = () => {
       return;
     }
 
-    let isMounted = true;
+    let isMounted = true;const controller=new AbortController();
     setTafsirLoading(true);
     setOpenTafsir(null);
 
-    (webAPI as any).getTafsirPage(mapping.book_id, mapping.page_id)
+    webAPI.getTafsirPage(mapping.book_id,mapping.page_id,controller.signal)
       .then((res: any) => {
         if (!isMounted) return;
         if (res.data) {
@@ -252,18 +247,20 @@ const QuranReader: React.FC = () => {
         if (isMounted) setTafsirLoading(false);
       });
 
-    return () => { isMounted = false; };
+    return () => { isMounted = false;controller.abort(); };
   }, [activeTafsirBook, currentAyahIndex, ayahs, tafsirMappings,loadedSurah,selectedSurah,retry]);
 
-  const [panel,setPanel] = useState<'surah'|'tafsir'|null>(null);
-  const [view,setView] = useState<'ayat'|'tafsir'>('ayat');
+  const [panel,setPanelState] = useState<'surah'|'tafsir'|null>(null);
+  const openPanel=(kind:'surah'|'tafsir')=>{if(!panel)pushLocation(window.location.hash,{...window.history.state,quranPanel:kind});setPanelState(kind);};
+  const closePanel=()=>{setPanelState(null);if(['surah','tafsir'].includes(window.history.state?.quranPanel))window.history.back();};
+  const [view,setViewState] = useState<'ayat'|'tafsir'>(initialPosition.view);
   const [surahSearch,setSurahSearch] = useState('');
   const [tafsirSearch,setTafsirSearch] = useState('');
-  const [fontSize,setFontSize] = useState(28);
+  const [fontSize,setFontSize] = useState(initialPosition.fontSize);
   const [focusMode,setFocusMode]=useState(false);
   const rootRef = useRef<HTMLElement>(null);
   const focusRef=useModalFocus(()=>setFocusMode(false),focusMode && panel===null);
-  const panelRef = useModalFocus(()=>setPanel(null),panel!==null);
+  const panelRef = useModalFocus(closePanel,panel!==null);
   const currentAyah = loadedSurah === selectedSurah ? ayahs[currentAyahIndex] ?? null : null;
   const selectedSurahData = surahs.find(s=>s.id===selectedSurah);
   const latinName = (id:number) => surahMetadata.find(s=>s.id===id)?.latin || `Surah ${id}`;
@@ -273,6 +270,33 @@ const QuranReader: React.FC = () => {
   const ready = !!currentAyah && !ayahLoading;
   const hasMapping = (bookId:number) => ready && tafsirMappings.some(m=>m.book_id===bookId && m.ayah_no===currentAyah.ayah_no);
   const hasBismillah = showOpeningBismillah(selectedSurah,currentAyah?.ayah_no);
+  routeHandler.current=()=>{
+    if(!window.location.hash.startsWith('#/quran'))return;
+    const next=quranLocation(window.location.hash,readQuranPosition(localStorage));
+    wantedPosition.current=next;
+    setSelectedSurahState(next.surah);setViewState(next.view);setPanelState(['surah','tafsir'].includes(window.history.state?.quranPanel)?window.history.state.quranPanel:null);
+    if(loadedSurah===next.surah) {
+      const index=ayahs.findIndex(a=>a.ayah_no===next.ayah);
+      setCurrentAyahIndex(index>=0?index:Math.max(0,Math.min(ayahs.length-1,next.ayah-1)));
+      const chosen=tafsirBooks.find(b=>b.book_id===next.book);
+      setActiveTafsirBook(previous=>chosen?(previous?.bookId===chosen.book_id?previous:{bookId:chosen.book_id,tafsirName:chosen.tafsir_name}):null);
+    }
+  };
+  useEffect(()=>{
+    const sync=()=>routeHandler.current();
+    for(const event of ['popstate','hashchange','maktabah:navigate'])window.addEventListener(event,sync);
+    return()=>{for(const event of ['popstate','hashchange','maktabah:navigate'])window.removeEventListener(event,sync);};
+  },[]);
+  useEffect(()=>{
+    if(!ready || !window.location.hash.startsWith('#/quran'))return;
+    const position:QuranPosition={surah:selectedSurah,ayah:currentAyah.ayah_no,view,book:tafsirListLoading || mappingError?wantedPosition.current.book:activeTafsirBook?.bookId,fontSize};
+    wantedPosition.current=position;
+    const hash=quranHash(position);
+    if(window.location.hash!==hash)window.history.replaceState(window.history.state,'',hash);
+    saveQuranPosition(localStorage,position);
+  },[ready,selectedSurah,currentAyah?.ayah_no,view,activeTafsirBook?.bookId,fontSize,tafsirListLoading,mappingError]);
+  useEffect(()=>{saveQuranPosition(localStorage,{...readQuranPosition(localStorage),fontSize});},[fontSize]);
+
   useEffect(()=>{
     const update=()=>{
       const root=rootRef.current;if(!root)return;
@@ -295,13 +319,13 @@ const QuranReader: React.FC = () => {
   const retryButton = <button type="button" className="q-button" onClick={()=>setRetry(v=>v+1)}>Coba lagi</button>;
   const surahList = <>
     <label className="q-search"><Search size={18} aria-hidden="true"/><input type="search" aria-label="Cari surah" placeholder="Nama Arab, Latin, atau nomor surah" value={surahSearch} onChange={e=>setSurahSearch(e.target.value)}/></label>
-    {surahLoading?<p role="status" className="q-status">Memuat daftar surah…</p>:surahError?<div role="alert" className="q-status">{surahError}{retryButton}</div>:<div className="q-choice-list">{filteredSurahs.map(s=><button type="button" key={s.id} aria-current={selectedSurah===s.id?'true':undefined} className={`q-choice ${selectedSurah===s.id?'is-selected':''}`} onClick={()=>{setSelectedSurah(s.id);setPanel(null);setView('ayat');}}><span className="q-number">{s.id}</span><span className="q-choice-label"><strong>{latinName(s.id)}</strong><span lang="ar" dir="rtl" className="q-arabic">{s.name}</span></span></button>)}{!filteredSurahs.length&&<p className="q-status">Surah tidak ditemukan. Coba nama atau nomor lain.</p>}</div>}
+    {surahLoading?<p role="status" className="q-status">Memuat daftar surah…</p>:surahError?<div role="alert" className="q-status">{surahError}{retryButton}</div>:<div className="q-choice-list">{filteredSurahs.map(s=><button type="button" key={s.id} aria-current={selectedSurah===s.id?'true':undefined} className={`q-choice ${selectedSurah===s.id?'is-selected':''}`} onClick={()=>{chooseSurah(s.id);}}><span className="q-number">{s.id}</span><span className="q-choice-label"><strong>{latinName(s.id)}</strong><span lang="ar" dir="rtl" className="q-arabic">{s.name}</span></span></button>)}{!filteredSurahs.length&&<div className="q-status"><p>{surahs.length?'Surah tidak ditemukan. Coba nama atau nomor lain.':'Daftar surah belum tersedia.'}</p>{!surahs.length&&retryButton}</div>}</div>}
   </>;
   const tafsirList = <>
     <p className="q-muted q-small">Pilih rujukan untuk {selectedSurah?latinName(selectedSurah):'surah'} · Ayat {currentAyah?.ayah_no||'—'}.</p>
     {tafsirListLoading?<p role="status" className="q-status">Memuat daftar tafsir…</p>:mappingError?<div role="alert" className="q-status">{mappingError}{retryButton}</div>:!tafsirBooks.length?<p className="q-status">Tafsir untuk surah ini belum tersedia.</p>:<>
       <label className="q-search"><Search size={18} aria-hidden="true"/><input type="search" aria-label="Cari kitab tafsir" placeholder="Cari nama kitab tafsir" value={tafsirSearch} onChange={e=>setTafsirSearch(e.target.value)}/></label>
-      <div className="q-choice-list">{filteredBooks.map(book=><button key={book.book_id} type="button" className={`q-choice ${activeTafsirBook?.bookId===book.book_id?'is-selected':''}`} aria-current={activeTafsirBook?.bookId===book.book_id?'true':undefined} disabled={!hasMapping(book.book_id)} onClick={()=>selectTafsirBook(book.book_id,book.tafsir_name)}><BookOpen size={18} aria-hidden="true"/><span className="q-choice-label"><strong dir="auto" className="q-arabic">{book.tafsir_name}</strong>{!hasMapping(book.book_id)&&<span className="q-small q-muted">Belum tersedia untuk ayat ini</span>}</span></button>)}{!filteredBooks.length&&<p className="q-status">Kitab tidak ditemukan. Coba kata lain.</p>}</div>
+      <div className="q-choice-list">{filteredBooks.map(book=><button key={book.book_id} type="button" className={`q-choice ${activeTafsirBook?.bookId===book.book_id?'is-selected':''}`} aria-current={activeTafsirBook?.bookId===book.book_id?'true':undefined} disabled={!hasMapping(book.book_id)} onClick={()=>selectTafsirBook(book.book_id)}><BookOpen size={18} aria-hidden="true"/><span className="q-choice-label"><strong dir="auto" className="q-arabic">{book.tafsir_name}</strong>{!hasMapping(book.book_id)&&<span className="q-small q-muted">Belum tersedia untuk ayat ini</span>}</span></button>)}{!filteredBooks.length&&<p className="q-status">Kitab tidak ditemukan. Coba kata lain.</p>}</div>
     </>}
   </>;
   const ayahControls = <div className="q-ayah-controls">
@@ -313,7 +337,7 @@ const QuranReader: React.FC = () => {
     <aside className="q-desktop-sidebar" aria-label="Daftar surah"><h2 className="q-side-title">Daftar Surah</h2>{surahList}</aside>
     <div className="q-reader-main">
       <div className="q-toolbar">
-        <button type="button" className="q-button q-surah-trigger" aria-label={`Pilih surah, ${selectedSurah?latinName(selectedSurah):'belum dipilih'}`} aria-haspopup="dialog" aria-expanded={panel==='surah'} aria-controls="quran-choice-panel" onClick={()=>setPanel('surah')}><List size={18} aria-hidden="true"/><span><small>Surah</small><strong>{selectedSurah?latinName(selectedSurah):'Pilih surah'}</strong></span></button>
+        <button type="button" className="q-button q-surah-trigger" aria-label={`Pilih surah, ${selectedSurah?latinName(selectedSurah):'belum dipilih'}`} aria-haspopup="dialog" aria-expanded={panel==='surah'} aria-controls="quran-choice-panel" onClick={()=>openPanel('surah')}><List size={18} aria-hidden="true"/><span><small>Surah</small><strong>{selectedSurah?latinName(selectedSurah):'Pilih surah'}</strong></span></button>
         <label className="q-ayah-select"><span>Ayat</span><select aria-label="Pilih ayat" disabled={!ready} value={currentAyahIndex} onChange={e=>goToAyah(Number(e.target.value))}>{ayahs.length?ayahs.map((a,i)=><option key={a.id} value={i}>{a.ayah_no}</option>):<option value={0}>—</option>}</select></label>
 
       </div>
@@ -327,15 +351,15 @@ const QuranReader: React.FC = () => {
             <button type="button" className="q-button q-read-tafsir" onClick={()=>setView('tafsir')}><BookOpen size={18} aria-hidden="true"/>Baca tafsir ayat ini</button>
           </div>
           <div id="q-panel-tafsir" role="tabpanel" aria-labelledby="q-tab-tafsir" hidden={view!=='tafsir'} tabIndex={0}>
-            <button type="button" className="q-button q-source-trigger" aria-haspopup="dialog" aria-expanded={panel==='tafsir'} aria-controls="quran-choice-panel" onClick={()=>setPanel('tafsir')}><BookOpen size={18} aria-hidden="true"/><span>{activeTafsirBook?'Ganti kitab tafsir':'Pilih kitab tafsir'}</span></button>
-            {tafsirLoading?<div role="status" className="q-state"><Loader2 className="animate-spin" size={22}/><p>Memuat teks tafsir…</p></div>:mappingError?<div role="alert" className="q-state q-error"><p>{mappingError}</p>{retryButton}</div>:!tafsirBooks.length?<p className="q-state">Tafsir untuk surah ini belum tersedia.</p>:!activeTafsirBook?<p className="q-state">Pilih kitab tafsir untuk membaca penjelasan ayat ini.</p>:openTafsir?<article className="q-tafsir"><h3 className="q-arabic" dir="auto">{openTafsir.tafsir_name}</h3>{openTafsir.state==='ready'&&<p className="q-small q-muted">{latinName(selectedSurah!)} · Ayat {currentAyah.ayah_no}{openTafsir.part?` · Jilid ${openTafsir.part}`:''}{openTafsir.page?` · Halaman ${openTafsir.page}`:''}</p>}<p className={openTafsir.state==='ready'?'q-arabic q-tafsir-text':'q-status'} dir="auto" style={openTafsir.state==='ready'?{fontSize:`${Math.max(20,fontSize-4)}px`}:undefined}>{openTafsir.text}</p>{openTafsir.state==='error'&&retryButton}</article>:null}
+            <button type="button" className="q-button q-source-trigger" aria-haspopup="dialog" aria-expanded={panel==='tafsir'} aria-controls="quran-choice-panel" onClick={()=>openPanel('tafsir')}><BookOpen size={18} aria-hidden="true"/><span>{activeTafsirBook?'Ganti kitab tafsir':'Pilih kitab tafsir'}</span></button>
+            {tafsirLoading || tafsirListLoading?<div role="status" className="q-state"><Loader2 className="animate-spin" size={22}/><p>Memuat teks tafsir…</p></div>:mappingError?<div role="alert" className="q-state q-error"><p>{mappingError}</p>{retryButton}</div>:!tafsirBooks.length?<p className="q-state">Tafsir untuk surah ini belum tersedia.</p>:!activeTafsirBook?<p className="q-state">{tafsirBooks.some(book=>hasMapping(book.book_id))?'Pilih kitab tafsir untuk membaca penjelasan ayat ini.':'Tafsir untuk ayat ini belum tersedia.'}</p>:openTafsir?<article className="q-tafsir"><h3 className="q-arabic" dir="auto">{openTafsir.tafsir_name}</h3>{openTafsir.state==='ready'&&<p className="q-small q-muted">{latinName(selectedSurah!)} · Ayat {currentAyah.ayah_no}{openTafsir.part?` · Jilid ${openTafsir.part}`:''}{openTafsir.page?` · Halaman ${openTafsir.page}`:''}</p>}<p className={openTafsir.state==='ready'?'q-arabic q-tafsir-text':'q-status'} dir="auto" style={openTafsir.state==='ready'?{fontSize:`${Math.max(20,fontSize-4)}px`}:undefined}>{openTafsir.text}</p>{openTafsir.state==='error'&&retryButton}</article>:null}
           </div>
         </>}
       </div>
       {ayahControls}
     </div>
     <aside className="q-desktop-sidebar" aria-label="Daftar kitab tafsir"><h2 className="q-side-title">Kitab Tafsir</h2>{tafsirList}</aside>
-    {panel&&createPortal(<div ref={panelRef} className="q-modal" role="dialog" aria-modal="true" aria-labelledby="quran-panel-title" tabIndex={-1} id="quran-choice-panel"><div className="q-modal-backdrop" onClick={()=>setPanel(null)} aria-hidden="true"/><div className="q-modal-sheet"><div className="q-modal-header"><h2 id="quran-panel-title">{panel==='surah'?'Pilih Surah':'Pilih Kitab Tafsir'}</h2><button type="button" className="q-icon-button" aria-label="Tutup panel pilihan" onClick={()=>setPanel(null)}><X size={22}/></button></div><div className="q-modal-content">{panel==='surah'?surahList:tafsirList}</div></div></div>,document.body)}
+    {panel&&createPortal(<div ref={panelRef} className="q-modal" role="dialog" aria-modal="true" aria-labelledby="quran-panel-title" tabIndex={-1} id="quran-choice-panel"><div className="q-modal-backdrop" onClick={closePanel} aria-hidden="true"/><div className="q-modal-sheet"><div className="q-modal-header"><h2 id="quran-panel-title">{panel==='surah'?'Pilih Surah':'Pilih Kitab Tafsir'}</h2><button type="button" className="q-icon-button" aria-label="Tutup panel pilihan" onClick={closePanel}><X size={22}/></button></div><div className="q-modal-content">{panel==='surah'?surahList:tafsirList}</div></div></div>,document.body)}
   </section>;
 };
 export default QuranReader;

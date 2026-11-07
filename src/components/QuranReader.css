@@ -1,4 +1,4 @@
-.quran-reader{--q-accent:color-mix(in srgb,var(--app-primary,#047857) 82%,#000);--q-border:color-mix(in srgb,var(--app-text,#334155) 16%,transparent);height:var(--q-height,70dvh);min-height:240px;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;border:1px solid var(--q-border);border-radius:20px;background:var(--reader-paper,#fff);color:var(--app-text,#334155);font-family:var(--latin-font,system-ui,sans-serif);box-shadow:0 4px 24px #00000006}
+.quran-reader{--q-accent:var(--app-text,#065f46);--q-border:color-mix(in srgb,var(--app-text,#334155) 16%,transparent);height:var(--q-height,70dvh);min-height:240px;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden;border:1px solid var(--q-border);border-radius:20px;background:var(--reader-paper,#fff);color:var(--app-text,#334155);font-family:var(--latin-font,system-ui,sans-serif);box-shadow:0 4px 24px #00000006}
 .q-reader-main{min-height:0;min-width:0;display:flex;flex-direction:column}
 .q-focus-mode{position:fixed;inset:0;z-index:70;height:100dvh;min-height:0;border-radius:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 .q-focus-toggle{font-size:12px}

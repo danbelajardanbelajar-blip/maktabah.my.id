@@ -1,7 +1,7 @@
 const API_BASE = '/api'; // Use relative path for production (served by Express) or proxy in dev
 
-async function fetchAPI(endpoint: string) {
-  const res = await fetch(`${API_BASE}${endpoint}`);
+async function fetchAPI(endpoint: string, signal?:AbortSignal) {
+  const res = await fetch(`${API_BASE}${endpoint}`,{signal});
   if (!res.ok) {
     let errText = `${res.status}`;
     try {
@@ -11,6 +11,16 @@ async function fetchAPI(endpoint: string) {
     throw new Error(`API error: ${errText}`);
   }
   return res.json();
+}
+
+async function fetchQuran(endpoint:string,signal?:AbortSignal) {
+  const controller=new AbortController();
+  const cancel=()=>controller.abort();
+  const timer=setTimeout(cancel,20000);
+  signal?.addEventListener('abort',cancel,{once:true});
+  if(signal?.aborted)cancel();
+  try {return await fetchAPI(endpoint,controller.signal);}
+  finally {clearTimeout(timer);signal?.removeEventListener('abort',cancel);}
 }
 
 const deletionStorageKey = 'maktabah-pending-deletion';
@@ -249,11 +259,11 @@ export const webAPI = {
   getMatnSharh: async (bookId: number, pageId: number) => {
     return fetchAPI(`/matn_sharh/${bookId}/${pageId}`);
   },
-  getQuranSurahs: async () => {
-    return fetchAPI(`/quran/surahs`);
+  getQuranSurahs: async (signal?:AbortSignal) => {
+    return fetchQuran(`/quran/surahs`,signal);
   },
-  getQuranAyahs: async (surahId: number) => {
-    return fetchAPI(`/quran/surah/${surahId}`);
+  getQuranAyahs: async (surahId: number,signal?:AbortSignal) => {
+    return fetchQuran(`/quran/surah/${surahId}`,signal);
   },
   getCategories: async () => {
     return fetchAPI(`/categories`);
@@ -274,16 +284,16 @@ export const webAPI = {
    * Ambil daftar kitab tafsir untuk surah tertentu.
    * Mengembalikan array: { id, surah_id, ayah_no, book_id, page_id, tafsir_name }
    */
-  getTafsirBySurah: async (surahId: number) => {
-    return fetchAPI(`/quran/tafsir/${surahId}`);
+  getTafsirBySurah: async (surahId: number,signal?:AbortSignal) => {
+    return fetchQuran(`/quran/tafsir/${surahId}`,signal);
   },
 
   /**
    * Ambil isi halaman tafsir berdasarkan book_id + page_id dari tafsir_ayah_mapping.
    * Mengembalikan: { data: { id, book_id, part, page, text } }
    */
-  getTafsirPage: async (bookId: number, pageId: number) => {
-    return fetchAPI(`/quran/tafsir-page/${bookId}/${pageId}`);
+  getTafsirPage: async (bookId: number, pageId: number,signal?:AbortSignal) => {
+    return fetchQuran(`/quran/tafsir-page/${bookId}/${pageId}`,signal);
   },
   // ===== ADMIN LOGS =====
   getAdminLogs: async (token: string, type: string) => {
