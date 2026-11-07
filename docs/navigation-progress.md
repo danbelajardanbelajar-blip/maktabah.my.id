@@ -6,7 +6,7 @@ Pengerjaan berurutan; setiap unit diverifikasi sebelum commit/push, kemudian dit
 - [x] 2. Admin: tujuan Kembali setiap halaman dan cakupan pilihan kategori yang jelas.
 - [x] 3. Lokasi berbasis URL, Kembali/Maju browser, Beranda terpisah dari Cari, konteks pencarian.
 - [x] 4. Pembaca: URL halaman aktif, posisi terakhir, kontrol ponsel dan gestur.
-- [ ] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
+- [x] 5. Tanya AI: pemulihan percakapan dan pertanyaan yang belum dikirim.
 - [ ] 6. Lainnya: klik/keyboard/fokus, menu konsisten, breakpoint dan modal.
 - [ ] 7. Katalog: kategori 0, pemulihan gagal, kategori/filter/pagination di URL.
 - [ ] 8. Koleksi Saya: favorit, bookmark, dan lanjut membaca, dengan keterangan penyimpanan perangkat.
@@ -29,3 +29,7 @@ URL hash menjaga kompatibilitas build web/Electron dan tautan pembaca lama. Bera
 ## Verifikasi unit 4
 
 Posisi buku dan URL halaman dipulihkan tanpa menambah riwayat setiap lembar. Kontrol pembaca tampil sejak awal; mode fokus tetap punya tombol keluar. Gestur mengabaikan scroll vertikal, seleksi teks dan request aktif. Uji `reading-position.test.js` dan build.
+
+## Verifikasi unit 5
+
+Percakapan tetap terpasang ketika menu berubah, pulih dari sessionStorage sesudah refresh, dan pertanyaan terputus tidak dikirim ulang otomatis. Tersedia indikator proses serta aksi percakapan baru. Uji ai-session dan build.

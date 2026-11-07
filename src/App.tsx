@@ -55,7 +55,9 @@ function App() {
   const [recentSearches, setRecentSearches] = useState<{query:string}[]>([]);
   const [recentAiQuestions, setRecentAiQuestions] = useState<{query:string}[]>([]);
   const [aiQuestion, setAiQuestion] = useState('');
-  const openAiQuestion = (question = '') => { setAiQuestion(question); setActiveTab('ask'); };
+  const [aiQuestionVersion, setAiQuestionVersion] = useState(0);
+  const [aiBusy, setAiBusy] = useState(false);
+  const openAiQuestion = (question = '') => { setAiQuestion(question); setAiQuestionVersion(v=>v+1); setActiveTab('ask'); };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
   const [recentBooks, setRecentBooks] = useState<any[]>(() => {
@@ -409,6 +411,7 @@ function App() {
       </header>
       
       <main className="flex-1 w-full mx-auto p-4 md:px-8 md:py-6 max-w-7xl relative">
+        <div hidden={activeTab !== 'ask'}><AskAI initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} /></div>
         {activeTab === 'quran' ? (
           <QuranReader />
         ) : activeTab === 'rowa' ? (
@@ -430,7 +433,7 @@ function App() {
         ) : activeTab === 'catalog' ? (
           <Catalog openBook={openBookInfo} readBook={(bookId) => openReader({ bookId })} />
         ) : activeTab === 'ask' ? (
-            <AskAI initialQuestion={aiQuestion} openBook={(bookId, pageId) => openReader({ bookId, pageId })} />
+            null
           ) : activeTab === 'more' ? (
           <div className="w-full bg-[var(--reader-bg)] p-6 rounded-2xl shadow-xl border border-[var(--app-primary)]/10 my-4 transition-all">
             <h2 className="text-2xl font-bold mb-6 text-[var(--app-text)] border-b pb-4 flex items-center gap-3">
@@ -897,6 +900,7 @@ function App() {
           </div>
         )}
       </main>
+      {aiBusy && activeTab !== 'ask' && <button onClick={() => openAiQuestion()} role="status" className="fixed bottom-20 lg:bottom-4 left-4 z-40 rounded-xl bg-emerald-800 text-white shadow-lg px-4 py-3 text-sm">Tanya AI sedang menyiapkan jawaban… Buka percakapan</button>}
 
       {/* Footer (Hidden on mobile because it's replaced by Lainnya menu) */}
       <footer className="hidden md:block bg-[var(--app-primary)] text-white py-6 md:py-8 mt-auto shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] transition-colors duration-300">

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { webAPI } from '../api';
+import { AI_SESSION_KEY, readAiSession } from '../lib/ai-session';
 import { Send, Bot, User, BookOpen, AlertCircle } from 'lucide-react';
 
 interface Message {
@@ -67,20 +68,27 @@ function inlineMarkdown(text: string): string {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function AskAI({ openBook, initialQuestion = '' }: { openBook: (id: number, pageId?: number) => void; initialQuestion?: string }) {
-  const [messages, setMessages] = useState<Message[]>([
+export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, onBusyChange }: { openBook: (id: number, pageId?: number) => void; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void }) {
+  const [restored] = useState(() => readAiSession(sessionStorage));
+  const welcome: Message[] = [
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
-  ]);
+  ];
+  const [messages, setMessages] = useState<Message[]>(restored.messages.length ? restored.messages : welcome);
   const [available, setAvailable] = useState<boolean | null>(null);
-  const [input, setInput] = useState(initialQuestion);
+  const [input, setInput] = useState(initialQuestion || restored.input);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
+  const lastQuestion = useRef('');
+  useEffect(() => {
+    try { sessionStorage.setItem(AI_SESSION_KEY,JSON.stringify({messages,input,pending:loading,lastQuestion:lastQuestion.current})); } catch {}
+  },[messages,input,loading]);
+  useEffect(() => { onBusyChange?.(loading); },[loading,onBusyChange]);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    setInput(initialQuestion);
+    if (initialQuestion) setInput(initialQuestion);
     if (initialQuestion) inputRef.current?.focus({ preventScroll: true });
-  }, [initialQuestion]);
+  }, [initialQuestion, questionVersion]);
 
   useEffect(() => {
     fetch('/api/ai/status').then(r => r.json()).then(data => setAvailable(data.available)).catch(() => {});
@@ -98,6 +106,7 @@ export default function AskAI({ openBook, initialQuestion = '' }: { openBook: (i
     if (!input.trim() || loading || available === false) return;
 
     const q = input.trim();
+    lastQuestion.current = q;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: q }]);
     setLoading(true);
@@ -131,6 +140,7 @@ export default function AskAI({ openBook, initialQuestion = '' }: { openBook: (i
       </div>
 
       {available === false && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">Tanya AI belum diaktifkan. Administrator dapat menambahkan API key melalui menu Pengaturan AI di halaman admin.</p>}
+      <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.map((m, i) => (
