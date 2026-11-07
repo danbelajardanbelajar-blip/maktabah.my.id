@@ -63,3 +63,9 @@ Semua push navigasi menandai lokasi sebelumnya di dalam aplikasi; tombol publik 
 Klik riwayat di beranda membuka Tanya AI dan langsung mengirim pertanyaan melalui alur yang sama dengan submit form. Riwayat di dalam Tanya AI juga langsung mengirim. Versi klik dikonsumsi sekali dan request dikunci sampai selesai; membuka tab, render ulang, serta pemulihan sesi tidak mengirim ulang. Jika ada permintaan aktif, pilihan terakhir menunggu otomatis dengan pemberitahuan antrean.
 
 Build produksi dan 10 tes AI/sesi lulus. Pengujian interaksi React dengan respons API tiruan memverifikasi pengiriman tanpa klik Send, indikator menunggu, input kosong setelah terkirim, pengaman render ulang, klik ulang pertanyaan sama, antrean saat sibuk dan navigasi tanpa pengiriman ulang. Runtime pengujian tambahan dipasang hanya di cache lokal, tanpa menambah dependensi produksi atau memakai kuota Gemini.
+
+## Nama lengkap perawi — 8 November 2026
+
+Data sumber yang diperiksa memiliki `Name`/`A_esm` kosong tetapi `IsoName` berisi nama lengkap. API pencarian kini mengirim `IsoName` untuk jalur FTS maupun LIKE, dan jalur LIKE juga mencari kolom tersebut. Sumber lama tanpa kolom ini tetap didukung. Pencarian FTS beberapa kata menyertakan kecocokan frasa persis yang sebelumnya terbuang oleh ekspresi NOT.
+
+Hasil pencarian dan profil memakai pilihan nama yang sama (A_esm, Name, lalu IsoName); teks membungkus tanpa pemotongan. Seluruh 60 tes serta build produksi lulus. Uji interaksi React dengan respons tiruan memverifikasi nama lengkap dari IsoName muncul pada judul hasil dan profil. Tidak mengubah isi database sumber atau nama perawi.

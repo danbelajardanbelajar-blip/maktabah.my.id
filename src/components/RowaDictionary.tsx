@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Search, User, BookOpen, Users, GraduationCap, ChevronLeft, ChevronRight, X, AlertCircle, Info, ExternalLink } from 'lucide-react';
 import { webAPI } from '../api';
 import { BackButton } from './BackButton';
+import { rowaFullName } from '../lib/rowa-name';
 
 // ============================================================
 // TYPES
@@ -10,6 +11,7 @@ interface RowaResult {
   id: number;
   Name: string;
   A_esm?: string;
+  IsoName?: string;
   A_kona?: string;
   kutub?: string;
   ROTBA?: string;
@@ -189,15 +191,15 @@ const ProfileModal = ({
         <div className="bg-[var(--app-primary)] text-white p-5 flex justify-between items-start gap-3 shrink-0">
           <div className="min-w-0">
             <h2
-              className="text-2xl sm:text-3xl font-bold leading-snug"
+              className="text-2xl sm:text-3xl font-bold leading-relaxed break-words whitespace-normal"
               dir="rtl"
               style={{ fontFamily: 'var(--arabic-font)' }}
             >
-              {rowa.Name}
+              {rowaFullName(rowa)}
             </h2>
-            {rowa.A_esm && rowa.A_esm !== rowa.Name && (
+            {rowa.Name?.trim() && rowa.Name.trim() !== rowaFullName(rowa) && (
               <p className="text-sm mt-1 text-white/80 leading-snug" dir="rtl" style={{ fontFamily: 'var(--arabic-font)' }}>
-                {rowa.A_esm}
+                {rowa.Name}
               </p>
             )}
             {rowa.A_kona && (
@@ -515,8 +517,8 @@ const RowaDictionary: React.FC = () => {
         <div className="space-y-3">
           {results.map((r) => {
             const kutubList = parseKutub(r.kutub);
-            // Tampilkan A_esm hanya jika berbeda dari Name
-            const showFullName = r.A_esm && r.A_esm.trim() !== '' && r.A_esm !== r.Name;
+            const fullName = rowaFullName(r);
+            const showShortName = r.Name?.trim() && r.Name.trim() !== fullName;
 
             return (
               <div
@@ -525,23 +527,23 @@ const RowaDictionary: React.FC = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                   <div className="flex-1 min-w-0">
-                    {/* Nama utama (Name field) */}
+                    {/* Nama lengkap, termasuk sumber IsoName pada database lama. */}
                     <h3
-                      className="text-xl font-bold text-gray-900 mb-0.5 leading-snug"
+                      className="text-xl font-bold text-gray-900 mb-1 leading-relaxed break-words whitespace-normal"
                       dir="rtl"
                       style={{ fontFamily: 'var(--arabic-font)' }}
                     >
-                      {r.Name}
+                      {fullName}
                     </h3>
 
-                    {/* Nama lengkap (A_esm) jika berbeda */}
-                    {showFullName && (
+                    {/* Nama ringkas tetap tersedia jika berbeda dari nama lengkap. */}
+                    {showShortName && (
                       <p
                         className="text-sm text-gray-500 mb-1 leading-snug"
                         dir="rtl"
                         style={{ fontFamily: 'var(--arabic-font)' }}
                       >
-                        {r.A_esm}
+                        {r.Name}
                       </p>
                     )}
 
