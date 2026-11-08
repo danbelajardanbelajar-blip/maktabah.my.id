@@ -290,7 +290,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
           <button 
             type="submit"
             aria-label="Kirim pertanyaan"
-            disabled={input.trim().length < 5 || loading || available !== true}
+            disabled={input.trim().length < 2 || loading || available !== true}
             className="absolute right-2 w-10 h-10 md:w-12 md:h-12 bg-[var(--app-primary)] hover:bg-[var(--app-primary-hover)] text-white rounded-full flex items-center justify-center transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100"
           >
             <Send size={18} className={input.trim() && !loading ? "translate-x-0.5" : ""} />

@@ -28,7 +28,7 @@ export function registerAiHistory(app,{getStateDb}) {
     const id=session(req,res);
     if(!id)return res.json({data:[]});
     try {
-      const rows=getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE session_id=? AND length(trim(question))>=5 ORDER BY rowid DESC LIMIT 200').all(id)||[];
+      const rows=getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE session_id=? AND length(trim(question))>=2 ORDER BY rowid DESC LIMIT 200').all(id)||[];
       const limit=Math.min(20,Math.max(1,parseInt(req.query.limit)||10)),seen=new Set(),data=[];
       for(const row of rows){let context={};try{context=JSON.parse(row.context_json||'{}');}catch{}const key=JSON.stringify([row.question.trim().toLowerCase(),context]);if(!seen.has(key)){seen.add(key);data.push({query:row.question,...context});if(data.length>=limit)break;}}
       res.json({data});

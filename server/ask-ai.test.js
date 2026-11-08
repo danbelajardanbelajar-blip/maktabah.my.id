@@ -134,7 +134,7 @@ test('admin tests and saves keys privately; invalid provider configuration canno
 test('input validation, absent configuration, quota errors and local mode are handled', async t=>{
   const f=fixture(t);
   const call=await serve(t,f,async()=>new Response('{}',{status:429}),{localExportMode:true});
-  for(const q of [{},'abc','x'.repeat(1501)])assert.equal((await call('/api/ask',{q})).status,400);
+  for(const q of [{},'a','x'.repeat(1501)])assert.equal((await call('/api/ask',{q})).status,400);
   assert.equal((await call('/api/admin/ai-settings',{apiKey:key},true)).status,403);
   const quota=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(quota.data.code,'QUOTA');
   fs.unlinkSync(f.configPath);
@@ -190,4 +190,21 @@ test('closing a streamed request cancels the provider operation',async t=>{
  const controller=new AbortController(),r=await fetch('http://127.0.0.1:'+server.address().port+'/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({q:'صلاة الجماعة',stream:true}),signal:controller.signal});
  const reader=r.body.getReader();await reader.read();controller.abort();
  await Promise.race([cancelled,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(new Error('provider not cancelled')),2000);timer.unref();})]);assert.equal(f.cache.size,0);
+});
+
+test('greetings and identity including reported typo need no provider or citations, while substantive questions still require evidence',async t=>{
+ const f=fixture(t);let calls=0;
+ const call=await serve(t,f,async()=>{calls++;return response(grounded('Jawaban tentang sumber [1]'));});
+ const cookie=(await call('/api/ai/status')).cookie;
+ for(const q of ['halo siapa kamu','halo siaoa kamu','halo','hi','assalamualaikum','terima kasih']){
+  const r=await call('/api/ask',{q,stream:true},false,cookie);
+  assert.equal(r.data.mode,'conversation');assert.equal(r.data.status,'success');assert.deepEqual(r.data.references,[]);assert.deepEqual(r.events.map(e=>e.type),['result']);
+ }
+ assert.equal(calls,0);assert.ok((await call('/api/recent-questions',undefined,false,cookie)).data.data.some(x=>x.query==='hi'));
+ // Use a new limiter instance after the six conversational requests.
+ const other=await serve(t,f,async()=>{calls++;return response(grounded('Jawaban tentang sumber [1]'));});
+ const actual=await other('/api/ask',{q:'halo ما حكم صلاة الجماعة',stream:true});
+ assert.equal(actual.data.mode,'grounded');assert.equal(calls,1);assert.ok(actual.data.evidence.quotes.length);
+ const source=await other('/api/ask',{q:'halo siapa kamu',source:{bookId:1,pageId:11},stream:true});
+ assert.equal(source.data.mode,'grounded');assert.equal(calls,2);
 });

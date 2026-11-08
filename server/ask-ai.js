@@ -1,3 +1,4 @@
+import {conversationalReply} from './ai-conversation.js';
 import {answerSchema,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -134,7 +135,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
   app.post('/api/ask', async (req,res) => {
     if(isMaintenance())return res.status(409).json({status:'error',code:'DATABASE_BUSY',message:'Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.'});
     const question = req.body?.q;
-    if (typeof question !== 'string' || question.trim().length < 5 || question.length > 1500) return res.status(400).json({ status: 'error', message: 'Masukkan pertanyaan sepanjang 5–1500 karakter.' });
+    if (typeof question !== 'string' || question.trim().length < 2 || question.length > 1500) return res.status(400).json({ status: 'error', message: 'Masukkan pertanyaan sepanjang 2–1500 karakter.' });
     if (!getDb()) return res.status(503).json({ status:'error', message:'Database kitab belum tersedia.' });
     const settings = config();
     if (!settings.keys.length) return res.status(503).json({ status:'error', code:'NOT_CONFIGURED', message:'Tanya AI belum diaktifkan. Administrator perlu mengatur API key Gemini melalui Pengaturan AI.' });
@@ -165,6 +166,11 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     try {
       const assertReady=()=>{if(isMaintenance())throw fault('Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.','DATABASE_BUSY',409);if(controller.signal.aborted)throw fault('Permintaan dibatalkan.','CANCELLED',499);};
       assertReady();
+      const social=!selected && intent==='question'?conversationalReply(q):null;
+      if(social){
+        const payload={status:'success',mode:'conversation',answer:social,references:[]};
+        history.record(req,res,q,social);finish(payload);return;
+      }
       const db = getDb();
       stage(selected?'preparing':'searching',selected?'Menyiapkan teks halaman yang dipilih…':'Mencari rujukan dalam kitab…');
       const catalogue = !selected && /tersedia|apakah.*(?:kitab|buku)|(?:kitab|buku).*ada|موجود|متوفر|هل.*كتاب/i.test(q);
