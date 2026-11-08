@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import Database from 'better-sqlite3';
-import {verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
+import {quoteCatalog,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
 test('evidence resolves canonical book/page, restores Arabic marks and rejects forged quotes/citations/cache',()=>{
  const db=new Database(':memory:');try{
  db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);");
@@ -9,12 +9,15 @@ test('evidence resolves canonical book/page, restores Arabic marks and rejects f
  assert.equal(refs[0].title,'أصل');assert.equal(refs[0].page,17);
  const evidence=verifyAnswer({answer:'Penjelasan [1]',quotes:[{source:1,text:'صلاة الجماعة واجبة'}]},refs);
  assert.ok(verifyAnswer({answer:'Penjelasan tanpa nomor',quotes:evidence.quotes},refs).answer.endsWith('[1]'));
+ const catalog=quoteCatalog(refs);
+ assert.equal(verifyAnswer({answer:'Transliterasi "salat al jamaah" [1]',quotes:[{source:1,quoteId:'1.1'}]},refs,catalog).quotes[0].text,'صَلَاةُ الجماعة واجبة عند بعض الفقهاء');
+ assert.throws(()=>verifyAnswer({answer:'Fake [1]',quotes:[{source:1,quoteId:'99.1'}]},refs,catalog));
+ assert.throws(()=>verifyAnswer({answer:'Fake [1]',quotes:[{source:2,quoteId:'1.1'}]},refs,catalog));
  assert.equal(evidence.quotes[0].text,'صَلَاةُ الجماعة واجبة');
  for(const bad of [
   {answer:'Penjelasan [9]',quotes:evidence.quotes},
   {answer:'Penjelasan [1]',quotes:[{source:1,text:'kutipan palsu yang tidak ada'}]},
   {answer:'Penjelasan [1]',quotes:[]},
-  {answer:'Penjelasan “kutipan palsu yang tidak ada” [1]',quotes:evidence.quotes},
   {answer:'Penjelasan [1]',quotes:[{source:0,text:'صلاة الجماعة واجبة'}]},
  ])assert.throws(()=>verifyAnswer(bad,refs),e=>e.code==='UNVERIFIED_ANSWER');
  assert.throws(()=>verifiedReferences(db,[{...refs[0],bkid:2}]));

@@ -33,3 +33,7 @@ Uji browser desktop dan ponsel memakai stream HTTP yang ditahan per tahap untuk 
 ### Verifikasi layanan langsung
 
 Percobaan Gemini menemukan kutipan yang menggabungkan baris tanpa spasi. Pencocokan kini menoleransi perubahan spasi/baris, lalu selalu mengembalikan rentang teks asli dari halaman. Selain kecocokan terhadap cuplikan yang dikirim, kutipan harus cocok dengan halaman lengkap; elipsis buatan cuplikan FTS tidak boleh dianggap kutipan harfiah.
+
+### Kutipan bernomor dan penjelasan terpisah
+
+Kasus frasa «سافر تجد عوضا» mengungkap bahwa tanda kutip untuk transliterasi dalam penjelasan keliru dianggap kutipan harfiah. Sekarang respons model memilih quoteId dari katalog rentang teks asli yang dibuat server, tanpa menyalin ulang bahasa Arab. Pemeriksaan mencocokkan sumber, ID, nomor [n] dan teks database, termasuk pemeriksaan ulang cache. Bagian Penjelasan AI dibedakan dari Kutipan sumber; penjelasan/transliterasi bukan bukti harfiah. Jika respons model gagal diperiksa, teks model dibuang dan pengguna mendapat kutipan database dengan keterangan bahwa penjelasannya belum terverifikasi. Hasil terbatas ini tidak masuk cache agar percobaan berikutnya tetap bisa menghasilkan penjelasan. Gangguan jaringan/provider tetap dilaporkan sebagai gangguan layanan.

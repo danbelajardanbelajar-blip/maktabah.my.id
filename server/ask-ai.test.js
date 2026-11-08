@@ -8,7 +8,7 @@ import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
 
 const key = 'AIza' + 'a'.repeat(35);
-const grounded=text=>JSON.stringify({answer:text,quotes:[{source:1,text:'صلاة الجماعة واجبة عند بعض الفقهاء'}]});
+const grounded=text=>JSON.stringify({answer:text,quotes:[{source:1,quoteId:'1.1'}]});
 const response = text => new Response(JSON.stringify({ candidates:[{content:{parts:[{text}]}}] }),{status:200});
 function fixture(t) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'maktabah-ai-'));
@@ -144,7 +144,7 @@ test('input validation, absent configuration, quota errors and local mode are ha
 
 test('selected page is loaded from database, contextual history/cache stay separate and forged selections fail',async t=>{
  const f=fixture(t);let prompts=[];
- const call=await serve(t,f,async(url,o)=>{prompts.push(JSON.parse(o.body).contents[0].parts[0].text);return response(JSON.stringify({answer:'Penjelasan [1]',quotes:[{source:1,text:'صلاة الجماعة واجبة'}]}));});
+ const call=await serve(t,f,async(url,o)=>{prompts.push(JSON.parse(o.body).contents[0].parts[0].text);return response(JSON.stringify({answer:'Penjelasan [1]',quotes:[{source:1,quoteId:'1.1'}]}));});
  const cookie=(await call('/api/ai/status')).cookie;
  const body={q:'Jelaskan halaman ini',intent:'explain',source:{bookId:1,pageId:11,title:'FORGED',text:'صلاة الجماعة واجبة'}};
  const first=await call('/api/ask',body,false,cookie);assert.equal(first.data.source.title,'كتاب الفقه');assert.equal(first.data.references[0].excerpt,'صلاة الجماعة واجبة');assert.ok(!prompts[0].includes('FORGED'));
@@ -156,22 +156,22 @@ test('selected page is loaded from database, contextual history/cache stay separ
  assert.equal(prompts.length,2);
 });
 
-test('unverified answers are not cached or logged, and catalogue facts need no model answer',async t=>{
+test('unverified prose is suppressed in favor of original source quotes without caching, and catalogue facts need no model answer',async t=>{
  const f=fixture(t),call=await serve(t,f,async()=>response(JSON.stringify({answer:'Klaim palsu [1]',quotes:[{source:1,text:'kutipan palsu yang tidak ada'}]})));
- const bad=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(bad.data.code,'UNVERIFIED_ANSWER');assert.equal(f.cache.size,0);assert.equal(f.db.prepare('SELECT count(*) AS n FROM ask_logs').get().n,0);
+ const bad=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(bad.data.mode,'sources_only');assert.ok(!bad.data.answer.includes('Klaim palsu'));assert.equal(f.cache.size,0);assert.equal(f.db.prepare('SELECT count(*) AS n FROM ask_logs').get().n,1);
  f.db.exec('DELETE FROM pages_fts');
  const catalogue=await call('/api/ask',{q:'هل كتاب الفقه موجود'});
  assert.equal(catalogue.data.mode,'catalogue');assert.ok(catalogue.data.answer.includes('كتاب الفقه'));assert.ok(!catalogue.data.answer.includes('Klaim'));
 });
 
-test('stream reports actual retrieval/generation/verification, cached branch skips generation and invalid answers emit errors',async t=>{
+test('stream reports actual retrieval/generation/verification, cached branch skips generation and invalid answers fall back to literal source quotes',async t=>{
  const f=fixture(t);let invalid=false,calls=0;
  const call=await serve(t,f,async()=>{calls++;return response(invalid?'not JSON':grounded('Penjelasan [1]'));});
  const first=await call('/api/ask',{q:'صلاة الجماعة',stream:true});
  assert.deepEqual(first.events.filter(x=>x.type==='stage').map(x=>x.stage),['searching','preparing','answering','verifying']);assert.equal(first.events.at(-1).type,'result');
  const cached=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.deepEqual(cached.events.map(x=>x.type),['stage','result']);assert.equal(cached.events[0].stage,'cached');assert.equal(calls,1);
  f.cache.clear();invalid=true;
- const bad=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(bad.events.at(-1).type,'error');assert.equal(bad.data.code,'UNVERIFIED_ANSWER');assert.ok(!bad.events.some(e=>e.type==='result'));
+ const bad=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(bad.events.at(-1).type,'result');assert.equal(bad.data.mode,'sources_only');assert.ok(bad.data.answer.includes('kutipan asli'));assert.equal(f.cache.size,0);
  const busy=await serve(t,f,async()=>response('unused'),{isMaintenance:()=>true});
  assert.equal((await busy('/api/ask',{q:'صلاة الجماعة',stream:true})).status,409);
 });
@@ -207,4 +207,19 @@ test('greetings and identity including reported typo need no provider or citatio
  assert.equal(actual.data.mode,'grounded');assert.equal(calls,1);assert.ok(actual.data.evidence.quotes.length);
  const source=await other('/api/ask',{q:'halo siapa kamu',source:{bookId:1,pageId:11},stream:true});
  assert.equal(source.data.mode,'grounded');assert.equal(calls,2);
+});
+
+test('reported Arabic poem resolves original quote IDs despite Latin transliteration in AI prose',async t=>{
+ const f=fixture(t),poem='سافر تجد عوضا عمن تفارقه ... وانصب فإن لذيذ العيش في النصب';
+ f.db.prepare('UPDATE pages SET nass=?').run(poem);f.db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
+ const call=await serve(t,f,async(u,o)=>{
+  const body=JSON.parse(o.body);
+  assert.ok(body.contents[0].parts[0].text.includes('ID 1.1: '+poem));
+  assert.deepEqual(body.generationConfig.responseSchema.properties.quotes.items.required,['source','quoteId']);
+  return response(JSON.stringify({answer:'Ungkapan "safar tajid iwadan" membahas perjalanan [1].',quotes:[{source:1,quoteId:'1.1',text:'MODEL REWRITE MUST NOT APPEAR'}]}));
+ });
+ const r=await call('/api/ask',{q:'سافر تجد عوضا',stream:true});
+ assert.equal(r.data.mode,'grounded');assert.equal(r.data.evidence.quotes[0].text,poem);
+ assert.ok(r.data.answer.includes('safar tajid iwadan'));assert.ok(!r.data.answer.includes('MODEL REWRITE'));
+ const cached=await call('/api/ask',{q:'سافر تجد عوضا',stream:true});assert.equal(cached.events[0].stage,'cached');
 });
