@@ -1,3 +1,4 @@
+import type {AiPageSource,AiIntent,AiRequest,AiHistoryItem} from '../lib/ai-source';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { webAPI } from '../api';
 import { AI_SESSION_KEY, readAiSession } from '../lib/ai-session';
@@ -69,7 +70,7 @@ function inlineMarkdown(text: string): string {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, onBusyChange }: { openBook: (id: number, pageId?: number) => void; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void }) {
+export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, initialSource, initialIntent, onBusyChange }: { openBook: (id: number, pageId?: number) => void; initialSource?:AiPageSource; initialIntent?:AiIntent; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void }) {
   const [restored] = useState(() => readAiSession(sessionStorage));
   const welcome: Message[] = [
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
@@ -78,21 +79,24 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   const [available, setAvailable] = useState<boolean | null>(null);
   const [availabilityMessage,setAvailabilityMessage]=useState('');
   const [input, setInput] = useState<string>(initialQuestion || restored.input);
+  const [source,setSource]=useState<AiPageSource|undefined>(initialSource || restored.source);
+  const [intent,setIntent]=useState<AiIntent>(initialIntent || restored.intent || 'explain');
   const [loading, setLoading] = useState(false);
-  const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
+  const [recentQuestions, setRecentQuestions] = useState<AiHistoryItem[]>([]);
   const lastQuestion = useRef('');
   const requestActive = useRef(false);
   const handledQuestionVersion = useRef(0);
   useEffect(() => {
-    try { sessionStorage.setItem(AI_SESSION_KEY,JSON.stringify({messages,input,pending:loading,lastQuestion:lastQuestion.current})); } catch {}
-  },[messages,input,loading]);
+    try { sessionStorage.setItem(AI_SESSION_KEY,JSON.stringify({messages,input,source,intent,pending:loading,lastQuestion:lastQuestion.current})); } catch {}
+  },[messages,input,source,intent,loading]);
   useEffect(() => { onBusyChange?.(loading); },[loading,onBusyChange]);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (initialQuestion) setInput(initialQuestion);
+    if(questionVersion>0 && initialQuestion){setSource(initialSource);setIntent(initialIntent || 'explain');}
     if (initialQuestion) inputRef.current?.focus({ preventScroll: true });
-  }, [initialQuestion, questionVersion]);
+  }, [initialQuestion, questionVersion, initialSource, initialIntent]);
 
   useEffect(() => {
     let disposed=false;let controller:AbortController|null=null;
@@ -117,7 +121,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendQuestion = useCallback(async (question:string) => {
+  const sendQuestion = useCallback(async (question:string,options:AiRequest={}) => {
     const q = question.trim();
     if (!q || requestActive.current || available !== true) return;
     // A ref closes the gap before React renders loading=true (double clicks/effect replay).
@@ -128,7 +132,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     setLoading(true);
 
     try {
-      const res = await webAPI.askAI(q);
+      const res = await webAPI.askAI(q,options);
       webAPI.getRecentQuestions().then(data => { if (data.data) setRecentQuestions(data.data); }).catch(() => {});
       if (res.status === 'success') {
         setMessages(prev => [...prev, { role: "ai", content: res.answer, references: res.references }]);
@@ -152,12 +156,12 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     // Only an explicit history click creates a new version. Opening the tab or restoring
     // a saved conversation must never resend a question or duplicate a provider request.
     handledQuestionVersion.current = questionVersion;
-    void sendQuestion(initialQuestion);
-  },[initialQuestion,questionVersion,loading,available,sendQuestion]);
+    void sendQuestion(initialQuestion,initialSource?{source:initialSource,intent:initialIntent || 'explain'}:{});
+  },[initialQuestion,questionVersion,initialSource,initialIntent,loading,available,sendQuestion]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void sendQuestion(input);
+    void sendQuestion(input,source?{source,intent}:{});
   };
 
   return (
@@ -176,7 +180,12 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
 
       {available !== true && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">{available===null?'Memeriksa ketersediaan Tanya AI…':availabilityMessage}</p>}
       {loading && initialQuestion.trim() && questionVersion > handledQuestionVersion.current && <p role="status" className="bg-emerald-50 text-emerald-800 text-sm p-4 border-b">Pertanyaan yang dipilih akan dikirim otomatis setelah jawaban sebelumnya selesai.</p>}
-      <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>
+      <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); setSource(undefined); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>
+      {source && <section aria-label="Halaman sumber" className="bg-emerald-50 border-b border-emerald-200 px-4 py-3 text-sm shrink-0 max-h-44 overflow-y-auto">
+        <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="font-semibold text-emerald-900" dir="auto">{source.title}</p><p className="text-xs text-emerald-800">Jilid {source.part ?? '—'} · Halaman {source.page ?? '—'} · {source.text?'Teks pilihan':'Seluruh halaman'}</p></div><button type="button" disabled={loading} onClick={()=>setSource(undefined)} className="min-h-11 px-2 text-emerald-800 underline disabled:opacity-40">Lepas sumber</button></div>
+        {source.text && <p dir="auto" className="truncate mt-1">{source.text}</p>}
+        <label className="flex items-center gap-2 mt-2">Tindakan <select aria-label="Tindakan halaman" value={intent} disabled={loading} onChange={e=>setIntent(e.target.value as AiIntent)} className="rounded-lg border border-emerald-300 bg-white p-2"><option value="explain">Jelaskan</option><option value="translate">Terjemahkan</option></select></label>
+      </section>}
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.map((m, i) => (
@@ -226,7 +235,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                   {recentQuestions.map((rq, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => { void sendQuestion(rq.query); }}
+                      onClick={() => { setSource(rq.source);setIntent(rq.intent || 'explain');void sendQuestion(rq.query,rq.source?{source:rq.source,intent:rq.intent || 'explain'}:{}); }}
                       disabled={loading || available !== true}
                       className="bg-white hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 border border-gray-200 hover:border-emerald-200 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
                       dir="auto"

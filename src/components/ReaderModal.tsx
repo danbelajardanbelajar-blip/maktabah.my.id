@@ -4,6 +4,7 @@ import { loadReaderData } from '../lib/reader-loader';
 import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
 import { useModalFocus } from '../lib/use-modal-focus';
 import { BackButton } from './BackButton';
+import type {AiRequest} from '../lib/ai-source';
 import { ChevronLeft, ChevronRight, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
@@ -17,6 +18,7 @@ export interface ReaderModalProps {
   setBookmarks?: any;
   onClose: () => void;
   onPageChange?: (bookId:number,pageId:number) => void;
+  onAskAI?: (request:AiRequest) => void;
 }
 
 const buildArabicRegex = (word: string) => {
@@ -61,7 +63,13 @@ const highlightText = (text: string, query?: string) => {
 };
 
 
-const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange }) => {
+const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange, onAskAI }) => {
+  const readingTextRef=useRef<HTMLDivElement>(null);
+  const askPage=(intent:'explain'|'translate')=>{
+    const selection=window.getSelection();
+    const text=selection && readingTextRef.current?.contains(selection.anchorNode) && readingTextRef.current?.contains(selection.focusNode)?selection.toString().trim():'';
+    onAskAI?.({intent,source:{bookId,pageId:currentPage.id,title:bookInfo.bk,part:currentPage.part,page:currentPage.page,...(text?{text}:{})}});
+  };
   const [bookInfo, setBookInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<any>(null);
   const [currentPageId, setCurrentPageId] = useState<number | undefined>(initialPageId);
@@ -463,13 +471,18 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
               <span>Jilid: {currentPage?.part} • Hal: {currentPage?.page}</span>
             </div>
             
+            {onAskAI && <div className="flex flex-wrap gap-2 px-4 md:px-8 py-3 border-b border-gray-200 font-sans" onClick={e=>e.stopPropagation()}>
+              <button type="button" disabled={loading} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('explain')} className="min-h-11 rounded-xl px-4 py-2 bg-emerald-700 text-white text-sm font-semibold disabled:opacity-40">Jelaskan halaman ini</button>
+              <button type="button" disabled={loading} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('translate')} className="min-h-11 rounded-xl px-4 py-2 border border-emerald-700 text-emerald-800 text-sm font-semibold disabled:opacity-40">Terjemahkan halaman ini</button>
+              <p className="basis-full text-xs text-gray-500">Pilih teks untuk membahas bagian tertentu, atau gunakan seluruh halaman.</p>
+            </div>}
             <div className="p-4 md:p-8 lg:p-12 flex-1">
               {loading ? (
                 <div className="flex h-full items-center justify-center">
                   <div className="w-8 h-8 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               ) : (
-                <div key={pageKey} className={`flex flex-col ${slideDir ? 'animate-slide-' + slideDir : ''}`} style={{ fontSize: `${fontSize}px`, lineHeight: '2.2', fontFamily: 'var(--arabic-font)' }}>
+                <div ref={readingTextRef} key={pageKey} className={`flex flex-col ${slideDir ? 'animate-slide-' + slideDir : ''}`} style={{ fontSize: `${fontSize}px`, lineHeight: '2.2', fontFamily: 'var(--arabic-font)' }}>
                     {(currentPage?.text || '').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line: string, i: number) => (
                       <div 
                         key={i} 

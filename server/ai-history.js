@@ -6,6 +6,7 @@ export function registerAiHistory(app,{getStateDb}) {
   const db=getStateDb();
   if(db?.prepare("SELECT 1 FROM sqlite_master WHERE name='ask_logs'").get()) {
     if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='session_id'))db.exec('ALTER TABLE ask_logs ADD COLUMN session_id TEXT');
+    if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='context_json'))db.exec('ALTER TABLE ask_logs ADD COLUMN context_json TEXT');
     db.exec('CREATE INDEX IF NOT EXISTS ask_logs_session ON ask_logs(session_id)');
   }
   const session=(req,res,create=false)=>{
@@ -19,17 +20,17 @@ export function registerAiHistory(app,{getStateDb}) {
     if(!token)return null;
     req[SESSION]=crypto.createHash('sha256').update(token).digest('hex');return req[SESSION];
   };
-  const record=(req,res,question,response)=>{
-    try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id) VALUES(?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true));} catch { /* History cannot discard a successful answer. */ }
+  const record=(req,res,question,response,context={})=>{
+    try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json) VALUES(?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context));} catch { /* History cannot discard a successful answer. */ }
   };
   app.get('/api/recent-questions',(req,res)=>{
     res.set('Cache-Control','no-store');
     const id=session(req,res);
     if(!id)return res.json({data:[]});
     try {
-      const rows=getStateDb()?.prepare('SELECT question FROM ask_logs WHERE session_id=? AND length(trim(question))>=5 ORDER BY rowid DESC LIMIT 200').all(id)||[];
+      const rows=getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE session_id=? AND length(trim(question))>=5 ORDER BY rowid DESC LIMIT 200').all(id)||[];
       const limit=Math.min(20,Math.max(1,parseInt(req.query.limit)||10)),seen=new Set(),data=[];
-      for(const row of rows){const key=row.question.trim().toLowerCase();if(!seen.has(key)){seen.add(key);data.push({query:row.question});if(data.length>=limit)break;}}
+      for(const row of rows){let context={};try{context=JSON.parse(row.context_json||'{}');}catch{}const key=JSON.stringify([row.question.trim().toLowerCase(),context]);if(!seen.has(key)){seen.add(key);data.push({query:row.question,...context});if(data.length>=limit)break;}}
       res.json({data});
     } catch {res.status(503).json({data:[],error:'Riwayat belum dapat dimuat. Silakan coba lagi.'});}
   });

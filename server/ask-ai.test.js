@@ -137,3 +137,17 @@ test('input validation, absent configuration, quota errors and local mode are ha
   assert.equal((await call('/api/ai/status')).data.available,false);
   assert.equal((await call('/api/ask',{q:'صلاة الجماعة'})).status,503);
 });
+
+test('selected page is loaded from database, contextual history/cache stay separate and forged selections fail',async t=>{
+ const f=fixture(t);let prompts=[];
+ const call=await serve(t,f,async(url,o)=>{prompts.push(JSON.parse(o.body).contents[0].parts[0].text);return response('Penjelasan [1]');});
+ const cookie=(await call('/api/ai/status')).cookie;
+ const body={q:'Jelaskan halaman ini',intent:'explain',source:{bookId:1,pageId:11,title:'FORGED',text:'صلاة الجماعة'}};
+ const first=await call('/api/ask',body,false,cookie);assert.equal(first.data.source.title,'كتاب الفقه');assert.equal(first.data.references[0].excerpt,'صلاة الجماعة');assert.ok(!prompts[0].includes('FORGED'));
+ await call('/api/ask',body,false,cookie);assert.equal(prompts.length,1);
+ await call('/api/ask',{...body,intent:'translate'},false,cookie);assert.equal(prompts.length,2);
+ const history=(await call('/api/recent-questions',undefined,false,cookie)).data.data;assert.equal(history.length,2);assert.equal(history[0].intent,'translate');assert.equal(history[0].source.pageId,11);
+ assert.equal((await call('/api/ask',{...body,source:{bookId:2,pageId:11}})).status,404);
+ assert.equal((await call('/api/ask',{...body,source:{bookId:1,pageId:11,text:'teks palsu'}})).status,400);
+ assert.equal(prompts.length,2);
+});

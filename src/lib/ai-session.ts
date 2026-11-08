@@ -1,4 +1,5 @@
 import {legacyAiError} from './ai-errors.ts';
+import {readAiSource} from './ai-source.ts';
 export const AI_SESSION_KEY = 'maktabah-ai-session';
 export function readAiSession(storage: {getItem:(key:string)=>string|null}) {
   try {
@@ -9,6 +10,7 @@ export function readAiSession(storage: {getItem:(key:string)=>string|null}) {
     })) : [];
     const input = typeof data.input==='string' ? data.input.slice(0,1500) : '';
     if(data.pending)messages.push({role:'error',content:'Permintaan sebelumnya terputus saat halaman dimuat ulang. Periksa percakapan lalu kirim kembali jika diperlukan.'});
-    return {messages,input:input || (data.pending && typeof data.lastQuestion==='string' ? data.lastQuestion.slice(0,1500):'')};
+    const source=readAiSource(data.source);
+    return {messages,input:input || (data.pending && typeof data.lastQuestion==='string' ? data.lastQuestion.slice(0,1500):''),...(source?{source,intent:data.intent==='translate'?'translate' as const:'explain' as const}: {})};
   } catch { return {messages:[],input:''}; }
 }

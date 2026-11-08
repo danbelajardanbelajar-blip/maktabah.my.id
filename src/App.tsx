@@ -1,3 +1,4 @@
+import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
 import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
@@ -61,12 +62,13 @@ function App() {
       .then(data => setStats(data))
       .catch(err => console.error("Failed to load stats:", err));
   }, []);
-  const [recentSearches, setRecentSearches] = useState<{query:string}[]>([]);
-  const [recentAiQuestions, setRecentAiQuestions] = useState<{query:string}[]>([]);
+  const [recentSearches, setRecentSearches] = useState<AiHistoryItem[]>([]);
+  const [recentAiQuestions, setRecentAiQuestions] = useState<AiHistoryItem[]>([]);
+  const [aiRequest,setAiRequest]=useState<AiRequest>({});
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiQuestionVersion, setAiQuestionVersion] = useState(0);
   const [aiBusy, setAiBusy] = useState(false);
-  const openAiQuestion = (question = '') => { setAiQuestion(question); setAiQuestionVersion(v=>v+1); setActiveTab('ask'); };
+  const openAiQuestion = (question = '',request:AiRequest={}) => { setAiRequest(request); setAiQuestion(question); setAiQuestionVersion(v=>v+1); setActiveTab('ask'); };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
   const [positions,setPositions] = useState(() => readingPositions(localStorage));
@@ -412,7 +414,7 @@ function App() {
           <BackButton onClick={goBack} disabled={activeTab==='home' && !previousLocation(window.history.state,window.location.href)} title={activeTab==='home' && !previousLocation(window.history.state,window.location.href)?'Anda berada di beranda':'Kembali ke halaman sebelumnya'}/>
           <span className="text-sm font-semibold text-[var(--app-text)] opacity-70 truncate">{pageTitles[activeTab]}</span>
         </nav>}
-        <div hidden={activeTab !== 'ask'}><AskAI initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} /></div>
+        <div hidden={activeTab !== 'ask'}><AskAI initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} /></div>
         {activeTab === 'quran' ? (
           <QuranReader />
         ) : activeTab === 'rowa' ? (
@@ -604,7 +606,7 @@ function App() {
                     {recentAiQuestions.length > 0 ? (
                       <div className="flex flex-col gap-2">
                         {recentAiQuestions.slice(0, 5).map((item, idx) => (
-                          <button key={idx} type="button" onClick={() => openAiQuestion(item.query)}
+                          <button key={idx} type="button" onClick={() => openAiQuestion(item.query,item)}
                             className="text-left break-words bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-2 rounded-xl text-sm transition-all shadow-sm" dir="auto">
                             {item.query}
                           </button>
@@ -1018,6 +1020,7 @@ function App() {
           bookmarks={bookmarks}
           setBookmarks={setBookmarks}
           onPageChange={(id, pageId) => { if (window.location.hash.startsWith('#/read/')) window.history.replaceState(window.history.state,'',`#/read/${id}/${pageId}`); }}
+          onAskAI={request=>{pushLocation(navigationHash('ask'));setReadingConfig(null);openAiQuestion(request.intent==='translate'?'Terjemahkan halaman ini':'Jelaskan halaman ini',request);}}
           onClose={closeReader}
         />
       )}

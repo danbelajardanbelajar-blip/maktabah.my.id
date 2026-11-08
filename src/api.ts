@@ -1,4 +1,5 @@
 import {aiResponseError} from './lib/ai-errors.ts';
+import type {AiRequest} from './lib/ai-source';
 const API_BASE = '/api'; // Use relative path for production (served by Express) or proxy in dev
 
 async function fetchAPI(endpoint: string, signal?:AbortSignal) {
@@ -189,11 +190,11 @@ export const webAPI = {
 
 
 
-  askAI: async (query: string) => {
+  askAI: async (query: string, options:AiRequest={}) => {
     const res = await fetch(`${API_BASE}/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q: query })
+      body: JSON.stringify({ q: query,...options })
     });
     
     let data;
@@ -234,7 +235,7 @@ export const webAPI = {
     return fetchAPI(`/toc/${bookId}`);
   },
   getPage: async (bookId: number, pageId?: number) => {
-    return fetchAPI(`/book/${bookId}/page${pageId ? `/${pageId}` : ''}`);
+    return fetchAPI(`/book/${bookId}/page${pageId !== undefined ? `/${pageId}` : ''}`);
   },
   getFirstPage: async (bookId: number) => {
     return fetchAPI(`/book/${bookId}/first`);
