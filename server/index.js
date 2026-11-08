@@ -442,25 +442,6 @@ app.get('/api/popular-books', (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get('/api/recent-questions', (req, res) => {
-    if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
-    try {
-        const limit = parseInt(req.query.limit) || 10;
-        const data = stateDb.prepare("SELECT question FROM ask_logs WHERE length(trim(question)) >= 5 ORDER BY id DESC LIMIT 200").all();
-        const unique = [];
-        const result = [];
-        for (const row of data) {
-            const q = row.question.toLowerCase().trim();
-            if (!unique.includes(q)) {
-                unique.push(q);
-                result.push({ query: row.question });
-                if (result.length >= limit) break;
-            }
-        }
-        res.json({ data: result });
-    } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
 // Legacy diagnostic endpoint is replaced by authenticated AI settings and connection tests.
 app.get('/api/test-gemini', (req, res) => res.sendStatus(404));
 

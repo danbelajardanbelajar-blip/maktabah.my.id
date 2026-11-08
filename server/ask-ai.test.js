@@ -29,9 +29,9 @@ async function serve(t,f,fetchImpl,extras={}) {
     requireAdmin:(req,res,next)=>req.headers.authorization==='Bearer test'?next():res.sendStatus(401),...extras});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
   t.after(()=>new Promise(r=>server.close(r)));
-  return async (route,body,admin=false) => {
-    const r=await fetch(`http://127.0.0.1:${server.address().port}${route}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(admin?{Authorization:'Bearer test'}:{})},body:body===undefined?undefined:JSON.stringify(body)});
-    const data=await r.json().catch(()=>null);return {status:r.status,data};
+  return async (route,body,admin=false,cookie) => {
+    const r=await fetch(`http://127.0.0.1:${server.address().port}${route}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(admin?{Authorization:'Bearer test'}:{}),...(cookie?{cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)});
+    const data=await r.json().catch(()=>null);return {status:r.status,data,cookie:r.headers.get('set-cookie')?.split(';')[0]};
   };
 }
 
@@ -49,6 +49,16 @@ test('availability follows maintenance and recovers without exposing configurati
   assert.equal(busy.data.available,false);assert.equal(busy.data.reason,'maintenance');assert.ok(!JSON.stringify(busy.data).includes(key));
   assert.equal((await request('/api/ask',{q:'صلاة الجماعة'})).status,409);assert.equal(calls,0);
   maintenance=false;assert.equal((await request('/api/ai/status')).data.available,true);
+});
+
+test('cached answers are recorded in the requesting browser history without sharing other questions',async t=>{
+  const f=fixture(t),call=await serve(t,f,async()=>response('Jawaban [1]'));
+  const a=(await call('/api/ai/status')).cookie,b=(await call('/api/ai/status')).cookie;
+  await call('/api/ask',{q:'صلاة الجماعة'},false,a);
+  await call('/api/ask',{q:'صلاة الجماعة'},false,b);
+  assert.deepEqual((await call('/api/recent-questions',undefined,false,a)).data.data,[{query:'صلاة الجماعة'}]);
+  assert.deepEqual((await call('/api/recent-questions',undefined,false,b)).data.data,[{query:'صلاة الجماعة'}]);
+  assert.equal(f.db.prepare('SELECT count(DISTINCT session_id) AS n FROM ask_logs').get().n,2);
 });
 
 test('Gemini uses header authentication and falls back only when a model is unavailable', async()=>{

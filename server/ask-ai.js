@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {registerAiHistory} from './ai-history.js';
 
 const DEFAULT_MODEL = 'gemini-flash-latest';
 const keyPattern = /^AIza[A-Za-z0-9_-]{30,100}$/;
@@ -94,9 +95,11 @@ export function retrieveAiReferences(db, question, additional = false, catalogue
 }
 
 export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAdmin, cache, configPath, localExportMode, isMaintenance = ()=>false, fetchImpl = fetch, env = process.env }) {
+  const history=registerAiHistory(app,{getStateDb});
   const config = () => readAiConfig(configPath, env);
   const publicSettings = () => { const c = config(); return { configured: c.keys.length > 0, model: c.model }; };
   app.get('/api/ai/status', (req,res) => {
+    history.session(req,res,true);
     const configured=publicSettings().configured;
     const reason=isMaintenance()?'maintenance':localExportMode?'read_only':!configured?'not_configured':null;
     res.set('Cache-Control','no-store').json({available:reason===null,configured,reason,message:reason==='maintenance'?'Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.':reason==='read_only'?'Gunakan Tanya AI melalui website online.':reason==='not_configured'?'Tanya AI belum diaktifkan. Silakan coba lagi nanti.':''});
@@ -131,8 +134,9 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     if (!getDb()) return res.status(503).json({ status:'error', message:'Database kitab belum tersedia.' });
     const settings = config();
     if (!settings.keys.length) return res.status(503).json({ status:'error', code:'NOT_CONFIGURED', message:'Tanya AI belum diaktifkan. Administrator perlu mengatur API key Gemini melalui Pengaturan AI.' });
+    history.session(req,res,true);
     const q = question.trim(), cached = cache.get(q);
-    if (cached && Date.now()-cached.createdAt < 300000) return res.json(cached.payload);
+    if (cached && Date.now()-cached.createdAt < 300000) {history.record(req,res,q,cached.payload.answer);return res.json(cached.payload);}
     const ip = req.ip || 'unknown', now = Date.now();
     for (const [id,entry] of limits) if (now-entry.start > 60000) limits.delete(id);
     const entry = limits.get(ip) || { start:now, count:0 };
@@ -164,7 +168,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       const payload = { status:'success', answer, references, mode };
       cache.set(q,{ createdAt:Date.now(), payload });
       if (cache.size > 100) cache.delete(cache.keys().next().value);
-      try { getStateDb().prepare('INSERT INTO ask_logs(question,response,ip,user_agent) VALUES(?,?,?,?)').run(q,answer,req.ip,req.headers['user-agent'] || ''); } catch { /* Logging must not discard an answer. */ }
+      history.record(req,res,q,answer);
       if (!res.destroyed) res.end(JSON.stringify(payload));
     } catch (e) { if (!res.destroyed) res.end(JSON.stringify({ status:'error', code:e.status ? e.code : 'SEARCH_ERROR', message:e.status ? e.message : 'Pencarian rujukan kitab mengalami gangguan. Silakan coba lagi.' })); }
     finally { clearInterval(heartbeat); active--; }

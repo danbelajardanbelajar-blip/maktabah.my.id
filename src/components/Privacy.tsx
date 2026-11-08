@@ -24,6 +24,7 @@ const Privacy: React.FC = () => {
 
           <p className="mb-2"><strong>Riwayat & Preferensi Pencarian</strong></p>
           <p className="mb-4">Sistem mencatat pencarian serta pertanyaan dan jawaban Tanya AI. Log layanan juga dapat memuat alamat IP dan informasi peramban untuk operasional, statistik, dan perbaikan layanan.</p>
+          <p className="mb-4">Riwayat Tanya AI pengunjung dipisahkan menggunakan cookie pengenal acak pada browser. Cookie ini dipakai untuk fungsi riwayat, bukan untuk iklan. Menghapus cookie dapat membuat riwayat sebelumnya tidak dapat diakses dari browser tersebut. Administrator dapat mengakses log layanan untuk pengelolaan dan penanganan masalah.</p>
         </section>
 
         <section>
