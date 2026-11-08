@@ -69,3 +69,9 @@ Build produksi dan 10 tes AI/sesi lulus. Pengujian interaksi React dengan respon
 Data sumber yang diperiksa memiliki `Name`/`A_esm` kosong tetapi `IsoName` berisi nama lengkap. API pencarian kini mengirim `IsoName` untuk jalur FTS maupun LIKE, dan jalur LIKE juga mencari kolom tersebut. Sumber lama tanpa kolom ini tetap didukung. Pencarian FTS beberapa kata menyertakan kecocokan frasa persis yang sebelumnya terbuang oleh ekspresi NOT.
 
 Hasil pencarian dan profil memakai pilihan nama yang sama (A_esm, Name, lalu IsoName); teks membungkus tanpa pemotongan. Seluruh 60 tes serta build produksi lulus. Uji interaksi React dengan respons tiruan memverifikasi nama lengkap dari IsoName muncul pada judul hasil dan profil. Tidak mengubah isi database sumber atau nama perawi.
+
+## Penjelasan 409 pada Tanya AI — 8 November 2026
+
+Penanganan respons AI membaca pesan pada properti `message` maupun `error`. Status 409 dari penguncian import/penghapusan kini menjadi pemberitahuan pembaruan database, tanpa awalan kegagalan koneksi. Pesan 409 lama pada sesi percakapan juga dinormalkan; pertanyaan dan jawaban AI tidak ditulis ulang. Pertanyaan gagal dikembalikan ke input untuk retry manual, bukan dikirim berulang otomatis. Proteksi server ketika import/penghapusan berlangsung tetap berlaku.
+
+Build produksi dan 14 tes terkait lulus. Pengujian Chrome headless dengan respons 409 tiruan memverifikasi pesan lama/baru, input tetap tersedia sesudah penolakan dan reload, tidak ada pengiriman ganda, serta tidak ada error halaman. Pembaruan hanya membutuhkan pull aset/frontend, tanpa restart layanan saat import aktif.

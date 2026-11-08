@@ -1,3 +1,4 @@
+import {aiResponseError} from './lib/ai-errors.ts';
 const API_BASE = '/api'; // Use relative path for production (served by Express) or proxy in dev
 
 async function fetchAPI(endpoint: string, signal?:AbortSignal) {
@@ -199,15 +200,12 @@ export const webAPI = {
     try {
         data = await res.json();
     } catch (e) {
-        await res.text().catch(() => '');
-        throw new Error(`Server returned invalid response (Status ${res.status}). Ini biasanya karena koneksi terputus atau server sedang sibuk (Timeout).`);
+        if(!res.ok)throw aiResponseError(res.status,null);
+        throw new Error('Jawaban belum diterima dengan lengkap. Silakan coba lagi.');
     }
 
     if (!res.ok) {
-        if (data.message) {
-            throw new Error(data.message);
-        }
-        throw new Error(`API error: ${res.status}`);
+        throw aiResponseError(res.status,data);
     }
     return data;
   },

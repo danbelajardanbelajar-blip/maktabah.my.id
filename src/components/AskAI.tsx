@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { webAPI } from '../api';
 import { AI_SESSION_KEY, readAiSession } from '../lib/ai-session';
+import {aiFailureMessage} from '../lib/ai-errors';
 import { Send, Bot, User, BookOpen, AlertCircle } from 'lucide-react';
 
 interface Message {
@@ -75,7 +76,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   ];
   const [messages, setMessages] = useState<Message[]>(restored.messages.length ? restored.messages : welcome);
   const [available, setAvailable] = useState<boolean | null>(null);
-  const [input, setInput] = useState(initialQuestion || restored.input);
+  const [input, setInput] = useState<string>(initialQuestion || restored.input);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
   const lastQuestion = useRef('');
@@ -120,9 +121,11 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
         setMessages(prev => [...prev, { role: "ai", content: res.answer, references: res.references }]);
       } else {
         setMessages(prev => [...prev, { role: 'error', content: res.message || 'Terjadi kesalahan sistem.' }]);
+        setInput(current=>current || q);
       }
     } catch (err: any) {
-      setMessages(prev => [...prev, { role: 'error', content: 'Gagal terhubung ke server: ' + err.message }]);
+      setMessages(prev => [...prev, { role: 'error', content: aiFailureMessage(err) }]);
+      setInput(current=>current || q);
     }
     finally {
       requestActive.current = false;
@@ -172,7 +175,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
               <div
                 className="leading-relaxed text-[15px] prose prose-sm max-w-none"
                 dir="auto"
-                style={m.role !== 'user' ? { fontFamily: 'var(--arabic-font)' } : {}}
+                style={m.role === 'ai' ? { fontFamily: 'var(--arabic-font)' } : {}}
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content) }}
               />
               
