@@ -11,6 +11,7 @@ export function aiResponseError(status:number,data:unknown) {
 }
 export function aiFailureMessage(error:unknown) {
   if(error && typeof error==='object' && 'status' in error && error.status===409)return AI_DATABASE_BUSY;
+  if(error instanceof Error && ['TimeoutError','AbortError'].includes(error.name))return 'Waktu menunggu jawaban habis. Pertanyaan dapat dikirim kembali.';
   if(error instanceof TypeError)return 'Koneksi terganggu. Periksa jaringan Anda lalu coba lagi.';
   return error instanceof Error?legacyAiError(error.message):'Pertanyaan belum berhasil diproses. Silakan coba lagi.';
 }

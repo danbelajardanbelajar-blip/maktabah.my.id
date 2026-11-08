@@ -26,6 +26,8 @@ export function verifyAnswer(text,refs){
   const actual=exactSourceQuote(refs[q.source-1].excerpt,q.text);if(!actual)throw invalid();
   return {source:q.source,text:actual};
  });
+ const sources=[...new Set(quotes.map(q=>q.source))];
+ if(!/\[\d+\]/.test(data.answer)&&sources.length===1&&refs.filter(r=>r.pageId!=null).length===1)data={...data,answer:data.answer.trim()+` [${sources[0]}]`};
  const citations=[...data.answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));
  if(!citations.length||citations.some(n=>!quotes.some(q=>q.source===n)))throw invalid();
  // Quoted phrases in the prose must also occur in an available source.

@@ -81,6 +81,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   const [input, setInput] = useState<string>(initialQuestion || restored.input);
   const [source,setSource]=useState<AiPageSource|undefined>(initialSource || restored.source);
   const [intent,setIntent]=useState<AiIntent>(initialIntent || restored.intent || 'explain');
+  const [progress,setProgress]=useState('');
+  const failedRequest=useRef<{q:string;options:AiRequest}|null>(null);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<AiHistoryItem[]>([]);
   const lastQuestion = useRef('');
@@ -129,21 +131,21 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     lastQuestion.current = q;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: q }]);
-    setLoading(true);
+    setLoading(true);setProgress('Memeriksa permintaan…');failedRequest.current=null;
 
     try {
-      const res = await webAPI.askAI(q,options);
+      const res = await webAPI.askAI(q,options,setProgress);
       webAPI.getRecentQuestions().then(data => { if (data.data) setRecentQuestions(data.data); }).catch(() => {});
       if (res.status === 'success') {
         setMessages(prev => [...prev, { role: "ai", content: res.answer, references: res.references }]);
       } else {
         setMessages(prev => [...prev, { role: 'error', content: res.message || 'Terjadi kesalahan sistem.' }]);
-        setInput(current=>current || q);
+        failedRequest.current={q,options};setInput(current=>current || q);
       }
     } catch (err: any) {
       if(err.status===409){setAvailable(false);setAvailabilityMessage(aiFailureMessage(err));}
       setMessages(prev => [...prev, { role: 'error', content: aiFailureMessage(err) }]);
-      setInput(current=>current || q);
+      failedRequest.current={q,options};setInput(current=>current || q);
     }
     finally {
       requestActive.current = false;
@@ -202,6 +204,10 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                 dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content) }}
               />
               
+              {m.role==='error' && i===messages.length-1 && <div className="flex flex-wrap gap-2 mt-3">
+                {failedRequest.current && <button type="button" disabled={loading || available!==true} onClick={()=>{const failed=failedRequest.current;if(failed){setSource(failed.options.source);setIntent(failed.options.intent || 'explain');void sendQuestion(failed.q,failed.options);}}} className="min-h-11 rounded-lg border border-red-300 px-3 font-semibold disabled:opacity-40">Coba lagi</button>}
+                <button type="button" disabled={loading} onClick={()=>inputRef.current?.focus()} className="min-h-11 rounded-lg px-3 underline">Ubah pertanyaan</button>
+              </div>}
               {m.references && m.references.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Referensi Kitab:</p><p className="text-xs text-gray-500">Periksa penjelasan dengan teks sumber melalui tautan di bawah.</p>
@@ -261,7 +267,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <span className="text-sm text-emerald-700 italic">Mesin sedang membaca referensi kitab & berpikir... (mohon tunggu, butuh hingga 1 menit)</span>
+              <span className="text-sm text-emerald-700 italic">{progress || 'Memeriksa permintaan…'}</span>
             </div>
           </div>
         )}

@@ -32,7 +32,10 @@ async function serve(t,f,fetchImpl,extras={}) {
   t.after(()=>new Promise(r=>server.close(r)));
   return async (route,body,admin=false,cookie) => {
     const r=await fetch(`http://127.0.0.1:${server.address().port}${route}`,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(admin?{Authorization:'Bearer test'}:{}),...(cookie?{cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)});
-    const data=await r.json().catch(()=>null);return {status:r.status,data,cookie:r.headers.get('set-cookie')?.split(';')[0]};
+    let data,events;
+    if(r.headers.get('content-type')?.includes('application/x-ndjson')){events=(await r.text()).trim().split('\n').map(x=>JSON.parse(x));data=events.find(x=>x.type==='result')?.data || events.find(x=>x.type==='error');}
+    else data=await r.json().catch(()=>null);
+    return {status:r.status,data,events,cookie:r.headers.get('set-cookie')?.split(';')[0]};
   };
 }
 
@@ -159,4 +162,32 @@ test('unverified answers are not cached or logged, and catalogue facts need no m
  f.db.exec('DELETE FROM pages_fts');
  const catalogue=await call('/api/ask',{q:'هل كتاب الفقه موجود'});
  assert.equal(catalogue.data.mode,'catalogue');assert.ok(catalogue.data.answer.includes('كتاب الفقه'));assert.ok(!catalogue.data.answer.includes('Klaim'));
+});
+
+test('stream reports actual retrieval/generation/verification, cached branch skips generation and invalid answers emit errors',async t=>{
+ const f=fixture(t);let invalid=false,calls=0;
+ const call=await serve(t,f,async()=>{calls++;return response(invalid?'not JSON':grounded('Penjelasan [1]'));});
+ const first=await call('/api/ask',{q:'صلاة الجماعة',stream:true});
+ assert.deepEqual(first.events.filter(x=>x.type==='stage').map(x=>x.stage),['searching','preparing','answering','verifying']);assert.equal(first.events.at(-1).type,'result');
+ const cached=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.deepEqual(cached.events.map(x=>x.type),['stage','result']);assert.equal(cached.events[0].stage,'cached');assert.equal(calls,1);
+ f.cache.clear();invalid=true;
+ const bad=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(bad.events.at(-1).type,'error');assert.equal(bad.data.code,'UNVERIFIED_ANSWER');assert.ok(!bad.events.some(e=>e.type==='result'));
+ const busy=await serve(t,f,async()=>response('unused'),{isMaintenance:()=>true});
+ assert.equal((await busy('/api/ask',{q:'صلاة الجماعة',stream:true})).status,409);
+});
+test('maintenance that starts during provider work stops the result and does not cache it',async t=>{
+ const f=fixture(t);let busy=false;
+ const call=await serve(t,f,async()=>{busy=true;return response(grounded('Penjelasan [1]'));},{isMaintenance:()=>busy});
+ const r=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(r.data.code,'DATABASE_BUSY');assert.equal(r.data.httpStatus,409);assert.equal(f.cache.size,0);
+});
+
+test('closing a streamed request cancels the provider operation',async t=>{
+ const f=fixture(t),app=express();app.use(express.json());let aborted;
+ const cancelled=new Promise(r=>aborted=r);
+ registerAskAi(app,{getDb:()=>f.db,getStateDb:()=>f.db,hasAdditional:()=>false,cache:f.cache,configPath:f.configPath,localExportMode:false,env:{},requireAdmin:(q,r,n)=>n(),
+ fetchImpl:async(url,options)=>new Promise((resolve,reject)=>{options.signal.addEventListener('abort',()=>{aborted();reject(new DOMException('cancelled','AbortError'));},{once:true});})});
+ const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>new Promise(r=>server.close(r)));
+ const controller=new AbortController(),r=await fetch('http://127.0.0.1:'+server.address().port+'/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({q:'صلاة الجماعة',stream:true}),signal:controller.signal});
+ const reader=r.body.getReader();await reader.read();controller.abort();
+ await Promise.race([cancelled,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(new Error('provider not cancelled')),2000);timer.unref();})]);assert.equal(f.cache.size,0);
 });

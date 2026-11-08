@@ -1,4 +1,4 @@
-import {aiResponseError} from './lib/ai-errors.ts';
+import {readAiResponse} from './lib/ai-stream.ts';
 import type {AiRequest} from './lib/ai-source';
 const API_BASE = '/api'; // Use relative path for production (served by Express) or proxy in dev
 
@@ -190,25 +190,12 @@ export const webAPI = {
 
 
 
-  askAI: async (query: string, options:AiRequest={}) => {
+  askAI: async (query: string, options:AiRequest={}, onProgress?:(message:string)=>void) => {
     const res = await fetch(`${API_BASE}/ask`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q: query,...options })
+      method: 'POST',headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: query,...options,stream:true }),signal:AbortSignal.timeout(90000)
     });
-    
-    let data;
-    try {
-        data = await res.json();
-    } catch (e) {
-        if(!res.ok)throw aiResponseError(res.status,null);
-        throw new Error('Jawaban belum diterima dengan lengkap. Silakan coba lagi.');
-    }
-
-    if (!res.ok) {
-        throw aiResponseError(res.status,data);
-    }
-    return data;
+    return readAiResponse(res,onProgress);
   },
 
   search: async (query: string, page = 1, limit = 50, cat_id?: number | string) => {

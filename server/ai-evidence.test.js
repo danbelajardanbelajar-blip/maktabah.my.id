@@ -8,6 +8,7 @@ test('evidence resolves canonical book/page, restores Arabic marks and rejects f
  const refs=verifiedReferences(db,[{bkid:1,pageId:11,title:'fake',excerpt:'صلاة الجماعة واجبة عند بعض الفقهاء'}]);
  assert.equal(refs[0].title,'أصل');assert.equal(refs[0].page,17);
  const evidence=verifyAnswer({answer:'Penjelasan [1]',quotes:[{source:1,text:'صلاة الجماعة واجبة'}]},refs);
+ assert.ok(verifyAnswer({answer:'Penjelasan tanpa nomor',quotes:evidence.quotes},refs).answer.endsWith('[1]'));
  assert.equal(evidence.quotes[0].text,'صَلَاةُ الجماعة واجبة');
  for(const bad of [
   {answer:'Penjelasan [9]',quotes:evidence.quotes},
