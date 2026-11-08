@@ -204,7 +204,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
               
               {m.references && m.references.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-2">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Referensi Kitab:</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Referensi Kitab:</p><p className="text-xs text-gray-500">Periksa penjelasan dengan teks sumber melalui tautan di bawah.</p>
                   {m.references.map((ref, idx) => (
                     <button 
                       key={idx}

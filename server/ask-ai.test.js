@@ -8,6 +8,7 @@ import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
 
 const key = 'AIza' + 'a'.repeat(35);
+const grounded=text=>JSON.stringify({answer:text,quotes:[{source:1,text:'صلاة الجماعة واجبة عند بعض الفقهاء'}]});
 const response = text => new Response(JSON.stringify({ candidates:[{content:{parts:[{text}]}}] }),{status:200});
 function fixture(t) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'maktabah-ai-'));
@@ -52,7 +53,7 @@ test('availability follows maintenance and recovers without exposing configurati
 });
 
 test('cached answers are recorded in the requesting browser history without sharing other questions',async t=>{
-  const f=fixture(t),call=await serve(t,f,async()=>response('Jawaban [1]'));
+  const f=fixture(t),call=await serve(t,f,async()=>response(grounded('Jawaban [1]')));
   const a=(await call('/api/ai/status')).cookie,b=(await call('/api/ai/status')).cookie;
   await call('/api/ask',{q:'صلاة الجماعة'},false,a);
   await call('/api/ask',{q:'صلاة الجماعة'},false,b);
@@ -97,7 +98,7 @@ test('Indonesian question translates to Arabic, answers from real excerpts and c
     if(calls===1)return response('صلاة الجماعة');
     assert.ok(body.contents[0].parts[0].text.includes('صلاة الجماعة'));
     assert.ok(body.contents[0].parts[0].text.includes('halaman 17'));
-    return response('Teks menjelaskan perbedaan pendapat mengenai salat berjamaah [1].');
+    return response(grounded('Teks menjelaskan perbedaan pendapat mengenai salat berjamaah [1].'));
   });
   const q={q:'Apa hukum salat berjamaah?'};
   const first=await call('/api/ask',q);assert.equal(first.data.status,'success');assert.equal(first.data.references[0].pageId,11);
@@ -140,14 +141,22 @@ test('input validation, absent configuration, quota errors and local mode are ha
 
 test('selected page is loaded from database, contextual history/cache stay separate and forged selections fail',async t=>{
  const f=fixture(t);let prompts=[];
- const call=await serve(t,f,async(url,o)=>{prompts.push(JSON.parse(o.body).contents[0].parts[0].text);return response('Penjelasan [1]');});
+ const call=await serve(t,f,async(url,o)=>{prompts.push(JSON.parse(o.body).contents[0].parts[0].text);return response(JSON.stringify({answer:'Penjelasan [1]',quotes:[{source:1,text:'صلاة الجماعة واجبة'}]}));});
  const cookie=(await call('/api/ai/status')).cookie;
- const body={q:'Jelaskan halaman ini',intent:'explain',source:{bookId:1,pageId:11,title:'FORGED',text:'صلاة الجماعة'}};
- const first=await call('/api/ask',body,false,cookie);assert.equal(first.data.source.title,'كتاب الفقه');assert.equal(first.data.references[0].excerpt,'صلاة الجماعة');assert.ok(!prompts[0].includes('FORGED'));
+ const body={q:'Jelaskan halaman ini',intent:'explain',source:{bookId:1,pageId:11,title:'FORGED',text:'صلاة الجماعة واجبة'}};
+ const first=await call('/api/ask',body,false,cookie);assert.equal(first.data.source.title,'كتاب الفقه');assert.equal(first.data.references[0].excerpt,'صلاة الجماعة واجبة');assert.ok(!prompts[0].includes('FORGED'));
  await call('/api/ask',body,false,cookie);assert.equal(prompts.length,1);
  await call('/api/ask',{...body,intent:'translate'},false,cookie);assert.equal(prompts.length,2);
  const history=(await call('/api/recent-questions',undefined,false,cookie)).data.data;assert.equal(history.length,2);assert.equal(history[0].intent,'translate');assert.equal(history[0].source.pageId,11);
  assert.equal((await call('/api/ask',{...body,source:{bookId:2,pageId:11}})).status,404);
  assert.equal((await call('/api/ask',{...body,source:{bookId:1,pageId:11,text:'teks palsu'}})).status,400);
  assert.equal(prompts.length,2);
+});
+
+test('unverified answers are not cached or logged, and catalogue facts need no model answer',async t=>{
+ const f=fixture(t),call=await serve(t,f,async()=>response(JSON.stringify({answer:'Klaim palsu [1]',quotes:[{source:1,text:'kutipan palsu yang tidak ada'}]})));
+ const bad=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(bad.data.code,'UNVERIFIED_ANSWER');assert.equal(f.cache.size,0);assert.equal(f.db.prepare('SELECT count(*) AS n FROM ask_logs').get().n,0);
+ f.db.exec('DELETE FROM pages_fts');
+ const catalogue=await call('/api/ask',{q:'هل كتاب الفقه موجود'});
+ assert.equal(catalogue.data.mode,'catalogue');assert.ok(catalogue.data.answer.includes('كتاب الفقه'));assert.ok(!catalogue.data.answer.includes('Klaim'));
 });
