@@ -25,3 +25,15 @@ test('evidence resolves canonical book/page, restores Arabic marks and rejects f
  assert.equal(validCachedAnswer(db,{mode:'no_context'}),false);
  }finally{db.close();}
 });
+
+test('joined line breaks restore exact original quote; synthetic FTS ellipses cannot become a direct quote',()=>{
+ const db=new Database(':memory:');try{
+ db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);INSERT INTO books_meta VALUES(1,'Book');");
+ db.prepare('INSERT INTO pages VALUES(1,1,1,1,?)').run('بغية المسترشدين (ص: 132)\nفما يجمعه الناس ويبذلونه لعمارتها');
+ const refs=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:'بغية المسترشدين (ص: 132)\nفما يجمعه الناس ويبذلونه لعمارتها'}]);
+ const result=verifyAnswer({answer:'Penjelasan [1]',quotes:[{source:1,text:'المسترشدين (ص: 132)فما يجمعه الناس'}]},refs);
+ assert.equal(result.quotes[0].text,'المسترشدين (ص: 132)\nفما يجمعه الناس');
+ const snippets=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:'بغية المسترشدين … الناس ويبذلونه'}]);
+ assert.throws(()=>verifyAnswer({answer:'Penjelasan [1]',quotes:[{source:1,text:'بغية المسترشدين … الناس ويبذلونه'}]},snippets));
+ }finally{db.close();}
+});

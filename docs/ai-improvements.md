@@ -29,3 +29,7 @@ Format JSON mengikuti dokumentasi generateContent: https://ai.google.dev/api/gen
 Browser menerima peristiwa NDJSON saat pencarian, penyiapan teks, penyusunan jawaban dan verifikasi benar-benar dijalankan. Jalur cache memakai tahap tersendiri, tanpa mengaku menjalankan generasi ulang. API JSON lama tetap didukung. Koneksi terputus membatalkan permintaan provider; pembaruan database di tengah proses menghentikan jawaban dengan pesan 409 yang jelas. UI mempertahankan draft dan menawarkan Coba lagi/Ubah pertanyaan tanpa pengiriman ulang otomatis. Pengujian stream mencakup UTF-8 terpotong, akhir respons hilang, error, cache, pemeliharaan saat generasi dan pembatalan koneksi.
 
 Uji browser desktop dan ponsel memakai stream HTTP yang ditahan per tahap untuk memastikan status muncul sebelum hasil, Kirim tetap terkunci dan Coba lagi bekerja. Pengujian tidak menggunakan perangkat ponsel fisik. Gemini yang melewatkan nomor rujukan pada jawaban satu sumber ditangani dengan penanda deterministik setelah kutipannya terverifikasi; jawaban banyak sumber tetap harus menunjukkan nomor pendukung yang valid.
+
+### Verifikasi layanan langsung
+
+Percobaan Gemini menemukan kutipan yang menggabungkan baris tanpa spasi. Pencocokan kini menoleransi perubahan spasi/baris, lalu selalu mengembalikan rentang teks asli dari halaman. Selain kecocokan terhadap cuplikan yang dikirim, kutipan harus cocok dengan halaman lengkap; elipsis buatan cuplikan FTS tidak boleh dianggap kutipan harfiah.
