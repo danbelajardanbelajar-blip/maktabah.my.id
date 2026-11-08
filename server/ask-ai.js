@@ -93,10 +93,14 @@ export function retrieveAiReferences(db, question, additional = false, catalogue
   return pages;
 }
 
-export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAdmin, cache, configPath, localExportMode, fetchImpl = fetch, env = process.env }) {
+export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAdmin, cache, configPath, localExportMode, isMaintenance = ()=>false, fetchImpl = fetch, env = process.env }) {
   const config = () => readAiConfig(configPath, env);
   const publicSettings = () => { const c = config(); return { configured: c.keys.length > 0, model: c.model }; };
-  app.get('/api/ai/status', (req,res) => res.set('Cache-Control','no-store').json({ available: publicSettings().configured }));
+  app.get('/api/ai/status', (req,res) => {
+    const configured=publicSettings().configured;
+    const reason=isMaintenance()?'maintenance':localExportMode?'read_only':!configured?'not_configured':null;
+    res.set('Cache-Control','no-store').json({available:reason===null,configured,reason,message:reason==='maintenance'?'Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.':reason==='read_only'?'Gunakan Tanya AI melalui website online.':reason==='not_configured'?'Tanya AI belum diaktifkan. Silakan coba lagi nanti.':''});
+  });
   app.get('/api/admin/ai-settings', requireAdmin, (req,res) => res.set('Cache-Control','no-store').json(publicSettings()));
   const configure = async (req,res,save) => {
     try {
@@ -121,6 +125,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
   let active = 0;
   const limits = new Map();
   app.post('/api/ask', async (req,res) => {
+    if(isMaintenance())return res.status(409).json({status:'error',code:'DATABASE_BUSY',message:'Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.'});
     const question = req.body?.q;
     if (typeof question !== 'string' || question.trim().length < 5 || question.length > 1500) return res.status(400).json({ status: 'error', message: 'Masukkan pertanyaan sepanjang 5–1500 karakter.' });
     if (!getDb()) return res.status(503).json({ status:'error', message:'Database kitab belum tersedia.' });

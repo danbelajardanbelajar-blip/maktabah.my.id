@@ -42,6 +42,15 @@ test('configuration ignores placeholder keys and never needs a committed secret'
   assert.deepEqual(readAiConfig(f.configPath,{GEMINI_API_KEY:key}).keys,[key]);
 });
 
+test('availability follows maintenance and recovers without exposing configuration secrets',async t=>{
+  const f=fixture(t);let maintenance=true,calls=0;
+  const request=await serve(t,f,async()=>{calls++;return response('unused');},{isMaintenance:()=>maintenance});
+  const busy=await request('/api/ai/status');
+  assert.equal(busy.data.available,false);assert.equal(busy.data.reason,'maintenance');assert.ok(!JSON.stringify(busy.data).includes(key));
+  assert.equal((await request('/api/ask',{q:'صلاة الجماعة'})).status,409);assert.equal(calls,0);
+  maintenance=false;assert.equal((await request('/api/ai/status')).data.available,true);
+});
+
 test('Gemini uses header authentication and falls back only when a model is unavailable', async()=>{
   const seen=[];
   const result=await generateGemini({keys:[key],model:'gemini-not-found'},'test',{fetchImpl:async(url,options)=>{

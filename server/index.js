@@ -1391,7 +1391,8 @@ app.get('/api/toc/:bookId', (req, res) => {
 
 
 registerAskAi(app, { getDb: () => db, getStateDb: () => stateDb, hasAdditional: () => hasTambahan,
-  requireAdmin, cache: askCache, configPath: path.join(rootDir, 'dev-data', 'ai-config.local.json'), localExportMode });
+  requireAdmin, cache: askCache, configPath: path.join(rootDir, 'dev-data', 'ai-config.local.json'), localExportMode,
+  isMaintenance:()=>Boolean(transferRuntime.importing || transferRuntime.deleting) });
 
 app.get('/api/categories', (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });

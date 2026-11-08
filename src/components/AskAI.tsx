@@ -76,6 +76,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   ];
   const [messages, setMessages] = useState<Message[]>(restored.messages.length ? restored.messages : welcome);
   const [available, setAvailable] = useState<boolean | null>(null);
+  const [availabilityMessage,setAvailabilityMessage]=useState('');
   const [input, setInput] = useState<string>(initialQuestion || restored.input);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<{query:string}[]>([]);
@@ -94,10 +95,22 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   }, [initialQuestion, questionVersion]);
 
   useEffect(() => {
-    fetch('/api/ai/status').then(r => r.json()).then(data => setAvailable(data.available)).catch(() => {});
+    let disposed=false;let controller:AbortController|null=null;
+    const refresh=async()=>{
+      controller?.abort();controller=new AbortController();
+      try {
+        const r=await fetch('/api/ai/status',{cache:'no-store',signal:controller.signal});
+        if(!r.ok)throw new Error('status');
+        const data=await r.json();
+        if(!disposed){setAvailable(data.available===true);setAvailabilityMessage(data.message || (data.available?'':'Tanya AI belum tersedia. Silakan coba lagi nanti.'));}
+      } catch {if(!disposed && !controller?.signal.aborted){setAvailable(false);setAvailabilityMessage('Status Tanya AI belum dapat diperiksa. Memeriksa kembali secara otomatis…');}}
+    };
+    const visible=()=>{if(document.visibilityState!=='hidden')void refresh();};
+    void refresh();const interval=setInterval(visible,5000);document.addEventListener('visibilitychange',visible);
     webAPI.getRecentQuestions().then(res => {
       if (res.data) setRecentQuestions(res.data);
     }).catch(() => {});
+    return()=>{disposed=true;controller?.abort();clearInterval(interval);document.removeEventListener('visibilitychange',visible);};
   }, []);
 
   useEffect(() => {
@@ -106,7 +119,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
 
   const sendQuestion = useCallback(async (question:string) => {
     const q = question.trim();
-    if (!q || requestActive.current || available === false) return;
+    if (!q || requestActive.current || available !== true) return;
     // A ref closes the gap before React renders loading=true (double clicks/effect replay).
     requestActive.current = true;
     lastQuestion.current = q;
@@ -124,6 +137,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
         setInput(current=>current || q);
       }
     } catch (err: any) {
+      if(err.status===409){setAvailable(false);setAvailabilityMessage(aiFailureMessage(err));}
       setMessages(prev => [...prev, { role: 'error', content: aiFailureMessage(err) }]);
       setInput(current=>current || q);
     }
@@ -134,7 +148,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   },[available]);
 
   useEffect(() => {
-    if (!initialQuestion.trim() || questionVersion <= handledQuestionVersion.current || loading || requestActive.current || available === false) return;
+    if (!initialQuestion.trim() || questionVersion <= handledQuestionVersion.current || loading || requestActive.current || available !== true) return;
     // Only an explicit history click creates a new version. Opening the tab or restoring
     // a saved conversation must never resend a question or duplicate a provider request.
     handledQuestionVersion.current = questionVersion;
@@ -160,7 +174,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
         </div>
       </div>
 
-      {available === false && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">Tanya AI belum diaktifkan. Administrator dapat menambahkan API key melalui menu Pengaturan AI di halaman admin.</p>}
+      {available !== true && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">{available===null?'Memeriksa ketersediaan Tanya AI…':availabilityMessage}</p>}
       {loading && initialQuestion.trim() && questionVersion > handledQuestionVersion.current && <p role="status" className="bg-emerald-50 text-emerald-800 text-sm p-4 border-b">Pertanyaan yang dipilih akan dikirim otomatis setelah jawaban sebelumnya selesai.</p>}
       <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>
       {/* Messages */}
@@ -213,7 +227,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                     <button 
                       key={idx}
                       onClick={() => { void sendQuestion(rq.query); }}
-                      disabled={loading || available === false}
+                      disabled={loading || available !== true}
                       className="bg-white hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 border border-gray-200 hover:border-emerald-200 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
                       dir="auto"
                     >
@@ -260,7 +274,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
           />
           <button 
             type="submit"
-            disabled={input.trim().length < 5 || loading || available === false}
+            aria-label="Kirim pertanyaan"
+            disabled={input.trim().length < 5 || loading || available !== true}
             className="absolute right-2 w-10 h-10 md:w-12 md:h-12 bg-[var(--app-primary)] hover:bg-[var(--app-primary-hover)] text-white rounded-full flex items-center justify-center transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100"
           >
             <Send size={18} className={input.trim() && !loading ? "translate-x-0.5" : ""} />
