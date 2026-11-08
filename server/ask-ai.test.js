@@ -196,7 +196,7 @@ test('greetings and identity including reported typo need no provider or citatio
  const f=fixture(t);let calls=0;
  const call=await serve(t,f,async()=>{calls++;return response(grounded('Jawaban tentang sumber [1]'));});
  const cookie=(await call('/api/ai/status')).cookie;
- for(const q of ['halo siapa kamu','halo siaoa kamu','halo','hi','assalamualaikum','terima kasih']){
+ for(const q of ['siapa kamu bro?','hi who are me?halo siapa kamu','halo siapa kamu','hi','assalamualaikum','terima kasih']){
   const r=await call('/api/ask',{q,stream:true},false,cookie);
   assert.equal(r.data.mode,'conversation');assert.equal(r.data.status,'success');assert.deepEqual(r.data.references,[]);assert.deepEqual(r.events.map(e=>e.type),['result']);
  }
