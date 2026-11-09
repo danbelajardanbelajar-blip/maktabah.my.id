@@ -18,3 +18,5 @@ dev-data/large-transfer/
 dev-data/deletion-jobs/
 
 dev-data/ai-config.local.json*
+
+dev-data/compact-transfer/

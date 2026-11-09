@@ -1,3 +1,4 @@
+import {registerCompactTransfer} from './compact-transfer.js';
 import express from 'express';
 import crypto from 'crypto';
 import cors from 'cors';
@@ -132,8 +133,11 @@ const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
 const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
-    && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/log/visit', '/api/log/download'].includes(req.path)) {
+    && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download'].includes(req.path)) {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
+  }
+  if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/download'].includes(req.path)){
+    return res.status(409).json({error:transferRuntime.compactExport?'Export hemat ruang sedang berjalan. Tunggu selesai sebelum mengubah database.':'Import bertahap belum selesai. Lanjutkan atau akhiri sesi pada Import / Export sebelum mengubah database.'});
   }
   if ((transferRuntime.importing || transferRuntime.deleting) && !['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !['/api/admin/login', '/api/admin/logout'].includes(req.path)) {
     return res.status(409).json({ error: 'Import atau penghapusan sedang berjalan. Tunggu selesai sebelum mengubah data.' });
@@ -348,7 +352,7 @@ function titlesUnion() {
 app.get('/api/local/status', (req, res) => {
   if (!localExportMode) return res.sendStatus(404);
   if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
-  res.json({ app: 'maktabah-local-export', readOnly: true, sources: [dbPath, tambDbPath, tafsirDbPath] });
+  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
 });
 
 app.get('/api/stats', (req, res) => {
@@ -627,6 +631,11 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
 registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
   hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(), runtime: transferRuntime,
+});
+registerCompactTransfer(app,{
+  getDb:()=>db,getDbPath:()=>dbPath,getAdditionalPath:()=>hasTambahan?path.resolve(tambDbPath):null,
+  requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>askCache.clear(),
+  directory:path.join(rootDir,'dev-data','compact-transfer'),
 });
 registerLargeTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,

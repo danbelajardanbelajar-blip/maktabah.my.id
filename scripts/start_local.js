@@ -34,14 +34,18 @@ const openWeb = () => {
     if (error) console.log('Buka link admin di atas melalui browser.');
   });
 };
-if (await status()) {
+const running=await status();
+if(running && !running.transferFormats?.includes('parts-v1'))throw new Error('Server lokal versi lama masih berjalan. Tutup jendela terminal Maktabah Lokal yang lama, lalu buka BAT ini kembali.');
+if (running) {
   console.log('Server lokal sudah berjalan.');
   openWeb();
 } else {
   await import('../server/index.js');
   let ready = false;
   for (let attempt = 0; attempt < 40; attempt++) {
-    if (await status()) { ready = true; break; }
+    const running=await status();
+if(running && !running.transferFormats?.includes('parts-v1'))throw new Error('Server lokal versi lama masih berjalan. Tutup jendela terminal Maktabah Lokal yang lama, lalu buka BAT ini kembali.');
+if (running) { ready = true; break; }
     await new Promise(resolve => setTimeout(resolve, 250));
   }
   if (!ready) { console.error('Server lokal gagal siap. Periksa port dan ketiga database sumber.'); process.exit(1); }
