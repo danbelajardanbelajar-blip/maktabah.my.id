@@ -39,3 +39,19 @@ test('full names take precedence, with safe fallbacks for missing and whitespace
   assert.equal(rowaFullName({Name:' ',A_esm:null,IsoName:` ${full} `}),full);
   assert.equal(rowaFullName({}),'Nama tidak tersedia');
 });
+
+test('searchRowa automatically extracts hadith books from telmez when kutub column is absent', () => {
+  const db = new Database(':memory:');
+  try {
+    db.exec(`CREATE TABLE rowa(id INTEGER PRIMARY KEY,Name TEXT,A_esm TEXT,IsoName TEXT,A_kona TEXT,ROTBA TEXT,R_ZAHBI TEXT,birth TEXT,death TEXT,telmez TEXT)`);
+    db.prepare('INSERT INTO rowa(id,Name,A_esm,IsoName,telmez) VALUES(1,?,?,?,?)').run('', '', full, 'B # # مسلم # أبو داود # الترمذى');
+    const result = searchRowa(db, { q: 'أحمد' }, builders);
+    assert.equal(result.total, 1);
+    assert.ok(result.data[0].kutub.includes('صحيح مسلم'));
+    assert.ok(result.data[0].kutub.includes('سنن أبي داود'));
+    assert.ok(result.data[0].kutub.includes('جامع الترمذي'));
+    assert.equal(result.data[0].telmez, undefined);
+  } finally {
+    db.close();
+  }
+});

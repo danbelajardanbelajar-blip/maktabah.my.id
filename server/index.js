@@ -18,6 +18,7 @@ import { registerAskAi } from './ask-ai.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
+import { extractKutubString } from './rowa-kutub.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1370,6 +1371,10 @@ app.get('/api/rowa/:id', (req, res) => {
     const data = db.prepare(`SELECT * FROM rowa WHERE id = ?`).get(rowaId);
 
     if (!data) return res.status(404).json({ data: null, error: 'Perawi tidak ditemukan' });
+
+    if (!data.kutub && data.telmez) {
+      data.kutub = extractKutubString(data.telmez);
+    }
 
     // Log kunjungan (non-blocking)
     try {

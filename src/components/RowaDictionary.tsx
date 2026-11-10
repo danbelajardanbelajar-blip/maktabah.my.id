@@ -70,6 +70,9 @@ const KITAB_COLORS: Record<string, string> = {
   'ترمذي': 'bg-purple-100 text-purple-800 border-purple-200',
   'نسائي': 'bg-pink-100 text-pink-800 border-pink-200',
   'ابن ماجه': 'bg-orange-100 text-orange-800 border-orange-200',
+  'أحمد': 'bg-teal-100 text-teal-800 border-teal-200',
+  'مالك': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+  'دارمي': 'bg-cyan-100 text-cyan-800 border-cyan-200',
 };
 
 const getKitabColor = (name: string): string => {

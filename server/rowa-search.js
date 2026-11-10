@@ -1,3 +1,5 @@
+import { extractKutubString } from './rowa-kutub.js';
+
 export function searchRowa(db, query, {buildFtsMatch,buildLikeMatch}) {
   const q=String(query.q || '').trim();
   const page=Math.max(1,parseInt(query.page)||1);
@@ -10,7 +12,8 @@ export function searchRowa(db, query, {buildFtsMatch,buildLikeMatch}) {
   const columns=db.prepare('PRAGMA table_info(rowa)').all().map(c=>c.name);
   const iso=columns.includes('IsoName');
   const kutub=['kutub','Kutub','books'].find(name=>columns.includes(name));
-  const fields=`r.id,r.Name,r.A_esm,${iso?'r.IsoName':'NULL AS IsoName'},r.A_kona,r.ROTBA,r.R_ZAHBI,r.birth,r.death${kutub?`,r.${kutub} AS kutub`:''}`;
+  const hasTelmez=columns.includes('telmez');
+  const fields=`r.id,r.Name,r.A_esm,${iso?'r.IsoName':'NULL AS IsoName'},r.A_kona,r.ROTBA,r.R_ZAHBI,r.birth,r.death${kutub?`,r.${kutub} AS kutub`:(hasTelmez?',r.telmez':'')}`;
   const offset=(page-1)*limit;
   const {exactPhrase,andMatch}=buildFtsMatch(q);
   const ftsExists=db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='rowa_fts'").get();
@@ -31,6 +34,12 @@ export function searchRowa(db, query, {buildFtsMatch,buildLikeMatch}) {
     const params=iso?[like,like,like]:[like,like];
     response.total=db.prepare(`SELECT COUNT(*) AS c FROM rowa r WHERE ${where}`).get(...params).c;
     response.data=db.prepare(`SELECT ${fields} FROM rowa r WHERE ${where} ORDER BY r.id LIMIT ? OFFSET ?`).all(...params,limit,offset);
+  }
+  if (!kutub && hasTelmez) {
+    for (const row of response.data) {
+      row.kutub = extractKutubString(row.telmez);
+      delete row.telmez;
+    }
   }
   response.totalPages=Math.ceil(response.total/limit);
   return response;
