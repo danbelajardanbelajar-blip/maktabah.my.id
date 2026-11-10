@@ -1478,10 +1478,10 @@ app.get('/api/search_titles', (req, res) => {
     const total = countStmt.get(...params).total;
 
     const stmt = db.prepare(`
-      SELECT b.bkid, b.bk, b.inf, a.auth as author_name, c.name as category_name
+      SELECT b.bkid, b.bk, b.cat, b.inf, a.auth as author_name, c.name as category_name
       FROM ${booksMeta()} b
       LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid
-      LEFT JOIN main.categories c ON b.cat = c.id
+      LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id
       ${whereClause}
       ORDER BY b.bk ASC
       LIMIT ? OFFSET ?
