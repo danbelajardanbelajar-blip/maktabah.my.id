@@ -364,7 +364,7 @@ app.get('/api/stats', (req, res) => {
     try {
         // Hitung total kitab dari main + tambahan (jika ada)
         const totalBooks = db.prepare(`SELECT COUNT(bkid) as count FROM ${booksMeta()} b`).get().count;
-        const totalCategories = db.prepare("SELECT COUNT(id) as count FROM main.categories").get().count;
+        const totalCategories = db.prepare(`SELECT COUNT(id) as count FROM ${categoryCatalogueSql(hasTambahan)}`).get().count;
         let totalSearches = 0;
         try {
             totalSearches = stateDb.prepare("SELECT COUNT(id) as count FROM main.search_logs").get().count;
@@ -546,7 +546,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     try {
         const stats = {
-            categories: db.prepare("SELECT COUNT(*) as c FROM main.categories").get().c,
+            categories: db.prepare(`SELECT COUNT(*) as c FROM ${categoryCatalogueSql(hasTambahan)}`).get().c,
             books: db.prepare(`SELECT COUNT(*) as c FROM ${booksMeta()}`).get().c,
             feedback: stateDb.prepare("SELECT COUNT(*) as c FROM feedback").get().c,
             requests: stateDb.prepare("SELECT COUNT(*) as c FROM book_requests").get().c,
@@ -567,18 +567,47 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
 app.get('/api/admin/logs/:type', requireAdmin, (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     const { type } = req.params;
-    let query = "";
-    try {
-        if (type === 'search') query = "SELECT * FROM search_logs ORDER BY id DESC LIMIT 500";
-        else if (type === 'download') query = "SELECT * FROM download_logs ORDER BY id DESC LIMIT 500";
-        else if (type === 'visit') query = "SELECT * FROM visit_logs ORDER BY id DESC LIMIT 500";
-        else if (type === 'quran') query = "SELECT * FROM quran_logs ORDER BY id DESC LIMIT 500";
-        else if (type === 'rowa') query = "SELECT * FROM rowa_logs ORDER BY id DESC LIMIT 500";
-        else if (type === 'ask') query = "SELECT * FROM ask_logs ORDER BY id DESC LIMIT 500";
-        else return res.status(400).json({ error: 'Invalid log type' });
+    const tableMap = {
+      search: 'search_logs',
+      download: 'download_logs',
+      visit: 'visit_logs',
+      quran: 'quran_logs',
+      rowa: 'rowa_logs',
+      ask: 'ask_logs'
+    };
+    const tableName = tableMap[type];
+    if (!tableName) return res.status(400).json({ error: 'Invalid log type' });
 
+    try {
+        const query = `SELECT * FROM ${tableName} ORDER BY id DESC LIMIT 500`;
         const data = stateDb.prepare(query).all();
-        res.json(data);
+        
+        let stats = { total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 };
+        try {
+          const statsQuery = `
+            SELECT 
+              COUNT(*) as total,
+              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-1 day') OR date(created_at, 'localtime') = date('now', 'localtime') THEN 1 ELSE 0 END), 0) as today,
+              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-7 days') THEN 1 ELSE 0 END), 0) as weekly,
+              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-30 days') THEN 1 ELSE 0 END), 0) as monthly,
+              COUNT(DISTINCT CASE WHEN ip IS NOT NULL AND ip != '' THEN ip END) as unique_ips
+            FROM ${tableName}
+          `;
+          const statsRow = stateDb.prepare(statsQuery).get();
+          if (statsRow) {
+            stats = {
+              total: Number(statsRow.total) || 0,
+              today: Number(statsRow.today) || 0,
+              weekly: Number(statsRow.weekly) || 0,
+              monthly: Number(statsRow.monthly) || 0,
+              unique_ips: Number(statsRow.unique_ips) || 0
+            };
+          }
+        } catch (e) {
+          stats.total = data.length;
+        }
+
+        res.json({ data, stats });
     } catch(err) {
         console.error(err);
         res.status(500).json({ error: err.message });

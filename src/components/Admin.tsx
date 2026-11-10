@@ -11,7 +11,7 @@ import { StorageCleanup } from './StorageCleanup';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
-import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2, GitMerge } from 'lucide-react';
+import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload, Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2, GitMerge, Layers, Star, ThumbsUp, Clock, XCircle, Hash, Folder } from 'lucide-react';
 import { CategoryMergeModal } from './CategoryMergeModal';
 
 // ==================== TYPES ====================
@@ -292,6 +292,25 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
           <input value={query} onChange={e => {setQuery(e.target.value);setCurrentPage(1);}} placeholder="Cari kategori..." className="pl-9 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
         </div>
       </div>
+      {/* Infografis Statistik Kategori & Kitab */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg"><FolderOpen size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Kategori</div><div className="text-xl font-bold text-gray-800">{cats.length.toLocaleString('id-ID')}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 bg-blue-100 text-blue-700 rounded-lg"><BookOpen size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Kitab</div><div className="text-xl font-bold text-gray-800">{cats.reduce((acc, c) => acc + (c.book_count || 0), 0).toLocaleString('id-ID')}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-purple-50/50 border-purple-100">
+          <div className="p-2.5 bg-purple-100 text-purple-700 rounded-lg"><BarChart2 size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Rata-rata Kitab / Kat.</div><div className="text-xl font-bold text-gray-800">{Math.round(cats.reduce((acc, c) => acc + (c.book_count || 0), 0) / (cats.length || 1)).toLocaleString('id-ID')}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-amber-50/50 border-amber-100">
+          <div className="p-2.5 bg-amber-100 text-amber-700 rounded-lg"><Folder size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Kategori Terisi</div><div className="text-xl font-bold text-gray-800">{cats.filter(c => c.book_count > 0).length} <span className="text-xs font-normal text-gray-500">({cats.filter(c => !c.book_count || c.book_count === 0).length} kosong)</span></div></div>
+        </div>
+      </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       {mergeSuccessMsg && (
         <div className="mx-5 mb-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center justify-between shadow-2xs">
@@ -488,6 +507,21 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari judul..." className="border rounded-l-lg px-3 py-2 w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
           <button type="submit" className="bg-[var(--app-primary)] text-white px-3 py-2 rounded-r-lg hover:bg-[var(--app-primary-hover)]"><Search size={16} /></button>
         </form>
+      </div>
+      {/* Statistik Kitab dalam Kategori */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg"><Folder size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Kategori Terpilih</div><div className="text-base font-bold text-gray-800 truncate max-w-[220px]" dir="auto">{category.name}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 bg-blue-100 text-blue-700 rounded-lg"><BookOpen size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Kitab dalam Kategori</div><div className="text-xl font-bold text-gray-800">{total.toLocaleString('id-ID')}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-gray-50/70 border-gray-200">
+          <div className="p-2.5 bg-gray-200 text-gray-700 rounded-lg"><Hash size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">ID Kategori</div><div className="text-xl font-bold text-gray-800">#{category.id}</div></div>
+        </div>
       </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       
@@ -768,6 +802,25 @@ const FeedbackView = ({ token, onLogout }: { token: string, onLogout: () => void
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 font-bold flex items-center gap-2"><MessageSquare size={18} className="text-gray-500" /> Feedback Pengguna</div>
+      {/* Infografis Statistik Feedback */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 bg-blue-100 text-blue-700 rounded-lg"><MessageSquare size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Feedback</div><div className="text-xl font-bold text-gray-800">{data.length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-amber-50/50 border-amber-100">
+          <div className="p-2.5 bg-amber-100 text-amber-700 rounded-lg"><Star size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Rating Rata-rata</div><div className="text-xl font-bold text-gray-800">{data.length ? (data.reduce((acc, d) => acc + (Number(d.rating) || 0), 0) / data.length).toFixed(1) + ' / 5' : '-'}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg"><ThumbsUp size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Rating Positif (4-5★)</div><div className="text-xl font-bold text-gray-800">{data.filter(d => Number(d.rating) >= 4).length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-purple-50/50 border-purple-100">
+          <div className="p-2.5 bg-purple-100 text-purple-700 rounded-lg"><Calendar size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">30 Hari Terakhir</div><div className="text-xl font-bold text-gray-800">{data.filter(d => { const t = new Date((d.created_at || '').replace(' ', 'T') + 'Z').getTime(); return !isNaN(t) && t >= Date.now() - 30 * 24 * 3600 * 1000; }).length}</div></div>
+        </div>
+      </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       {loading ? <div className="p-8 text-center text-gray-500">Memuat...</div> : ( <>
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'feedbackview_export.csv')} />
@@ -842,6 +895,25 @@ const RequestsView = ({ token, onLogout }: { token: string, onLogout: () => void
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 font-bold flex items-center gap-2"><BookPlus size={18} className="text-gray-500" /> Request Kitab</div>
+      {/* Infografis Statistik Request Kitab */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 bg-blue-100 text-blue-700 rounded-lg"><BookPlus size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Permintaan</div><div className="text-xl font-bold text-gray-800">{data.length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-amber-50/50 border-amber-100">
+          <div className="p-2.5 bg-amber-100 text-amber-700 rounded-lg"><Clock size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Menunggu (Pending)</div><div className="text-xl font-bold text-amber-800">{data.filter(d => (d.status || 'pending') === 'pending').length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg"><CheckCircle2 size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Disetujui</div><div className="text-xl font-bold text-emerald-800">{data.filter(d => d.status === 'approved').length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-red-50/50 border-red-100">
+          <div className="p-2.5 bg-red-100 text-red-700 rounded-lg"><XCircle size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Ditolak</div><div className="text-xl font-bold text-red-800">{data.filter(d => d.status === 'rejected').length}</div></div>
+        </div>
+      </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       {loading ? <div className="p-8 text-center text-gray-500">Memuat...</div> : ( <>
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'requestsview_export.csv')} />
@@ -923,6 +995,25 @@ const SubmissionsView = ({ token, onLogout }: { token: string, onLogout: () => v
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 font-bold flex items-center gap-2"><Upload size={18} className="text-gray-500" /> Submit Kitab (File)</div>
+      {/* Infografis Statistik Kiriman Kitab */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 bg-blue-100 text-blue-700 rounded-lg"><Upload size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Total Kiriman</div><div className="text-xl font-bold text-gray-800">{data.length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-amber-50/50 border-amber-100">
+          <div className="p-2.5 bg-amber-100 text-amber-700 rounded-lg"><Clock size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Menunggu (Pending)</div><div className="text-xl font-bold text-amber-800">{data.filter(d => (d.status || 'pending') === 'pending').length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-lg"><CheckCircle2 size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Disetujui</div><div className="text-xl font-bold text-emerald-800">{data.filter(d => d.status === 'approved').length}</div></div>
+        </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-red-50/50 border-red-100">
+          <div className="p-2.5 bg-red-100 text-red-700 rounded-lg"><XCircle size={20} /></div>
+          <div><div className="text-xs text-gray-500 font-medium">Ditolak</div><div className="text-xl font-bold text-red-800">{data.filter(d => d.status === 'rejected').length}</div></div>
+        </div>
+      </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       {loading ? <div className="p-8 text-center text-gray-500">Memuat...</div> : ( <>
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'submissionsview_export.csv')} />
@@ -990,61 +1081,88 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const [stats, setStats] = useState({ daily: 0, weekly: 0, monthly: 0 });
-
-  useEffect(() => {
-    if (data && data.length > 0) {
-      const now = new Date();
-      // Reset time to 00:00:00 for accurate local date boundaries
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-      let d = 0, w = 0, m = 0;
-      data.forEach(item => {
-        const itemDateStr = (item.created_at || '').replace(' ', 'T');
-        if (!itemDateStr) return;
-        // Parse as UTC (database format) to local Date object
-        const itemDate = new Date(itemDateStr + 'Z');
-        
-        if (itemDate >= startOfToday) d++;
-        if (itemDate >= startOfWeek) w++;
-        if (itemDate >= startOfMonth) m++;
-      });
-      setStats({ daily: d, weekly: w, monthly: m });
-    } else {
-      setStats({ daily: 0, weekly: 0, monthly: 0 });
-    }
-  }, [data]);
+  const [stats, setStats] = useState({ total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 });
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       const res = await adminFetch(token, () => webAPI.getAdminLogs(token, type), onLogout, setError);
-      if (res) setData(res);
+      if (res) {
+        if (Array.isArray(res)) {
+          setData(res);
+        } else if (res.data) {
+          setData(res.data);
+          if (res.stats) {
+            setStats({
+              total: Number(res.stats.total) || 0,
+              today: Number(res.stats.today) || 0,
+              weekly: Number(res.stats.weekly) || 0,
+              monthly: Number(res.stats.monthly) || 0,
+              unique_ips: Number(res.stats.unique_ips) || 0
+            });
+          }
+        }
+      }
       setLoading(false);
     };
     load();
   }, [token, type]);
 
+  useEffect(() => {
+    // Fallback hitung statistik dari data log jika server tidak mengembalikan objek stats
+    if (data && data.length > 0 && stats.total === 0) {
+      const now = Date.now();
+      const oneDayAgo = now - 24 * 60 * 60 * 1000;
+      const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+      const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
+
+      let d = 0, w = 0, m = 0;
+      const ips = new Set<string>();
+
+      data.forEach(item => {
+        if (item.ip) ips.add(item.ip);
+        const itemDateStr = (item.created_at || '').replace(' ', 'T');
+        if (!itemDateStr) return;
+        const itemTime = new Date(itemDateStr + 'Z').getTime();
+        if (isNaN(itemTime)) return;
+        
+        if (itemTime >= oneDayAgo) d++;
+        if (itemTime >= sevenDaysAgo) w++;
+        if (itemTime >= thirtyDaysAgo) m++;
+      });
+      setStats({ total: data.length, today: d, weekly: w, monthly: m, unique_ips: ips.size });
+    }
+  }, [data]);
+
   const paginated = data.slice((currentPage - 1) * limit, currentPage * limit);
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-      <div className="p-4 border-b bg-gray-50 font-bold text-gray-800">{title}</div>
+      <div className="p-4 border-b bg-gray-50 flex items-center justify-between flex-wrap gap-2">
+        <span className="font-bold text-gray-800">{title}</span>
+        {stats.unique_ips > 0 && (
+          <span className="text-xs font-semibold text-gray-600 bg-white border border-gray-200 px-3 py-1 rounded-full shadow-2xs">
+            {stats.unique_ips} IP Pengguna Unik
+          </span>
+        )}
+      </div>
       
-      {/* Infografis Statistik */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border-b bg-white">
-        <div className="flex items-center gap-4 p-4 rounded-xl border shadow-sm bg-blue-50/50">
-          <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><Activity size={24} /></div>
-          <div><div className="text-sm text-gray-500 font-medium">Hari Ini</div><div className="text-2xl font-bold text-gray-800">{stats.daily}</div></div>
+      {/* Infografis Statistik Log */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-gray-50/70 border-gray-200">
+          <div className="p-2.5 md:p-3 bg-gray-200 text-gray-700 rounded-lg"><Layers size={22} /></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Total Keseluruhan</div><div className="text-xl md:text-2xl font-bold text-gray-800">{stats.total.toLocaleString('id-ID')}</div></div>
         </div>
-        <div className="flex items-center gap-4 p-4 rounded-xl border shadow-sm bg-green-50/50">
-          <div className="p-3 bg-green-100 text-green-600 rounded-lg"><Calendar size={24} /></div>
-          <div><div className="text-sm text-gray-500 font-medium">Minggu Ini</div><div className="text-2xl font-bold text-gray-800">{stats.weekly}</div></div>
+        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
+          <div className="p-2.5 md:p-3 bg-blue-100 text-blue-600 rounded-lg"><Activity size={22} /></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Hari Ini (24 Jam)</div><div className="text-xl md:text-2xl font-bold text-blue-800">{stats.today.toLocaleString('id-ID')}</div></div>
         </div>
-        <div className="flex items-center gap-4 p-4 rounded-xl border shadow-sm bg-purple-50/50">
-          <div className="p-3 bg-purple-100 text-purple-600 rounded-lg"><BarChart2 size={24} /></div>
-          <div><div className="text-sm text-gray-500 font-medium">Bulan Ini</div><div className="text-2xl font-bold text-gray-800">{stats.monthly}</div></div>
+        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
+          <div className="p-2.5 md:p-3 bg-emerald-100 text-emerald-600 rounded-lg"><Calendar size={22} /></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Minggu Ini (7 Hari)</div><div className="text-xl md:text-2xl font-bold text-emerald-800">{stats.weekly.toLocaleString('id-ID')}</div></div>
+        </div>
+        <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-purple-50/50 border-purple-100">
+          <div className="p-2.5 md:p-3 bg-purple-100 text-purple-600 rounded-lg"><BarChart2 size={22} /></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Bulan Ini (30 Hari)</div><div className="text-xl md:text-2xl font-bold text-purple-800">{stats.monthly.toLocaleString('id-ID')}</div></div>
         </div>
       </div>
 
