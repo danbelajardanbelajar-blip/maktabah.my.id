@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { buildCategorySqlCase } from './known-categories.js';
 
 export const MAX_TRANSFER_BYTES = 50 * 1024 * 1024;
 const MAX_BOOKS = 100;
@@ -18,7 +19,7 @@ export const bookCatalogueSql = additional => additional
   : 'main.books_meta';
 export const categoryCatalogueSql = additional => additional
   ? `(SELECT id,name,catord,lvl FROM main.categories UNION ALL
-      SELECT DISTINCT b.cat AS id, 'Kategori sumber #' || b.cat AS name, 0 AS catord, 0 AS lvl
+      SELECT DISTINCT b.cat AS id, ${buildCategorySqlCase('b.cat')} AS name, 0 AS catord, 0 AS lvl
       FROM ${bookCatalogueSql(true)} b WHERE b.cat IS NOT NULL
       AND NOT EXISTS (SELECT 1 FROM main.categories c WHERE c.id=b.cat))`
   : 'main.categories';
