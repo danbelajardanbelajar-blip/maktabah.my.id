@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { webAPI } from '../api';
 import { AI_SESSION_KEY, readAiSession } from '../lib/ai-session';
 import {aiFailureMessage} from '../lib/ai-errors';
-import { Send, Bot, User, BookOpen, AlertCircle } from 'lucide-react';
+import { Send, Bot, User, BookOpen, AlertCircle, X } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'ai' | 'error';
@@ -70,7 +70,7 @@ function inlineMarkdown(text: string): string {
 }
 // ────────────────────────────────────────────────────────────────────────────
 
-export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, initialSource, initialIntent, onBusyChange }: { openBook: (id: number, pageId?: number) => void; initialSource?:AiPageSource; initialIntent?:AiIntent; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void }) {
+export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, initialSource, initialIntent, onBusyChange, redirectNotice = '', onCancelRedirect }: { openBook: (id: number, pageId?: number) => void; initialSource?:AiPageSource; initialIntent?:AiIntent; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void; redirectNotice?: string; onCancelRedirect?: () => void }) {
   const [restored] = useState(() => readAiSession(sessionStorage));
   const welcome: Message[] = [
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
@@ -85,6 +85,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   const failedRequest=useRef<{q:string;options:AiRequest}|null>(null);
   const [loading, setLoading] = useState(false);
   const [recentQuestions, setRecentQuestions] = useState<AiHistoryItem[]>([]);
+  const [showNotice, setShowNotice] = useState(true);
+  useEffect(() => { if (redirectNotice) setShowNotice(true); }, [redirectNotice]);
   const lastQuestion = useRef('');
   const requestActive = useRef(false);
   const handledQuestionVersion = useRef(0);
@@ -180,6 +182,33 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
         </div>
       </div>
 
+      {redirectNotice && showNotice && (
+        <div role="status" className="bg-emerald-50 border-b border-emerald-200 px-4 py-3 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
+          <div className="flex items-center gap-2 text-emerald-900">
+            <Bot size={18} className="text-emerald-700 shrink-0" />
+            <span>Pencarian <strong>"{redirectNotice}"</strong> terdeteksi sebagai pertanyaan dan otomatis dialihkan ke Tanya AI.</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {onCancelRedirect && (
+              <button
+                type="button"
+                onClick={onCancelRedirect}
+                className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 underline shrink-0 text-left sm:text-right cursor-pointer"
+              >
+                Tetap cari di katalog buku biasa &rarr;
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowNotice(false)}
+              className="text-emerald-600 hover:text-emerald-800 p-1 rounded-lg cursor-pointer"
+              title="Tutup pemberitahuan"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
       {available !== true && <p role="status" className="bg-amber-50 text-amber-900 text-sm p-4 border-b">{available===null?'Memeriksa ketersediaan Tanya AI…':availabilityMessage}</p>}
       {loading && initialQuestion.trim() && questionVersion > handledQuestionVersion.current && <p role="status" className="bg-emerald-50 text-emerald-800 text-sm p-4 border-b">Pertanyaan yang dipilih akan dikirim otomatis setelah jawaban sebelumnya selesai.</p>}
       <div className="flex justify-end px-4 py-2 bg-white border-b"><button type="button" disabled={loading} onClick={() => { if (messages.length>1 && !window.confirm('Mulai percakapan baru? Percakapan pada sesi ini akan dikosongkan.')) return; setMessages(welcome); setInput(''); setSource(undefined); }} className="text-sm font-semibold text-emerald-700 disabled:opacity-40">Percakapan baru</button></div>

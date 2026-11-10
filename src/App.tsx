@@ -15,6 +15,7 @@ import BookRequest from './components/BookRequest';
 import BookSubmit from './components/BookSubmit';
 import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
+import { detectAiQuery } from './lib/ai-query-detector';
 import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
 import { readingPositions } from './lib/reading-position';
@@ -68,7 +69,21 @@ function App() {
   const [aiQuestion, setAiQuestion] = useState('');
   const [aiQuestionVersion, setAiQuestionVersion] = useState(0);
   const [aiBusy, setAiBusy] = useState(false);
-  const openAiQuestion = (question = '',request:AiRequest={}) => { setAiRequest(request); setAiQuestion(question); setAiQuestionVersion(v=>v+1); setActiveTab('ask'); };
+  const [aiRedirectNotice, setAiRedirectNotice] = useState('');
+  const openAiQuestion = (question = '', request: AiRequest = {}, redirectNotice = '') => {
+    setAiRedirectNotice(redirectNotice);
+    setAiRequest(request);
+    setAiQuestion(question);
+    setAiQuestionVersion(v => v + 1);
+    setActiveTab('ask');
+  };
+  const cancelAiRedirect = () => {
+    const q = aiRedirectNotice;
+    setAiRedirectNotice('');
+    setQuery(q);
+    setActiveTab('search');
+    executeSearch(q, 1, 'text', 'push', [], true);
+  };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
   const [positions,setPositions] = useState(() => readingPositions(localStorage));
@@ -239,8 +254,15 @@ function App() {
     return () => { current = false; };
   }, [homeHistoryVisible]);
 
-  const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', categoryFilter = selectedCategories) => {
+  const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', categoryFilter = selectedCategories, forceLiteral = false) => {
     if (!searchQuery.trim()) return;
+    if (!forceLiteral) {
+      const detection = detectAiQuery(searchQuery);
+      if (detection.shouldRedirect) {
+        openAiQuestion(searchQuery, {}, searchQuery);
+        return;
+      }
+    }
     const requestId = ++searchRequest.current;
     const key = JSON.stringify([searchQuery, page, mode, categoryFilter]);
     pendingSearch.current = key;
@@ -314,7 +336,14 @@ function App() {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
-    executeSearch(activeTab === 'home' ? homeQuery : query, 1, activeTab === 'home' ? 'text' : searchMode).then(() => {
+    const targetQuery = activeTab === 'home' ? homeQuery : query;
+    if (!targetQuery.trim()) return;
+    const detection = detectAiQuery(targetQuery);
+    if (detection.shouldRedirect) {
+      openAiQuestion(targetQuery, {}, targetQuery);
+      return;
+    }
+    executeSearch(targetQuery, 1, activeTab === 'home' ? 'text' : searchMode).then(() => {
       if (!['search','advanced_search'].includes(parseNavigation(window.location.hash).tab)) return;
       setTimeout(() => {
         const resultsEl = document.getElementById('search-results');
@@ -327,13 +356,13 @@ function App() {
   };
 
   const handleNextPage = () => {
-    executeSearch(query, currentPage + 1, searchMode);
+    executeSearch(query, currentPage + 1, searchMode, 'push', selectedCategories, true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      executeSearch(query, currentPage - 1);
+      executeSearch(query, currentPage - 1, searchMode, 'push', selectedCategories, true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -414,7 +443,7 @@ function App() {
           <BackButton onClick={goBack} disabled={activeTab==='home' && !previousLocation(window.history.state,window.location.href)} title={activeTab==='home' && !previousLocation(window.history.state,window.location.href)?'Anda berada di beranda':'Kembali ke halaman sebelumnya'}/>
           <span className="text-sm font-semibold text-[var(--app-text)] opacity-70 truncate">{pageTitles[activeTab]}</span>
         </nav>}
-        <div hidden={activeTab !== 'ask'}><AskAI initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} /></div>
+        <div hidden={activeTab !== 'ask'}><AskAI initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} redirectNotice={aiRedirectNotice} onCancelRedirect={cancelAiRedirect} /></div>
         {activeTab === 'quran' ? (
           <QuranReader />
         ) : activeTab === 'rowa' ? (
@@ -558,7 +587,7 @@ function App() {
                   key={tab.id}
                   onClick={() => {
                     setSearchMode(tab.id as any);
-                    if (query.trim()) executeSearch(query, 1, tab.id as any);
+                    if (query.trim()) executeSearch(query, 1, tab.id as any, 'push', selectedCategories, true);
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-sm border ${
                     searchMode === tab.id 
@@ -817,6 +846,7 @@ function App() {
                 <div className="text-center py-12 bg-[var(--reader-bg)] rounded-2xl border border-black/5">
                   <Search className="mx-auto text-gray-300 mb-3" size={48} />
                   <p className="text-[var(--app-text)] opacity-60 text-lg">Tidak ada hasil ditemukan.</p>
+                  <button type="button" onClick={() => openAiQuestion(query, {}, query)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium shadow-sm transition-all text-sm cursor-pointer mt-4"><Bot size={18} />Tanyakan ke Tanya AI</button>
                 </div>
               )}
             </div>
