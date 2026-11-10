@@ -1,7 +1,7 @@
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
-import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -727,8 +727,11 @@ function App() {
                       <button onClick={() => openBookInfo(r.book_id)} className="font-semibold hover:text-[var(--app-primary)] transition-colors flex items-center gap-1.5">
                         <Info size={16} /> Detail Kitab
                       </button>
-                      <a href={`/api/download/${r.book_id}`} target="_blank" className="font-semibold text-blue-600 hover:opacity-80 transition-colors flex items-center gap-1.5">
+                      <a href={`/api/download/${r.book_id}`} target="_blank" className="font-semibold text-blue-600 hover:opacity-80 transition-colors flex items-center gap-1.5" title="Download Word">
                         <Download size={16} /> Word
+                      </a>
+                      <a href={`/api/download/${r.book_id}/pdf`} target="_blank" rel="noopener noreferrer" className="font-semibold text-rose-600 hover:opacity-80 transition-colors flex items-center gap-1.5" title="Download / Cetak PDF">
+                        <FileText size={16} /> PDF
                       </a>
                       <button onClick={() => openReader({ bookId: r.book_id, pageId: r.page_id, highlightQuery: query })} className="font-semibold text-[var(--app-primary)] hover:opacity-80 transition-colors flex items-center gap-1.5">
                         <BookOpen size={16} /> Baca Kitab
@@ -771,8 +774,11 @@ function App() {
                       <button onClick={(e) => { e.stopPropagation(); openReader({ bookId: r.bkid }); }} className="bg-[var(--app-primary)] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[var(--app-primary-hover)] transition-colors flex items-center gap-2">
                         <BookOpen size={16} /> Baca Kitab
                       </button>
-                      <a href={`/api/download/${r.bkid}`} onClick={(e) => e.stopPropagation()} target="_blank" className="bg-[#2e7d32] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#1b5e20] transition-colors flex items-center gap-2">
+                      <a href={`/api/download/${r.bkid}`} onClick={(e) => e.stopPropagation()} target="_blank" className="bg-[#2e7d32] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#1b5e20] transition-colors flex items-center gap-2" title="Download Word">
                         <Download size={16} /> Word
+                      </a>
+                      <a href={`/api/download/${r.bkid}/pdf`} onClick={(e) => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="bg-[#dc2626] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#b91c1c] transition-colors flex items-center gap-2" title="Download / Cetak PDF">
+                        <FileText size={16} /> PDF
                       </a>
                     </div>
                   </div>

@@ -5,7 +5,7 @@ import { rememberReadingPosition, swipeDirection } from '../lib/reading-position
 import { useModalFocus } from '../lib/use-modal-focus';
 import { BackButton } from './BackButton';
 import type {AiRequest} from '../lib/ai-source';
-import { ChevronLeft, ChevronRight, BookOpen, Heart, Bookmark, Download , ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, Heart, Bookmark, Download, FileText, ChevronsLeft, ChevronsRight, SkipBack, SkipForward, Menu, Search, List} from 'lucide-react';
 
 export interface ReaderModalProps {
   bookId: number;
@@ -368,6 +368,9 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
             </button>
             <a href={`/api/download/${bookId}`} target="_blank" className="p-1 md:p-2 rounded-full hover:bg-green-50 text-gray-500 hover:text-green-600 transition-colors" title="Download Word" onClick={e => e.stopPropagation()}>
               <Download size={20} />
+            </a>
+            <a href={`/api/download/${bookId}/pdf`} target="_blank" rel="noopener noreferrer" className="p-1 md:p-2 rounded-full hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors" title="Download / Cetak PDF" onClick={e => e.stopPropagation()}>
+              <FileText size={20} />
             </a>
             <button 
               onClick={(e) => { e.stopPropagation(); setShowSidebar(!showSidebar); loadToc(); }} 

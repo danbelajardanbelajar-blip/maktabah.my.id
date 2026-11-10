@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 
 
 import { generateBookDocx } from './word-export.js';
+import { generateBookHtmlPdf } from './pdf-export.js';
 import 'dotenv/config';
 import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerLargeTransfer } from './large-transfer.js';
@@ -1113,6 +1114,55 @@ app.get('/api/download/:id', async (req, res) => {
         res.status(500).json({ error: 'Failed to generate Word document: ' + error.message + ' ' + (error.stack || '') });
     }
 });
+
+const handlePdfExport = async (req, res) => {
+    try {
+        const bookId = parseInt(req.params.id);
+        const bookStmt = db.prepare(`SELECT bk as title FROM ${booksMeta()} WHERE bkid = ?`);
+        const book = bookStmt.get(bookId);
+        if (book) {
+            stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, '[PDF] ' + book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+        }
+    } catch(e) {}
+    if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
+    try {
+        const bookId = parseInt(req.params.id);
+        if (!Number.isInteger(bookId) || bookId <= 0) {
+            return res.status(400).json({ error: 'ID kitab tidak valid' });
+        }
+
+        const bookStmt = db.prepare(`
+            SELECT b.bkid, b.bk as title, a.auth as author, a.HigriD, c.name as category
+            FROM ${booksMeta()} b
+            LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid
+            LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id
+            WHERE b.bkid = ?
+        `);
+        const book = bookStmt.get(bookId);
+        if (!book) return res.status(404).json({ error: 'Book not found' });
+
+        const pagesStmt = db.prepare(`SELECT part as juz, page, nass as content FROM ${pagesUnion()} WHERE book_id = ? ORDER BY id ASC`);
+        const pages = pagesStmt.all(bookId);
+
+        const html = generateBookHtmlPdf({
+            title: book.title,
+            author: book.author,
+            higriYear: book.HigriD,
+            category: book.category,
+            pages,
+        });
+
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.send(html);
+
+    } catch (error) {
+        console.error('Error creating pdf html:', error);
+        res.status(500).json({ error: 'Failed to generate PDF document: ' + error.message + ' ' + (error.stack || '') });
+    }
+};
+
+app.get('/api/download/:id/pdf', handlePdfExport);
+app.get('/api/pdf/:id', handlePdfExport);
 
 app.get('/api/book/:id', (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
