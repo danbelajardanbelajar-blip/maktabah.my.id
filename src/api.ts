@@ -99,6 +99,15 @@ export const webAPI = {
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
     return waitForDeletion(token, await res.json(), onProgress);
   },
+  mergeCategories: async (token: string, data: { sourceCategoryIds: number[]; targetCategoryId?: number | null; newCategoryName?: string; deleteSourceCategories?: boolean }) => {
+    const res = await fetch(`${API_BASE}/admin/categories/merge`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `${res.status}`); }
+    return res.json();
+  },
   bulkDeleteCategories: async (token: string, categoryIds: number[], onProgress?: (message: string) => void) => {
     const res = await fetch(`${API_BASE}/admin/categories/bulk-delete`, {
       method: 'DELETE', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },

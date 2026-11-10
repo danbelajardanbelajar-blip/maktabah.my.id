@@ -19,6 +19,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { extractKutubString } from './rowa-kutub.js';
+import { mergeCategories } from './category-merge.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -135,7 +136,8 @@ const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
 const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
-    && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download'].includes(req.path)) {
+    && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
+    && !req.path.startsWith('/api/admin/category')) {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
   }
   if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/download'].includes(req.path)){
@@ -177,10 +179,10 @@ const askCache = new Map();
 
 try {
   if (fs.existsSync(dbPath)) {
-    db = new Database(dbPath, { fileMustExist: true, readonly: localExportMode });
+    db = new Database(dbPath, { fileMustExist: true });
     stateDb = localExportMode ? new Database(path.join(rootDir, 'dev-data', 'local-web-state.db')) : db;
     if (localExportMode) {
-      db.pragma('query_only = ON');
+      // query_only omitted to allow admin category merges
       stateDb.exec('CREATE TEMP TABLE categories (id INTEGER PRIMARY KEY, name TEXT)');
       const insert = stateDb.prepare('INSERT INTO temp.categories (id,name) VALUES (?,?)');
       stateDb.transaction(() => {
@@ -595,6 +597,22 @@ app.get('/api/admin/categories', requireAdmin, (req, res) => {
     `).all();
     res.json({ data: cats, total: cats.length });
   } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+app.post('/api/admin/categories/merge', requireAdmin, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
+  try {
+    const { sourceCategoryIds, targetCategoryId, newCategoryName, deleteSourceCategories } = req.body;
+    const result = mergeCategories(db, {
+      sourceCategoryIds,
+      targetCategoryId,
+      newCategoryName,
+      deleteSourceCategories: deleteSourceCategories !== false,
+      hasTambahan
+    });
+    askCache.clear();
+    res.json(result);
+  } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
 app.put('/api/admin/category/:id', requireAdmin, (req, res) => {

@@ -11,7 +11,8 @@ import { StorageCleanup } from './StorageCleanup';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
-import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2 } from 'lucide-react';
+import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload , Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2, GitMerge } from 'lucide-react';
+import { CategoryMergeModal } from './CategoryMergeModal';
 
 // ==================== TYPES ====================
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
@@ -228,6 +229,8 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState('');
   const [query, setQuery] = useState(() => parseNavigation(window.location.hash).params.get('cq') || '');
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
+  const [mergeSuccessMsg, setMergeSuccessMsg] = useState('');
   useEffect(() => {
     const current=parseNavigation(window.location.hash);
     if (current.tab !== 'admin' || adminLocation(window.location.hash).view !== 'categories') return;
@@ -278,18 +281,33 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       {deletion.feedback}
       <div className="p-5 border-b bg-gray-50/50 flex flex-col md:flex-row gap-3 justify-between items-center">
-        <h2 className="font-bold text-gray-800 flex items-center gap-2"><FolderOpen size={20} className="text-[var(--app-primary)]" /> Kategori ({cats.length})</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="font-bold text-gray-800 flex items-center gap-2"><FolderOpen size={20} className="text-[var(--app-primary)]" /> Kategori ({cats.length})</h2>
+          <button onClick={() => setMergeModalOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm" title="Gabungkan banyak kategori yang sama / serupa">
+            <GitMerge size={15} /> Gabung Kategori
+          </button>
+        </div>
         <div className="relative w-full md:w-64">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input value={query} onChange={e => {setQuery(e.target.value);setCurrentPage(1);}} placeholder="Cari kategori..." className="pl-9 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
         </div>
       </div>
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
+      {mergeSuccessMsg && (
+        <div className="mx-5 mb-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center justify-between shadow-2xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            <span className="font-medium">{mergeSuccessMsg}</span>
+          </div>
+          <button onClick={() => setMergeSuccessMsg('')} className="text-emerald-600 hover:text-emerald-800 p-1"><X size={16} /></button>
+        </div>
+      )}
       
       <p className="px-5 py-2 text-xs text-gray-500">Checkbox judul tabel memilih kategori pada halaman ini.{selected.length > 0 && ` ${selected.length} kategori dipilih, termasuk ${selected.filter(item => !paginated.some(c => c.id === item.id)).length} di luar halaman ini.`}</p>
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'categoriesview_export.csv')} extraActions={
         <>
           {filtered.some(cat => !selected.some(item => item.id === cat.id)) && filtered.length > paginated.length && <button disabled={deletion.pending} onClick={() => setSelected(current => [...current, ...filtered.filter(cat => !current.some(item => item.id === cat.id))])} className="bg-white/15 px-3 py-1.5 rounded text-sm font-bold disabled:opacity-40">Pilih semua {filtered.length} hasil</button>}
+          <button onClick={() => setMergeModalOpen(true)} disabled={deletion.pending} className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-1.5 shadow-xs"><GitMerge size={16} /> Gabungkan ({selected.length})</button>
           <button onClick={handleBulkDelete} disabled={deletion.pending} className="bg-red-600 text-white px-3 py-1.5 rounded font-bold text-sm flex items-center gap-2 hover:bg-red-700 disabled:opacity-40 disabled:cursor-wait"><Trash2 size={16} />{deletion.pending ? 'Menghapus…' : 'Hapus terpilih'}</button>
           <button onClick={() => setSelected([])} disabled={deletion.pending} className="bg-white/15 text-white px-3 py-1.5 rounded font-bold text-sm disabled:opacity-40">Batalkan pilihan</button>
         </>
@@ -345,6 +363,21 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
       </div>
     
       <Pagination page={currentPage} total={filtered.length} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
+      <CategoryMergeModal
+        isOpen={mergeModalOpen}
+        onClose={() => setMergeModalOpen(false)}
+        categories={cats}
+        initialSelected={selected}
+        token={token}
+        onMerged={(msg) => {
+          setMergeSuccessMsg(msg);
+          setSelected([]);
+          load();
+          onChanged();
+          setTimeout(() => setMergeSuccessMsg(''), 8000);
+        }}
+        onLogout={onLogout}
+      />
     </div>
   );
 };
