@@ -6,9 +6,9 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('./vendor/docx.cjs');
+
+
+import { generateBookDocx } from './word-export.js';
 import 'dotenv/config';
 import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerLargeTransfer } from './large-transfer.js';
@@ -1069,80 +1069,47 @@ app.get('/api/search', (req, res) => {
 app.get('/api/download/:id', async (req, res) => {
     try {
         const bookId = parseInt(req.params.id);
-        const bookStmt = db.prepare(`SELECT bk as title FROM books_meta WHERE bkid = ?`);
+        const bookStmt = db.prepare(`SELECT bk as title FROM ${booksMeta()} WHERE bkid = ?`);
         const book = bookStmt.get(bookId);
         if (book) {
-            stateDb.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
     } catch(e) {}
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
     try {
         const bookId = parseInt(req.params.id);
-        
-        const bookStmt = db.prepare(`SELECT b.bkid, b.bk as title, a.auth as author FROM books_meta b LEFT JOIN authors a ON b.authno = a.authid WHERE b.bkid = ?`);
+        if (!Number.isInteger(bookId) || bookId <= 0) {
+            return res.status(400).json({ error: 'ID kitab tidak valid' });
+        }
+
+        const bookStmt = db.prepare(`
+            SELECT b.bkid, b.bk as title, a.auth as author, a.HigriD, c.name as category
+            FROM ${booksMeta()} b
+            LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid
+            LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id
+            WHERE b.bkid = ?
+        `);
         const book = bookStmt.get(bookId);
         if (!book) return res.status(404).json({ error: 'Book not found' });
-        
-        const pagesStmt = db.prepare(`SELECT part as juz, page, nass as content FROM pages WHERE book_id = ? ORDER BY id ASC`);
+
+        const pagesStmt = db.prepare(`SELECT part as juz, page, nass as content FROM ${pagesUnion()} WHERE book_id = ? ORDER BY id ASC`);
         const pages = pagesStmt.all(bookId);
-        
-        const docChildren = [];
-        
-        const isTitleRtl = /[\u0600-\u06FF]/.test(book.title || '');
-        docChildren.push(new Paragraph({ 
-            children: [new TextRun({ text: book.title || 'Kitab', rightToLeft: isTitleRtl })],
-            heading: 'Heading1', 
-            alignment: AlignmentType.CENTER,
-            bidirectional: isTitleRtl
-        }));
-        
-        if (book.author) {
-            const isAuthRtl = /[\u0600-\u06FF]/.test(book.author);
-            docChildren.push(new Paragraph({ 
-                children: [new TextRun({ text: "Penulis: " + book.author, rightToLeft: isAuthRtl })],
-                alignment: AlignmentType.CENTER,
-                bidirectional: isAuthRtl
-            }));
-        }
-        
-        docChildren.push(new Paragraph({ text: "", spacing: { after: 400 } }));
-        
-        for (const p of pages) {
-            let contentText = p.content || '';
-            
-            docChildren.push(new Paragraph({
-                text: `Juz: ${p.juz || 1} | Halaman: ${p.page || 1}`,
-                alignment: AlignmentType.CENTER,
-                spacing: { before: 200, after: 100 }
-            }));
-            
-            const lines = contentText.split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i);
-            for (const rawLine of lines) {
-                let line = rawLine.replace(/<[^>]*>?/gm, '');
-                line = line.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
-                
-                if (line.trim()) {
-                    const isRtl = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(line);
-                    docChildren.push(new Paragraph({
-                        children: [new TextRun({ text: line.trim(), rightToLeft: isRtl })],
-                        alignment: isRtl ? AlignmentType.JUSTIFIED : AlignmentType.LEFT,
-                        bidirectional: isRtl
-                    }));
-                }
-            }
-            docChildren.push(new Paragraph({ text: "" })); // spacer antar halaman
-        }
-        
-        const doc = new Document({ sections: [{ properties: {}, children: docChildren }] });
-        const buffer = await Packer.toBuffer(doc);
-        
+
+        const buffer = await generateBookDocx({
+            title: book.title,
+            author: book.author,
+            higriYear: book.HigriD,
+            category: book.category,
+            pages,
+        });
+
         let filename = (book.title || 'Kitab') + '.docx';
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"; filename*=UTF-8''${encodeURIComponent(filename)}`);
         res.send(Buffer.from(buffer));
-        
+
     } catch (error) {
-        console.error("Error creating docx:", error);
+        console.error('Error creating docx:', error);
         res.status(500).json({ error: 'Failed to generate Word document: ' + error.message + ' ' + (error.stack || '') });
     }
 });
