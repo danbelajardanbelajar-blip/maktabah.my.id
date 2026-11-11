@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import Database from 'better-sqlite3';
-import {bookCatalogueSql,categoryCatalogueSql,importBooks,validateBookPackage} from './book-transfer.js';
+import {categoryCatalogueSql,importBooks,validateBookPackage,resolveBookSources,hasBookTitle,isValidCategoryMeta,isValidAuthorMeta,isValidPageRow,isValidTitleRow} from './book-transfer.js';
 
 export const MAGIC=Buffer.from('MAKTABAH-PARTS-1\n');
 export const MAX_RAW=8*1024*1024,MAX_COMPRESSED=MAX_RAW+65536,RESERVE=512*1024*1024;
@@ -43,12 +43,10 @@ export function exportCompact({dbPath,additionalPath,selection,outputPath,target
   if(!Array.isArray(chosen)||!chosen.length||chosen.length>(byCat?100:50000)||chosen.some(id=>!integer(id)||id<(byCat?0:1)))fail('Pilihan export tidak valid.');
   const wanted=new Set(chosen);
   if(byCat)for(const id of wanted)if(!categories.has(id))fail('Kategori tidak ditemukan.');
-  const books=db.prepare(`SELECT bkid,cat FROM ${bookCatalogueSql(extra)} ORDER BY bkid`).all().filter(b=>byCat?wanted.has(b.cat):wanted.has(b.bkid));
-  const ids=[...new Set(books.map(b=>b.bkid))];
-  if(!byCat&&ids.length!==wanted.size)fail('Kitab tidak ditemukan.');
-  const usedCats=byCat?new Set(chosen):new Set(books.map(b=>b.cat).filter(id=>categories.has(id)));
+  const sources=resolveBookSources(db,{...(byCat?{categoryIds:chosen}:{bookIds:chosen}),includeAdditional:extra});
+  const ids=sources.map(b=>b.bkid);
+  const usedCats=byCat?new Set(chosen):new Set(sources.map(b=>b.cat).filter(id=>categories.has(id)));
   const id=crypto.randomBytes(24).toString('hex');
-  const sources=ids.map(bkid=>({bkid,schema:db.prepare('SELECT 1 FROM main.books_meta WHERE bkid=?').get(bkid)?'main':'tambahan'}));
   let pages=0,titles=0;
   for(const b of sources){pages+=db.prepare(`SELECT count(*) n FROM ${b.schema}.pages WHERE book_id=?`).get(b.bkid).n;titles+=db.prepare(`SELECT count(*) n FROM ${b.schema}.titles WHERE book_id=?`).get(b.bkid).n;}
   const manifest={kind:byCat?'categories':'books',books:ids.length,pages,titles,categories:[...usedCats].map(id=>categories.get(id)),exportedAt:new Date().toISOString()};
@@ -59,13 +57,13 @@ export function exportCompact({dbPath,additionalPath,selection,outputPath,target
   emit({type:'manifest',manifest});flush();
   for(const b of sources){
    const book=db.prepare(`SELECT bkid,bk,cat,authno,inf,betaka FROM ${b.schema}.books_meta WHERE bkid=?`).get(b.bkid);
-   const category=categories.get(book.cat)||null;
-   const author=book.authno==null?null:db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE authid=?').get(book.authno)||null;
-   if(!category)book.cat=null;if(!author)book.authno=null;
+   let category=categories.get(book.cat)||null;
+   let author=book.authno==null?null:db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE authid=?').get(book.authno)||null;
+   if(!category||!isValidCategoryMeta(category)){category=null;book.cat=null;}if(!author||!isValidAuthorMeta(author)){author=null;book.authno=null;}
    const counts={pages:db.prepare(`SELECT count(*) n FROM ${b.schema}.pages WHERE book_id=?`).get(b.bkid).n,titles:db.prepare(`SELECT count(*) n FROM ${b.schema}.titles WHERE book_id=?`).get(b.bkid).n};
    emit({type:'book',item:{book,category,author,pages:[],titles:[]},counts});
-   for(const row of db.prepare(`SELECT id,book_id,part,page,seal,nass FROM ${b.schema}.pages WHERE book_id=? ORDER BY rowid`).iterate(b.bkid)){emit({type:'page',row});pagesDone++;}
-   for(const row of db.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${b.schema}.titles WHERE book_id=? ORDER BY rowid`).iterate(b.bkid))emit({type:'title',row});
+   for(const row of db.prepare(`SELECT id,book_id,part,page,seal,nass FROM ${b.schema}.pages WHERE book_id=? ORDER BY rowid`).iterate(b.bkid)){if(!isValidPageRow(row,b.bkid))fail(`Isi halaman kitab ${b.bkid} tidak valid.`);emit({type:'page',row});pagesDone++;}
+   for(const row of db.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${b.schema}.titles WHERE book_id=? ORDER BY rowid`).iterate(b.bkid)){if(!isValidTitleRow(row,b.bkid))fail(`Daftar isi kitab ${b.bkid} tidak valid.`);emit({type:'title',row});}
    emit({type:'book_end',bookId:b.bkid});booksDone++;
   }
   flush();emit({type:'end',books:ids.length,pages,titles});flush();
@@ -119,7 +117,7 @@ export function applyCompact(db,part,hash,existsAdditional=()=>false){
     const b=record.item.book;
     if(manifest.kind==='categories'&&!manifest.categories.some(c=>c.id===b.cat&&JSON.stringify(c)===JSON.stringify(record.item.category)))fail('Kitab tidak termasuk kategori paket.');
     db.prepare('INSERT INTO compact_books VALUES (?,?)').run(part.id,b.bkid);
-    const skip=!!db.prepare('SELECT 1 FROM books_meta WHERE bkid=?').get(b.bkid)||existsAdditional(b.bkid);
+    const skip=!hasBookTitle(b)||!!db.prepare('SELECT 1 FROM books_meta WHERE bkid=?').get(b.bkid)||existsAdditional(b.bkid);
     if(!skip&&['pages','titles'].some(t=>db.prepare(`SELECT 1 FROM ${t} WHERE book_id=? LIMIT 1`).get(b.bkid)))fail('Ditemukan data halaman tanpa metadata untuk ID kitab ini. Import dihentikan agar tidak menimpa data.');
     current={item:record.item,expected:record.counts,pages:0,titles:0,skip};
    }else if(record.type==='page'||record.type==='title'){

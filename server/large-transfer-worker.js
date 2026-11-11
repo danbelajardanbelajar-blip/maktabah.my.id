@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
-import { bookCatalogueSql, categoryCatalogueSql, importBooks, validPageReference } from './book-transfer.js';
+import { categoryCatalogueSql, importBooks, resolveBookSources, isValidCategoryMeta, isValidAuthorMeta, isValidPageRow, isValidTitleRow } from './book-transfer.js';
 
 const RESERVE = 256 * 1024 * 1024;
 const fields = {
@@ -27,16 +27,14 @@ function checkDisk(filename, needed = RESERVE) {
   const disk = fs.statfsSync(path.dirname(filename));
   if (disk.bavail * disk.bsize < needed) throw new Error('Ruang disk tidak cukup untuk melanjutkan transfer.');
 }
-function metadata(db, id, additional, categories) {
-  let source = 'main';
-  let book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta WHERE bkid=?').get(id);
-  if (!book && additional) { source = 'tambahan'; book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta WHERE bkid=?').get(id); }
+function metadata(db, id, schema, categories) {
+  const book = db.prepare(`SELECT bkid,bk,cat,authno,inf,betaka FROM ${schema}.books_meta WHERE bkid=?`).get(id);
   if (!book) throw new Error(`Kitab ${id} tidak ditemukan.`);
-  const category = categories.get(book.cat) ?? null;
-  const author = book.authno == null ? null : db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE authid=?').get(book.authno) ?? null;
-  if (!category) book.cat = null;
-  if (!author) book.authno = null;
-  return { source, book, category, author };
+  let category = categories.get(book.cat) ?? null;
+  let author = book.authno == null ? null : db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE authid=?').get(book.authno) ?? null;
+  if (!category || !isValidCategoryMeta(category)) { category = null; book.cat = null; }
+  if (!author || !isValidAuthorMeta(author)) { author = null; book.authno = null; }
+  return { source: schema, book, category, author };
 }
 
 export function exportLargePackage(options, progress = () => {}) {
@@ -49,19 +47,10 @@ export function exportLargePackage(options, progress = () => {}) {
     const byCategory = options.selection.categoryIds !== undefined;
     const selected = byCategory ? options.selection.categoryIds : options.selection.bookIds;
     if (!Array.isArray(selected) || !selected.length || selected.length > 50000 || selected.some(id => !Number.isSafeInteger(id))) throw new Error('Pilihan kitab/kategori tidak valid.');
-    let ids;
-    if (byCategory) {
-      for (const id of selected) if (!categories.has(id)) throw new Error(`Kategori ${id} tidak ditemukan.`);
-      const set = new Set(selected);
-      ids = [...new Set(source.prepare(`SELECT bkid,cat FROM ${bookCatalogueSql(additional)}`).all().filter(b => set.has(b.cat)).map(b => b.bkid))];
-    } else ids = [...new Set(selected)];
-    const items = ids.map(id => {
-      if (source.prepare('SELECT 1 FROM main.books_meta WHERE bkid=?').get(id)) return { id, source: 'main' };
-      if (additional && source.prepare('SELECT 1 FROM tambahan.books_meta WHERE bkid=?').get(id)) return { id, source: 'tambahan' };
-      throw new Error(`Kitab ${id} tidak ditemukan.`);
-    });
+    if (byCategory) for (const id of selected) if (!categories.has(id)) throw new Error(`Kategori ${id} tidak ditemukan.`);
+    const items = resolveBookSources(source, { ...(byCategory ? { categoryIds: selected } : { bookIds: selected }), includeAdditional: additional });
     let totalPages = 0;
-    for (const item of items) totalPages += source.prepare(`SELECT count(*) n FROM ${item.source}.pages WHERE book_id=?`).get(item.id).n;
+    for (const item of items) totalPages += source.prepare(`SELECT count(*) n FROM ${item.schema}.pages WHERE book_id=?`).get(item.bkid).n;
     checkDisk(options.outputPath);
     if (fs.existsSync(options.outputPath)) throw new Error('File export sudah ada.');
     output = new Database(options.outputPath);
@@ -73,23 +62,27 @@ export function exportLargePackage(options, progress = () => {}) {
     if (byCategory) for (const id of new Set(selected)) insertCategory.run(...values(categories.get(id), 'categories'));
     let booksDone = 0, pagesDone = 0, titlesDone = 0, lastProgress = 0;
     for (const reference of items) {
-      const item = metadata(source, reference.id, additional, categories);
+      const item = metadata(source, reference.bkid, reference.schema, categories);
       output.transaction(() => {
         if (item.category) insertCategory.run(...values(item.category, 'categories'));
         if (item.author) insertAuthor.run(...values(item.author, 'authors'));
         insertBook.run(...values(item.book, 'books_meta'));
         for (const row of source.prepare(`SELECT id,book_id,part,page,seal,nass FROM ${item.source}.pages WHERE book_id=?`).iterate(item.book.bkid)) {
+          if (!isValidPageRow(row, item.book.bkid)) throw new Error(`Halaman kitab ${item.book.bkid} tidak valid (ID halaman ${row.id}).`);
           insertPage.run(...values(row, 'pages')); pagesDone++;
-          if (Date.now() - lastProgress > 500) { checkDisk(options.outputPath); progress({ phase: 'export', totalBooks: ids.length, booksDone, totalPages, pagesDone }); lastProgress = Date.now(); }
+          if (Date.now() - lastProgress > 500) { checkDisk(options.outputPath); progress({ phase: 'export', totalBooks: items.length, booksDone, totalPages, pagesDone }); lastProgress = Date.now(); }
         }
-        for (const row of source.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${item.source}.titles WHERE book_id=?`).iterate(item.book.bkid)) { insertTitle.run(...values(row, 'titles')); titlesDone++; }
+        for (const row of source.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${item.source}.titles WHERE book_id=?`).iterate(item.book.bkid)) {
+          if (!isValidTitleRow(row, item.book.bkid)) throw new Error(`Daftar isi kitab ${item.book.bkid} tidak valid.`);
+          insertTitle.run(...values(row, 'titles')); titlesDone++;
+        }
       })();
       booksDone++;
     }
     const manifest = { format: 'maktabah-sqlite-package', version: 1, kind: byCategory ? 'categories' : 'books', exportedAt: new Date().toISOString(), books: booksDone, pages: pagesDone, titles: titlesDone };
     output.prepare('INSERT INTO transfer_manifest VALUES (?)').run(JSON.stringify(manifest));
     output.close(); output = null;
-    progress({ phase: 'export', totalBooks: ids.length, booksDone, totalPages, pagesDone });
+    progress({ phase: 'export', totalBooks: items.length, booksDone, totalPages, pagesDone });
     return { ...manifest, bytes: fs.statSync(options.outputPath).size };
   } catch (error) {
     output?.close(); output = null;
@@ -145,12 +138,12 @@ export async function importLargePackage(options, progress = () => {}) {
         if (result.imported) {
           imported++;
           for (const p of source.prepare('SELECT id,book_id,part,page,seal,nass FROM pages WHERE book_id=?').iterate(book.bkid)) {
-            if ((p.id !== null && !Number.isSafeInteger(p.id)) || (p.nass !== null && typeof p.nass !== 'string') || [p.part, p.page].some(v => !validPageReference(v)) || (p.seal !== null && typeof p.seal !== 'string')) throw new Error(`Halaman kitab ${book.bkid} tidak valid (ID halaman ${p.id}).`);
+            if (!isValidPageRow(p, book.bkid)) throw new Error(`Halaman kitab ${book.bkid} tidak valid (ID halaman ${p.id}).`);
             insertPage.run(...values(p, 'pages')); pagesDone++;
             if (Date.now() - lastProgress > 500) { checkDisk(options.dbPath); progress({ phase: 'import', totalBooks: info.books, booksDone, totalPages: info.pages, pagesDone }); lastProgress = Date.now(); }
           }
           for (const t of source.prepare('SELECT id,book_id,lvl,sub,tit FROM titles WHERE book_id=?').iterate(book.bkid)) {
-            if ([t.id, t.lvl, t.sub].some(v => v !== null && !Number.isSafeInteger(v)) || (t.tit !== null && typeof t.tit !== 'string')) throw new Error(`Daftar isi kitab ${book.bkid} tidak valid.`);
+            if (!isValidTitleRow(t, book.bkid)) throw new Error(`Daftar isi kitab ${book.bkid} tidak valid.`);
             insertTitle.run(...values(t, 'titles'));
           }
         } else skipped++;

@@ -197,3 +197,35 @@ test('additional books export with complete pages even without category or autho
   assert.equal(importBooks(db, payload).imported, 2);
   assert.equal(db.prepare('SELECT nass FROM main.pages WHERE book_id=999999').get().nass, 'نص عربي من المصدر الإضافي');
 });
+
+test('category export skips books with null or blank titles while explicit book export rejects them', t => {
+  const { db, ids } = fixture(t);
+  const cat = db.prepare('SELECT cat FROM books_meta WHERE bkid=?').get(ids[0]).cat;
+  db.prepare('INSERT INTO books_meta (bkid,bk,cat,authno,inf,betaka) VALUES (999998,NULL,?,0,\'\',\'\')').run(cat);
+  db.prepare('INSERT INTO books_meta (bkid,bk,cat,authno,inf,betaka) VALUES (999999,\'   \',?,0,\'\',\'\')').run(cat);
+  assert.throws(() => exportBooks(db, [999998]), /Metadata kitab 999998 tidak valid/);
+  const payload = exportCategories(db, [cat]);
+  assert.ok(!payload.books.some(b => b.book.bkid === 999998 || b.book.bkid === 999999));
+  clearBooks(db);
+  assert.equal(importBooks(db, payload).imported, payload.books.length);
+});
+
+test('importBooks skips untitled books in legacy packages while rejecting malformed book titles', t => {
+  const { db, ids } = fixture(t);
+  const payload = exportBooks(db, [ids[0]]);
+  const bad = structuredClone(payload);
+  bad.books[0].book.bk = 123;
+  assert.throws(() => importBooks(db, bad), /Metadata kitab tidak valid/);
+  const untitled = structuredClone(payload.books[0]);
+  untitled.book.bkid = 999998;
+  untitled.book.bk = null;
+  untitled.pages = untitled.pages.map(p => ({ ...p, book_id: 999998 }));
+  untitled.titles = untitled.titles.map(row => ({ ...row, book_id: 999998 }));
+  payload.books.push(untitled);
+  clearBooks(db);
+  const result = importBooks(db, payload);
+  assert.equal(result.imported, 1);
+  assert.equal(result.skipped.length, 1);
+  assert.equal(result.skipped[0].bkid, 999998);
+  assert.equal(db.prepare('SELECT 1 FROM books_meta WHERE bkid=999998').get(), undefined);
+});

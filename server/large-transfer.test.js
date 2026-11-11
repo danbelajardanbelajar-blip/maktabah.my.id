@@ -128,3 +128,34 @@ test('upload, background validation, import status and download routes require a
     const retained = await fetch(new URL(exportJob.downloadUrl,base).href);assert.equal(retained.status,200);await retained.arrayBuffer();
   } finally { api.close(); await new Promise(resolve => server.close(resolve)); db.close(); }
 });
+
+test('large SQLite category export skips books with null titles while explicit book export rejects them', async t => {
+  const f = fixture(t);
+  const src = new Database(f.source);
+  const cat = src.prepare('SELECT cat FROM books_meta WHERE bkid=1').get().cat;
+  src.prepare('INSERT INTO books_meta (bkid,bk,cat,authno,inf,betaka) VALUES (999998,NULL,?,0,\'\',\'\')').run(cat);
+  src.close();
+  assert.throws(() => exportLargePackage({ dbPath: f.source, outputPath: f.output, selection: { bookIds: [999998] } }), /Metadata kitab 999998 tidak valid/);
+  assert.ok(!fs.existsSync(f.output));
+  const exported = exportLargePackage({ dbPath: f.source, outputPath: f.output, selection: { categoryIds: [cat] } });
+  assert.equal(exported.books, 1);
+  const result = await importLargePackage({ dbPath: f.destination, inputPath: f.output, backupPath: f.backup });
+  assert.equal(result.imported, 1);
+});
+
+test('large SQLite import skips untitled books already present in existing packages', async t => {
+  const f = fixture(t);
+  exportLargePackage({ dbPath: f.source, outputPath: f.output, selection: { bookIds: [1] } });
+  const pkg = new Database(f.output);
+  pkg.prepare("INSERT INTO books_meta (bkid,bk,cat,authno,inf,betaka) VALUES (107698,NULL,NULL,NULL,'','')").run();
+  const m = JSON.parse(pkg.prepare('SELECT data FROM transfer_manifest').get().data);
+  m.books += 1;
+  pkg.prepare('UPDATE transfer_manifest SET data=?').run(JSON.stringify(m));
+  pkg.close();
+  const result = await importLargePackage({ dbPath: f.destination, inputPath: f.output, backupPath: f.backup });
+  assert.equal(result.imported, 1);
+  assert.equal(result.skipped, 1);
+  const dest = new Database(f.destination);
+  assert.equal(dest.prepare('SELECT 1 FROM books_meta WHERE bkid=107698').get(), undefined);
+  dest.close();
+});

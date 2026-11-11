@@ -158,3 +158,43 @@ test('export ticket survives restart and interrupted export is marked failed wit
  assert.equal((await(await fetch(base+'/api/admin/compact/exports/'+partial)).json()).status,'failed');
  assert.ok(!fs.existsSync(path.join(directory,partial+'.mkt')));
 });
+
+test('compact category export skips books with null or blank titles while explicit book export rejects them',t=>{
+ const f=fixture(t),src=new Database(f.source);
+ const cat=src.prepare('SELECT cat FROM books_meta WHERE bkid=1').get().cat;
+ const validBooks=src.prepare('SELECT count(*) n FROM books_meta WHERE cat=?').get(cat).n;
+ src.prepare("INSERT INTO books_meta(bkid,bk,cat,authno,inf,betaka) VALUES(999998,NULL,?,0,'','')").run(cat);
+ src.prepare("INSERT INTO books_meta(bkid,bk,cat,authno,inf,betaka) VALUES(999999,'  ',?,0,'','')").run(cat);
+ src.prepare('INSERT INTO categories(id,name) VALUES(888888,?)').run('Only untitled');
+ src.prepare("INSERT INTO books_meta(bkid,bk,cat,authno,inf,betaka) VALUES(999997,NULL,888888,0,'','')").run();
+ src.close();
+ assert.throws(()=>exportCompact({dbPath:f.source,selection:{bookIds:[999998]},outputPath:f.output}),/Metadata kitab 999998 tidak valid/);
+ assert.ok(!fs.existsSync(f.output));
+ const exported=exportCompact({dbPath:f.source,selection:{categoryIds:[cat,888888]},outputPath:f.output,targetBytes:1200});
+ assert.equal(exported.manifest.books,validBooks);
+ const s=apply(f.db,frames(f.output));
+ assert.equal(s.status,'done');assert.equal(s.stats.imported,validBooks);assert.equal(s.stats.importedCategories,2);
+});
+
+test('compact import skips untitled books inside existing packages while rejecting non-string titles',t=>{
+ const f=fixture(t);exportCompact({dbPath:f.source,selection:{bookIds:[1]},outputPath:f.output,targetBytes:1000});
+ const parts=frames(f.output),manifest=parts[0],bookRecord=parts.flatMap(p=>p.data.records).find(r=>r.type==='book');
+ const bad=encodePart(manifest.data.id,1,[{...bookRecord,item:{...bookRecord.item,book:{...bookRecord.item.book,bk:123}},counts:{pages:0,titles:0}}]);
+ startCompact(f.db,manifest.data,manifest.hash,3);
+ assert.throws(()=>applyCompact(f.db,decodePart(bad.compressed,bad.hash),bad.hash),/Metadata kitab tidak valid/);
+ const untitledBook={...bookRecord.item.book,bkid:107698,bk:null};
+ const untitledRec={type:'book',item:{...bookRecord.item,book:untitledBook},counts:{pages:0,titles:0}};
+ const pageRecs=parts.flatMap(p=>p.data.records).filter(r=>r.type==='page'||r.type==='title');
+ const p1=encodePart(manifest.data.id,1,[bookRecord,...pageRecs,{type:'book_end',bookId:1},untitledRec,{type:'book_end',bookId:107698}]);
+ const endManifest={...manifest.data.records[0].manifest,kind:'books',books:2};
+ const p0=encodePart(manifest.data.id,0,[{type:'manifest',manifest:endManifest}]);
+ const p2=encodePart(manifest.data.id,2,[{type:'end',books:2,pages:endManifest.pages,titles:endManifest.titles}]);
+ const db2=new Database(f.destination);db2.exec('DELETE FROM compact_sessions;DELETE FROM compact_receipts;DELETE FROM compact_books;DELETE FROM books_meta;DELETE FROM pages;DELETE FROM titles;');
+ try{
+  startCompact(db2,decodePart(p0.compressed,p0.hash),p0.hash,3);
+  applyCompact(db2,decodePart(p1.compressed,p1.hash),p1.hash);
+  const done=applyCompact(db2,decodePart(p2.compressed,p2.hash),p2.hash);
+  assert.equal(done.status,'done');assert.equal(done.stats.imported,1);assert.equal(done.stats.skipped,1);
+  assert.equal(db2.prepare('SELECT 1 FROM books_meta WHERE bkid=107698').get(),undefined);
+ }finally{db2.close();}
+});

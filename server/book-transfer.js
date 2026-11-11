@@ -14,6 +14,73 @@ const nullableText = value => value == null || typeof value === 'string';
 export const validPageReference = value => nullableInt(value) || typeof value === 'string';
 const historicalDate = value => nullableInt(value) || typeof value === 'string';
 
+/** Validate a category metadata record for import/export. */
+export const isValidCategoryMeta = c => Boolean(
+  c && integer(c.id) && typeof c.name === 'string' && nullableInt(c.catord) && nullableInt(c.lvl)
+);
+/** Whether a book metadata record has a non-empty title string. */
+export const hasBookTitle = b => typeof b?.bk === 'string' && b.bk.trim().length > 0;
+/** Validate a book record's field types; allows NULL/empty titles so importers can skip legacy untitled rows. */
+export const isValidBookRecord = b => Boolean(
+  b && integer(b.bkid) && b.bkid >= 1 && nullableText(b.bk)
+  && nullableInt(b.cat) && nullableInt(b.authno) && nullableText(b.inf) && nullableText(b.betaka)
+);
+/** Validate a book metadata record; requires a positive integer ID and non-empty title. */
+export const isValidBookMeta = b => isValidBookRecord(b) && hasBookTitle(b);
+/** Validate an author metadata record for import/export. */
+export const isValidAuthorMeta = a => Boolean(
+  a && integer(a.authid) && typeof a.auth === 'string' && nullableText(a.inf)
+  && historicalDate(a.HigriD) && historicalDate(a.AD)
+);
+/** Validate a single page row belonging to `bookId`. */
+export const isValidPageRow = (row, bookId) => Boolean(
+  row && (row.id === null || integer(row.id)) && row.book_id === bookId
+  && validPageReference(row.part) && validPageReference(row.page)
+  && nullableText(row.seal) && (row.nass === null || typeof row.nass === 'string')
+);
+/** Validate a single table-of-contents title row belonging to `bookId`. */
+export const isValidTitleRow = (row, bookId) => Boolean(
+  row && (row.id === null || integer(row.id)) && row.book_id === bookId
+  && nullableInt(row.lvl) && nullableInt(row.sub) && nullableText(row.tit)
+);
+
+/**
+ * Resolve exportable book sources (`main` takes precedence over `tambahan`).
+ * Category exports skip rows with invalid metadata (e.g. NULL/empty titles) so
+ * one orphan row does not break an entire category package; explicit book
+ * exports fail early if a requested book has missing or invalid metadata.
+ */
+export function resolveBookSources(db, { bookIds, categoryIds, includeAdditional = false }) {
+  const byCat = categoryIds !== undefined;
+  let candidateIds;
+  if (byCat) {
+    const wanted = new Set(categoryIds);
+    candidateIds = [...new Set(
+      db.prepare(`SELECT bkid,cat FROM ${bookCatalogueSql(includeAdditional)} ORDER BY bkid`)
+        .all()
+        .filter(b => wanted.has(b.cat))
+        .map(b => b.bkid)
+    )];
+  } else {
+    candidateIds = [...new Set(bookIds)];
+  }
+  const selectMain = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta WHERE bkid=?');
+  const selectExtra = includeAdditional ? db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta WHERE bkid=?') : null;
+  const sources = [];
+  for (const bkid of candidateIds) {
+    const mainBook = selectMain.get(bkid);
+    const schema = mainBook ? 'main' : 'tambahan';
+    const book = mainBook || selectExtra?.get(bkid);
+    if (!book) fail(`Kitab ${bkid} tidak ditemukan di database utama.`);
+    if (!isValidBookMeta(book)) {
+      if (byCat) continue;
+      fail(`Metadata kitab ${bkid} tidak valid.`);
+    }
+    sources.push({ bkid, schema, cat: book.cat });
+  }
+  return sources;
+}
+
 export const bookCatalogueSql = additional => additional
   ? '(SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta UNION ALL SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta)'
   : 'main.books_meta';
@@ -34,33 +101,29 @@ export function validateBookPackage(payload) {
   if (categoryPackage) {
     if (!Array.isArray(payload.categories) || !payload.categories.length || payload.categories.length > 100) fail('Paket harus berisi 1–100 kategori.');
     for (const c of payload.categories) {
-      if (!c || !integer(c.id) || typeof c.name !== 'string' || !nullableInt(c.catord) || !nullableInt(c.lvl) || categoryIds.has(c.id)) fail('Metadata kategori tidak valid atau ID berulang.');
+      if (!isValidCategoryMeta(c) || categoryIds.has(c.id)) fail('Metadata kategori tidak valid atau ID berulang.');
       categoryIds.add(c.id);
     }
   }
   const ids = new Set();
   for (const item of payload.books) {
     const b = item?.book;
-    if (!b || !integer(b.bkid) || b.bkid < 1 || typeof b.bk !== 'string' || !b.bk.trim()
-      || !nullableInt(b.cat) || !nullableInt(b.authno) || !nullableText(b.inf) || !nullableText(b.betaka)) fail('Metadata kitab tidak valid.');
+    if (!isValidBookRecord(b)) fail('Metadata kitab tidak valid.');
     if (ids.has(b.bkid)) fail(`ID kitab ${b.bkid} berulang dalam file.`);
     ids.add(b.bkid);
-    if (b.cat != null && (!item.category || item.category.id !== b.cat || typeof item.category.name !== 'string'
-      || !nullableInt(item.category.catord) || !nullableInt(item.category.lvl))) fail(`Kategori kitab ${b.bkid} tidak valid.`);
+    if (b.cat != null && (!isValidCategoryMeta(item.category) || item.category.id !== b.cat)) fail(`Kategori kitab ${b.bkid} tidak valid.`);
     if (categoryPackage) {
       const c = payload.categories.find(c => c.id === b.cat);
       if (!c || ['id', 'name', 'catord', 'lvl'].some(key => c[key] !== item.category?.[key])) fail(`Kategori kitab ${b.bkid} tidak sesuai dengan paket kategori.`);
     }
-    if (b.authno != null && (!item.author || item.author.authid !== b.authno || typeof item.author.auth !== 'string'
-      || !nullableText(item.author.inf) || !historicalDate(item.author.HigriD) || !historicalDate(item.author.AD))) fail(`Penulis kitab ${b.bkid} tidak valid.`);
+    if (b.authno != null && (!isValidAuthorMeta(item.author) || item.author.authid !== b.authno)) fail(`Penulis kitab ${b.bkid} tidak valid.`);
     if (!Array.isArray(item.pages) || !Array.isArray(item.titles)) fail(`Halaman/daftar isi kitab ${b.bkid} tidak valid.`);
     for (const [rows, isPage] of [[item.pages, true], [item.titles, false]]) {
       const rowIds = new Set();
       for (const row of rows) {
         if (!row || (row.id !== null && !integer(row.id)) || row.book_id !== b.bkid || (row.id !== null && rowIds.has(row.id))) fail(`ID halaman/daftar isi kitab ${b.bkid} tidak valid atau berulang.`);
         if (row.id !== null) rowIds.add(row.id);
-        if (isPage ? (!validPageReference(row.part) || !validPageReference(row.page) || !nullableText(row.seal) || (row.nass !== null && typeof row.nass !== 'string'))
-          : (!nullableInt(row.lvl) || !nullableInt(row.sub) || !nullableText(row.tit))) fail(`Isi halaman/daftar isi kitab ${b.bkid} tidak valid.`);
+        if (!(isPage ? isValidPageRow(row, b.bkid) : isValidTitleRow(row, b.bkid))) fail(`Isi halaman/daftar isi kitab ${b.bkid} tidak valid.`);
       }
     }
   }
@@ -72,14 +135,8 @@ export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS, includeAdditional
     || bookIds.some(id => !integer(id) || id < 1)) fail(`Paket melebihi batas ${maxBooks} kitab atau pilihan kitab tidak valid.`);
   const result = { format: 'maktabah-books', version: 1, exported_at: new Date().toISOString(), books: [] };
   let bytes = 0;
-  for (const id of new Set(bookIds)) {
-    let schema = 'main';
-    let book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM main.books_meta WHERE bkid=?').get(id);
-    if (!book && includeAdditional) {
-      book = db.prepare('SELECT bkid,bk,cat,authno,inf,betaka FROM tambahan.books_meta WHERE bkid=?').get(id);
-      schema = 'tambahan';
-    }
-    if (!book) fail(`Kitab ${id} tidak ditemukan di database utama.`);
+  for (const { bkid: id, schema } of resolveBookSources(db, { bookIds, includeAdditional })) {
+    const book = db.prepare(`SELECT bkid,bk,cat,authno,inf,betaka FROM ${schema}.books_meta WHERE bkid=?`).get(id);
     const textBytes = db.prepare(`SELECT coalesce(sum(length(CAST(nass AS BLOB))),0) AS n FROM ${schema}.pages WHERE book_id=?`).get(id).n;
     if (textBytes > MAX_TRANSFER_BYTES) fail('Isi kitab terlalu besar. Batas export 50 MB per file.');
     const item = {
@@ -90,8 +147,10 @@ export function exportBooks(db, bookIds, maxBooks = MAX_BOOKS, includeAdditional
       titles: db.prepare(`SELECT id,book_id,lvl,sub,tit FROM ${schema}.titles WHERE book_id=? ORDER BY rowid`).all(id),
     };
     // Older catalogues may refer to a category or author that no longer exists.
-    if (!item.category) item.book.cat = null;
-    if (!item.author) item.book.authno = null;
+    if (!item.category || !isValidCategoryMeta(item.category)) { item.category = null; item.book.cat = null; }
+    if (!item.author || !isValidAuthorMeta(item.author)) { item.author = null; item.book.authno = null; }
+    if (item.pages.some(row => !isValidPageRow(row, id))) fail(`Isi halaman kitab ${id} tidak valid.`);
+    if (item.titles.some(row => !isValidTitleRow(row, id))) fail(`Daftar isi kitab ${id} tidak valid.`);
     bytes += Buffer.byteLength(JSON.stringify(item));
     if (bytes > MAX_TRANSFER_BYTES - 1024) fail('Export melebihi 50 MB. Pilih lebih sedikit kitab.');
     result.books.push(item);
@@ -106,8 +165,7 @@ export function exportCategories(db, categoryIds, includeAdditional = false) {
     if (!c) fail(`Kategori ${id} tidak ditemukan.`);
     return c;
   });
-  const placeholders = categories.map(() => '?').join(',');
-  const ids = db.prepare(`SELECT DISTINCT bkid FROM ${bookCatalogueSql(includeAdditional)} WHERE cat IN (${placeholders}) ORDER BY bkid LIMIT ?`).all(...categories.map(c => c.id), MAX_CATEGORY_BOOKS + 1).map(b => b.bkid);
+  const ids = resolveBookSources(db, { categoryIds: categories.map(c => c.id), includeAdditional }).map(s => s.bkid);
   if (ids.length > MAX_CATEGORY_BOOKS) fail('Kategori pilihan melebihi 5.000 kitab. Pilih lebih sedikit kategori atau gunakan export per kitab.');
   const result = ids.length ? exportBooks(db, ids, MAX_CATEGORY_BOOKS, includeAdditional) : { version: 1, exported_at: new Date().toISOString(), books: [] };
   result.format = 'maktabah-categories';
@@ -135,7 +193,7 @@ export function importBooks(db, payload, existsInAdditional = () => false) {
     for (const c of isCategory(payload) ? payload.categories : []) ensureCategory(c);
     for (const item of payload.books) {
       const b = item.book;
-      if (db.prepare('SELECT 1 FROM main.books_meta WHERE bkid=?').get(b.bkid) || existsInAdditional(b.bkid)) {
+      if (!hasBookTitle(b) || db.prepare('SELECT 1 FROM main.books_meta WHERE bkid=?').get(b.bkid) || existsInAdditional(b.bkid)) {
         skipped.push({ bkid: b.bkid, title: b.bk });
         continue;
       }
