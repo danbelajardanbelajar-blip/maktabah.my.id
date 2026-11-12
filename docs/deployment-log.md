@@ -1,3 +1,12 @@
+## 2026-11-13 06:00:47 WIB — Koreksi linimasa tahun horizontal
+
+- Commit fungsi `fd39d9c` sudah push GitHub dan pull VPS; layanan `maktabah.service` aktif. Transfer/import/penghapusan diperiksa tidak aktif sebelum restart.
+- Satu jalur horizontal pada desktop dan ponsel; tahun tampil sebagai tombol, nama baru muncul setelah klik. Muat kiri/kanan menambah kelompok waktu lengkap tanpa duplikasi atau memotong penulis pada tahun sama.
+- 137 tes server lulus, TypeScript/build lokal lulus, pemeriksaan diff whitespace bersih. Browser lokal 3082 dan HTTPS online lulus pada 320/390/768/1024/1440 piksel: nama tersembunyi sebelum klik, muat dua arah, kembali dari profil, dan kelompok 194 tanggal belum terpetakan. Tidak ada pageerror atau overflow halaman.
+- Hash aset online sesuai build lokal. Koleksi 36.159 kitab dan regresi profil perawi 5739 (AQUAL 40.413 karakter) tetap sesuai.
+- Kontrol otomatis menolak perintah yang mencakup penghentian proses lokal 3081. Tidak diulang dengan cara lain; versi baru berjalan terpisah di 3082 dan launcher Penulis Lokal diarahkan ke sana. Proses lama tetap berjalan.
+- Database tidak diubah; tidak memerlukan impor ulang.
+
 # Catatan deployment
 
 ## 2026-11-13 05:40 WIB — Linimasa premium penulis

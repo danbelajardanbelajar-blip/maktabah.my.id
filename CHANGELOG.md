@@ -260,3 +260,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-59-42-1b11bd.
 | 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 49–55 | — | module/file | modified |
 | 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 60–61 | 49–50 | module/file | modified |
 | 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 63–63 | 52–65 | module/file | modified |
+
+## [2026-11-13 06:00:47 +07:00] — Catat deployment koreksi linimasa tahun horizontal dan hasil browser online
+
+Waktu pencatatan: **2026-11-13 06:00:47 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `fd39d9c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi fd39d9c aktif online, 137 tes lulus, browser lokal 3082 dan HTTPS lolos; hash aset sesuai; koleksi kitab dan perawi tetap sesuai. Lokal 3081 tidak dihentikan karena penolakan kontrol otomatis.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-00-47-f6af42.json](docs/change-audit/2026-11-13-06-00-47-f6af42.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 06:00:47 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |

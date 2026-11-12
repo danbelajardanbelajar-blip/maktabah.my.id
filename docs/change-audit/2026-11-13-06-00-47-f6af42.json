@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 06:00:47 +07:00",
+  "title": "Catat deployment koreksi linimasa tahun horizontal dan hasil browser online",
+  "baseCommit": "fd39d9cee7a1225459a7d0cbdea102b0cecff47d",
+  "checks": "Dokumentasi saja; fungsi fd39d9c aktif online, 137 tes lulus, browser lokal 3082 dan HTTPS lolos; hash aset sesuai; koleksi kitab dan perawi tetap sesuai. Lokal 3081 tidak dihentikan karena penolakan kontrol otomatis.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 06:00:47 +07:00",
+      "stagedSha256": "4652ba88ed9a98e71646f9998d1bffec2d7a67d80c590fc5a7239a487bdf91c3",
+      "diffSha256": "a6abe24da7caca031fa9eb80118fbfff2a2154ff206c61a6072ff2e7356a4fe6",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 9
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}
