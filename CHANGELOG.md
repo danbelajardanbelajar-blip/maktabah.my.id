@@ -92,3 +92,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-12-19-15-34-f5c3e6.
 | 2026-11-12 18:59:41 +07:00 | `src/lib/admin-navigation.ts` | — | 4–4 | const parents: Record<AdminView, AdminView> = { | modified |
 | 2026-11-12 18:59:41 +07:00 | `src/lib/admin-navigation.ts` | — | 10–10 | const titles: Record<AdminView,string> = { | modified |
 | 2026-11-12 18:59:41 +07:00 | `src/lib/admin-navigation.ts` | 16–16 | 18–18 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+
+## [2026-11-12 19:44:04 +07:00] — Catat hasil pull VPS, aktivasi database perawi, dan verifikasi HTTPS
+
+Waktu pencatatan: **2026-11-12 19:44:04 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `31808cc`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi deployment; tidak ada perubahan kode. HEAD VPS 31808cc cocok dengan GitHub; maktabah.service active; HTTP 200; hash JS/CSS online cocok; profil/pencarian Bukhari berkode ت س; jumlah kitab tetap 36.159. git diff --cached --check lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-12-19-44-04-241a70.json](docs/change-audit/2026-11-12-19-44-04-241a70.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-12 19:44:03 +07:00 | `docs/deployment-log.md` | — | 1–19 | module/file | added |

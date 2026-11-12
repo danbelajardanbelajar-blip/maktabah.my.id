@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-12 19:44:04 +07:00",
+  "title": "Catat hasil pull VPS, aktivasi database perawi, dan verifikasi HTTPS",
+  "baseCommit": "31808cc33a5e961648b3a9e6c37f790c4878c91b",
+  "checks": "Dokumentasi deployment; tidak ada perubahan kode. HEAD VPS 31808cc cocok dengan GitHub; maktabah.service active; HTTP 200; hash JS/CSS online cocok; profil/pencarian Bukhari berkode ت س; jumlah kitab tetap 36.159. git diff --cached --check lulus.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:44:03 +07:00",
+      "stagedSha256": "a97d388a19a57e7eb1c9331941fab94c4dc2117abb3184b609fde2cc8be67e0a",
+      "diffSha256": "f08df2205b82f9f8996e82cdbc81dccd7fd11d9d440d7f42e397e6b1d5698b02",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 19
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}
