@@ -1,4 +1,5 @@
-import {ArrowUpRight,BookOpen,Feather,HelpCircle} from 'lucide-react';
+import {useEffect,useRef,useState} from 'react';
+import {ArrowUpRight,ArrowLeft,ArrowRight,BookOpen} from 'lucide-react';
 import {navigationHash} from '../lib/navigation';
 export interface AuthorDate {kind:string;year:number|null;century:number|null;sortYear:number|null;label:string;original:string;}
 export interface AuthorSummary {id:number;name:string;death_text:string;workCount:number;hasBiography?:boolean;deathDate?:AuthorDate;}
@@ -14,15 +15,42 @@ function AuthorCard({author,context,onOpen,compact=false}:{author:AuthorSummary;
     <span className="author-journey-card-link">Jelajahi profil <span aria-hidden="true">↗</span></span>
   </a>;
 }
-export function AuthorTimeline({authors,context,onOpen}:Props) {
-  const dated=authors.filter(a=>dateOf(a).kind!=='unknown'),unknown=authors.filter(a=>dateOf(a).kind==='unknown');
-  const rows=Array.from({length:Math.ceil(dated.length/4)},(_,i)=>dated.slice(i*4,i*4+4));
-  return <div className="author-chronology">
-    {rows.length>0&&<div className="author-chronology-rows" aria-label="Linimasa tahun wafat penulis">{rows.map((row,index)=><ol key={row[0].id} className="author-timeline-row" aria-label={`Bagian linimasa ${index+1}`} style={{'--timeline-columns':row.length} as React.CSSProperties}>{row.map((a,i)=><li key={a.id} className={`author-timeline-item ${i%2===0?'is-above':'is-below'}`} style={{gridColumn:i+1}}>
-      <AuthorCard author={a} context={context} onOpen={onOpen}/>
-      <div className="author-timeline-node" aria-hidden="true"><span className="author-timeline-stem"/><span className="author-timeline-orbit"><Feather size={21}/></span></div>
-    </li>)}</ol>)}</div>}
-    {unknown.length>0&&<section className="author-undated"><div className="author-undated-heading"><HelpCircle size={19} aria-hidden="true"/><div><h3>Waktu yang belum terpetakan</h3><p>Nama tetap ditampilkan tanpa menetapkan tahun wafat yang tidak tercantum jelas.</p></div></div><AuthorCards authors={unknown} context={context} onOpen={onOpen}/></section>}
+interface YearGroup {key:string;label:string;authors:AuthorSummary[];}
+export function AuthorTimeline({context,onOpen}:Props) {
+  const [groups,setGroups]=useState<YearGroup[]>([]),[selected,setSelected]=useState<string|null>(null);
+  const [range,setRange]=useState({start:0,end:0,totalGroups:0}),[busy,setBusy]=useState(true),[error,setError]=useState('');
+  const rail=useRef<HTMLDivElement>(null),request=useRef<AbortController|null>(null);
+  const q=context.q||'',century=context.century||'';
+  const lastDirection=useRef<'initial'|'left'|'right'>('initial');
+  async function load(direction:'initial'|'left'|'right') {
+    lastDirection.current=direction;request.current?.abort();const controller=new AbortController();request.current=controller;
+    setBusy(true);setError('');
+    const query=new URLSearchParams({timeline:'1',q:String(q),century:String(century)});
+    if(direction!=='initial')query.set('start',String(direction==='left'?Math.max(0,range.start-10):range.end));
+    const oldWidth=rail.current?.scrollWidth||0,oldLeft=rail.current?.scrollLeft||0;
+    try {
+      const response=await fetch(`/api/authors?${query}`,{signal:controller.signal});
+      if(!response.headers.get('content-type')?.includes('application/json'))throw Error('Layanan linimasa belum tersedia. Muat ulang setelah layanan diperbarui.');
+      const result=await response.json();if(!response.ok)throw Error(result.error||'Gagal memuat rentang tahun.');
+      if(!Array.isArray(result.groups))throw Error(['localhost','127.0.0.1'].includes(window.location.hostname)?'Layanan lokal ini belum mendukung linimasa tahun. Buka http://127.0.0.1:3082/#/penulis.':'Layanan linimasa sedang diperbarui. Muat ulang beberapa saat lagi.');
+      if(controller.signal.aborted)return;
+      setGroups(previous=>direction==='initial'?result.groups:direction==='left'?[...result.groups.filter((g:YearGroup)=>!previous.some(p=>p.key===g.key)),...previous]:[...previous,...result.groups.filter((g:YearGroup)=>!previous.some(p=>p.key===g.key))]);
+      setRange(previous=>({start:direction==='right'?previous.start:result.start,end:direction==='left'?previous.end:result.end,totalGroups:result.totalGroups}));
+      requestAnimationFrame(()=>{if(rail.current){rail.current.scrollLeft=direction==='left'?oldLeft+rail.current.scrollWidth-oldWidth:direction==='right'?oldWidth-rail.current.clientWidth+160:0;}});
+    }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Gagal memuat linimasa.');}
+    finally{if(!controller.signal.aborted)setBusy(false);}
+  }
+  useEffect(()=>{setGroups([]);setSelected(null);load('initial');return()=>request.current?.abort();},[q,century]);
+  const active=groups.find(g=>g.key===selected);
+  return <div className="author-year-browser">
+    <div className="author-year-controls"><button disabled={busy||range.start===0} onClick={()=>load('left')}><ArrowLeft size={16}/>Muat kiri</button><span aria-live="polite">{busy?'Memuat tahun…':`${groups.length} dari ${range.totalGroups} penanda waktu`}</span><button disabled={busy||range.end>=range.totalGroups} onClick={()=>load('right')}>Muat kanan<ArrowRight size={16}/></button></div>
+    <div className="author-year-scroll" ref={rail} tabIndex={0} role="region" aria-label="Linimasa horizontal tahun wafat Hijriah; geser kiri atau kanan">
+      <ol className="author-year-rail">{groups.map(group=><li key={group.key}><button aria-pressed={selected===group.key} aria-controls="author-year-detail" onClick={()=>setSelected(group.key)}><span className="author-year-label">{group.label}</span><span className="author-year-dot" aria-hidden="true"/><span className="author-year-count">{group.authors.length} penulis</span></button></li>)}</ol>
+    </div>
+    {error&&<div role="alert" className="author-journey-empty">{error}<button onClick={()=>load(lastDirection.current)}>Coba lagi</button></div>}
+    <section id="author-year-detail" className="author-year-detail" aria-live="polite">
+      {active?<><h3>{active.label} <span>· {active.authors.length} penulis</span></h3><p>Rujukan wafat sesuai sumber. Keterangan sebelum, setelah, atau perkiraan tercantum pada kartu.</p><AuthorCards authors={active.authors} context={context} onOpen={onOpen}/></>:<p className="author-year-prompt">Klik tahun pada linimasa untuk menampilkan nama penulis dan membuka profilnya.</p>}
+    </section>
   </div>;
 }
 export function AuthorCards({authors,context,onOpen}:Props) {

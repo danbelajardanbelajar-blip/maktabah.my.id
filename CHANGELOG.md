@@ -230,3 +230,33 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-40-43-5723ea.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 05:40:43 +07:00 | `docs/deployment-log.md` | — | 3–16 | module/file | modified |
+
+## [2026-11-13 05:59:42 +07:00] — Koreksi linimasa menjadi satu jalur tahun horizontal dengan pemuatan kiri kanan dan nama setelah klik
+
+Waktu pencatatan: **2026-11-13 05:59:42 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e56f28c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 137 pengujian server lulus; TypeScript dan build lokal lulus; browser lokal 3082: tahun satu baris pada 320/390/768/1024/1440, nama tersembunyi sampai tahun diklik, muat kiri kanan menambah 10+10+10 tanpa duplikasi, grup tahun lengkap, profil dan tanggal tidak diketahui lulus, tanpa pageerror; diff whitespace bersih. Launcher lokal dipindah 3082 karena kontrol otomatis menolak penghentian proses 3081.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-59-42-1b11bd.json](docs/change-audit/2026-11-13-05-59-42-1b11bd.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 05:58:42 +07:00 | `Buka Penulis Lokal.bat` | 16–16 | 16–16 | if not exist "node_modules\dotenv\package.json" ( | modified |
+| 2026-11-13 05:59:36 +07:00 | `dist/assets/index-BA1Cj2qV.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Dq3MmhhG.js` | 1–16 | — | module/file | deleted |
+| 2026-11-13 05:59:36 +07:00 | `dist/assets/index.dev-OdtLzvJl.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 05:59:36 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 05:58:42 +07:00 | `docs/authors.md` | 7–7 | 7–7 | Fitur publik tersedia di `#/penulis`. Nama penulis dapat dicari, diurutkan berda | modified |
+| 2026-11-13 05:58:42 +07:00 | `docs/authors.md` | 11–11 | 11–11 | Tahun pasti, `بعد` (setelah), `قبل` (sebelum), `نحو` (sekitar), dan ket | modified |
+| 2026-11-13 05:58:42 +07:00 | `docs/authors.md` | 25–25 | 25–25 | Label **Kecocokan metadata** menjelaskan dasar relasinya; bukan klaim bahwa atri | modified |
+| 2026-11-13 05:54:59 +07:00 | `server/authors.js` | — | 44–55 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-13 05:56:15 +07:00 | `server/authors.test.js` | — | 62–77 | test('library title edits/deletions and duplicate IDs invalidate public work lis | modified |
+| 2026-11-13 05:59:27 +07:00 | `src/components/AuthorTimeline.tsx` | 1–1 | 1–2 | dateOf, AuthorCard, date, AuthorTimeline, rail, q, lastDirection, load | modified |
+| 2026-11-13 05:59:27 +07:00 | `src/components/AuthorTimeline.tsx` | 17–25 | 18–53 | function AuthorCard({author,context,onOpen,compact=false}:{author:AuthorSummary; | modified |
+| 2026-11-13 05:58:42 +07:00 | `src/components/Authors.tsx` | 35–35 | 35–35 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:58:42 +07:00 | `src/components/Authors.tsx` | 94–94 | 94–94 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:58:42 +07:00 | `src/components/Authors.tsx` | 97–97 | 97–97 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 33–36 | — | module/file | modified |
+| 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 49–55 | — | module/file | modified |
+| 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 60–61 | 49–50 | module/file | modified |
+| 2026-11-13 05:55:55 +07:00 | `src/components/author-journey.css` | 63–63 | 52–65 | module/file | modified |

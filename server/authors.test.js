@@ -59,6 +59,22 @@ test('library title edits/deletions and duplicate IDs invalidate public work lis
   assert.equal(service.detail(7,{}).total,1);f.library.push({bkid:100,bk:'Conflicting same ID'});version++;
   assert.equal(service.detail(7,{}).total,0);assert.throws(()=>service.decide({book_id:100,author_id:7,expected_author:'السيوطي',expected_title:'الإتقان',revision:'initial',action:'confirmed',note:'Evidence from source'}),/judul ganda/);
 });
+
+test('horizontal timeline groups complete years without splitting authors and loads both directions',t=>{
+  const f=fixture(t),db=f.store.getDb(),insert=db.prepare('INSERT INTO authors VALUES(?,?,?,?,?,?)');
+  for(let i=0;i<35;i++)insert.run(100+i,`كاتب ${i}`,'',String(200+i),'Source/test',`كاتب ${i}`);
+  insert.run(200,'قرين السنة','','200','Source/test','قرين السنة');
+  insert.run(201,'تاريخ تقريبي','','بعد 200','Source/test','تاريخ تقريبي');
+  insert.run(202,'غير مؤرخ','','','Source/test','غير مؤرخ');
+  f.service.invalidate();
+  const middle=f.service.authorList({timeline:'1'});assert(middle.start>0);assert(middle.end<middle.totalGroups);
+  const first=f.service.authorList({timeline:'1',start:0});assert.equal(first.groups[0].label,'200 H');assert.equal(first.groups[0].authors.length,3);assert.equal(first.groups[0].authors.find(a=>a.id===201).deathDate.kind,'after');
+  const right=f.service.authorList({timeline:'1',start:first.end});assert.equal(right.start,first.end);assert(!right.groups.some(g=>first.groups.some(p=>p.key===g.key)));
+  const left=f.service.authorList({timeline:'1',start:Math.max(0,right.start-10)});assert.deepEqual(left.groups,first.groups);
+  const filtered=f.service.authorList({timeline:'1',q:'قرين السنة'});assert.equal(filtered.totalGroups,1);assert.equal(filtered.groups[0].authors[0].id,200);
+  const unknown=f.service.authorList({timeline:'1',century:'unknown'});assert.equal(unknown.groups[0].key,'unknown');
+  assert.throws(()=>f.service.authorList({timeline:'1',start:'-10'}),/Rentang/);
+});
 test('import preserves compatible local decisions, download/re-import preserves review evidence, restore and restart work',async t=>{
   const f=fixture(t),initial=f.store.status().active.id,info=f.service.bookCase(100);
   f.service.decide({book_id:100,author_id:7,expected_author:'السيوطي',expected_title:info.title,revision:info.revision,action:'rejected',note:'Rujukan menolak atribusi ini'});

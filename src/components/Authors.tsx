@@ -32,7 +32,7 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
     if(century)query.set('century',century);
     const endpoint=id?`/api/authors/${id}?page=${page}`:`/api/authors?${query}`;
     fetch(endpoint,{signal:controller.signal}).then(async r=>{
-      if(!r.headers.get('content-type')?.includes('application/json'))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Layanan penulis pada alamat ini belum diperbarui. Untuk versi lokal terbaru, buka http://127.0.0.1:3081/#/penulis.':'Layanan penulis belum memberikan data. Muat ulang beberapa saat lagi.');
+      if(!r.headers.get('content-type')?.includes('application/json'))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Layanan penulis pada alamat ini belum diperbarui. Untuk versi lokal terbaru, buka http://127.0.0.1:3082/#/penulis.':'Layanan penulis belum memberikan data. Muat ulang beberapa saat lagi.');
       const result=await r.json();if(!r.ok)throw Error(result.error||'Gagal memuat penulis.');return result;
     }).then(data=>{if(!controller.signal.aborted)setReply({location,data});})
       .catch(e=>{if(!controller.signal.aborted)setError(e.message);}).finally(()=>{if(!controller.signal.aborted)setLoading(false);});
@@ -91,10 +91,10 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
       {data.works.map((w:Work)=><article key={w.book_id} className="p-5 border rounded-2xl bg-[var(--reader-bg)] space-y-3"><button onClick={()=>openBook(w.book_id)} className="block w-full text-right text-xl font-bold hover:text-[var(--app-primary)]" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{w.title}</button><div className="flex gap-2 items-center flex-wrap"><span className="text-xs rounded-full bg-[var(--app-primary)]/10 px-3 py-1">{basisName(w.basis)}</span><button onClick={()=>readBook(w.book_id)} className="ml-auto px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white font-semibold flex items-center gap-2"><BookOpen size={16}/>Baca kitab</button></div><details className="text-sm"><summary className="cursor-pointer opacity-70">Dasar relasi & sumber</summary><p className="mt-2 whitespace-pre-wrap break-words" dir="auto">{w.evidence}</p><p className="text-xs opacity-60 mt-2 break-words">{w.source_ref}</p></details></article>)}
     </>}
     {!loading&&!error&&data&&!id&&<>
-      <div className="author-journey-section-heading"><div><h2>{view==='timeline'?'Jejak Penulis Lintas Zaman':'Mengenal Para Penulis'}</h2><p>{view==='timeline'?'Berdasarkan rujukan wafat Hijriah. Urutan tidak menunjukkan jarak waktu berskala; penanda sekitar/setelah/abad dipertahankan.':'Pilih nama untuk membuka biografi dan karya yang tersedia.'}</p></div><span dir="rtl">أعلام ومؤلفات</span></div>
+      <div className="author-journey-section-heading"><div><h2>{view==='timeline'?'Jejak Penulis Lintas Zaman':'Mengenal Para Penulis'}</h2><p>{view==='timeline'?'Klik tahun untuk melihat penulis. Geser linimasa ke kiri atau kanan, lalu muat rentang sebelumnya atau berikutnya. Jarak penanda tidak berskala.':'Pilih nama untuk membuka biografi dan karya yang tersedia.'}</p></div><span dir="rtl">أعلام ومؤلفات</span></div>
       {data.total===0?<p className="author-journey-empty">Tidak ada nama pada pilihan ini. Coba bagian nama atau abad yang lain.</p>:view==='timeline'?<AuthorTimeline authors={data.data} context={{...context,listPage:page}} onOpen={openAuthor}/>:<AuthorCards authors={data.data} context={{...context,listPage:page}} onOpen={openAuthor}/>}
     </>}
-    {!loading&&data?.totalPages>1&&<nav aria-label="Halaman penulis dan karya" className="author-pagination">
+    {!loading&&(!!id||view==='cards')&&data?.totalPages>1&&<nav aria-label="Halaman penulis dan karya" className="author-pagination">
       <button disabled={page<=1} onClick={()=>changePage(page-1)}><ArrowLeft size={14} aria-hidden="true"/>Sebelumnya</button>
       <span>Halaman {page} dari {data.totalPages}</span>
       <button disabled={page>=data.totalPages} onClick={()=>changePage(page+1)}>Berikutnya<ArrowRight size={14} aria-hidden="true"/></button>

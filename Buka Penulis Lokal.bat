@@ -13,7 +13,7 @@ if not exist "node_modules\dotenv\package.json" (
   pause
   exit /b 1
 )
-node scripts\start_local.js --port=3081 --authors
+node scripts\start_local.js --port=3082 --authors
 if errorlevel 1 (
   echo Gagal membuka layanan penulis lokal. Lihat pesan di atas.
   pause

@@ -4,11 +4,11 @@ Fitur publik tersedia di `#/penulis`. Nama penulis dapat dicari, diurutkan berda
 
 ## Tampilan linimasa
 
-Tampilan bawaan memakai linimasa berdasarkan rujukan wafat Hijriah: kartu bergantian di atas/bawah garis pada desktop, serta alur vertikal pada tablet/ponsel. Pilihan **Kartu** tetap tersedia untuk penelusuran nama. Filter abad, kata pencarian, tampilan, dan halaman tersimpan dalam URL. Kembali dari profil mengembalikan halaman daftar dan filternya.
+Tampilan bawaan memakai satu linimasa horizontal tahun rujukan wafat Hijriah pada desktop maupun ponsel. Nama penulis tersembunyi sampai penanda tahun diklik; semua penulis pada tahun tersebut muncul pada panel di bawah garis. Tombol **Muat kiri** dan **Muat kanan** menambahkan rentang lebih awal/akhir tanpa membuat baris baru. Geser garis atau gunakan keyboard pada area gulir untuk menelusuri tahun yang telah dimuat. Pilihan **Kartu** tetap tersedia untuk penelusuran nama. Filter abad, kata pencarian, tampilan, dan halaman tersimpan dalam URL. Kembali dari profil mengembalikan halaman daftar dan filternya.
 
 Tahun pasti, `بعد` (setelah), `قبل` (sebelum), `نحو` (sekitar), dan keterangan abad seperti `ق 4` dipetakan secara terpisah. Abad tidak diubah menjadi tahun wafat. Teks asli dipertahankan pada keterangan yang tidak pasti. Data tanpa tanggal yang dapat dipetakan dikelompokkan tersendiri. Filter abad mengikuti tahun/abad rujukan, bukan klaim tanggal wafat pasti untuk entri berketerangan relatif. Jarak antarposisi linimasa tidak berskala tahun.
 
-Parser dan urutan dijalankan pada server sebelum pagination. Dua belas penulis ditampilkan per halaman linimasa dan 24 per halaman kartu. URL lama dengan `sort=name` tanpa parameter tampilan tetap membuka kartu agar pilihan pengurutan lama tidak berubah diam-diam. Tampilan ini tidak memerlukan import ulang database.
+Parser dan urutan dijalankan pada server sebelum pengelompokan. Endpoint `GET /api/authors?timeline=1` mengirim sepuluh kelompok waktu lengkap per rentang, dengan `start`/`end`/`totalGroups`. Rentang awal berada di tengah koleksi terfilter agar kedua arah dapat dimuat. Parameter `start` mengambil rentang berikut/sebelumnya, dengan filter `q` dan `century` yang sama. Nama dengan tahun rujukan sama tidak terpotong oleh pagination. Tahun yang berketerangan relatif mempertahankan keterangan aslinya di kartu. Kelompok abad dan tanggal belum terpetakan tetap berlabel sesuai sumber. Tampilan kartu memakai 24 penulis per halaman. URL lama dengan `sort=name` tanpa parameter tampilan tetap membuka kartu agar pilihan pengurutan lama tidak berubah diam-diam. Tampilan ini tidak memerlukan import ulang database.
 
 ## Sumber dan batas data
 
@@ -22,7 +22,7 @@ Label **Kecocokan metadata** menjelaskan dasar relasinya; bukan klaim bahwa atri
 
 ## Halaman admin
 
-Untuk layanan lokal terbaru tanpa menghentikan proses lama, jalankan `Buka Penulis Lokal.bat`. Launcher memakai port 3081: halaman publik `http://127.0.0.1:3081/#/penulis` dan admin `http://127.0.0.1:3081/#/admin?view=authors_database`. Menjalankan launcher lagi memakai proses yang sudah sesuai. Terminal tetap dibuka selama layanan dipakai. Default launcher lokal lama di port 3080 tidak berubah. Port bisa dipilih lewat `node scripts/start_local.js --port=3081 --authors`.
+Untuk layanan lokal terbaru tanpa menghentikan proses lama, jalankan `Buka Penulis Lokal.bat`. Launcher memakai port 3082: halaman publik `http://127.0.0.1:3082/#/penulis` dan admin `http://127.0.0.1:3082/#/admin?view=authors_database`. Menjalankan launcher lagi memakai proses yang sudah sesuai. Terminal tetap dibuka selama layanan dipakai. Default launcher lokal lama di port 3080 tidak berubah. Port bisa dipilih lewat `node scripts/start_local.js --port=3082 --authors`.
 
 Menu **Penulis → Database Penulis** menyediakan upload `.db` maksimal 64 MB, pratinjau, aktivasi, unduh, dan pemulihan versi sebelumnya. Transfer memakai format yang sama di lokal dan online. Database kitab dan Database Perawi tidak diganti.
 

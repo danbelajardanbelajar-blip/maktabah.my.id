@@ -41,6 +41,18 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
     if(century&&century!=='unknown'&&!/^[1-9]\d?$/.test(century))throw err('Pilihan abad tidak valid.');
     if(century)all=all.filter(a=>century==='unknown'?a.deathDate.kind==='unknown':a.deathDate.century===Number(century));
     all.sort(query.sort==='death'?compareAuthorDates:(a,b)=>a.name.localeCompare(b.name,'ar')||a.id-b.id);
+    if(query.timeline==='1') {
+      const groups=new Map();
+      for(const {biography,...a} of [...all].sort(compareAuthorDates)) {
+        const date=a.deathDate,key=date.year!==null?`year-${date.year}`:date.kind==='unknown'?'unknown':`century-${date.century}`;
+        if(!groups.has(key))groups.set(key,{key,label:date.year!==null?`${date.year} H`:date.label,authors:[]});
+        groups.get(key).authors.push({...a,hasBiography:!!biography.trim()});
+      }
+      const ordered=[...groups.values()],size=10;
+      if(query.start!==undefined&&!/^\d+$/.test(String(query.start)))throw err('Rentang linimasa tidak valid.');
+      const start=Math.min(Math.max(0,ordered.length-size),query.start===undefined?Math.floor(ordered.length/2/size)*size:Number(query.start));
+      return{groups:ordered.slice(start,start+size),start,end:Math.min(start+size,ordered.length),totalGroups:ordered.length};
+    }
     return{data:all.slice((page-1)*limit,page*limit).map(({biography,...a})=>({...a,hasBiography:!!biography.trim()})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),
       eras:[...eraCounts].sort((a,b)=>a[0]-b[0]).map(([century,count])=>({century,count})),unknownDates:unknown,
       overview:{authors:everyone.length,dated:everyone.filter(a=>a.deathDate.kind!=='unknown').length,linkedWorks:[...g.works.values()].filter(w=>w.available&&w.links.size>0).length}};
