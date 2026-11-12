@@ -1,3 +1,4 @@
+import {HadithBooks} from './components/HadithBooks';
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
@@ -29,7 +30,7 @@ import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
 
-const pageTitles:Record<AppTab,string> = {authors:'Penulis & Karya',home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
+const pageTitles:Record<AppTab,string> = {hadith:'Kutub Hadis',authors:'Penulis & Karya',home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
 
 function App() {
   const [activeTab, setActiveTabState] = useState<AppTab>(() => parseNavigation(window.location.hash, window.location.search).tab);
@@ -449,6 +450,8 @@ function App() {
           <QuranReader />
         ) : activeTab === 'rowa' ? (
           <RowaDictionary />
+        ) : activeTab === 'hadith' ? (
+          <HadithBooks openBook={openBookInfo} readBook={bookId=>openReader({bookId})}/>
         ) : activeTab === 'authors' ? (
           <Authors openBook={openBookInfo} readBook={bookId=>openReader({bookId})} />
         ) : activeTab === 'collection' ? (

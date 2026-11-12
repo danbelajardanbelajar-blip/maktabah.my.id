@@ -317,3 +317,38 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-29-00-4713e9.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 06:28:59 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |
+
+## [2026-11-13 06:47:09 +07:00] — Tambahkan halaman Kutub Hadis dan kelompok sumber 2 4 6 9 10 11 dengan edisi katalog nyata
+
+Waktu pencatatan: **2026-11-13 06:47:09 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4ed3d8b`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 142 tes lulus; sintaks server/launcher, TypeScript dan build lokal lulus; browser lokal 3083 memverifikasi kelompok 2/4/6/9/10/11/17, 123 edisi, pencarian Arab/Latin, URL/reload/filter, pilih edisi dan baca serta kembali, viewport 320/390/768/1440 tanpa overflow/pageerror. Inspeksi MDB read-only dan kode Android didokumentasikan; ID sumber tidak dipakai sebagai ID web; Nasai Kubra/syarah serta konflik ID dikecualikan; staged diff whitespace bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-47-09-735233.json](docs/change-audit/2026-11-13-06-47-09-735233.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 06:44:09 +07:00 | `Buka Kutub Hadis Lokal.bat` | — | 1–20 | module/file | added |
+| 2026-11-13 06:40:23 +07:00 | `Buka Penulis Lokal.bat` | 16–16 | 16–16 | if not exist "node_modules\dotenv\package.json" ( | modified |
+| 2026-11-13 06:46:10 +07:00 | `dist/assets/index-DV29ooXM.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-mAgu00si.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 06:46:10 +07:00 | `dist/assets/index.dev-BIEZg86d.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-DzwPpVbh.js` | 1–16 | — | module/file | deleted |
+| 2026-11-13 06:46:10 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 06:46:33 +07:00 | `docs/hadith-books.md` | — | 1–32 | module/file | added |
+| 2026-11-13 06:44:09 +07:00 | `scripts/start_local.js` | 22–22 | 22–23 | const base = `http://127.0.0.1:${port}`; | modified |
+| 2026-11-13 06:44:09 +07:00 | `scripts/start_local.js` | 24–24 | 25–25 | const adminUrl=authorMode?`${base}/#/admin?view=authors_database`:`${base}/?admi | modified |
+| 2026-11-13 06:44:09 +07:00 | `scripts/start_local.js` | 35–35 | 36–36 | const openWeb = () => { | modified |
+| 2026-11-13 06:44:09 +07:00 | `scripts/start_local.js` | — | 43–43 | const running=await status(); | modified |
+| 2026-11-13 06:39:57 +07:00 | `server/data/hadith-books.json` | — | 1–384 | module/file | added |
+| 2026-11-13 06:40:22 +07:00 | `server/hadith-books.js` | — | 1–26 | hadithCatalogue, hadithBooks, byId, previous, books, allowed, editions, registerHadithBooks | added |
+| 2026-11-13 06:42:12 +07:00 | `server/hadith-books.test.js` | — | 1–29 | groups, g, result, app, server, url, route | added |
+| 2026-11-13 06:40:23 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-13 06:40:23 +07:00 | `server/index.js` | 365–365 | 366–366 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 06:40:23 +07:00 | `server/index.js` | — | 694–694 | const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR | modified |
+| 2026-11-13 06:40:23 +07:00 | `src/App.tsx` | — | 1–1 | App, navigationHandler, loadedSearch, lastTabLocations, pendingSearch, searchRequest, openAiQuestion, cancelAiRedirect | modified |
+| 2026-11-13 06:40:23 +07:00 | `src/App.tsx` | 32–32 | 33–33 | import { useEffect, useRef } from 'react'; | modified |
+| 2026-11-13 06:40:23 +07:00 | `src/App.tsx` | — | 453–454 | function App() { | modified |
+| 2026-11-13 06:45:59 +07:00 | `src/components/HadithBooks.tsx` | — | 1–55 | normalize, HadithBooks, params, update, controller, result, group, chosen | added |
+| 2026-11-13 06:40:23 +07:00 | `src/components/MoreMenu.tsx` | — | 7–7 | const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[ | modified |
+| 2026-11-13 06:40:23 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |

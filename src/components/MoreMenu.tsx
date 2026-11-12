@@ -4,6 +4,7 @@ import {navigationHash} from '../lib/navigation';
 import type {AppTab} from '../lib/navigation';
 const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[
   {tab:'quran',label:"Al-Qur’an",icon:BookOpen},{tab:'rowa',label:'Kamus Perawi',icon:UserCircle},
+  {tab:'hadith',label:'Kutub Hadis',icon:BookOpen},
   {tab:'authors',label:'Penulis & Karya',icon:UserCircle},
   {tab:'collection',label:'Koleksi Saya',icon:BookOpen},
   {tab:'settings',label:'Pengaturan Tampilan',icon:Settings},{tab:'feedback',label:'Masukan',icon:MessageSquare},

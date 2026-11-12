@@ -1,0 +1,384 @@
+{
+  "books": [
+    {
+      "key": "bukhari",
+      "arabic": "صحيح البخاري",
+      "name": "Sahih al-Bukhari",
+      "author": "Imam al-Bukhari",
+      "sourceId": 41,
+      "titles": [
+        "صحيح البخاري",
+        "صحيح البخاري (الطبعة الهندية)",
+        "صحيح البخاري - البغا",
+        "صحيح البخاري - ط الشعب",
+        "صحيح البخاري ت",
+        "صحيح البخاري ط- أخرى",
+        "صحيح البخاري ـ حسب ترقيم فتح الباري",
+        "صحيح البخاري-ن"
+      ]
+    },
+    {
+      "key": "muslim",
+      "arabic": "صحيح مسلم",
+      "name": "Sahih Muslim",
+      "author": "Imam Muslim",
+      "sourceId": 42,
+      "titles": [
+        "صحيح مسلم",
+        "صحيح مسلم (ط التأصيل)",
+        "صحيح مسلم ط- أخرى",
+        "صحيح مسلم-ن"
+      ]
+    },
+    {
+      "key": "abu-dawud",
+      "arabic": "سنن أبي داود",
+      "name": "Sunan Abu Dawud",
+      "author": "Imam Abu Dawud",
+      "sourceId": 43,
+      "titles": [
+        "سنن أبي داود",
+        "سنن أبي داود (ط التأصيل)",
+        "سنن أبي داود - القبلة",
+        "سنن أبي داود ت الأرنؤوط",
+        "سنن أبي داود ط-أخرى",
+        "سنن أبي داود ناشرون"
+      ]
+    },
+    {
+      "key": "tirmidhi",
+      "arabic": "جامع الترمذي",
+      "name": "Jami‘ at-Tirmidzi",
+      "author": "Imam at-Tirmidzi",
+      "sourceId": 44,
+      "titles": [
+        "جامع الترمذي",
+        "سنن الترمذي",
+        "سنن الترمذي (ط ناشرون)",
+        "سنن الترمذي - الرسالة",
+        "سنن الترمذي -دار الفكر",
+        "سنن الترمذي التأصيل",
+        "سنن الترمذي ت بشار",
+        "سنن الترمذي ت شاكر",
+        "سنن الترمذي ط-أخرى"
+      ]
+    },
+    {
+      "key": "nasai",
+      "arabic": "سنن النسائي",
+      "name": "Sunan an-Nasa’i (al-Mujtaba)",
+      "author": "Imam an-Nasa’i",
+      "sourceId": 45,
+      "titles": [
+        "سنن النسائي"
+      ]
+    },
+    {
+      "key": "ibn-majah",
+      "arabic": "سنن ابن ماجه",
+      "name": "Sunan Ibnu Majah",
+      "author": "Imam Ibnu Majah",
+      "sourceId": 46,
+      "titles": [
+        "سنن ابن ماجة",
+        "سنن ابن ماجة - التأصيل",
+        "سنن ابن ماجة - الرسالة",
+        "سنن ابن ماجة - ناشرون",
+        "سنن ابن ماجة -ط أخرى",
+        "سنن ابن ماجة ط-أخرى",
+        "سنن ابن ماجه",
+        "سنن ابن ماجه ت الأرنؤوط"
+      ]
+    },
+    {
+      "key": "malik",
+      "arabic": "موطأ مالك",
+      "name": "Al-Muwattha’",
+      "author": "Imam Malik",
+      "sourceId": 40,
+      "titles": [
+        "الموطأ",
+        "الموطأ - رواية محمد بن الحسن",
+        "الموطأ - رواية يحيى الليثي",
+        "الموطأ برواية ابن القاسم",
+        "الموطأ برواية ابن القاسم ط- أخرى",
+        "الموطأ برواية ابن زياد",
+        "الموطأ برواية سويد الحدثاني",
+        "الموطأ رواية أبي مصعب التأصيل (179)",
+        "موطأ مالك",
+        "موطأ مالك ت الأعظمي",
+        "موطأ مالك ت عبد الباقي",
+        "موطأ مالك رواية أبي مصعب الزهري",
+        "موطأ مالك رواية عبد الله بن مسلمة القعنبي",
+        "موطأ مالك رواية محمد بن الحسن الشيباني",
+        "موطأ مالك رواية يحيى الليثي ط- أخرى"
+      ]
+    },
+    {
+      "key": "ahmad",
+      "arabic": "مسند أحمد",
+      "name": "Musnad Ahmad",
+      "author": "Imam Ahmad bin Hanbal",
+      "sourceId": 47,
+      "titles": [
+        "مسند أحمد",
+        "مسند أحمد (ط الميمنية)",
+        "مسند أحمد - قرطبة",
+        "مسند أحمد ت شاكر",
+        "مسند أحمد ط (المكنز)",
+        "مسند أحمد ط الرسالة",
+        "مسند أحمد مخرجا",
+        "مسند الإمام أحمد بن حنبل"
+      ]
+    },
+    {
+      "key": "darimi",
+      "arabic": "سنن الدارمي",
+      "name": "Sunan ad-Darimi",
+      "author": "Imam ad-Darimi",
+      "sourceId": 52,
+      "titles": [
+        "سنن الدارمي",
+        "سنن الدارمي (ط البشائر)",
+        "سنن الدارمي - ت: دهمان",
+        "سنن الدارمي -ط أخرى",
+        "سنن الدارمي ط-أخرى",
+        "مسند الدارمي",
+        "مسند الدارمي ت الزهراني"
+      ]
+    },
+    {
+      "key": "ibn-khuzaymah",
+      "arabic": "صحيح ابن خزيمة",
+      "name": "Sahih Ibnu Khuzaimah",
+      "author": "Ibnu Khuzaimah",
+      "sourceId": 54,
+      "titles": [
+        "صحيح ابن خزيمة",
+        "صحيح ابن خزيمة (ط التأصيل)",
+        "صحيح ابن خزيمة (مع تعليقات محمود خليل)",
+        "صحيح ابن خزيمة ط 3",
+        "صحيح ابن خزيمة ط-أخرى"
+      ]
+    },
+    {
+      "key": "ibn-hibban",
+      "arabic": "صحيح ابن حبان",
+      "name": "Sahih Ibnu Hibban",
+      "author": "Ibnu Hibban",
+      "sourceId": 53,
+      "titles": [
+        "صحيح ابن حبان",
+        "صحيح ابن حبان - محققا",
+        "صحيح ابن حبان - مخرجا",
+        "صحيح ابن حبان بتحقيق الأرناؤوط - مطابق للمطبوع"
+      ]
+    },
+    {
+      "key": "shafii",
+      "arabic": "مسند الشافعي",
+      "name": "Musnad asy-Syafi‘i",
+      "author": "Imam asy-Syafi‘i",
+      "sourceId": 55,
+      "titles": [
+        "مسند الشافعي",
+        "مسند الشافعي - ترتيب السندي",
+        "مسند الشافعي - ترتيب سنجر",
+        "مسند الشافعي ترتيب السندي",
+        "مسند الشافعي ط-أخرى"
+      ]
+    },
+    {
+      "key": "ibn-jarud",
+      "arabic": "المنتقى لابن الجارود",
+      "name": "Al-Muntaqa karya Ibn al-Jarud",
+      "author": "Ibn al-Jarud",
+      "sourceId": null,
+      "titles": [
+        "المنتقى لابن الجارود",
+        "المنتقى لابن الجارود ط- أخرى",
+        "المنتقى لابن الجارود ط-أخرى"
+      ]
+    },
+    {
+      "key": "hakim",
+      "arabic": "المستدرك على الصحيحين",
+      "name": "Al-Mustadrak",
+      "author": "Imam al-Hakim",
+      "sourceId": 829,
+      "titles": [
+        "المستدرك على الصحيحين",
+        "المستدرك على الصحيحين للحاكم",
+        "المستدرك على الصحيحين للحاكم (ط التأصيل)",
+        "المستدرك على الصحيحين للحاكم {ط الحرمين}"
+      ]
+    },
+    {
+      "key": "abu-awanah",
+      "arabic": "مستخرج أبي عوانة",
+      "name": "Mustakhraj Abi ‘Awanah",
+      "author": "Abu ‘Awanah",
+      "sourceId": 1160,
+      "titles": [
+        "مستخرج أبي عوانة",
+        "مستخرج أبي عوانة ط الجامعة الإسلامية",
+        "مستخرج أبي عوانة ط-أخرى",
+        "مسند أبي عوانة",
+        "مسند أبي عوانة-الخضري"
+      ]
+    },
+    {
+      "key": "tahawi",
+      "arabic": "شرح معاني الآثار",
+      "name": "Syarh Ma‘ani al-Atsar",
+      "author": "Imam ath-Thahawi",
+      "sourceId": 1151,
+      "titles": [
+        "شرح معاني الآثار"
+      ]
+    },
+    {
+      "key": "daraqutni",
+      "arabic": "سنن الدارقطني",
+      "name": "Sunan ad-Daraquthni",
+      "author": "Imam ad-Daraquthni",
+      "sourceId": 715,
+      "titles": [
+        "سنن الدارقطني",
+        "سنن الدارقطني -ط أخرى",
+        "سنن الدارقطني ط-أخرى"
+      ]
+    }
+  ],
+  "groups": [
+    {
+      "key": "two",
+      "name": "Shahihain",
+      "arabic": "الصحيحان",
+      "description": "Dua kitab: Sahih al-Bukhari dan Sahih Muslim.",
+      "books": [
+        "bukhari",
+        "muslim"
+      ]
+    },
+    {
+      "key": "four",
+      "name": "Sunan Arba‘ah",
+      "arabic": "السنن الأربعة",
+      "description": "Sunan Abu Dawud, at-Tirmidzi, an-Nasa’i, dan Ibnu Majah.",
+      "books": [
+        "abu-dawud",
+        "tirmidhi",
+        "nasai",
+        "ibn-majah"
+      ]
+    },
+    {
+      "key": "six",
+      "name": "Kutub Sittah",
+      "arabic": "الكتب الستة",
+      "description": "Shahihain dan empat kitab Sunan; susunan ini memakai Sunan Ibnu Majah sebagai kitab keenam.",
+      "books": [
+        "bukhari",
+        "muslim",
+        "abu-dawud",
+        "tirmidhi",
+        "nasai",
+        "ibn-majah"
+      ]
+    },
+    {
+      "key": "nine",
+      "name": "Kutub Tis‘ah",
+      "arabic": "الكتب التسعة",
+      "description": "Kutub Sittah, al-Muwattha’, Musnad Ahmad, dan Sunan ad-Darimi.",
+      "books": [
+        "bukhari",
+        "muslim",
+        "abu-dawud",
+        "tirmidhi",
+        "nasai",
+        "ibn-majah",
+        "malik",
+        "ahmad",
+        "darimi"
+      ]
+    },
+    {
+      "key": "ten",
+      "name": "Kutub ‘Asyrah · Ithaf",
+      "arabic": "أطراف العشرة",
+      "description": "Sepuluh sumber dalam susunan Ithaf al-Maharah karya Ibnu Hajar. Susunannya berbeda dari Kutub Tis‘ah, bukan sembilan kitab ditambah satu.",
+      "books": [
+        "malik",
+        "shafii",
+        "ahmad",
+        "darimi",
+        "ibn-khuzaymah",
+        "ibn-hibban",
+        "ibn-jarud",
+        "hakim",
+        "abu-awanah",
+        "tahawi"
+      ]
+    },
+    {
+      "key": "eleven",
+      "name": "Ithaf · 11 sumber",
+      "arabic": "مصادر إتحاف المهرة",
+      "description": "Sepuluh sumber Ithaf al-Maharah beserta Sunan ad-Daraquthni sebagai pelengkap. Ini susunan karya tersebut, bukan istilah baku untuk semua himpunan sebelas kitab.",
+      "books": [
+        "malik",
+        "shafii",
+        "ahmad",
+        "darimi",
+        "ibn-khuzaymah",
+        "ibn-hibban",
+        "ibn-jarud",
+        "hakim",
+        "abu-awanah",
+        "tahawi",
+        "daraqutni"
+      ]
+    },
+    {
+      "key": "all",
+      "name": "Semua sumber",
+      "arabic": "كتب الحديث",
+      "description": "Semua sumber dalam kelompok di halaman ini. Pilih edisi yang ingin dibaca.",
+      "books": [
+        "bukhari",
+        "muslim",
+        "abu-dawud",
+        "tirmidhi",
+        "nasai",
+        "ibn-majah",
+        "malik",
+        "ahmad",
+        "darimi",
+        "ibn-khuzaymah",
+        "ibn-hibban",
+        "shafii",
+        "ibn-jarud",
+        "hakim",
+        "abu-awanah",
+        "tahawi",
+        "daraqutni"
+      ]
+    }
+  ],
+  "references": [
+    {
+      "title": "Kutub Tis‘ah: mukadimah Sunan ad-Darimi",
+      "url": "https://usul.ai/bn/t/sunan-al-darami/13"
+    },
+    {
+      "title": "Ithaf al-Maharah: daftar sumber kitab",
+      "url": "https://app.alreq.com/ar/AuthoredBooks/AuthoredBook/3908afce-2ffc-441b-3e6b-08d79e7d2715"
+    },
+    {
+      "title": "Mukadimah Musnad ad-Darimi: sepuluh sumber Ithaf dan pelengkap ad-Daraquthni",
+      "url": "https://saaid.org/book/21/15211.pdf"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {registerHadithBooks} from './hadith-books.js';
 import {registerCompactTransfer} from './compact-transfer.js';
 import express from 'express';
 import crypto from 'crypto';
@@ -362,7 +363,7 @@ function titlesUnion() {
 app.get('/api/local/status', (req, res) => {
   if (!localExportMode) return res.sendStatus(404);
   if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
-  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
+  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1','hadith-books-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
 });
 
 app.get('/api/stats', (req, res) => {
@@ -690,6 +691,7 @@ registerBookTransfer(app, {
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});
 const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR || path.join(rootDir,'dev-data','authors-database')));
+registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all();});
 const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
 registerAuthorTransfer(app,{store:authorStore,requireAdmin});
 registerAuthors(app,{service:authorService,requireAdmin});
