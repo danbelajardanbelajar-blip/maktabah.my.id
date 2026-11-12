@@ -167,3 +167,39 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-06-49-071920.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 05:06:48 +07:00 | `docs/deployment-log.md` | — | 3–18 | module/file | modified |
+
+## [2026-11-13 05:37:39 +07:00] — Linimasa premium Penulis dan Karya: kronologi sumber, filter abad, kartu bergantian, dan tampilan responsif
+
+Waktu pencatatan: **2026-11-13 05:37:39 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6d1694e`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 136 tes server lulus; TypeScript/build produksi lulus; browser memverifikasi kartu/axis desktop, alur vertikal 320–1440 px, hijau/gelap/krem, filter abad, waktu relatif/abad saja/tanpa tanggal, pagination dan kembali dari profil, tampilan kartu, tanpa error JavaScript atau overflow. git diff --check lulus. Backend lokal 3081 berhasil dimuat ulang setelah verifikasi proses dan transfer.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-37-39-e8f9c1.json](docs/change-audit/2026-11-13-05-37-39-e8f9c1.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 05:36:32 +07:00 | `dist/assets/index-BUrTUMsL.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-GqfaGxNR.css` | 1–2 | — | module/file | deleted |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-D2Uj4HUL.js` | 1–16 | — | module/file | deleted |
+| 2026-11-13 05:36:32 +07:00 | `dist/assets/index.dev-Dq3MmhhG.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 05:36:32 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 05:36:23 +07:00 | `docs/authors.md` | — | 5–12 | Fitur publik tersedia di `#/penulis`. Nama penulis dapat dicari, diurutkan berda | modified |
+| 2026-11-13 05:28:14 +07:00 | `server/author-chronology.js` | — | 1–18 | authorDeathDate, original, clean, unknown, century, n, match, year | added |
+| 2026-11-13 05:28:14 +07:00 | `server/author-chronology.test.js` | — | 1–13 | c, rows | added |
+| 2026-11-13 05:28:14 +07:00 | `server/authors.js` | — | 3–3 | import {normalizeIdentity,identityHash} from './author-package.js'; | modified |
+| 2026-11-13 05:28:14 +07:00 | `server/authors.js` | 36–39 | 37–46 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-13 05:32:12 +07:00 | `server/authors.test.js` | — | 44–54 | test('review confirmation/rejection/reset, multiple authors, stale edit conflict | modified |
+| 2026-11-13 05:36:23 +07:00 | `server/back-navigation.test.js` | — | 5–9 | import {backState,previousLocation,pushLocation,backFallback} from '../src/lib/b | modified |
+| 2026-11-13 05:30:08 +07:00 | `src/components/AuthorTimeline.tsx` | — | 1–30 | dateOf, AuthorCard, date, AuthorTimeline, dated, rows, AuthorCards | added |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 2–2 | 2–2 | import {useEffect,useState} from 'react'; | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 5–5 | 5–8 | import {navigationHash,routePage} from '../lib/navigation'; | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | — | 11–11 | const basisName=(basis:string)=>basis==='admin-reviewed'?'Ditinjau admin':basis= | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 9–9 | 13–14 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 11–11 | 16–20 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 13–13 | 22–26 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 18–19 | 31–38 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 22–23 | 41–46 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 25–28 | 48–85 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 36–37 | 93–101 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 05:36:23 +07:00 | `src/components/author-journey.css` | — | 1–65 | module/file | added |
+| 2026-11-13 05:32:12 +07:00 | `src/lib/back-navigation.ts` | 20–20 | 20–20 | export function backFallback(hash:string) { | modified |

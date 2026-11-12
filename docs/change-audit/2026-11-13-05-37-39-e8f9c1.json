@@ -1,0 +1,1097 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 05:37:39 +07:00",
+  "title": "Linimasa premium Penulis dan Karya: kronologi sumber, filter abad, kartu bergantian, dan tampilan responsif",
+  "baseCommit": "6d1694e4f41e2570bc1eca731c40f59b7040d9dd",
+  "checks": "136 tes server lulus; TypeScript/build produksi lulus; browser memverifikasi kartu/axis desktop, alur vertikal 320–1440 px, hijau/gelap/krem, filter abad, waktu relatif/abad saja/tanpa tanggal, pagination dan kembali dari profil, tampilan kartu, tanpa error JavaScript atau overflow. git diff --check lulus. Backend lokal 3081 berhasil dimuat ulang setelah verifikasi proses dan transfer.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BUrTUMsL.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:36:32 +07:00",
+      "stagedSha256": "d772ef77ebf3493ffa83d1759666940a7a2b82d20ec2db6ce4bed7351d94a6fa",
+      "diffSha256": "cbc5fea9be4387849c137c07829fcd70335f57cd8fb848416d9c6e2dd0c2ace1",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-GqfaGxNR.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "29d08dd3df38568fee5050ffa036259f46d1ebae06cd42262de058403738006e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-D2Uj4HUL.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "8eb1ad3e1c1b65563e60dc41f48fe6052673c83f531cafe59161622960eacd6f",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 16
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-Dq3MmhhG.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:36:32 +07:00",
+      "stagedSha256": "9a76110004cbe8a6f7ae66f75d5a6f826e9cb8d2bf66dd0474c31cbed1353f02",
+      "diffSha256": "3b4e8b7575ddbc6af5de2415388fc677a1054705d24a5789301694cc1337466d",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "i",
+        "x",
+        "o",
+        "c",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "V",
+        "H",
+        "U",
+        "ie",
+        "ae",
+        "W",
+        "oe",
+        "le",
+        "de",
+        "fe",
+        "pe",
+        "Ae",
+        "Pe",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "Xe",
+        "Ze",
+        "Qe",
+        "ct",
+        "G",
+        "lt",
+        "ut",
+        "dt",
+        "ft",
+        "mt",
+        "ht",
+        "yt",
+        "q",
+        "bt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "kt",
+        "At",
+        "jt",
+        "Mt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "Rt",
+        "zt",
+        "Bt",
+        "Ut",
+        "Wt",
+        "Kt",
+        "Yt",
+        "Zt",
+        "Qt",
+        "on",
+        "sn",
+        "cn",
+        "ln",
+        "un",
+        "On",
+        "kn",
+        "Un",
+        "Wn",
+        "Kn",
+        "qn",
+        "Yn",
+        "Xn",
+        "er",
+        "tr",
+        "or",
+        "sr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "mr",
+        "hr",
+        "gr",
+        "_r",
+        "vr",
+        "yr",
+        "Tr",
+        "Er",
+        "Ar",
+        "Br",
+        "Gr",
+        "Kr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "si",
+        "li",
+        "yi",
+        "bi",
+        "xi",
+        "Si",
+        "Ci",
+        "ki",
+        "Ai",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Fi",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "ea",
+        "aa",
+        "oa",
+        "sa",
+        "ua",
+        "da",
+        "fa",
+        "_a",
+        "va",
+        "ya",
+        "xa",
+        "Sa",
+        "Ta",
+        "Ea",
+        "Da",
+        "Oa",
+        "u",
+        "f",
+        "h",
+        "g",
+        "Ma",
+        "Na",
+        "Pa",
+        "Fa",
+        "Ia",
+        "La",
+        "za",
+        "Ba",
+        "Va",
+        "Ha",
+        "Ga",
+        "Ka",
+        "qa",
+        "Xa",
+        "Za",
+        "Qa",
+        "eo",
+        "no",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "js",
+        "Is",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Ys",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "fc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "Jc",
+        "el",
+        "tl",
+        "nl",
+        "al",
+        "ol",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "dl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "wl",
+        "El",
+        "Dl",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "Ml",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "S",
+        "it",
+        "at",
+        "ot",
+        "pt",
+        "gt",
+        "_t",
+        "vt",
+        "Ot",
+        "Xt",
+        "tn",
+        "nn",
+        "rn",
+        "dn",
+        "pn",
+        "gn",
+        "yn",
+        "xn",
+        "Sn",
+        "wn",
+        "Tn",
+        "Mn",
+        "Nn",
+        "Pn",
+        "In",
+        "rr",
+        "ar",
+        "pr",
+        "Sr",
+        "Cr",
+        "Or",
+        "jr",
+        "Mr",
+        "Rr"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 16
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:36:32 +07:00",
+      "stagedSha256": "906fed77f6690f8bbb8a68b1c874462cffc0a79ffd8de1d2d6e9f2bb42058221",
+      "diffSha256": "28fcb690f06ddafe9007252d3b6c93c4a68ab79bd62446c659a1db8446f8833a",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/authors.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:36:23 +07:00",
+      "stagedSha256": "e239fc425ffc66ebd5ce723a8b4e23fd039e8355d2737e514a60661ac85116ac",
+      "diffSha256": "8b1a609fffc53ba55a23319e9f7c1356948feb5be3b07e7aae3ac2284648666d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 0
+          },
+          "after": {
+            "line": 5,
+            "count": 8
+          },
+          "section": "Fitur publik tersedia di `#/penulis`. Nama penulis dapat dicari, diurutkan berda"
+        }
+      ]
+    },
+    {
+      "file": "server/author-chronology.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:28:14 +07:00",
+      "stagedSha256": "9adbde64fb1a582728d7538724f81f765a4840b5b416846138e13e10d08a59f3",
+      "diffSha256": "6f447088bfa2b35fb1508cf843fe6655fd9ab3ea12a766a3fdb47b1e1a191bdb",
+      "symbols": [
+        "authorDeathDate",
+        "original",
+        "clean",
+        "unknown",
+        "century",
+        "n",
+        "match",
+        "year",
+        "prefix",
+        "compareAuthorDates",
+        "av"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 18
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/author-chronology.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:28:14 +07:00",
+      "stagedSha256": "451fa2d98665429f50f5a9ba7d8ad0156161234a8972d6acb0ac8966362a4d14",
+      "diffSha256": "9df2a927cb04be0023ae97173a925d4aac137cf03adf22ae2f188a0e3836252a",
+      "symbols": [
+        "c",
+        "rows"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 13
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/authors.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:28:14 +07:00",
+      "stagedSha256": "7f55b593b20be50c99647e3d3965224247739d9f5fff312bea0c25411bc29f5c",
+      "diffSha256": "df307ea67d76cbb6873900612406581a2696a84fc6e2ab12e5425ccd1b151759",
+      "symbols": [
+        "err",
+        "paging",
+        "limit",
+        "findText",
+        "createAuthorService",
+        "invalidate",
+        "graph",
+        "db",
+        "version",
+        "library",
+        "existing",
+        "authors",
+        "works",
+        "w",
+        "authorList",
+        "g",
+        "everyone",
+        "eraCounts",
+        "c",
+        "unknown",
+        "related",
+        "detail",
+        "revision",
+        "bookCase",
+        "review",
+        "all",
+        "decide",
+        "old",
+        "registerAuthors",
+        "route"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import {normalizeIdentity,identityHash} from './author-package.js';"
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 4
+          },
+          "after": {
+            "line": 37,
+            "count": 10
+          },
+          "section": "export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {"
+        }
+      ]
+    },
+    {
+      "file": "server/authors.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:32:12 +07:00",
+      "stagedSha256": "22330595d916576c53b1c6d90ba7b6147c33b21c2d85c2934c6e0998110c1816",
+      "diffSha256": "d690fdc46e8d0f02e0c7ee1a04bbde6c475c82117206044cb8d9e1a69481188a",
+      "symbols": [
+        "makePackage",
+        "filename",
+        "a",
+        "w",
+        "fixture",
+        "dir",
+        "clean",
+        "library",
+        "service",
+        "candidates",
+        "f",
+        "info",
+        "body",
+        "old",
+        "first",
+        "second",
+        "backup",
+        "reimport",
+        "d",
+        "other",
+        "after",
+        "input",
+        "app",
+        "auth",
+        "server",
+        "base",
+        "send",
+        "preview",
+        "ticket",
+        "profile"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 43,
+            "count": 0
+          },
+          "after": {
+            "line": 44,
+            "count": 11
+          },
+          "section": "test('review confirmation/rejection/reset, multiple authors, stale edit conflict"
+        }
+      ]
+    },
+    {
+      "file": "server/back-navigation.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:36:23 +07:00",
+      "stagedSha256": "7a0355d8bfcb6f93fbe64f341e6533a43951ba6981744a976ab2417bade54015",
+      "diffSha256": "1b886dc54819d6e404b674d5555854097606d243c222a68348ace38e0b7ca624",
+      "symbols": [
+        "hash",
+        "p",
+        "origin",
+        "state",
+        "original"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 0
+          },
+          "after": {
+            "line": 5,
+            "count": 5
+          },
+          "section": "import {backState,previousLocation,pushLocation,backFallback} from '../src/lib/b"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AuthorTimeline.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:30:08 +07:00",
+      "stagedSha256": "e85c44bad38848335a39168175f0e8d4cec16de46c12052556715b4e14086a05",
+      "diffSha256": "247e0097ab5563a7e5faf7ef5c556d2bbc7d1bd59c04b9a8719e8a1ae9bc5ac9",
+      "symbols": [
+        "dateOf",
+        "AuthorCard",
+        "date",
+        "AuthorTimeline",
+        "dated",
+        "rows",
+        "AuthorCards"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 30
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Authors.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:36:23 +07:00",
+      "stagedSha256": "b5264ed47f4c1ce4eac0e5d5285e8f3658c836605f8d044ff71d35c124b9dfc1",
+      "diffSha256": "5eecb558ee696694ae4569032a039e374b472a660659af0751bc5a223bfcfbc6",
+      "symbols": [
+        "basisName",
+        "number",
+        "Authors",
+        "data",
+        "params",
+        "q",
+        "view",
+        "sort",
+        "listPage",
+        "update",
+        "controller",
+        "query",
+        "endpoint",
+        "result",
+        "context",
+        "go",
+        "openAuthor",
+        "changePage",
+        "overview"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 1
+          },
+          "after": {
+            "line": 2,
+            "count": 1
+          },
+          "section": "import {useEffect,useState} from 'react';"
+        },
+        {
+          "before": {
+            "line": 5,
+            "count": 1
+          },
+          "after": {
+            "line": 5,
+            "count": 4
+          },
+          "section": "import {navigationHash,routePage} from '../lib/navigation';"
+        },
+        {
+          "before": {
+            "line": 7,
+            "count": 0
+          },
+          "after": {
+            "line": 11,
+            "count": 1
+          },
+          "section": "const basisName=(basis:string)=>basis==='admin-reviewed'?'Ditinjau admin':basis="
+        },
+        {
+          "before": {
+            "line": 9,
+            "count": 1
+          },
+          "after": {
+            "line": 13,
+            "count": 2
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 1
+          },
+          "after": {
+            "line": 16,
+            "count": 5
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 13,
+            "count": 1
+          },
+          "after": {
+            "line": 22,
+            "count": 5
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 18,
+            "count": 2
+          },
+          "after": {
+            "line": 31,
+            "count": 8
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 22,
+            "count": 2
+          },
+          "after": {
+            "line": 41,
+            "count": 6
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 25,
+            "count": 4
+          },
+          "after": {
+            "line": 48,
+            "count": 38
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 2
+          },
+          "after": {
+            "line": 93,
+            "count": 9
+          },
+          "section": "export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook"
+        }
+      ]
+    },
+    {
+      "file": "src/components/author-journey.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 05:36:23 +07:00",
+      "stagedSha256": "6843b3875acbdd038b49c7c2e6fa2fb9cfae65f535c7490f1cb986f3afcbc623",
+      "diffSha256": "63582344e18c5a4ffbbf3738a42f377844b98f7bf104d279ef8c0b2d2b35b4f6",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 65
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/back-navigation.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:32:12 +07:00",
+      "stagedSha256": "76e8382dcfc99f80da1c9aec5d99e447aa176ab2976bce7850d0f1584accbbf9",
+      "diffSha256": "5b82ba45b7040a4d6de5612b33fb05240c4da193ee75a7df33e9d6eb08c14222",
+      "symbols": [
+        "backState",
+        "url",
+        "previousLocation",
+        "previous",
+        "current",
+        "pushLocation",
+        "backFallback",
+        "page",
+        "parent"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 20,
+            "count": 1
+          },
+          "after": {
+            "line": 20,
+            "count": 1
+          },
+          "section": "export function backFallback(hash:string) {"
+        }
+      ]
+    }
+  ]
+}

@@ -17,7 +17,7 @@ export function pushLocation(hash:string,state:Record<string,unknown>|null=null)
 }
 export function backFallback(hash:string) {
   const [path,query='']=hash.split('?'),params=new URLSearchParams(query);
-  if(path==='#/penulis'&&params.has('id')) {params.delete('id');params.delete('page');return '#/penulis'+(params.size?'?'+params:'');}
+  if(path==='#/penulis'&&params.has('id')) {params.delete('id');params.delete('page');const page=params.get('listPage');params.delete('listPage');if(page&&/^[1-9]\d*$/.test(page))params.set('page',page);return '#/penulis'+(params.size?'?'+params:'');}
   if(path==='#/katalog' && params.has('cat')) {
     const parent=new URLSearchParams();
     if(params.get('filter'))parent.set('filter',params.get('filter')!);

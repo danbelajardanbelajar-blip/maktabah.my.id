@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import {normalizeIdentity,identityHash} from './author-package.js';
+import {authorDeathDate,compareAuthorDates} from './author-chronology.js';
 const err=(message,status=400)=>Object.assign(Error(message),{status});
 const paging=(q,size=24)=>{const limit=Math.min(100,Math.max(1,parseInt(q.limit)||size)),page=Math.max(1,parseInt(q.page)||1);return{limit,page};};
 const findText=s=>normalizeIdentity(s).replace(/[أإآٱ]/gu,'ا').replace(/ى/gu,'ي').toLowerCase();
@@ -33,10 +34,16 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
   }
   const authorList=query=>{
     const g=graph(),{limit,page}=paging(query),q=findText(String(query.q||'').slice(0,200));
-    let all=[...g.authors.values()].filter(a=>!q||findText(a.name).includes(q));
-    const year=a=>Number(a.death_text.match(/\d{2,4}/)?.[0]||99999);
-    all.sort((a,b)=>query.sort==='death'?year(a)-year(b)||a.name.localeCompare(b.name,'ar'):a.name.localeCompare(b.name,'ar'));
-    return{data:all.slice((page-1)*limit,page*limit).map(({biography,...a})=>({...a,hasBiography:!!biography.trim()})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit)};
+    const everyone=[...g.authors.values()].map(a=>({...a,deathDate:authorDeathDate(a.death_text)}));
+    let all=everyone.filter(a=>!q||findText(a.name).includes(q));
+    const eraCounts=new Map();for(const a of all){const c=a.deathDate.century;if(c)eraCounts.set(c,(eraCounts.get(c)||0)+1);}
+    const unknown=all.filter(a=>a.deathDate.kind==='unknown').length,century=String(query.century||'');
+    if(century&&century!=='unknown'&&!/^[1-9]\d?$/.test(century))throw err('Pilihan abad tidak valid.');
+    if(century)all=all.filter(a=>century==='unknown'?a.deathDate.kind==='unknown':a.deathDate.century===Number(century));
+    all.sort(query.sort==='death'?compareAuthorDates:(a,b)=>a.name.localeCompare(b.name,'ar')||a.id-b.id);
+    return{data:all.slice((page-1)*limit,page*limit).map(({biography,...a})=>({...a,hasBiography:!!biography.trim()})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),
+      eras:[...eraCounts].sort((a,b)=>a[0]-b[0]).map(([century,count])=>({century,count})),unknownDates:unknown,
+      overview:{authors:everyone.length,dated:everyone.filter(a=>a.deathDate.kind!=='unknown').length,linkedWorks:[...g.works.values()].filter(w=>w.available&&w.links.size>0).length}};
   };
   const related=(bookId,title)=>{
     const g=graph(),w=g.works.get(bookId);if(!w?.available||title&&normalizeIdentity(title)!==w.title_key)return[];

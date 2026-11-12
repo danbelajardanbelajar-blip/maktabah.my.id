@@ -41,6 +41,17 @@ test('review confirmation/rejection/reset, multiple authors, stale edit conflict
   assert.throws(()=>f.service.decide({...body,action:'confirmed',note:'x'}),/rujukan/);
   assert.throws(()=>f.service.decide({...body,expected_author:'Penulis lain',action:'confirmed'}),/Identitas penulis/);
 });
+test('chronology and era filters apply to the complete result before pagination',t=>{
+  const f=fixture(t),d=f.store.getDb();
+  d.prepare('INSERT INTO authors VALUES(?,?,?,?,?,?)').run(9,'بلا تاريخ','','','Source/9','بلا تاريخ');
+  d.prepare('UPDATE manifest SET authors=3').run();
+  const first=f.service.authorList({sort:'death',limit:1});assert.equal(first.total,3);assert.equal(first.data[0].id,8);assert.equal(first.overview.dated,2);
+  assert.equal(f.service.authorList({sort:'death',page:2,limit:1}).data[0].id,7);
+  assert.deepEqual(f.service.authorList({century:'9'}).data.map(a=>a.id),[8]);
+  assert.deepEqual(f.service.authorList({century:'unknown'}).data.map(a=>a.id),[9]);
+  assert.equal(f.service.authorList({q:'السيوطي',century:'9'}).total,0);
+  assert.throws(()=>f.service.authorList({century:'-1'}),/abad/);
+});
 test('library title edits/deletions and duplicate IDs invalidate public work lists immediately',t=>{
   const f=fixture(t);let version=1;const service=createAuthorService(f.store,()=>f.library,()=>version);
   assert.equal(service.detail(7,{}).total,1);f.library.find(b=>b.bkid===100).bk='A different book';version++;

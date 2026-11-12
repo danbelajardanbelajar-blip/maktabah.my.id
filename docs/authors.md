@@ -2,6 +2,14 @@
 
 Fitur publik tersedia di `#/penulis`. Nama penulis dapat dicari, diurutkan berdasarkan nama/tahun wafat, dan dibuka melalui tautan tetap `#/penulis?id=ID`. Profil berisi biografi sumber, informasi wafat, karya yang tersedia di server, serta dasar setiap relasi. Kartu kitab membuka metadata atau pembaca. Metadata kitab juga menyediakan tautan balik ke profil penulis yang tertaut.
 
+## Tampilan linimasa
+
+Tampilan bawaan memakai linimasa berdasarkan rujukan wafat Hijriah: kartu bergantian di atas/bawah garis pada desktop, serta alur vertikal pada tablet/ponsel. Pilihan **Kartu** tetap tersedia untuk penelusuran nama. Filter abad, kata pencarian, tampilan, dan halaman tersimpan dalam URL. Kembali dari profil mengembalikan halaman daftar dan filternya.
+
+Tahun pasti, `بعد` (setelah), `قبل` (sebelum), `نحو` (sekitar), dan keterangan abad seperti `ق 4` dipetakan secara terpisah. Abad tidak diubah menjadi tahun wafat. Teks asli dipertahankan pada keterangan yang tidak pasti. Data tanpa tanggal yang dapat dipetakan dikelompokkan tersendiri. Filter abad mengikuti tahun/abad rujukan, bukan klaim tanggal wafat pasti untuk entri berketerangan relatif. Jarak antarposisi linimasa tidak berskala tahun.
+
+Parser dan urutan dijalankan pada server sebelum pagination. Dua belas penulis ditampilkan per halaman linimasa dan 24 per halaman kartu. URL lama dengan `sort=name` tanpa parameter tampilan tetap membuka kartu agar pilihan pengurutan lama tidak berubah diam-diam. Tampilan ini tidak memerlukan import ulang database.
+
 ## Sumber dan batas data
 
 Paket awal `maktabah-penulis-2026-11-13-final.db` memuat 966 penulis dari `MAKTABAH_CAKZEN_2026/Buka Lewat Sini/Files/Special.mdb`, tabel `Auth`; 770 biografi terisi. Relasi eksplisit diperiksa melalui `Files/main.mdb`, tabel `0bok`. Encoding MDB adalah Windows-1256. Sumber dibuka hanya-baca dan hash sumber diperiksa sebelum/sesudah export.
