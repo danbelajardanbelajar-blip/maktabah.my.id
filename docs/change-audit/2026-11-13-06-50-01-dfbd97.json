@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 06:50:01 +07:00",
+  "title": "Catat deployment Kutub Hadis beserta inspeksi sumber dan verifikasi online",
+  "baseCommit": "bbe2d0394a326edea8226c54ae9902da8c297e1a",
+  "checks": "Dokumentasi saja; fungsi bbe2d03 aktif pada lokal 3083 dan HTTPS; 142 tes/build/browser lulus, 17 sumber/123 edisi sesuai; hash aset dan regresi kitab/penulis/perawi lulus. Backend lama menunggu I/O, pulih setelah restart yang didahului pemeriksaan persisted jobs dan compact_sessions tanpa transfer aktif.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 06:50:01 +07:00",
+      "stagedSha256": "1c1ec9870a2a5354a81e59cf4c145bf544de4a1c7821a5de3dd6c7fd4fc1ede2",
+      "diffSha256": "9df9d7824c25c594a9662f3dad0e5c37d131b0d87f348844c0fc570c861d0578",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 10
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

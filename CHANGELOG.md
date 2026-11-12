@@ -352,3 +352,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-47-09-735233.
 | 2026-11-13 06:45:59 +07:00 | `src/components/HadithBooks.tsx` | — | 1–55 | normalize, HadithBooks, params, update, controller, result, group, chosen | added |
 | 2026-11-13 06:40:23 +07:00 | `src/components/MoreMenu.tsx` | — | 7–7 | const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[ | modified |
 | 2026-11-13 06:40:23 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
+
+## [2026-11-13 06:50:01 +07:00] — Catat deployment Kutub Hadis beserta inspeksi sumber dan verifikasi online
+
+Waktu pencatatan: **2026-11-13 06:50:01 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `bbe2d03`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi bbe2d03 aktif pada lokal 3083 dan HTTPS; 142 tes/build/browser lulus, 17 sumber/123 edisi sesuai; hash aset dan regresi kitab/penulis/perawi lulus. Backend lama menunggu I/O, pulih setelah restart yang didahului pemeriksaan persisted jobs dan compact_sessions tanpa transfer aktif.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-50-01-dfbd97.json](docs/change-audit/2026-11-13-06-50-01-dfbd97.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 06:50:01 +07:00 | `docs/deployment-log.md` | — | 1–10 | module/file | modified |

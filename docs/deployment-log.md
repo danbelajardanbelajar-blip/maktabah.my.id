@@ -1,3 +1,13 @@
+## 2026-11-13 06:50:01 WIB — Halaman Kutub Hadis
+
+- Commit fungsi `bbe2d03` sudah push GitHub dan pull VPS; layanan aktif dengan endpoint `/api/hadith-books` dan halaman `/#/kutub-hadis` melalui menu Lainnya.
+- 142 tes lulus; sintaks, TypeScript/build lokal dan staged whitespace lulus. Browser lokal 3083 serta HTTPS online memverifikasi kelompok 2/4/6/9/10/11/17, pencarian Arab/Latin, URL/reload, pilih edisi, baca kitab yang dipilih dan kembali ke kelompok. Viewport 320/390/768/1440 tanpa overflow/pageerror.
+- Terpetakan 17 sumber dan 123 edisi pada lokal maupun online. Kelompok 10/11 mengikuti Ithaf al-Maharah; susunannya dijelaskan, tidak diklaim sebagai penambahan universal atas Kutub Tis‘ah. Rujukan tersedia pada halaman dan docs/hadith-books.md.
+- Inspeksi sumber MDB dilakukan read-only; koleksi aslinya sudah memiliki kategori متون الحديث, tetapi kelompok terpisah tidak ditemukan pada tabel yang diperiksa/kode Android. Kemampuan seluruh UI executable lama tidak diuji langsung. ID MDB tidak dipakai sebagai ID web.
+- Sebelum pull, backend lama aktif tetapi tidak merespons HTTP; proses berstatus D menunggu I/O. Pemeriksaan file job dan compact_sessions melalui SQLite read-only memastikan tidak ada transfer/import/penghapusan aktif. Restart layanan berhasil; endpoint dan browser online kembali berfungsi. Tidak mengubah penyimpanan/kernel/database untuk pemulihan.
+- Hash aset HTTPS sesuai build lokal; 36.159 kitab, 966 penulis, dan regresi perawi 5739 (AQUAL 40.413 karakter) tetap sesuai. Tidak ada impor ulang/perubahan isi database.
+- Lokal terbaru port 3083; launcher Buka Kutub Hadis Lokal.bat memakai pemeriksaan hadith-books-v1.
+
 ## 2026-11-13 06:28:59 WIB — Terjemahan dan penjelasan langsung dalam pembaca
 
 - Commit fungsi `1d76c75` sudah push GitHub dan pull VPS; layanan aktif. Perubahan frontend saja, tanpa restart backend, impor database, atau perubahan konfigurasi provider.
