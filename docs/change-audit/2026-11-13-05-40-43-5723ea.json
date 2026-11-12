@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 05:40:43 +07:00",
+  "title": "Catat deployment linimasa premium penulis beserta verifikasi lokal dan HTTPS",
+  "baseCommit": "0a862f2e415f8ad70c7eddba4b3f798dec80872f",
+  "checks": "Dokumentasi saja. Linimasa aktif di lokal 3081 dan VPS; browser desktop/ponsel tanpa error; overview 966/772/5.610; aset online sesuai hash build; 36.159 kitab tetap ada dan regresi perawi lulus. Pemeriksaan whitespace akhir bersih.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:40:43 +07:00",
+      "stagedSha256": "5ba9289b0bc16b506433548452aff911e43ef323b6558eed65a7900aa1e977b2",
+      "diffSha256": "3b934eadf130905f45a0c34a4c7bd73e5b3d7b559aa7d82b35472b4ee957da75",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 14
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

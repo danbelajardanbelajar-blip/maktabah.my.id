@@ -1,5 +1,19 @@
 # Catatan deployment
 
+## 2026-11-13 05:40 WIB — Linimasa premium penulis
+
+Waktu sampai detik dan baris perubahan tersedia pada CHANGELOG serta audit terstruktur commit terkait.
+
+- Perubahan aplikasi `d109841` dan perapian whitespace `0a862f2` sudah dipush serta dipull fast-forward ke VPS. Catatan audit awal tentang pemeriksaan whitespace dikoreksi secara eksplisit pada commit tindak lanjut; tidak ada perubahan perilaku dari perapian tersebut.
+- Sebelum restart, pekerjaan export/import/penghapusan tidak aktif dan sesi import bertahap `null`. Backend baru lulus pemeriksaan sintaks; `maktabah.service` aktif setelah restart. Tidak ada import ulang database dan tidak ada pengubahan isi dataset.
+- Layanan lokal milik proses yang diverifikasi pada port 3081 berhasil dimuat ulang. Proses lama pada port 3080 tidak dihentikan.
+- Verifikasi API lokal/online: 966 penulis, 772 rujukan tahun/abad, 194 tanggal belum terpetakan, dan 5.610 kitab tertaut. Pagination dilakukan sesudah pengurutan/filter pada server.
+- Linimasa desktop menempatkan kartu bergantian di atas/bawah garis dengan titik sejajar. Tablet/ponsel memakai alur vertikal. Kartu tetap tersedia sebagai pilihan tampilan. Filter abad, pencarian, pengurutan kartu, dan posisi halaman dipertahankan saat kembali dari profil.
+- Penanda setelah/sebelum/sekitar/abad dipertahankan; `ق 4` tidak diperlakukan sebagai tahun 4 H. Jarak visual tidak mengklaim skala waktu proporsional.
+- Sebelum push: 136 tes lulus, TypeScript/build lulus, dan uji browser mencakup lebar 320/390/768/1024/1440, tema hijau/gelap/krem, filter abad, waktu relatif/abad saja/tanpa tanggal, pagination/profil, tanpa overflow atau error JavaScript. Pemeriksaan whitespace akhir lulus setelah koreksi EOF stylesheet.
+- Uji browser akhir pada lokal 3081 dan HTTPS online: linimasa desktop, alur ponsel, navigasi profil/kembali; tanpa error JavaScript. HTML dan hash aset `index.dev-Dq3MmhhG.js` serta `index-BUrTUMsL.css` online cocok dengan build lokal.
+- Jumlah kitab VPS tetap 36.159. Regresi profil perawi #5739 tetap memiliki uraian 40.413 karakter. Tidak mengubah paket penulis maupun perawi yang aktif.
+
 ## 2026-11-13 05:06 WIB — Penulis & Karya, Database Penulis, dan Tinjauan Relasi
 
 Jam ini adalah ringkasan verifikasi. Waktu pencatatan sampai detik serta rentang baris setiap file tercantum pada audit terstruktur dan CHANGELOG commit terkait.

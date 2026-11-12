@@ -218,3 +218,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-38-52-b3d289.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 05:38:20 +07:00 | `src/components/author-journey.css` | 64–65 | — | module/file | modified |
+
+## [2026-11-13 05:40:43 +07:00] — Catat deployment linimasa premium penulis beserta verifikasi lokal dan HTTPS
+
+Waktu pencatatan: **2026-11-13 05:40:43 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0a862f2`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja. Linimasa aktif di lokal 3081 dan VPS; browser desktop/ponsel tanpa error; overview 966/772/5.610; aset online sesuai hash build; 36.159 kitab tetap ada dan regresi perawi lulus. Pemeriksaan whitespace akhir bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-40-43-5723ea.json](docs/change-audit/2026-11-13-05-40-43-5723ea.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 05:40:43 +07:00 | `docs/deployment-log.md` | — | 3–16 | module/file | modified |
