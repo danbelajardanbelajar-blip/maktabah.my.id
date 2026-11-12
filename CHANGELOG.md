@@ -272,3 +272,36 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-00-47-f6af42.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 06:00:47 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |
+
+## [2026-11-13 06:26:39 +07:00] — Tampilkan terjemahan dan penjelasan AI langsung dalam pembaca tanpa pindah halaman
+
+Waktu pencatatan: **2026-11-13 06:26:39 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `042a4db`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 139 tes lulus; TypeScript dan build lokal lulus; browser lokal 3082: terjemahan seluruh halaman, penjelasan teks pilihan, alamat/pembaca/teks sumber tetap, error 409 dan retry, close serta perpindahan halaman membatalkan permintaan, HTML model di-escape, ponsel tanpa overflow atau pageerror. Pemeriksaan staged menemukan blank EOF pada renderer baru; diperbaiki sebelum commit, tes renderer/stream/cancel diulang lulus dan git diff --cached --check akhir bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-26-39-f997c8.json](docs/change-audit/2026-11-13-06-26-39-f997c8.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BA1Cj2qV.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 06:25:43 +07:00 | `dist/assets/index-mAgu00si.css` | — | 1–2 | module/file | added |
+| 2026-11-13 06:25:43 +07:00 | `dist/assets/index.dev-DzwPpVbh.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 06:25:43 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 06:25:30 +07:00 | `docs/ai-improvements.md` | — | 40–48 | Kasus frasa «سافر تجد عوضا» mengungkap bahwa tanda kutip untuk tran | modified |
+| 2026-11-13 06:23:28 +07:00 | `server/reader-ai.test.js` | — | 1–22 | controller, pending, result | added |
+| 2026-11-13 06:22:44 +07:00 | `src/App.tsx` | 1063–1063 | — | function App() { | modified |
+| 2026-11-13 06:22:44 +07:00 | `src/api.ts` | 202–202 | 202–202 | export const webAPI = { | modified |
+| 2026-11-13 06:22:44 +07:00 | `src/api.ts` | 205–205 | 205–205 | export const webAPI = { | modified |
+| 2026-11-13 06:22:44 +07:00 | `src/components/AskAI.tsx` | — | 1–1 | AskAI, failedRequest, lastQuestion, requestActive, handledQuestionVersion, endRef, inputRef, refresh | modified |
+| 2026-11-13 06:22:44 +07:00 | `src/components/AskAI.tsx` | 14–72 | — | interface Message { | modified |
+| 2026-11-13 06:22:45 +07:00 | `src/components/ReaderAiPanel.tsx` | — | 1–30 | ReaderAiPanel, heading, title, controller | added |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 1–1 | 1–2 | buildArabicRegex, harakat, safeWord, highlightText, words, regexStr, regex, readingTextRef | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 21–21 | — | export interface ReaderModalProps { | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 66–66 | 66–66 | const highlightText = (text: string, query?: string) => { | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | — | 68–72 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | — | 74–75 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 71–71 | 78–78 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | — | 84–84 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 477–479 | 485–487 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 481–481 | 489–490 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 06:26:38 +07:00 | `src/lib/ai-markdown.ts` | — | 1–58 | renderMarkdown, lines, closeListsIfOpen, olMatch, ulMatch, inlineMarkdown | added |

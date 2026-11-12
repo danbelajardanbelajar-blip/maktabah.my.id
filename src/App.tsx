@@ -1060,7 +1060,6 @@ function App() {
           bookmarks={bookmarks}
           setBookmarks={setBookmarks}
           onPageChange={(id, pageId) => { if (window.location.hash.startsWith('#/read/')) window.history.replaceState(window.history.state,'',`#/read/${id}/${pageId}`); }}
-          onAskAI={request=>{pushLocation(navigationHash('ask'));setReadingConfig(null);openAiQuestion(request.intent==='translate'?'Terjemahkan halaman ini':'Jelaskan halaman ini',request);}}
           onClose={closeReader}
         />
       )}

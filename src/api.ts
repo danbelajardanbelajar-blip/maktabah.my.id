@@ -199,10 +199,10 @@ export const webAPI = {
 
 
 
-  askAI: async (query: string, options:AiRequest={}, onProgress?:(message:string)=>void) => {
+  askAI: async (query: string, options:AiRequest={}, onProgress?:(message:string)=>void, signal?:AbortSignal) => {
     const res = await fetch(`${API_BASE}/ask`, {
       method: 'POST',headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q: query,...options,stream:true }),signal:AbortSignal.timeout(90000)
+      body: JSON.stringify({ q: query,...options,stream:true }),signal:signal?AbortSignal.any([signal,AbortSignal.timeout(90000)]):AbortSignal.timeout(90000)
     });
     return readAiResponse(res,onProgress);
   },

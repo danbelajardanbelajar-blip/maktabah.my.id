@@ -37,3 +37,12 @@ Percobaan Gemini menemukan kutipan yang menggabungkan baris tanpa spasi. Pencoco
 ### Kutipan bernomor dan penjelasan terpisah
 
 Kasus frasa «سافر تجد عوضا» mengungkap bahwa tanda kutip untuk transliterasi dalam penjelasan keliru dianggap kutipan harfiah. Sekarang respons model memilih quoteId dari katalog rentang teks asli yang dibuat server, tanpa menyalin ulang bahasa Arab. Pemeriksaan mencocokkan sumber, ID, nomor [n] dan teks database, termasuk pemeriksaan ulang cache. Bagian Penjelasan AI dibedakan dari Kutipan sumber; penjelasan/transliterasi bukan bukti harfiah. Jika respons model gagal diperiksa, teks model dibuang dan pengguna mendapat kutipan database dengan keterangan bahwa penjelasannya belum terverifikasi. Hasil terbatas ini tidak masuk cache agar percobaan berikutnya tetap bisa menghasilkan penjelasan. Gangguan jaringan/provider tetap dilaporkan sebagai gangguan layanan.
+
+
+## Hasil AI langsung di pembaca
+
+Tombol **Jelaskan halaman ini** dan **Terjemahkan halaman ini** menampilkan hasil pada panel dalam pembaca; tidak menutup kitab atau berpindah ke Tanya AI. Pilihan teks yang masih berada di area teks kitab dikirim sebagai konteks, atau seluruh halaman jika tidak ada pilihan. Server tetap memvalidasi sumber melalui bookId/pageId dan kecocokan teks dengan database.
+
+Panel menampilkan intent, bagian/halaman sumber, teks pilihan, tahap proses, jawaban, kegagalan beserta coba lagi, dan tombol kembali melihat teks sumber. Tombol tindakan dinonaktifkan selama permintaan untuk mencegah pengiriman ganda. Menutup panel/pembaca atau mulai memuat halaman lain membatalkan permintaan klien; hasil terlambat diabaikan dan tidak ditempel ke halaman baru. Perubahan hanya frontend; endpoint AI, penyimpanan riwayat server, dan konfigurasi provider tetap digunakan.
+
+Renderer Markdown dipakai bersama dengan Tanya AI dan melakukan escape HTML sebelum format diterapkan. `webAPI.askAI` mendukung AbortSignal opsional dengan batas waktu 90 detik. Percakapan Tanya AI tidak ditimpa oleh panel pembaca. Uji browser menggunakan respons AI terkendali untuk memeriksa seluruh halaman, pilihan teks, error 409/coba lagi, penutupan saat memuat, navigasi saat memuat, HTML ter-escape, serta tampilan ponsel.

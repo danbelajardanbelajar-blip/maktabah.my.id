@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import {ReaderAiPanel} from './ReaderAiPanel';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { webAPI } from '../api';
 import { loadReaderData } from '../lib/reader-loader';
 import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
@@ -18,7 +19,6 @@ export interface ReaderModalProps {
   setBookmarks?: any;
   onClose: () => void;
   onPageChange?: (bookId:number,pageId:number) => void;
-  onAskAI?: (request:AiRequest) => void;
 }
 
 const buildArabicRegex = (word: string) => {
@@ -63,17 +63,25 @@ const highlightText = (text: string, query?: string) => {
 };
 
 
-const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange, onAskAI }) => {
+const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange }) => {
   const readingTextRef=useRef<HTMLDivElement>(null);
+  const [aiRequest,setAiRequest]=useState<AiRequest|null>(null),[aiBusy,setAiBusy]=useState(false);
+  const aiActive=useRef(false);
+  const onAiBusy=useCallback((busy:boolean)=>{aiActive.current=busy;setAiBusy(busy);},[]);
+  const closeAi=()=>{setAiRequest(null);onAiBusy(false);};
+
   const askPage=(intent:'explain'|'translate')=>{
+    if(loading||!currentPage||!bookInfo||aiActive.current)return;
+    onAiBusy(true);
     const selection=window.getSelection();
     const text=selection && readingTextRef.current?.contains(selection.anchorNode) && readingTextRef.current?.contains(selection.focusNode)?selection.toString().trim():'';
-    onAskAI?.({intent,source:{bookId,pageId:currentPage.id,title:bookInfo.bk,part:currentPage.part,page:currentPage.page,...(text?{text}:{})}});
+    setAiRequest({intent,source:{bookId,pageId:currentPage.id,title:bookInfo.bk,part:currentPage.part,page:currentPage.page,...(text?{text}:{})}});
   };
   const [bookInfo, setBookInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<any>(null);
   const [currentPageId, setCurrentPageId] = useState<number | undefined>(initialPageId);
   const [loading, setLoading] = useState(true);
+  useEffect(()=>{setAiRequest(null);onAiBusy(false);},[bookId,currentPageId,loading,onAiBusy]);
   const [loadError, setLoadError] = useState('');
   const loadRequest = useRef(0);
   
@@ -474,11 +482,12 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
               <span>Jilid: {currentPage?.part} • Hal: {currentPage?.page}</span>
             </div>
             
-            {onAskAI && <div className="flex flex-wrap gap-2 px-4 md:px-8 py-3 border-b border-gray-200 font-sans" onClick={e=>e.stopPropagation()}>
-              <button type="button" disabled={loading} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('explain')} className="min-h-11 rounded-xl px-4 py-2 bg-emerald-700 text-white text-sm font-semibold disabled:opacity-40">Jelaskan halaman ini</button>
-              <button type="button" disabled={loading} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('translate')} className="min-h-11 rounded-xl px-4 py-2 border border-emerald-700 text-emerald-800 text-sm font-semibold disabled:opacity-40">Terjemahkan halaman ini</button>
+            <div className="flex flex-wrap gap-2 px-4 md:px-8 py-3 border-b border-gray-200 font-sans" onClick={e=>e.stopPropagation()}>
+              <button type="button" disabled={loading||aiBusy} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('explain')} className="min-h-11 rounded-xl px-4 py-2 bg-emerald-700 text-white text-sm font-semibold disabled:opacity-40">Jelaskan halaman ini</button>
+              <button type="button" disabled={loading||aiBusy} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('translate')} className="min-h-11 rounded-xl px-4 py-2 border border-emerald-700 text-emerald-800 text-sm font-semibold disabled:opacity-40">Terjemahkan halaman ini</button>
               <p className="basis-full text-xs text-gray-500">Pilih teks untuk membahas bagian tertentu, atau gunakan seluruh halaman.</p>
-            </div>}
+            </div>
+            {aiRequest&&!loading&&aiRequest.source?.bookId===bookId&&aiRequest.source?.pageId===currentPage.id&&<ReaderAiPanel request={aiRequest} onBusyChange={onAiBusy} onClose={closeAi} onShowSource={()=>readingTextRef.current?.scrollIntoView({block:'start'})}/>}
             <div className="p-4 md:p-8 lg:p-12 flex-1">
               {loading ? (
                 <div className="flex h-full items-center justify-center">
