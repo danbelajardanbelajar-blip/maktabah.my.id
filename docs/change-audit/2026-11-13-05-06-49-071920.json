@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 05:06:49 +07:00",
+  "title": "Catat deployment penulis lokal 3081 dan VPS beserta aktivasi paket serta verifikasi runtime",
+  "baseCommit": "cad86671e944a42d371516e26d7998b1f067b4f6",
+  "checks": "Dokumentasi saja, kode tidak berubah. Commit aplikasi cad8667 telah dipull VPS; layanan aktif. API lokal/online memverifikasi 966 penulis, 770 biografi, 5.610 kitab tertaut; browser ponsel pencarian/profil tanpa error; hash aset online cocok; 36.159 kitab online tetap ada; regresi Kamus Perawi lulus. git diff --cached --check lulus.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 05:06:48 +07:00",
+      "stagedSha256": "c6f0ba8c771af6beee80a7427b336cecef805374a14b7ac6467409c3d91b8e2a",
+      "diffSha256": "594adc67136843c68ee26a785856ed337f5e1084356177b1adb78fe2c85b9e14",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 16
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

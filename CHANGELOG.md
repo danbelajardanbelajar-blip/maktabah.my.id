@@ -155,3 +155,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-02-34-431083.
 | 2026-11-13 04:45:08 +07:00 | `src/lib/admin-navigation.ts` | 18–18 | 20–20 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
 | 2026-11-13 04:48:51 +07:00 | `src/lib/back-navigation.ts` | — | 20–20 | export function backFallback(hash:string) { | modified |
 | 2026-11-13 04:45:08 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
+
+## [2026-11-13 05:06:49 +07:00] — Catat deployment penulis lokal 3081 dan VPS beserta aktivasi paket serta verifikasi runtime
+
+Waktu pencatatan: **2026-11-13 05:06:49 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `cad8667`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja, kode tidak berubah. Commit aplikasi cad8667 telah dipull VPS; layanan aktif. API lokal/online memverifikasi 966 penulis, 770 biografi, 5.610 kitab tertaut; browser ponsel pencarian/profil tanpa error; hash aset online cocok; 36.159 kitab online tetap ada; regresi Kamus Perawi lulus. git diff --cached --check lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-06-49-071920.json](docs/change-audit/2026-11-13-05-06-49-071920.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 05:06:48 +07:00 | `docs/deployment-log.md` | — | 3–18 | module/file | modified |
