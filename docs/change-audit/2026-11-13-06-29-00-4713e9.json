@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 06:29:00 +07:00",
+  "title": "Catat deployment panel terjemahan dan penjelasan pembaca beserta uji provider online",
+  "baseCommit": "1d76c750b0320f9bbdcbac6974232c4bae483cc9",
+  "checks": "Dokumentasi saja; fungsi 1d76c75 aktif lokal 3082 dan HTTPS, 139 tes dan build lulus, browser respons terkendali lulus, provider sungguhan translate/explain keduanya grounded di pembaca yang sama, hash aset online cocok. Frontend saja tanpa restart layanan.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 06:28:59 +07:00",
+      "stagedSha256": "759ae010c052754d8b34366cd5379f5ba5e8753dc761d0e84ec4e9d19a5cbf05",
+      "diffSha256": "09766b32a3f1991bdf318e82cd7185be3a880c354e0f6c2706cd1e4b744e518f",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 9
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

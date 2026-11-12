@@ -305,3 +305,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-26-39-f997c8.
 | 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 477–479 | 485–487 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-13 06:25:30 +07:00 | `src/components/ReaderModal.tsx` | 481–481 | 489–490 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-13 06:26:38 +07:00 | `src/lib/ai-markdown.ts` | — | 1–58 | renderMarkdown, lines, closeListsIfOpen, olMatch, ulMatch, inlineMarkdown | added |
+
+## [2026-11-13 06:29:00 +07:00] — Catat deployment panel terjemahan dan penjelasan pembaca beserta uji provider online
+
+Waktu pencatatan: **2026-11-13 06:29:00 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1d76c75`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi 1d76c75 aktif lokal 3082 dan HTTPS, 139 tes dan build lulus, browser respons terkendali lulus, provider sungguhan translate/explain keduanya grounded di pembaca yang sama, hash aset online cocok. Frontend saja tanpa restart layanan.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-29-00-4713e9.json](docs/change-audit/2026-11-13-06-29-00-4713e9.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 06:28:59 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |

@@ -1,3 +1,12 @@
+## 2026-11-13 06:28:59 WIB — Terjemahan dan penjelasan langsung dalam pembaca
+
+- Commit fungsi `1d76c75` sudah push GitHub dan pull VPS; layanan aktif. Perubahan frontend saja, tanpa restart backend, impor database, atau perubahan konfigurasi provider.
+- Tombol pembaca sekarang membuka panel inline dengan proses, hasil, sumber, error/coba lagi, dan tutup. Alamat, teks asli, dan pembaca tetap. Pilihan teks tetap didukung; tanpa pilihan memakai seluruh halaman.
+- 139 tes lulus, TypeScript/build lokal lulus. Unit cancel request dan escape HTML lulus; renderer Markdown dipakai bersama Tanya AI. Whitespace EOF yang ditemukan saat staged sudah diperbaiki sebelum commit.
+- Browser lokal 3082 dan HTTPS online lulus dengan respons terkendali: translate seluruh halaman, explain pilihan teks, rute tetap, teks asli tetap, error 409/retry, close dan ganti halaman membatalkan permintaan, HTML tidak dieksekusi, ponsel tanpa overflow/pageerror.
+- Uji provider sungguhan melalui UI online pada kitab 2921: translate dan explain basmalah keduanya success/mode grounded, dengan kutipan sumber dan hasil di pembaca yang sama. Pengamatan respons streaming memakai clone fetch karena CDP response.body tidak tersedia setelah reader streaming selesai; uji UI/provider akhir lulus.
+- Hash SHA256 aset HTTPS sesuai build lokal. Audit mencatat waktu WIB sampai detik, file, baris/simbol, serta hash staged.
+
 ## 2026-11-13 06:00:47 WIB — Koreksi linimasa tahun horizontal
 
 - Commit fungsi `fd39d9c` sudah push GitHub dan pull VPS; layanan `maktabah.service` aktif. Transfer/import/penghapusan diperiksa tidak aktif sebelum restart.
