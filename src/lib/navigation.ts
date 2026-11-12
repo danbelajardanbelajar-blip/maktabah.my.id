@@ -1,5 +1,5 @@
-export type AppTab = 'home' | 'search' | 'advanced_search' | 'catalog' | 'quran' | 'rowa' | 'about' | 'privacy' | 'settings' | 'more' | 'ask' | 'admin' | 'feedback' | 'book_request' | 'book_submit' | 'collection';
-const paths: Record<AppTab,string> = {home:'beranda',search:'cari',advanced_search:'cari',catalog:'katalog',quran:'quran',rowa:'perawi',about:'tentang',privacy:'privasi',settings:'pengaturan',more:'lainnya',ask:'tanya-ai',admin:'admin',feedback:'masukan',book_request:'permintaan-kitab',book_submit:'kirim-kitab',collection:'koleksi'};
+export type AppTab = 'authors' | 'home' | 'search' | 'advanced_search' | 'catalog' | 'quran' | 'rowa' | 'about' | 'privacy' | 'settings' | 'more' | 'ask' | 'admin' | 'feedback' | 'book_request' | 'book_submit' | 'collection';
+const paths: Record<AppTab,string> = {authors:'penulis',home:'beranda',search:'cari',advanced_search:'cari',catalog:'katalog',quran:'quran',rowa:'perawi',about:'tentang',privacy:'privasi',settings:'pengaturan',more:'lainnya',ask:'tanya-ai',admin:'admin',feedback:'masukan',book_request:'permintaan-kitab',book_submit:'kirim-kitab',collection:'koleksi'};
 export function parseNavigation(hash: string, search = '') {
   const [name, query = ''] = hash.replace(/^#\/?/,'').split('?');
   const params = new URLSearchParams(query);

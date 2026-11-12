@@ -22,6 +22,8 @@ Login admin lokal, buka **Database Kitab → Import / Export Kitab**, lalu expor
 
 ## Import dan export kitab
 
+Fitur **Penulis & Karya** memakai data `Special.mdb/Auth`, dengan paket database terpisah. Admin menyediakan **Penulis → Database Penulis** serta **Tinjau Relasi Penulis** untuk transfer `.db`, pemeriksaan atribusi, rujukan, dan riwayat perubahan. Lihat [panduan penulis](docs/authors.md).
+
 Kamus Perawi memiliki database `.db` terpisah dan menu **Transfer → Database Perawi**, dengan pratinjau, aktivasi, download, serta pemulihan versi sebelumnya. Import ini tersedia di server lokal dan online. Lihat [panduan database perawi](docs/rowa-database.md) untuk pembuatan paket dari MDB, penyimpanan hosting, dan arti kode kitab sumber.
 
 Mode **file besar (.db)** pada halaman transfer tidak memakai batas ukuran 50 MB. Paket SQLite khusus ini hanya memuat kategori/kitab pilihan, penulis, halaman, dan daftar isi; bukan database produksi utuh. Export dan import dijalankan melalui worker terpisah yang memproses halaman per baris. Unduhan disajikan langsung ke browser tanpa menampung file dalam JavaScript Blob. Upload memakai aliran biner ke disk, lalu tersedia pratinjau sebelum tombol **Mulai import** dijalankan.

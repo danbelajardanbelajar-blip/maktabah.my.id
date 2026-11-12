@@ -7,6 +7,7 @@ import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
 import QuranReader from './components/QuranReader';
 import RowaDictionary from './components/RowaDictionary';
+import {Authors} from './components/Authors';
 import About from './components/About';
 import Privacy from './components/Privacy';
 import { Admin } from './components/Admin';
@@ -28,7 +29,7 @@ import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
 
-const pageTitles:Record<AppTab,string> = {home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
+const pageTitles:Record<AppTab,string> = {authors:'Penulis & Karya',home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
 
 function App() {
   const [activeTab, setActiveTabState] = useState<AppTab>(() => parseNavigation(window.location.hash, window.location.search).tab);
@@ -448,6 +449,8 @@ function App() {
           <QuranReader />
         ) : activeTab === 'rowa' ? (
           <RowaDictionary />
+        ) : activeTab === 'authors' ? (
+          <Authors openBook={openBookInfo} readBook={bookId=>openReader({bookId})} />
         ) : activeTab === 'collection' ? (
           <Collection positions={positions} favorites={favorites} bookmarks={bookmarks} readBook={(bookId,pageId)=>openReader({bookId,pageId})}
             removeFavorite={id=>setFavorites((items:any[])=>items.filter(item=>item.bkid!==id))}
@@ -982,6 +985,7 @@ function App() {
                       <div>
                         <span className="font-bold text-[#795548]">Penulis:</span> {bookInfo.auth || '-'}
                         {bookInfo.HigriD ? ` (Wafat: ${bookInfo.HigriD} H / ${bookInfo.AD} M)` : ''}
+                        {!!bookInfo.author_profiles?.length&&<div className="mt-2 flex flex-wrap gap-2">{bookInfo.author_profiles.map((a:any)=><a key={a.id} href={navigationHash('authors',{id:a.id})} onClick={e=>{if(!e.ctrlKey&&!e.metaKey){e.preventDefault();setSelectedBook(null);pushLocation(navigationHash('authors',{id:a.id}));navigationHandler.current();}}} className="inline-flex border rounded-lg px-3 py-1 text-sm text-[var(--app-primary)] hover:underline" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{a.name} ← Profil & karya</a>)}</div>}
                       </div>
                       <div className="col-span-2 text-blue-800">
                         <span className="font-bold text-[#795548]">Total Halaman:</span> {bookInfo.total_pages} Halaman

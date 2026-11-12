@@ -3,6 +3,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
 import { RowaDatabase } from './RowaDatabase';
+import { AuthorDatabase } from './AuthorDatabase';
+import { AuthorReview } from './AuthorReview';
 import { AiSettings } from './AiSettings';
 import { useModalFocus } from '../lib/use-modal-focus';
 import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin-navigation';
@@ -1376,6 +1378,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {view === 'ai_settings' && <AiSettings token={token} onLogout={onLogout} />}
           {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} onStorage={() => setView('storage')} />}
           {view === 'rowa_database' && <RowaDatabase token={token} onLogout={onLogout} />}
+          {view === 'authors_database' && <AuthorDatabase token={token} onLogout={onLogout} onReview={()=>setView('authors_review')} />}
+          {view === 'authors_review' && <AuthorReview token={token} onLogout={onLogout} />}
           {view === 'categories' && (
             <CategoriesView key={restoredHash} token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={cat => setView('books',{category:cat})} />
           )}

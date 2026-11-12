@@ -20,6 +20,8 @@ import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
+import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
+import {createAuthorService,registerAuthors} from './authors.js';
 import { mergeCategories } from './category-merge.js';
 
 
@@ -139,7 +141,9 @@ app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
     && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
     && !req.path.startsWith('/api/admin/category')
-    && !req.path.startsWith('/api/admin/rowa-database/')) {
+    && !req.path.startsWith('/api/admin/rowa-database/')
+    && !req.path.startsWith('/api/admin/authors-database/')
+    && req.path!=='/api/admin/authors/decision') {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
   }
   if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/download'].includes(req.path)){
@@ -358,7 +362,7 @@ function titlesUnion() {
 app.get('/api/local/status', (req, res) => {
   if (!localExportMode) return res.sendStatus(404);
   if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
-  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
+  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
 });
 
 app.get('/api/stats', (req, res) => {
@@ -685,6 +689,10 @@ registerBookTransfer(app, {
 });
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});
+const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR || path.join(rootDir,'dev-data','authors-database')));
+const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
+registerAuthorTransfer(app,{store:authorStore,requireAdmin});
+registerAuthors(app,{service:authorService,requireAdmin});
 registerCompactTransfer(app,{
   getDb:()=>db,getDbPath:()=>dbPath,getAdditionalPath:()=>hasTambahan?path.resolve(tambDbPath):null,
   requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>askCache.clear(),
@@ -1230,6 +1238,7 @@ app.get('/api/book/:id', (req, res) => {
     const data = stmt.get(bookId);
 
     if (data) {
+      try {data.author_profiles=authorService.related(bookId,data.bk);}catch {data.author_profiles=[];}
       try {
         stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(
           `/book/${bookId} - ${data.bk}`, 

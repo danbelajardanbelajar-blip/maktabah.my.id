@@ -104,3 +104,54 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-12-19-44-04-241a70.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-12 19:44:03 +07:00 | `docs/deployment-log.md` | — | 1–19 | module/file | added |
+
+## [2026-11-13 05:02:34 +07:00] — Penulis dan karya: database sumber, profil publik, tinjauan atribusi, import lokal/online, dan launcher lokal 3081
+
+Waktu pencatatan: **2026-11-13 05:02:34 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `590c816`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 132 tes server lulus; TypeScript/build produksi lulus; sintaks startup lokal lulus; browser desktop/ponsel: import paket 14 MB, profil, metadata kitab, pembaca, reject/reset, riwayat, unduhan snapshot tanpa error JavaScript atau overflow; LOCAL_EXPORT_MODE=1 upload/aktivasi/tinjauan lulus; git diff --check lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-02-34-431083.json](docs/change-audit/2026-11-13-05-02-34-431083.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 04:45:08 +07:00 | `.gitignore` | — | 24–24 | dev-data/rowa-database/ | modified |
+| 2026-11-13 05:01:11 +07:00 | `Buka Penulis Lokal.bat` | — | 1–20 | module/file | added |
+| 2026-11-13 04:57:10 +07:00 | `README.md` | — | 25–26 | Login admin lokal, buka **Database Kitab → Import / Export Kitab**, lalu expor | modified |
+| waktu penghapusan tidak direkam | `dist/assets/index-DBN47W4M.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 05:00:19 +07:00 | `dist/assets/index-GqfaGxNR.css` | — | 1–2 | module/file | added |
+| 2026-11-13 05:00:19 +07:00 | `dist/assets/index.dev-D2Uj4HUL.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 05:00:19 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 05:01:11 +07:00 | `docs/authors.md` | — | 1–68 | module/file | added |
+| 2026-11-13 04:39:19 +07:00 | `scripts/AuthorMdbExport.java` | — | 1–33 | AuthorMdbExport | added |
+| 2026-11-13 04:56:11 +07:00 | `scripts/build-author-db.js` | — | 1–58 | files, sha, hashes, libraries, run, records, authors, byName | added |
+| 2026-11-13 05:01:11 +07:00 | `scripts/start_local.js` | — | 10–11 | dotenv.config({ path: path.join(root, '.env.local'), override: true, quiet: true | modified |
+| 2026-11-13 05:01:11 +07:00 | `scripts/start_local.js` | 20–20 | 22–24 | const base = `http://127.0.0.1:${port}`; | modified |
+| 2026-11-13 05:01:11 +07:00 | `scripts/start_local.js` | 31–31 | 35–35 | const openWeb = () => { | modified |
+| 2026-11-13 05:01:11 +07:00 | `scripts/start_local.js` | — | 42–42 | const running=await status(); | modified |
+| 2026-11-13 04:56:11 +07:00 | `server/author-package.js` | — | 1–85 | AUTHOR_FORMAT, AUTHOR_VERSION, AUTHOR_MAX_BYTES, normalizeIdentity, identityHash, matchAuthorIdentity, names, year | added |
+| 2026-11-13 04:56:11 +07:00 | `server/author-store.js` | — | 1–80 | validId, createAuthorStore, versions, file, open, next, m, refresh | added |
+| 2026-11-13 04:59:50 +07:00 | `server/authors.js` | — | 1–98 | err, paging, limit, findText, createAuthorService, invalidate, graph, db | added |
+| 2026-11-13 04:59:50 +07:00 | `server/authors.test.js` | — | 1–83 | makePackage, filename, a, w, fixture, dir, clean, library | added |
+| 2026-11-13 05:01:27 +07:00 | `server/index.js` | — | 23–24 | import { createRowaStore, registerRowaDatabase } from './rowa-database.js'; | modified |
+| 2026-11-13 05:01:27 +07:00 | `server/index.js` | 142–142 | 144–146 | app.use((req, res, next) => { | modified |
+| 2026-11-13 05:01:27 +07:00 | `server/index.js` | 361–361 | 365–365 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 05:01:27 +07:00 | `server/index.js` | — | 692–695 | registerRowaDatabase(app, {store:rowaStore, requireAdmin}); | modified |
+| 2026-11-13 05:01:27 +07:00 | `server/index.js` | — | 1241–1241 | app.get('/api/book/:id', (req, res) => { | modified |
+| 2026-11-13 04:58:26 +07:00 | `server/navigation.test.js` | — | 17–20 | test('navigation supports legacy admin links and bounds malformed pagination',() | modified |
+| 2026-11-13 04:51:13 +07:00 | `src/App.tsx` | — | 10–10 | import RowaDictionary from './components/RowaDictionary'; | modified |
+| 2026-11-13 04:51:13 +07:00 | `src/App.tsx` | 31–31 | 32–32 | import { useEffect, useRef } from 'react'; | modified |
+| 2026-11-13 04:51:13 +07:00 | `src/App.tsx` | — | 452–453 | function App() { | modified |
+| 2026-11-13 04:51:13 +07:00 | `src/App.tsx` | — | 988–988 | function App() { | modified |
+| 2026-11-13 04:48:51 +07:00 | `src/components/Admin.tsx` | — | 6–7 | import { RowaDatabase } from './RowaDatabase'; | modified |
+| 2026-11-13 04:48:51 +07:00 | `src/components/Admin.tsx` | — | 1381–1382 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-13 04:47:14 +07:00 | `src/components/AuthorDatabase.tsx` | — | 1–24 | AuthorDatabase, input, request, r, body, run, upload, activate | added |
+| 2026-11-13 04:59:50 +07:00 | `src/components/AuthorReview.tsx` | — | 1–43 | date, AuthorReview, detailId, request, r, data, loadCase, sequence | added |
+| 2026-11-13 04:54:46 +07:00 | `src/components/Authors.tsx` | — | 1–39 | basisName, Authors, data, params, update, controller, endpoint, result | added |
+| 2026-11-13 04:45:08 +07:00 | `src/components/MoreMenu.tsx` | — | 7–7 | const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[ | modified |
+| 2026-11-13 04:45:08 +07:00 | `src/lib/admin-navigation.ts` | 1–1 | 1–1 | adminParent, adminTitle, adminGroup, adminLocation, p, raw, id, v | modified |
+| 2026-11-13 04:45:08 +07:00 | `src/lib/admin-navigation.ts` | — | 4–4 | const parents: Record<AdminView, AdminView> = { | modified |
+| 2026-11-13 04:45:08 +07:00 | `src/lib/admin-navigation.ts` | — | 11–11 | const titles: Record<AdminView,string> = { | modified |
+| 2026-11-13 04:45:08 +07:00 | `src/lib/admin-navigation.ts` | 18–18 | 20–20 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+| 2026-11-13 04:48:51 +07:00 | `src/lib/back-navigation.ts` | — | 20–20 | export function backFallback(hash:string) { | modified |
+| 2026-11-13 04:45:08 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
