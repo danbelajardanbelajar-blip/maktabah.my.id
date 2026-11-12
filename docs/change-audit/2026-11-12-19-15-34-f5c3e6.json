@@ -1,0 +1,1701 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-12 19:15:34 +07:00",
+  "title": "Database khusus perawi dari MDB, import lokal/online, dan koreksi kode kitab sumber",
+  "baseCommit": "2d9f3dc9dfca4ed7293eaab1bf907d4efea08ea0",
+  "checks": "123 tes server lulus; TypeScript dan build produksi lulus; uji browser impor paket 42 MB, desktop/ponsel tanpa error; uji LOCAL_EXPORT_MODE=1 upload dan aktivasi lulus; git diff --check lulus. Pull server menunggu akses SSH yang valid.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": ".gitignore",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:00:22 +07:00",
+      "stagedSha256": "ae0038c4a84c66017d1bbb873f2d45eeed4ee70ffa499c2cd06233778802e6e7",
+      "diffSha256": "b28b4a8fadb2cc65de3d028fdcde6b6abb57e0285bae82ced466aac3e79eae5c",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 22,
+            "count": 0
+          },
+          "after": {
+            "line": 23,
+            "count": 1
+          },
+          "section": "dev-data/compact-transfer/"
+        }
+      ]
+    },
+    {
+      "file": "AGENTS.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:15:33 +07:00",
+      "stagedSha256": "19b6136495326ac587f9918a2229b32738ec013f347dff3c7043762b4ca61331",
+      "diffSha256": "e9d08090f7a3feea92c1b1b05f62bf5a0b86c7c446da42a73b094cd549c863b0",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 15
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:04:17 +07:00",
+      "stagedSha256": "e130726706b03d8b48d5c93da419ff9346cdaf1ae284c4b1ea1ce7afd6823b40",
+      "diffSha256": "46769653158481afe7fad2cd6ef9deaea0a0d3ee351bfe84e84abb52039d2eb0",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 24,
+            "count": 0
+          },
+          "after": {
+            "line": 25,
+            "count": 2
+          },
+          "section": "Login admin lokal, buka **Database Kitab → Import / Export Kitab**, lalu expor"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-Bm-CgWzv.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "7dc0e2f839414d227473aa6aba887c311b4f5821592b4a2244ae3d85919b4c5b",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-DBN47W4M.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:12:16 +07:00",
+      "stagedSha256": "814d4bd5bde5a803cf484d44e0817cfd9c2918cb7f33937b2b1ea62312baaa70",
+      "diffSha256": "dc804f0a298c0e73707d3d40ee1e0651fc84cad1e2e18416188e14192866703d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-BtzLlrud.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:12:16 +07:00",
+      "stagedSha256": "f54e2b77a4a6b7e27ffa48fd1e96832014c4c08c103cf6d99c0865f5c5a681dd",
+      "diffSha256": "94682be5ac182f0890ffb8f4f489796c5655c5548c882a19620c8b84163ebc91",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "i",
+        "x",
+        "o",
+        "c",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "ee",
+        "V",
+        "H",
+        "ae",
+        "oe",
+        "se",
+        "ce",
+        "de",
+        "pe",
+        "me",
+        "he",
+        "Me",
+        "Ie",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "Xe",
+        "Ze",
+        "Qe",
+        "et",
+        "lt",
+        "ut",
+        "W",
+        "dt",
+        "ft",
+        "pt",
+        "gt",
+        "G",
+        "bt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "Ot",
+        "kt",
+        "jt",
+        "Mt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "Lt",
+        "Rt",
+        "Bt",
+        "Vt",
+        "Ht",
+        "Gt",
+        "Kt",
+        "Jt",
+        "Zt",
+        "en",
+        "cn",
+        "ln",
+        "un",
+        "dn",
+        "fn",
+        "An",
+        "jn",
+        "Gn",
+        "Kn",
+        "Jn",
+        "Yn",
+        "Zn",
+        "Qn",
+        "tr",
+        "nr",
+        "rr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "pr",
+        "mr",
+        "gr",
+        "_r",
+        "vr",
+        "yr",
+        "br",
+        "xr",
+        "Dr",
+        "Or",
+        "Mr",
+        "Hr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "si",
+        "ci",
+        "li",
+        "di",
+        "xi",
+        "Si",
+        "Ci",
+        "wi",
+        "Ti",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Fi",
+        "Ii",
+        "Li",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "Yi",
+        "Xi",
+        "ta",
+        "na",
+        "sa",
+        "ca",
+        "la",
+        "fa",
+        "pa",
+        "ma",
+        "ya",
+        "ba",
+        "xa",
+        "Ca",
+        "wa",
+        "Da",
+        "Oa",
+        "ka",
+        "Aa",
+        "u",
+        "f",
+        "h",
+        "g",
+        "Pa",
+        "Fa",
+        "Ia",
+        "La",
+        "Ra",
+        "za",
+        "Va",
+        "Ha",
+        "Ua",
+        "Wa",
+        "qa",
+        "Ja",
+        "Ya",
+        "Qa",
+        "eo",
+        "to",
+        "no",
+        "io",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "js",
+        "Ms",
+        "Ns",
+        "Rs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Ys",
+        "Xs",
+        "Zs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "fc",
+        "pc",
+        "mc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "Jc",
+        "Yc",
+        "Xc",
+        "nl",
+        "rl",
+        "il",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "dl",
+        "fl",
+        "pl",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "wl",
+        "Tl",
+        "El",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "Ml",
+        "Nl",
+        "Pl",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Q",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "S",
+        "tt",
+        "nt",
+        "rt",
+        "at",
+        "ot",
+        "st",
+        "mt",
+        "ht",
+        "_t",
+        "Yt",
+        "rn",
+        "on",
+        "sn",
+        "mn",
+        "hn",
+        "gn",
+        "vn",
+        "bn",
+        "xn",
+        "Wn",
+        "Xn",
+        "er",
+        "hr",
+        "Tr"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 16
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:12:16 +07:00",
+      "stagedSha256": "0a5e4d56763da7c44d7bbc33ce10b959f9056c7bce047f773c02151dc9d0364f",
+      "diffSha256": "a5ffb511f29788f23b704dbc2e210cbca4e83a5e673d6614ca7c4415532f4557",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/rowa-database.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:04:17 +07:00",
+      "stagedSha256": "9d4031ef81db4db587dc192c12cc4e49c991f75e8165ea1b4f90f9899f9a3be3",
+      "diffSha256": "494da6a32ed0516dc0af7e0175c226f5bc8d92614de48b3c1c93e9fbcf422823",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 57
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "scripts/RowaMdbExport.java",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 18:57:01 +07:00",
+      "stagedSha256": "10ddd9c3124d15842bec1f3308fc5e7178423c88230f0e6cb4b55c63dada1b0b",
+      "diffSha256": "867124b3807cc250e5bfb2e95c98189a70f9768d0d731e41ee7823d454c02c36",
+      "symbols": [
+        "RowaMdbExport"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 41
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "scripts/build-rowa-db.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 18:58:13 +07:00",
+      "stagedSha256": "da418838552f0db877723d92ab28aa562c62b0c56bf51106b0fd385b633b6cba",
+      "diffSha256": "b6740531b394794fbbefca1c7de6eb11382b932de83705d181773cbc2a84e667",
+      "symbols": [
+        "temp",
+        "jsonl",
+        "before",
+        "run",
+        "rows",
+        "item",
+        "insert",
+        "after"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 45
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "scripts/record-changes.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:15:33 +07:00",
+      "stagedSha256": "4bc246501177c102b46e31106c8fa8290a0b7ece76cfacb8641e12bfadeb7c97",
+      "diffSha256": "7c2e2af4683566bb06f1b1bf56b9bd635313e345317fe506357ad7a78f3fecf3",
+      "symbols": [
+        "git",
+        "root",
+        "files",
+        "wib",
+        "parts",
+        "now",
+        "records",
+        "diff",
+        "hunks",
+        "symbols",
+        "audit",
+        "folder",
+        "filename",
+        "escape",
+        "range",
+        "rows",
+        "entry"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 44
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:03:00 +07:00",
+      "stagedSha256": "350f98fbe1a4d5d618a2f374e3b97bb0239bf9810819cc4f4896db0f5b0df473",
+      "diffSha256": "2ceb6d1867efc4d6bb77a6548ed850bf4d5ddeca77a7dbba070f371a353ed187",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "tableMap",
+        "tableName",
+        "query",
+        "statsQuery",
+        "statsRow",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "total",
+        "rowaStore",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "rawQuery",
+        "targetBookId",
+        "getQuery",
+        "selectFields",
+        "countExactStmt",
+        "totalExact",
+        "countAndStmt",
+        "totalAnd",
+        "fetchExactStmt",
+        "params",
+        "remLimit",
+        "fetchAndStmt",
+        "params2",
+        "andOffset",
+        "countStmt",
+        "fetchStmt",
+        "buildFtsQuery",
+        "ftsTable",
+        "pagesTable",
+        "execSearch",
+        "sql",
+        "stmt",
+        "prefixes",
+        "r",
+        "pfxTotal",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 2
+          },
+          "section": "import { searchRowa } from './rowa-search.js';"
+        },
+        {
+          "before": {
+            "line": 140,
+            "count": 1
+          },
+          "after": {
+            "line": 141,
+            "count": 2
+          },
+          "section": "app.use((req, res, next) => {"
+        },
+        {
+          "before": {
+            "line": 683,
+            "count": 0
+          },
+          "after": {
+            "line": 686,
+            "count": 2
+          },
+          "section": "registerBookTransfer(app, {"
+        },
+        {
+          "before": {
+            "line": 1399,
+            "count": 1
+          },
+          "after": {
+            "line": 1403,
+            "count": 2
+          },
+          "section": "app.get('/api/rowa/search', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1401,
+            "count": 1
+          },
+          "after": {
+            "line": 1406,
+            "count": 1
+          },
+          "section": "app.get('/api/rowa/search', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1409,
+            "count": 1
+          },
+          "after": {
+            "line": 1414,
+            "count": 2
+          },
+          "section": "app.get('/api/rowa/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1415,
+            "count": 1
+          },
+          "after": {
+            "line": 1421,
+            "count": 1
+          },
+          "section": "app.get('/api/rowa/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1418,
+            "count": 1
+          },
+          "after": {
+            "line": 1424,
+            "count": 1
+          },
+          "section": "app.get('/api/rowa/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1422,
+            "count": 3
+          },
+          "after": {
+            "line": 1428,
+            "count": 1
+          },
+          "section": "app.get('/api/rowa/:id', (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-codes.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:01:55 +07:00",
+      "stagedSha256": "0eeec339bfd4751acaef5f2a992e239eeb382cecd870ccad3d95fb57a7dc2a0f",
+      "diffSha256": "a716e89bde6f75cf7c552e09b755f4238bceba0c1c8b20e6d53d593b6883f7ef",
+      "symbols": [
+        "CODE_SOURCE",
+        "BOOK_CODES",
+        "decodeWho",
+        "symbols",
+        "canonical",
+        "unknown",
+        "expanded",
+        "withRowaSources",
+        "decoded"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 33
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-codes.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:01:55 +07:00",
+      "stagedSha256": "1a5483f288e83d9a6153812297d9d5b4a1b7c4d20bf7ac55e486f5da66f417de",
+      "diffSha256": "44d55be1cba5e3598c6f5db76ecda2d45628c886cf15ce2ad76fd17bfcf01b6d",
+      "symbols": [
+        "result"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 19
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-database.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:03:00 +07:00",
+      "stagedSha256": "398bbffd4a574ccd0856148d4a3fd1cbe036e25142fefe575586a83c7d94d70d",
+      "diffSha256": "ff3d2ac3e939bca6524b36959566e7cf557db42b77a45fe8e26c09708d4b99bd",
+      "symbols": [
+        "validId",
+        "createRowaStore",
+        "versions",
+        "pointer",
+        "file",
+        "open",
+        "db",
+        "m",
+        "activate",
+        "next",
+        "value",
+        "pending",
+        "previous",
+        "refresh",
+        "status",
+        "backups",
+        "id",
+        "manifest",
+        "registerRowaDatabase",
+        "staging",
+        "filename",
+        "length",
+        "disk",
+        "preview",
+        "ticket"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 135
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-database.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:03:15 +07:00",
+      "stagedSha256": "24094dbe8d0ae4d9585fbc52ebd972ff1e4014ebbfa8e81ec68390444e283251",
+      "diffSha256": "eb3a128f897426ea0738dcc4a14dcb1d06cc386fed6454b907891ef3dba33181",
+      "symbols": [
+        "directory",
+        "dir",
+        "makePackage",
+        "filename",
+        "src",
+        "before",
+        "preview",
+        "db",
+        "r",
+        "result",
+        "bytes",
+        "input",
+        "output",
+        "app",
+        "auth",
+        "server",
+        "base",
+        "send",
+        "upload",
+        "ticket",
+        "imported",
+        "first",
+        "downloaded",
+        "second",
+        "updated"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 86
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-kutub.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "16c65c41923327345b447f93e93711d0455f2ceea56763ec4c19bff58d4a62ba",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 37
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-kutub.test.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "e81064a8723d87211b5dbb91605c8137798eb2301a8313dd6fec3ca62d82dddb",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 36
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-package.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 18:57:01 +07:00",
+      "stagedSha256": "9ebfbe04254c6991b3dc390e068ff5c353130094d3b8668bcca216d9be0d4c65",
+      "diffSha256": "3041f3b83dc9cca1e99a0412f2e032da28605bff4740e7899b7accff95fa3a48",
+      "symbols": [
+        "FORMAT",
+        "VERSION",
+        "MAX_PACKAGE",
+        "TEXT_FIELDS",
+        "norm",
+        "createRowaSchema",
+        "writeRowaRows",
+        "insert",
+        "fts",
+        "values",
+        "v",
+        "summarizeRowa",
+        "counts",
+        "unknown",
+        "canonicalizeRowaPackage",
+        "schema",
+        "allowed",
+        "sql",
+        "manifests",
+        "m",
+        "total",
+        "ref",
+        "result"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 81
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-search.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 18:59:41 +07:00",
+      "stagedSha256": "913e08413b4160f9e1386b0cc6323ea236a893efb3c7eb8eba8eb0b9a3e20b43",
+      "diffSha256": "a3986984fb7c585e9f07db6958feae3de61dd40ecdbf3b3b33187f3ee3c21c3c",
+      "symbols": [
+        "searchRowa",
+        "q",
+        "page",
+        "limit",
+        "response",
+        "columns",
+        "iso",
+        "fields",
+        "offset",
+        "ftsExists",
+        "match",
+        "from",
+        "like",
+        "where",
+        "params"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 14,
+            "count": 3
+          },
+          "after": {
+            "line": 14,
+            "count": 1
+          },
+          "section": "export function searchRowa(db, query, {buildFtsMatch,buildLikeMatch}) {"
+        },
+        {
+          "before": {
+            "line": 38,
+            "count": 6
+          },
+          "after": {
+            "line": 36,
+            "count": 1
+          },
+          "section": "export function searchRowa(db, query, {buildFtsMatch,buildLikeMatch}) {"
+        }
+      ]
+    },
+    {
+      "file": "server/rowa-search.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:00:22 +07:00",
+      "stagedSha256": "9be360c813d13a063005c050ce9d5f32c9417c2bef9d52cb06b7dcc30cba9b40",
+      "diffSha256": "aa80f69490a43068b7d5ffaf7e85feec4b7018cf61b9d8d883330f272f0e3a2a",
+      "symbols": [
+        "full",
+        "builders",
+        "fixture",
+        "db",
+        "result",
+        "sourced"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 43,
+            "count": 1
+          },
+          "after": {
+            "line": 43,
+            "count": 1
+          },
+          "section": "test('full names take precedence, with safe fallbacks for missing and whitespace"
+        },
+        {
+          "before": {
+            "line": 50,
+            "count": 3
+          },
+          "after": {
+            "line": 50,
+            "count": 2
+          },
+          "section": "test('searchRowa automatically extracts hadith books from telmez when kutub colu"
+        },
+        {
+          "before": {
+            "line": 53,
+            "count": 0
+          },
+          "after": {
+            "line": 53,
+            "count": 5
+          },
+          "section": "test('searchRowa automatically extracts hadith books from telmez when kutub colu"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Admin.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 18:59:41 +07:00",
+      "stagedSha256": "78fa0219157cdfa0d8621fc4d78207a698baf8a4df1050b12f44b2e6e50ef4ed",
+      "diffSha256": "d46420464f83e870f3236ed4a85391b725797d0ce35f7172904e4e82401defea",
+      "symbols": [
+        "downloadCSV",
+        "keys",
+        "csvContent",
+        "blob",
+        "link",
+        "url",
+        "SelectionBar",
+        "adminFetch",
+        "Pagination",
+        "totalPages",
+        "ErrorBanner",
+        "LoginForm",
+        "dialogRef",
+        "handleSubmit",
+        "res",
+        "useDeletionFeedback",
+        "locked",
+        "run",
+        "message",
+        "recoveryCallback",
+        "feedback",
+        "CategoriesView",
+        "toggleAll",
+        "newSel",
+        "toggleOne",
+        "n",
+        "deletion",
+        "current",
+        "load",
+        "filtered",
+        "handleEdit",
+        "handleDelete",
+        "paginated",
+        "handleBulkDelete",
+        "ids",
+        "bookCount",
+        "BooksView",
+        "handleBulkMove",
+        "handleSearch",
+        "PagesView",
+        "handleDeletePage",
+        "EditPageView",
+        "fetch",
+        "handleSave",
+        "FeedbackView",
+        "t",
+        "RequestsView",
+        "handleStatus",
+        "SubmissionsView",
+        "LogsView",
+        "now",
+        "oneDayAgo",
+        "sevenDaysAgo",
+        "thirtyDaysAgo",
+        "ips",
+        "itemDateStr",
+        "itemTime",
+        "AdminDashboard",
+        "drawerRef",
+        "requestId",
+        "restoreRef",
+        "route",
+        "nested",
+        "setView",
+        "previous",
+        "category",
+        "book",
+        "page",
+        "old",
+        "hash",
+        "restore",
+        "fetchStats",
+        "breadcrumb",
+        "goBack",
+        "Admin"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 0
+          },
+          "after": {
+            "line": 5,
+            "count": 1
+          },
+          "section": "import { BookTransfer } from './BookTransfer';"
+        },
+        {
+          "before": {
+            "line": 1376,
+            "count": 0
+          },
+          "after": {
+            "line": 1378,
+            "count": 1
+          },
+          "section": "const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:"
+        }
+      ]
+    },
+    {
+      "file": "src/components/RowaDatabase.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-12 19:01:55 +07:00",
+      "stagedSha256": "304edb7cb7fd9dfd075ef8a242588722ffa91b2a6e91cc4f8c015b5201392241",
+      "diffSha256": "b637eeac0a2be3226453039e5d213f9ace6996d5c82c8d7340aaa6256a377f13",
+      "symbols": [
+        "size",
+        "RowaDatabase",
+        "input",
+        "request",
+        "response",
+        "body",
+        "run",
+        "upload",
+        "activate",
+        "restore",
+        "download",
+        "blob"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 72
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/components/RowaDictionary.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 19:01:55 +07:00",
+      "stagedSha256": "3453f4744acbe74c5788ea3be857305ef746f1751fa7192dc8dfa6811094371e",
+      "diffSha256": "a431c367addd481436a6541d43315d24ade1ece257e1936ebc9a3892d4b2b368",
+      "symbols": [
+        "parseList",
+        "parseKutub",
+        "sep",
+        "formatYear",
+        "getKitabColor",
+        "SkeletonCard",
+        "DerajatBadge",
+        "EmptyState",
+        "ErrorBanner",
+        "SearchHint",
+        "ProfileModal",
+        "guruList",
+        "muridList",
+        "kutubList",
+        "handleNameClick",
+        "NameLink",
+        "LIMIT",
+        "inputRef",
+        "doSearch",
+        "res",
+        "handleSubmit",
+        "q",
+        "handlePageChange",
+        "openProfile",
+        "handleSearchFromModal",
+        "handleClear",
+        "fullName",
+        "showShortName"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 20,
+            "count": 0
+          },
+          "after": {
+            "line": 21,
+            "count": 4
+          },
+          "section": "interface RowaResult {"
+        },
+        {
+          "before": {
+            "line": 23,
+            "count": 0
+          },
+          "after": {
+            "line": 28,
+            "count": 2
+          },
+          "section": "interface RowaDetail extends RowaResult {"
+        },
+        {
+          "before": {
+            "line": 232,
+            "count": 1
+          },
+          "after": {
+            "line": 238,
+            "count": 1
+          },
+          "section": "const ProfileModal = ({"
+        },
+        {
+          "before": {
+            "line": 236,
+            "count": 1
+          },
+          "after": {
+            "line": 242,
+            "count": 1
+          },
+          "section": "const ProfileModal = ({"
+        },
+        {
+          "before": {
+            "line": 249,
+            "count": 0
+          },
+          "after": {
+            "line": 256,
+            "count": 1
+          },
+          "section": "const ProfileModal = ({"
+        },
+        {
+          "before": {
+            "line": 251,
+            "count": 0
+          },
+          "after": {
+            "line": 259,
+            "count": 2
+          },
+          "section": "const ProfileModal = ({"
+        },
+        {
+          "before": {
+            "line": 280,
+            "count": 0
+          },
+          "after": {
+            "line": 290,
+            "count": 8
+          },
+          "section": "const ProfileModal = ({"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/admin-navigation.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-12 18:59:41 +07:00",
+      "stagedSha256": "302d55315fca07dbc4a2f44c7252b3fa0d69647daacc1934ce7a31e646448096",
+      "diffSha256": "efe728c7c13f8ca32ddadc55d203721e3429b8a5b43e6d07c02624ff7fbb47a0",
+      "symbols": [
+        "adminParent",
+        "adminTitle",
+        "adminGroup",
+        "adminLocation",
+        "p",
+        "raw",
+        "id",
+        "v"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 3,
+            "count": 0
+          },
+          "after": {
+            "line": 4,
+            "count": 1
+          },
+          "section": "const parents: Record<AdminView, AdminView> = {"
+        },
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "const titles: Record<AdminView,string> = {"
+        },
+        {
+          "before": {
+            "line": 16,
+            "count": 1
+          },
+          "after": {
+            "line": 18,
+            "count": 1
+          },
+          "section": "export const adminGroups: {label:string;views:AdminView[]}[] = ["
+        }
+      ]
+    }
+  ]
+}

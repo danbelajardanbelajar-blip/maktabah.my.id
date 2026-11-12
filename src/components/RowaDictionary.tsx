@@ -18,9 +18,15 @@ interface RowaResult {
   R_ZAHBI?: string;
   birth?: string | number;
   death?: string | number;
+  WHO?: string;
+  unknown_book_symbols?: string[];
+  distinction_only?: boolean;
+  book_code_reference?: string;
 }
 
 interface RowaDetail extends RowaResult {
+  AQUAL?: string;
+  CODE?: string;
   A_nasab?: string;
   sheok?: string;
   telmez?: string;
@@ -229,11 +235,11 @@ const ProfileModal = ({
             ))}
           </div>
 
-          {/* Nama Kitab */}
+          {/* Symbols come from the source record, never students' names. */}
           {kutubList.length > 0 && (
             <div>
               <h3 className="font-bold text-gray-700 mb-2 flex items-center gap-2">
-                <BookOpen size={15} className="text-[var(--app-primary)]" /> Kitab yang Meriwayatkan
+                <BookOpen size={15} className="text-[var(--app-primary)]" /> Kitab menurut Kode Sumber
               </h3>
               <div className="flex flex-wrap gap-2">
                 {kutubList.map((k, i) => (
@@ -247,8 +253,11 @@ const ProfileModal = ({
                   </span>
                 ))}
               </div>
+              <p className="text-xs text-gray-500 mt-2">Baca uraian biografi untuk catatan dan perbedaan identifikasi riwayat.</p>
             </div>
           )}
+          {rowa.WHO?.trim() && <div className="bg-gray-50 border rounded-xl p-3 text-sm"><p className="font-semibold text-gray-700">Kode dan catatan kitab dari sumber</p><p dir="rtl" className="mt-2 leading-relaxed" style={{fontFamily:'var(--arabic-font)'}}>{rowa.WHO}</p>{!!rowa.unknown_book_symbols?.length&&<p className="text-xs text-gray-500 mt-2">Catatan ini dipertahankan utuh; nama kitab tidak disimpulkan otomatis.</p>}</div>}
+          {rowa.distinction_only && <p className="text-sm text-gray-600">Sumber menandai perawi ini sebagai تمييز, untuk membedakannya dari perawi lain.</p>}
 
           {/* Derajat */}
           {(rowa.ROTBA || rowa.R_ZAHBI) && (
@@ -277,6 +286,14 @@ const ProfileModal = ({
               </div>
             </div>
           )}
+
+          {rowa.AQUAL?.trim() && <details className="rounded-xl border border-gray-200 p-4">
+            <summary className="font-bold text-gray-700 cursor-pointer">Biografi & Jarh wa Ta‘dil — Teks Sumber</summary>
+            <p className="text-xs text-gray-500 my-3">Nomor rujukan: {rowa.CODE || rowa.id}. Teks dipertahankan dari sumber, termasuk catatan perbedaan pendapat.</p>
+            <div className="space-y-3 text-lg leading-loose break-words" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>
+              {rowa.AQUAL.split('#').map((text:string,i:number)=>text.trim()&&<p key={i}>{text.trim()}</p>)}
+            </div>
+          </details>}
 
           {/* Guru & Murid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -40,17 +40,21 @@ test('full names take precedence, with safe fallbacks for missing and whitespace
   assert.equal(rowaFullName({}),'Nama tidak tersedia');
 });
 
-test('searchRowa automatically extracts hadith books from telmez when kutub column is absent', () => {
+test('legacy student names never produce inferred books; source symbols determine books', () => {
   const db = new Database(':memory:');
   try {
     db.exec(`CREATE TABLE rowa(id INTEGER PRIMARY KEY,Name TEXT,A_esm TEXT,IsoName TEXT,A_kona TEXT,ROTBA TEXT,R_ZAHBI TEXT,birth TEXT,death TEXT,telmez TEXT)`);
     db.prepare('INSERT INTO rowa(id,Name,A_esm,IsoName,telmez) VALUES(1,?,?,?,?)').run('', '', full, 'B # # مسلم # أبو داود # الترمذى');
     const result = searchRowa(db, { q: 'أحمد' }, builders);
     assert.equal(result.total, 1);
-    assert.ok(result.data[0].kutub.includes('صحيح مسلم'));
-    assert.ok(result.data[0].kutub.includes('سنن أبي داود'));
-    assert.ok(result.data[0].kutub.includes('جامع الترمذي'));
+    assert.equal(result.data[0].kutub,'');
+    assert.equal(result.data[0].kutub_source,null);
     assert.equal(result.data[0].telmez, undefined);
+    db.exec('ALTER TABLE rowa ADD COLUMN WHO TEXT');
+    db.prepare('UPDATE rowa SET WHO=? WHERE id=1').run('ت س');
+    const sourced=searchRowa(db,{q:'أحمد'},builders).data[0];
+    assert.deepEqual(sourced.books.map(b=>b.code),['ت','س']);
+    assert.equal(sourced.kutub_source,'WHO');
   } finally {
     db.close();
   }

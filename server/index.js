@@ -18,7 +18,8 @@ import { registerAskAi } from './ask-ai.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
-import { extractKutubString } from './rowa-kutub.js';
+import { withRowaSources } from './rowa-codes.js';
+import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import { mergeCategories } from './category-merge.js';
 
 
@@ -137,7 +138,8 @@ const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
     && !['/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
-    && !req.path.startsWith('/api/admin/category')) {
+    && !req.path.startsWith('/api/admin/category')
+    && !req.path.startsWith('/api/admin/rowa-database/')) {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
   }
   if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/download'].includes(req.path)){
@@ -681,6 +683,8 @@ registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
   hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(), runtime: transferRuntime,
 });
+const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
+registerRowaDatabase(app, {store:rowaStore, requireAdmin});
 registerCompactTransfer(app,{
   getDb:()=>db,getDbPath:()=>dbPath,getAdditionalPath:()=>hasTambahan?path.resolve(tambDbPath):null,
   requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>askCache.clear(),
@@ -1396,9 +1400,10 @@ app.get('/api/quran/surah/:id', (req, res) => {
   }
 });
 app.get('/api/rowa/search', (req, res) => {
-  if (!db) return res.status(500).json({ data: [], total: 0, error: 'Database not loaded' });
+  const rowaDb = rowaStore.getDb();
+  if (!rowaDb) return res.status(503).json({ data: [], total: 0, error: 'Database perawi belum tersedia' });
   try {
-    res.json(searchRowa(db,req.query,{buildFtsMatch,buildLikeMatch}));
+    res.json(searchRowa(rowaDb,req.query,{buildFtsMatch,buildLikeMatch}));
   } catch (error) {
     console.error('/api/rowa/search error:', error.message);
     res.status(error.status || 500).json({ data: [], total: 0, error: error.message });
@@ -1406,22 +1411,21 @@ app.get('/api/rowa/search', (req, res) => {
 });
 
 app.get('/api/rowa/:id', (req, res) => {
-  if (!db) return res.status(500).json({ data: null, error: 'Database not loaded' });
+  const rowaDb = rowaStore.getDb();
+  if (!rowaDb) return res.status(503).json({ data: null, error: 'Database perawi belum tersedia' });
   try {
     const rowaId = parseInt(req.params.id);
     if (isNaN(rowaId)) return res.status(400).json({ data: null, error: 'ID tidak valid' });
 
     // Cek tabel rowa
-    const rowaExists = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='rowa'").get();
+    const rowaExists = rowaDb.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='rowa'").get();
     if (!rowaExists) return res.status(503).json({ data: null, error: 'Tabel data perawi tidak tersedia' });
 
-    const data = db.prepare(`SELECT * FROM rowa WHERE id = ?`).get(rowaId);
+    let data = rowaDb.prepare(`SELECT * FROM rowa WHERE id = ?`).get(rowaId);
 
     if (!data) return res.status(404).json({ data: null, error: 'Perawi tidak ditemukan' });
 
-    if (!data.kutub && data.telmez) {
-      data.kutub = extractKutubString(data.telmez);
-    }
+    data = withRowaSources(data);
 
     // Log kunjungan (non-blocking)
     try {

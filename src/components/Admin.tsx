@@ -2,6 +2,7 @@ import { pushLocation } from '../lib/back-navigation';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { webAPI } from '../api';
 import { BookTransfer } from './BookTransfer';
+import { RowaDatabase } from './RowaDatabase';
 import { AiSettings } from './AiSettings';
 import { useModalFocus } from '../lib/use-modal-focus';
 import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin-navigation';
@@ -1374,6 +1375,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {['categories', 'books', 'pages', 'edit_page'].includes(view) && <div className="flex justify-end mb-4"><button onClick={() => { setView('transfer'); setSelectedCategory(null); setSelectedBook(null); setSelectedPage(null); }} className="inline-flex items-center gap-2 bg-[var(--app-primary)] text-white font-semibold text-sm px-4 py-2.5 rounded-xl"><FolderSync size={18} /> Import / Export Kitab</button></div>}
           {view === 'ai_settings' && <AiSettings token={token} onLogout={onLogout} />}
           {view === 'transfer' && <BookTransfer token={token} onLogout={onLogout} onBack={() => setView('categories')} onChanged={fetchStats} onStorage={() => setView('storage')} />}
+          {view === 'rowa_database' && <RowaDatabase token={token} onLogout={onLogout} />}
           {view === 'categories' && (
             <CategoriesView key={restoredHash} token={token} onLogout={onLogout} onChanged={fetchStats} onSelectCategory={cat => setView('books',{category:cat})} />
           )}

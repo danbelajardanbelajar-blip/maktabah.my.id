@@ -22,6 +22,8 @@ Login admin lokal, buka **Database Kitab → Import / Export Kitab**, lalu expor
 
 ## Import dan export kitab
 
+Kamus Perawi memiliki database `.db` terpisah dan menu **Transfer → Database Perawi**, dengan pratinjau, aktivasi, download, serta pemulihan versi sebelumnya. Import ini tersedia di server lokal dan online. Lihat [panduan database perawi](docs/rowa-database.md) untuk pembuatan paket dari MDB, penyimpanan hosting, dan arti kode kitab sumber.
+
 Mode **file besar (.db)** pada halaman transfer tidak memakai batas ukuran 50 MB. Paket SQLite khusus ini hanya memuat kategori/kitab pilihan, penulis, halaman, dan daftar isi; bukan database produksi utuh. Export dan import dijalankan melalui worker terpisah yang memproses halaman per baris. Unduhan disajikan langsung ke browser tanpa menampung file dalam JavaScript Blob. Upload memakai aliran biner ke disk, lalu tersedia pratinjau sebelum tombol **Mulai import** dijalankan.
 
 Status proses disimpan dan dimuat kembali setelah halaman direfresh. Setelah upload selesai, pemrosesan dapat berlanjut di latar belakang. Restart server menandai pekerjaan yang terputus sebagai gagal; transaksi SQLite yang belum selesai dibatalkan. Import memakai cadangan otomatis, koneksi terpisah, dan satu transaksi, dengan WAL untuk memungkinkan pembacaan selama proses berlangsung. Penulisan admin lain ditunda hingga import selesai. Ukuran paket tetap harus muat di disk beserta cadangan, hasil import, dan ruang kerja. Paket sementara/tautan download kedaluwarsa setelah 24 jam; cadangan database disimpan terpisah.
