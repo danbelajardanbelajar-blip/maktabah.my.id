@@ -203,3 +203,18 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-37-39-e8f9c1.
 | 2026-11-13 05:36:23 +07:00 | `src/components/Authors.tsx` | 36–37 | 93–101 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
 | 2026-11-13 05:36:23 +07:00 | `src/components/author-journey.css` | — | 1–65 | module/file | added |
 | 2026-11-13 05:32:12 +07:00 | `src/lib/back-navigation.ts` | 20–20 | 20–20 | export function backFallback(hash:string) { | modified |
+
+Catatan koreksi verifikasi untuk commit d109841: pemeriksaan staged menemukan satu baris kosong berlebih pada akhir src/components/author-journey.css. Teks audit awal menyebut pemeriksaan whitespace lulus; status yang benar adalah ada temuan whitespace tersebut. Baris kosong dibetulkan pada commit tindak lanjut, tanpa perubahan perilaku, lalu pemeriksaan dan build diulang.
+
+
+## [2026-11-13 05:38:52 +07:00] — Rapikan EOF stylesheet linimasa dan koreksi catatan pemeriksaan whitespace sebelumnya
+
+Waktu pencatatan: **2026-11-13 05:38:52 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `d109841`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Perubahan whitespace saja; tidak mengubah perilaku. Build produksi dan TypeScript diulang dan lulus. git diff --cached --check lulus setelah koreksi. Hasil 136 tes dan uji browser fungsional tetap merujuk perubahan aplikasi d109841.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-05-38-52-b3d289.json](docs/change-audit/2026-11-13-05-38-52-b3d289.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 05:38:20 +07:00 | `src/components/author-journey.css` | 64–65 | — | module/file | modified |
