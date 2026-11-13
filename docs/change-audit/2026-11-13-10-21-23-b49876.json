@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 10:21:23 +07:00",
+  "title": "Ringankan pemeriksaan makna AI dengan sumber terpakai dan anggaran waktu bersama",
+  "baseCommit": "08e76d8adbeeaf7186d23b75a47ed481e715666b",
+  "checks": "24 targeted tests passed including reviewer receiving only cited source IDs; node syntax and staged diff passed. Full suite 164 and UI production build previously passed for 08e76d8; frontend unchanged in this follow-up. VPS 08e76d8 active and public context QA passed. First real witir request hit semantic-review timeout without releasing unverified prose; reviewer input reduced, stage maximum35s bounded by shared80s request budget. Screenshot domain verified as iframe wrapper for maktab.my.id.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-improvements.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:21:22 +07:00",
+      "stagedSha256": "225c8b88ab850cfc3c7b814ac44cb6626675209a4f367b8cb103fb1a8ff62ddf",
+      "diffSha256": "f3c046c4da551bc2713321c611643b24788c942b3a3938b2bf7276da8d820a95",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 64,
+            "count": 0
+          },
+          "after": {
+            "line": 65,
+            "count": 8
+          },
+          "section": "Verifikasi: 164 tes otomatis, TypeScript/build produksi, sintaks dan diff; regre"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:20:32 +07:00",
+      "stagedSha256": "c13f5b80a7dc515221096d7515d74b42c668c2ac8cc675e8a81d7a8520221b7c",
+      "diffSha256": "4f6bc75144b3d6d5b92d9206bd2cd3e32436b6475691e264857a065773aefbfe",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "retrieveAiReferences",
+        "terms",
+        "constraint",
+        "results",
+        "matches",
+        "relevant",
+        "seen",
+        "pages",
+        "id",
+        "rows",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "translated",
+        "expanded",
+        "catalog",
+        "context",
+        "task",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "renumber"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 168,
+            "count": 0
+          },
+          "after": {
+            "line": 169,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 186,
+            "count": 1
+          },
+          "after": {
+            "line": 188,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 205,
+            "count": 1
+          },
+          "after": {
+            "line": 207,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 212,
+            "count": 3
+          },
+          "after": {
+            "line": 213,
+            "count": 0
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 216,
+            "count": 0
+          },
+          "after": {
+            "line": 216,
+            "count": 3
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:21:21 +07:00",
+      "stagedSha256": "7153ded6f12ad62b28c82810d4c7abcfd65fb46906a81d54b77de6d68b0a4499",
+      "diffSha256": "4e84cbab56d6318bf8fa5b426c18b68f96e84bff18c3d9b80c32f88eabe15555",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 268,
+            "count": 1
+          },
+          "after": {
+            "line": 268,
+            "count": 1
+          },
+          "section": "test('only cited evidence remains visible and its citation numbers stay valid af"
+        }
+      ]
+    }
+  ]
+}

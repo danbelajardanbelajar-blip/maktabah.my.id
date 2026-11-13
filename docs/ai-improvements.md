@@ -62,3 +62,11 @@ Perbaikan:
 Batas verifikasi: pemeriksaan makna tetap menggunakan model, bukan pembuktian formal atau jaminan nol kesalahan. Pengenalan alias/anaphora bersifat terbatas dan riwayat dibatasi. Tambahan satu panggilan pemeriksaan meningkatkan waktu/biaya per jawaban; ekspansi Arab juga dipakai pada hasil Indonesia yang sudah ada. Jika bukti tidak cukup, sistem memilih tidak menyimpulkan. Label Masa Percobaan tetap ada.
 
 Verifikasi: 164 tes otomatis, TypeScript/build produksi, sintaks dan diff; regresi witir/tarawih, kebiasaan vs keutamaan, verdict tidak valid, pemisahan cache/konteks, validasi riwayat, sumber terpilih, pemadatan nomor rujukan dan cache. Fixture model generator/pemeriksa dipisahkan dan kasus penolakan diuji eksplisit. QA browser memakai respons AI terkendali untuk pengiriman hanya pertanyaan pengguna, reload, Percakapan baru dan ponsel; regresi panel AI pembaca diuji terpisah.
+
+### Penyempurnaan setelah uji provider langsung
+
+Build fitur `08e76d8` sudah aktif setelah pull dan restart VPS, didahului pemeriksaan tidak ada transfer/compact import aktif. QA browser publik konteks/reset/reload lulus. Pertanyaan asli pada gambar sempat mencapai tahap verifikasi, tetapi pemeriksa provider melewati batas 25 detik; sistem mengembalikan TIMEOUT, tanpa meneruskan jawaban yang belum diperiksa.
+
+Pemeriksa kini hanya menerima metadata/cuplikannya dari sumber yang benar-benar dikutip (maksimal tiga), bukan seluruh kandidat pencarian. Batas tahap pemeriksa menjadi maksimal 35 detik, dengan anggaran bersama 80 detik untuk seluruh permintaan agar tetap berada di bawah batas klien 90 detik. Pengujian memastikan kandidat yang tidak dikutip tidak ikut dikirim ke pemeriksa. Tidak ada jalur bypass ketika pemeriksa gagal.
+
+Domain `maktabah.quizb.my.id` menyajikan pembungkus iframe dengan src `https://maktab.my.id`; HTML pembungkus memang tidak memiliki hash build aplikasi. Backend yang diperbarui adalah target iframe tersebut.

@@ -699,3 +699,21 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-17-40-a8326b.
 | 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 105–106 | 108–109 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
 | 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 218–218 | 221–221 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
 | 2026-11-13 10:07:42 +07:00 | `src/lib/ai-source.ts` | 3–3 | 3–3 | export type AiIntent='explain'\|'translate'; | modified |
+
+## [2026-11-13 10:21:23 +07:00] — Ringankan pemeriksaan makna AI dengan sumber terpakai dan anggaran waktu bersama
+
+Waktu pencatatan: **2026-11-13 10:21:23 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `08e76d8`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 24 targeted tests passed including reviewer receiving only cited source IDs; node syntax and staged diff passed. Full suite 164 and UI production build previously passed for 08e76d8; frontend unchanged in this follow-up. VPS 08e76d8 active and public context QA passed. First real witir request hit semantic-review timeout without releasing unverified prose; reviewer input reduced, stage maximum35s bounded by shared80s request budget. Screenshot domain verified as iframe wrapper for maktab.my.id.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-21-23-b49876.json](docs/change-audit/2026-11-13-10-21-23-b49876.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 10:21:22 +07:00 | `docs/ai-improvements.md` | — | 65–72 | Verifikasi: 164 tes otomatis, TypeScript/build produksi, sintaks dan diff; regre | modified |
+| 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | — | 169–170 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | 186–186 | 188–188 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | 205–205 | 207–207 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | 212–214 | — | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | — | 216–218 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:21:21 +07:00 | `server/ask-ai.test.js` | 268–268 | 268–268 | test('only cited evidence remains visible and its citation numbers stay valid af | modified |

@@ -265,7 +265,7 @@ test('follow-up context and cache cannot confuse different user topics or accept
 
 test('only cited evidence remains visible and its citation numbers stay valid after compaction and caching',async t=>{
  const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,1,18,?)').run('صلاة الجماعة هذا نص اختبار ثان مستقل لمراجعة أرقام الإحالة');
- const call=await serve(t,f,async()=>response(JSON.stringify({answer:'Penjelasan dari sumber kedua [2]',quotes:[{source:2,quoteId:'2.1'}]})));
+ const call=await serve(t,f,async()=>response(JSON.stringify({answer:'Penjelasan dari sumber kedua [2]',quotes:[{source:2,quoteId:'2.1'}]})),{reviewReply:async(u,o)=>{const input=JSON.parse(JSON.parse(o.body).contents[0].parts[0].text);assert.deepEqual(input.sources.map(source=>source.source),[2]);return response(JSON.stringify({relevant:true,supported:true,complete:true,reason:'Synthetic fixture supported.'}));}});
  const result=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(result.data.mode,'grounded');assert.equal(result.data.references.length,1);assert.equal(result.data.evidence.quotes[0].source,1);assert.ok(result.data.answer.includes('[1]'));assert.ok(!result.data.answer.includes('[2]'));
  const cached=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(cached.events[0].stage,'cached');assert.equal(cached.data.references.length,1);
 });
