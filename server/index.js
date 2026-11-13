@@ -1,3 +1,4 @@
+import {registerHadithSearch} from './hadith-search.js';
 import {registerHadithBooks} from './hadith-books.js';
 import {registerCompactTransfer} from './compact-transfer.js';
 import express from 'express';
@@ -183,6 +184,8 @@ let hasTafsir = false;
 
 // Cache untuk query AI
 const askCache = new Map();
+let invalidateHadithIndex=()=>{};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateHadithIndex();};
 
 try {
   if (fs.existsSync(dbPath)) {
@@ -363,7 +366,7 @@ function titlesUnion() {
 app.get('/api/local/status', (req, res) => {
   if (!localExportMode) return res.sendStatus(404);
   if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
-  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1','hadith-books-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
+  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1','hadith-books-v1','hadith-search-v2'], sources: [dbPath, tambDbPath, tafsirDbPath] });
 });
 
 app.get('/api/stats', (req, res) => {
@@ -517,7 +520,7 @@ app.put('/api/admin/books/bulk-move', requireAdmin, (req, res) => {
     } catch(e) { res.status(500).json({error: e.message}); }
 });
 
-registerBookDeletion(app, { getDb: () => db, requireAdmin, clearCache: () => askCache.clear(),
+registerBookDeletion(app, { getDb: () => db, requireAdmin, clearCache: () => invalidateLibraryCache(),
   hasAdditional: () => hasTambahan, hasTafsir: () => hasTafsir, runtime: transferRuntime,
   directory: path.join(rootDir, 'dev-data', 'deletion-jobs'), getTafsirPath: () => tafsirDbPath });
 
@@ -646,7 +649,7 @@ app.post('/api/admin/categories/merge', requireAdmin, (req, res) => {
       deleteSourceCategories: deleteSourceCategories !== false,
       hasTambahan
     });
-    askCache.clear();
+    invalidateLibraryCache();
     res.json(result);
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
@@ -686,24 +689,25 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
 
 registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
-  hasAdditional: () => hasTambahan, clearCache: () => askCache.clear(), runtime: transferRuntime,
+  hasAdditional: () => hasTambahan, clearCache: () => invalidateLibraryCache(), runtime: transferRuntime,
 });
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});
 const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR || path.join(rootDir,'dev-data','authors-database')));
+invalidateHadithIndex=registerHadithSearch(app,{directory:path.join(rootDir,'dev-data','hadith-search'),getPaths:()=>db?[path.resolve(dbPath),...(hasTambahan?[path.resolve(tambDbPath)]:[])]:[],isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession)});
 registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all();});
 const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
 registerAuthorTransfer(app,{store:authorStore,requireAdmin});
 registerAuthors(app,{service:authorService,requireAdmin});
 registerCompactTransfer(app,{
   getDb:()=>db,getDbPath:()=>dbPath,getAdditionalPath:()=>hasTambahan?path.resolve(tambDbPath):null,
-  requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>askCache.clear(),
+  requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>invalidateLibraryCache(),
   directory:path.join(rootDir,'dev-data','compact-transfer'),
 });
 registerLargeTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
   getAdditionalPath: () => hasTambahan ? path.resolve(tambDbPath) : null,
-  localExportMode, runtime: transferRuntime, clearCache: () => askCache.clear(),
+  localExportMode, runtime: transferRuntime, clearCache: () => invalidateLibraryCache(),
   directory: path.join(rootDir, 'dev-data', 'large-transfer'),
 });
 

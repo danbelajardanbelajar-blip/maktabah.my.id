@@ -364,3 +364,44 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-06-50-01-dfbd97.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 06:50:01 +07:00 | `docs/deployment-log.md` | — | 1–10 | module/file | modified |
+
+## [2026-11-13 07:19:48 +07:00] — Tambahkan pencarian isi Kutub Hadis terbatas kelompok kitab dan edisi dengan indeks Arab terpisah
+
+Waktu pencatatan: **2026-11-13 07:19:48 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4ff6f72`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 146 tes server lulus; sintaks server/worker/launcher, TypeScript dan build lokal lulus; browser lokal 3085 lulus lingkup kelompok/kitab/edisi, kata/frasa, pagination tanpa duplikasi, sorotan dan tautan halaman asli, kembali/reload filter, auto retry 202, hasil kosong, 320/390/768/1440 tanpa overflow/pageerror. Indeks lokal 757.404 halaman quick_check ok; pencarian nyata sekitar 1 detik. Unit memverifikasi sumber read-only, gabungan database, harakat/hamzah, scope tidak bocor, indeks atomik/rebuild/retensi. Staged whitespace bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-19-48-6f6561.json](docs/change-audit/2026-11-13-07-19-48-6f6561.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 07:09:10 +07:00 | `.gitignore` | — | 25–26 | dev-data/authors-database/ | modified |
+| 2026-11-13 07:09:55 +07:00 | `Buka Kutub Hadis Lokal.bat` | 16–16 | 16–16 | if not exist "node_modules\dotenv\package.json" ( | modified |
+| waktu penghapusan tidak direkam | `dist/assets/index-DV29ooXM.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 07:18:30 +07:00 | `dist/assets/index-VvUxaVVz.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BIEZg86d.js` | 1–16 | — | module/file | deleted |
+| 2026-11-13 07:18:30 +07:00 | `dist/assets/index.dev-Dt-qlpeR.js` | — | 1–16 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 07:18:30 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 07:17:49 +07:00 | `docs/hadith-books.md` | — | 33–49 | Pengujian server mencakup komposisi kelompok, identitas judul, konflik ID, penge | modified |
+| 2026-11-13 07:09:55 +07:00 | `scripts/start_local.js` | 43–43 | 43–43 | const running=await status(); | modified |
+| 2026-11-13 07:17:49 +07:00 | `server/hadith-search-core.js` | — | 1–108 | fail, normalizeHadith, hadithMatch, words, hadithExcerpt, text, map, c | added |
+| 2026-11-13 07:08:32 +07:00 | `server/hadith-search-worker.js` | — | 1–4 | module/file | added |
+| 2026-11-13 07:09:55 +07:00 | `server/hadith-search.js` | — | 1–39 | registerHadithSearch, startBuild, dirtyFile, worker, preparing, paths, indexPath, stop | added |
+| 2026-11-13 07:17:49 +07:00 | `server/hadith-search.test.js` | — | 1–59 | indexes, searchHadith, key, fixture, dir, db, b, paths | added |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | — | 187–188 | const askCache = new Map(); | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 366–366 | 369–369 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 520–520 | 523–523 | app.put('/api/admin/books/bulk-move', requireAdmin, (req, res) => { | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 649–649 | 652–652 | app.post('/api/admin/categories/merge', requireAdmin, (req, res) => { | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 689–689 | 692–692 | registerBookTransfer(app, { | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | — | 697–697 | const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 700–700 | 704–704 | registerCompactTransfer(app,{ | modified |
+| 2026-11-13 07:09:55 +07:00 | `server/index.js` | 706–706 | 710–710 | registerLargeTransfer(app, { | modified |
+| 2026-11-13 07:00:30 +07:00 | `src/App.tsx` | 454–454 | 454–454 | function App() { | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | — | 1–1 | normalize, HadithBooks, params, mode, update, controller, result, group | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 11–11 | 12–12 | const normalize=(s:string)=>s.normalize('NFKD').replace(/[\u064B-\u065F\u0670\u0 | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | — | 16–16 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 29–30 | 31–32 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 38–40 | 40–48 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 42–43 | 50–51 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-13 07:09:55 +07:00 | `src/components/HadithTextSearch.tsx` | — | 1–36 | HadithTextSearch, query, key, controller, result | added |

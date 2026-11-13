@@ -451,7 +451,7 @@ function App() {
         ) : activeTab === 'rowa' ? (
           <RowaDictionary />
         ) : activeTab === 'hadith' ? (
-          <HadithBooks openBook={openBookInfo} readBook={bookId=>openReader({bookId})}/>
+          <HadithBooks openBook={openBookInfo} readBook={(bookId,pageId,highlightQuery)=>openReader({bookId,pageId,highlightQuery})}/>
         ) : activeTab === 'authors' ? (
           <Authors openBook={openBookInfo} readBook={bookId=>openReader({bookId})} />
         ) : activeTab === 'collection' ? (
