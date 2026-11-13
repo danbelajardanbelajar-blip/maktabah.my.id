@@ -634,3 +634,19 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-07-19-777b24.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 09:07:18 +07:00 | `docs/category-families.md` | — | 15–22 | Verifikasi lokal: 157 tes otomatis lulus; TypeScript dan build produksi lulus; o | modified |
+
+## [2026-11-13 09:57:02 +07:00] — Label Masa Percobaan yang jelas pada judul Tanya AI
+
+Waktu pencatatan: **2026-11-13 09:57:02 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `069a1b1`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: TypeScript and production build passed; 20 existing AI/history/session tests passed; Edge local QA at 320/390/768/1440px: trial label and heading visible, no page overflow or pageerror, no AI question submitted. Staged diff --check passed. Header-only UI change; no database/backend change.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-57-02-516447.json](docs/change-audit/2026-11-13-09-57-02-516447.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 09:56:14 +07:00 | `dist/assets/index-BVWVepuA.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DEcz1-FK.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 09:56:14 +07:00 | `dist/assets/index.dev-B0S5CQb4.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 09:56:14 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 09:56:03 +07:00 | `src/components/AskAI.tsx` | 121–122 | 121–125 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |

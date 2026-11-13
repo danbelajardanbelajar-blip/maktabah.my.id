@@ -118,8 +118,11 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
         <div className="bg-emerald-100 p-2 rounded-full text-emerald-600">
           <Bot size={24} />
         </div>
-        <div>
-          <h2 className="font-bold text-gray-800 text-lg">Tanya AI Maktabah</h2>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h2 className="font-bold text-gray-800 text-lg">Tanya AI Maktabah</h2>
+            <span className="inline-flex rounded-full border border-amber-300 bg-amber-100 px-3 py-1 text-sm font-bold text-amber-950">Masa Percobaan</span>
+          </div>
           <p className="text-xs text-gray-500">Gemini AI + Rujukan Kitab Perpustakaan</p>
         </div>
       </div>
