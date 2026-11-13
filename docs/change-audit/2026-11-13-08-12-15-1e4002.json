@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 08:12:15 +07:00",
+  "title": "Catat deployment Beranda tanpa tombol Kembali dan verifikasi navigasi online",
+  "baseCommit": "9085849ccdf4d2d47e7cd73acc3725fc6dd6ae96",
+  "checks": "Dokumentasi saja; fungsi 9085849 aktif lokal dan HTTPS; 7 tes navigasi/build/browser lulus. Beranda tanpa Kembali pada desktop dan ponsel, halaman lain/pembaca/modal serta browser history tetap berfungsi. Frontend saja, layanan aktif tanpa restart.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 08:12:14 +07:00",
+      "stagedSha256": "315517ebe0a020ee81ddde99874b70f0d6e60c8c76fe446b82cb5b139ec81127",
+      "diffSha256": "88d4fa318057470302a1488439d42696cadb5ec2f4f474df5228841b087b1238",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 7
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

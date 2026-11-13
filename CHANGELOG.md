@@ -488,3 +488,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-11-22-4f07c6.
 | 2026-11-13 08:09:51 +07:00 | `dist/assets/index.dev-nNJ5Hc0Y.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
 | 2026-11-13 08:09:51 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
 | 2026-11-13 08:09:37 +07:00 | `src/App.tsx` | 444–445 | 444–445 | function App() { | modified |
+
+## [2026-11-13 08:12:15 +07:00] — Catat deployment Beranda tanpa tombol Kembali dan verifikasi navigasi online
+
+Waktu pencatatan: **2026-11-13 08:12:15 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `9085849`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi 9085849 aktif lokal dan HTTPS; 7 tes navigasi/build/browser lulus. Beranda tanpa Kembali pada desktop dan ponsel, halaman lain/pembaca/modal serta browser history tetap berfungsi. Frontend saja, layanan aktif tanpa restart.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-12-15-1e4002.json](docs/change-audit/2026-11-13-08-12-15-1e4002.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:12:14 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |

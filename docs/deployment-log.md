@@ -1,3 +1,10 @@
+## 2026-11-13 08:12:14 WIB — Beranda tanpa tombol Kembali
+
+- Commit fungsi `9085849` sudah push GitHub dan pull VPS. Layanan aktif; frontend saja, tidak memerlukan restart atau perubahan database.
+- Navigasi Kembali beserta label Beranda disembunyikan pada Beranda, termasuk saat memiliki riwayat internal. Halaman lain, pembaca, dan modal mempertahankan navigasi sebelumnya.
+- Tujuh tes navigasi/back-navigation, TypeScript/build lokal, dan staged whitespace lulus.
+- Browser lokal 3087 dan HTTPS online lulus: Beranda desktop/ponsel tanpa tombol Kembali, riwayat browser tetap bekerja, halaman lain tetap memiliki tombol, pembaca kembali ke Kutub Hadis, dan Escape pada bithaqah tidak menutup pembaca. Tidak ada pageerror atau overflow ponsel.
+
 ## 2026-11-13 07:51:40 WIB — Bithaqah perawi inline pada teks hadis
 
 - Commit fungsi `0340341` sudah push GitHub dan pull VPS. Tidak ada transfer/import/penghapusan aktif sebelum restart; layanan aktif dan endpoint pengenalan nama tersedia.
