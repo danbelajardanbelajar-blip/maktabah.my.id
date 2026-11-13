@@ -538,3 +538,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-23-51-652f6f.
 | 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | — | 80–87 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
 | 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | — | 96–96 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
 | 2026-11-13 08:19:13 +07:00 | `src/components/author-journey.css` | — | 66–69 | module/file | modified |
+
+## [2026-11-13 08:25:51 +07:00] — Catat deployment tombol abjad penulis dan verifikasi filter global online
+
+Waktu pencatatan: **2026-11-13 08:25:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `d2b602e`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi d2b602e aktif lokal 3088 dan HTTPS, 151 tes/build/browser lulus. Jumlah global 966 dan huruf mim 98 sesuai, filter/pagination/profil/kembali/reload/abad/q serta linimasa terverifikasi, hash aset dan regresi kitab/perawi sesuai. Tanpa perubahan database.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-25-51-934d16.json](docs/change-audit/2026-11-13-08-25-51-934d16.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:25:51 +07:00 | `docs/deployment-log.md` | — | 1–8 | module/file | modified |

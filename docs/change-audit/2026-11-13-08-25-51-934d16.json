@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 08:25:51 +07:00",
+  "title": "Catat deployment tombol abjad penulis dan verifikasi filter global online",
+  "baseCommit": "d2b602e8d8b7136fa57eed6a378e8dfb21e72ea2",
+  "checks": "Dokumentasi saja; fungsi d2b602e aktif lokal 3088 dan HTTPS, 151 tes/build/browser lulus. Jumlah global 966 dan huruf mim 98 sesuai, filter/pagination/profil/kembali/reload/abad/q serta linimasa terverifikasi, hash aset dan regresi kitab/perawi sesuai. Tanpa perubahan database.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 08:25:51 +07:00",
+      "stagedSha256": "0e0633e3c2f25a64dfdf3f1b1036e460d80a9e7956c3e5a2298ad0b3f74cbb7e",
+      "diffSha256": "bf6a183376010040c807c7945f3851b39344c2d1d26e09fe7c616bcf83d5c25e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 8
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

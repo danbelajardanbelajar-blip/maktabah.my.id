@@ -1,3 +1,11 @@
+## 2026-11-13 08:25:51 WIB — Abjad awal nama pada kartu penulis
+
+- Commit fungsi `d2b602e` sudah push GitHub dan pull VPS; layanan aktif setelah pemeriksaan tidak ada transfer/import/penghapusan aktif dan restart.
+- Tampilan kartu Penulis & Karya memiliki 28 huruf Arab, Semua, Lainnya dan jumlah hasil per huruf. Filter bekerja sebelum pagination dan dapat digabung dengan q/abad. Huruf awal mengikuti nama yang ditampilkan; awalan ال/ابن tidak dibuang.
+- 151 tes server lulus, TypeScript/build lokal serta staged whitespace lulus. Browser lokal 3088 dan HTTPS online lulus: jumlah global 966, pilih huruf memulai halaman pertama, pagination, profil/kembali/reload mempertahankan filter, gabungan q/abad, konsistensi linimasa, Semua menjaga filter lain, huruf kosong nonaktif, 320/390/768/1440 tanpa overflow/pageerror.
+- Uji API online huruf م menghasilkan 98 penulis. Hash aset HTTPS sesuai build lokal. Regresi 36.159 kitab dan AQUAL perawi 5739 = 40.413 karakter tetap sesuai. Tidak mengubah/import ulang database.
+- Buka Penulis Lokal.bat memakai port 3088 dengan pemeriksaan authors-initials-v1; backend lama tidak dipakai seolah-olah sudah memfilter.
+
 ## 2026-11-13 08:12:14 WIB — Beranda tanpa tombol Kembali
 
 - Commit fungsi `9085849` sudah push GitHub dan pull VPS. Layanan aktif; frontend saja, tidak memerlukan restart atau perubahan database.
