@@ -1,3 +1,14 @@
+## 2026-11-13 07:51:40 WIB — Bithaqah perawi inline pada teks hadis
+
+- Commit fungsi `0340341` sudah push GitHub dan pull VPS. Tidak ada transfer/import/penghapusan aktif sebelum restart; layanan aktif dan endpoint pengenalan nama tersedia.
+- Nama yang dikenali pada cuplikan dan pembaca bergaris bawah; modal memakai komponen profil Kamus Perawi yang sama. Nama unik membuka profil, nama ambigu meminta pilihan. Guru/murid dapat ditelusuri dalam kartu tanpa mengganti URL/konteks bacaan. Ada pencarian untuk nama yang dipilih manual.
+- Pencocokan berasal dari nama/kunyah sumber, bukan identifikasi sanad. Inspeksi Special.mdb/link dan MenDetail tidak menghasilkan pemetaan offset halaman hadis yang dapat dipastikan. Kandidat tidak dipilih berdasarkan asumsi kitab, umur, atau murid.
+- Lokal 3087 memakai paket perawi yang tersedia setelah canonicalisasi, aktivasi tercatat 2026-11-13 07:37:34 WIB: 8.858 perawi, 8.854 biografi, AQUAL 5739 = 40.413 karakter, WHO ت س. Sumber MDB, database kitab dan paket asli tidak diedit. Paket online sudah sesuai dan tidak diimpor ulang.
+- 149 tes server lulus, TypeScript/build lokal dan staged whitespace lulus. Browser lokal serta HTTPS online memverifikasi nama unik/ambigu, profil sumber/jarh wa ta‘dil, guru/murid inline, Escape menjaga pembaca tetap terbuka, fokus kembali, URL tetap, ponsel tanpa overflow/pageerror, dan Kamus Perawi lama tetap berfungsi.
+- Uji keterlambatan penautan memastikan pilihan teks tetap utuh; penautan ditunda saat memilih teks dan HTML dimemoisasi untuk menghindari reset selection. Format bold/mark dipertahankan, HTML aktif tidak dieksekusi. Regresi AI inline dan pencarian isi pada lokal/online lulus.
+- Hash aset HTTPS sesuai build lokal; regresi 36.159 kitab, 966 penulis, serta profil 5739 tetap sesuai. Indeks pencarian isi yang ada tetap digunakan.
+- Launcher Kutub Hadis lokal memakai port 3087 dan pemeriksaan rowa-mentions-v1. Proses lokal lama tidak dihentikan.
+
 ## 2026-11-13 07:22:53 WIB — Pencarian isi dalam lingkup Kutub Hadis
 
 - Commit fungsi `74cebb2` sudah push GitHub dan pull VPS. Transfer/import/penghapusan diperiksa tidak aktif, layanan direstart dan aktif. Kode/dependensi dibangun lokal; hosting hanya menghasilkan indeks data turunan.

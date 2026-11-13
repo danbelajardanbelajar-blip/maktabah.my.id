@@ -462,3 +462,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-49-14-75995f.
 | 2026-11-13 07:32:46 +07:00 | `src/lib/use-modal-focus.ts` | — | 10–11 | export function useModalFocus(onEscape?:()=>void, enabled=true) { | modified |
 | 2026-11-13 07:36:44 +07:00 | `src/main.tsx` | — | 1–1 | module/file | modified |
 | 2026-11-13 07:36:44 +07:00 | `src/main.tsx` | 8–8 | 9–9 | createRoot(document.getElementById('root')!).render( | modified |
+
+## [2026-11-13 07:51:41 +07:00] — Catat deployment bithaqah perawi inline dan regresi AI pencarian serta kamus
+
+Waktu pencatatan: **2026-11-13 07:51:41 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0340341`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi 0340341 aktif lokal 3087 dan HTTPS, 149 tes/build lulus. Browser lokal/online lulus untuk kartu sumber, kandidat ambigu, guru/murid, focus/Escape, pilihan teks saat tautan terlambat, regresi AI dan pencarian isi; tanpa pageerror. Hash aset dan regresi kitab/penulis/perawi sesuai. Aktivasi paket perawi lokal dan basis kecocokan nama dicatat.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-51-41-17cb75.json](docs/change-audit/2026-11-13-07-51-41-17cb75.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 07:51:40 +07:00 | `docs/deployment-log.md` | — | 1–11 | module/file | modified |

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 07:51:41 +07:00",
+  "title": "Catat deployment bithaqah perawi inline dan regresi AI pencarian serta kamus",
+  "baseCommit": "0340341e39d9bec9aae3a15a22755eb1cde45207",
+  "checks": "Dokumentasi saja; fungsi 0340341 aktif lokal 3087 dan HTTPS, 149 tes/build lulus. Browser lokal/online lulus untuk kartu sumber, kandidat ambigu, guru/murid, focus/Escape, pilihan teks saat tautan terlambat, regresi AI dan pencarian isi; tanpa pageerror. Hash aset dan regresi kitab/penulis/perawi sesuai. Aktivasi paket perawi lokal dan basis kecocokan nama dicatat.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 07:51:40 +07:00",
+      "stagedSha256": "90f628d0899d0284338e2152f641b2a36062d912b4672de6c889f4f15c8b592a",
+      "diffSha256": "bf76007fc3ebcf767c1bb362b04c046862410868cae102dfb21930ca6583b475",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 11
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}
