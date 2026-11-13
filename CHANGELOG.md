@@ -622,3 +622,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-05-36-c6e161.
 | 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | 273–273 | 284–284 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
 | 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | — | 289–290 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
 | 2026-11-13 09:02:59 +07:00 | `src/lib/category-families.ts` | — | 1–20 | categoryFamily, letters, arabic, latin, groupCategoryFamilies | added |
+
+## [2026-11-13 09:07:19 +07:00] — Verifikasi deployment rumpun kategori lokal dan online
+
+Waktu pencatatan: **2026-11-13 09:07:19 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b6f69d3`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Feature b6f69d3 pushed/pulled on VPS; service active without restart (frontend only); served JS/CSS verified; public Edge QA passed, no pageerror, API data unchanged. Online dataset 138 categories (11/127), local 139 (11/128); initial equal-count assertion corrected to actual per-environment data. Documentation only; staged diff check passed.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-07-19-777b24.json](docs/change-audit/2026-11-13-09-07-19-777b24.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 09:07:18 +07:00 | `docs/category-families.md` | — | 15–22 | Verifikasi lokal: 157 tes otomatis lulus; TypeScript dan build produksi lulus; o | modified |

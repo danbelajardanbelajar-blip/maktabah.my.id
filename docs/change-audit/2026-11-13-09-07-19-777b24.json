@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 09:07:19 +07:00",
+  "title": "Verifikasi deployment rumpun kategori lokal dan online",
+  "baseCommit": "b6f69d339fcb0f36e7b5dceb73b08510c203b157",
+  "checks": "Feature b6f69d3 pushed/pulled on VPS; service active without restart (frontend only); served JS/CSS verified; public Edge QA passed, no pageerror, API data unchanged. Online dataset 138 categories (11/127), local 139 (11/128); initial equal-count assertion corrected to actual per-environment data. Documentation only; staged diff check passed.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/category-families.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 09:07:18 +07:00",
+      "stagedSha256": "37ed94b79c242417477525c3619bef921dac150e16e212825a410a4346192e29",
+      "diffSha256": "3b5d3bab4ec3c5186ce4d3760341b642787cbffb32cdb30c476378cafaef4f87",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 14,
+            "count": 0
+          },
+          "after": {
+            "line": 15,
+            "count": 8
+          },
+          "section": "Verifikasi lokal: 157 tes otomatis lulus; TypeScript dan build produksi lulus; o"
+        }
+      ]
+    }
+  ]
+}
