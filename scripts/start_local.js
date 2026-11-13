@@ -20,9 +20,10 @@ const port = Number(process.env.PORT || 3080);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('PORT pada .env.local tidak valid.');
 const base = `http://127.0.0.1:${port}`;
 const hadithMode=process.argv.includes('--hadith');
-const authorMode=process.argv.includes('--authors')||hadithMode;
+const rowaMode=process.argv.includes('--rowa');
+const authorMode=process.argv.includes('--authors')||hadithMode||rowaMode;
 const adminUrl=authorMode?`${base}/#/admin?view=authors_database`:`${base}/?admin=1`;
-const url = hadithMode?`${base}/#/kutub-hadis`:authorMode?`${base}/#/penulis`:adminUrl;
+const url = rowaMode?`${base}/#/perawi`:hadithMode?`${base}/#/kutub-hadis`:authorMode?`${base}/#/penulis`:adminUrl;
 const status = async () => {
   try {
     const r = await fetch(`${base}/api/local/status`, { signal: AbortSignal.timeout(2000) });
@@ -33,13 +34,14 @@ const status = async () => {
   } catch { return null; }
 };
 const openWeb = () => {
-  console.log(`\nWeb lokal: ${base}/\nAdmin / export: ${adminUrl}\n${authorMode?`${hadithMode?'Kutub Hadis':'Penulis & Karya'}: ${url}\n`:''}Sumber dibuka hanya-baca. Tidak ada perubahan pada VPS.\n`);
+  console.log(`\nWeb lokal: ${base}/\nAdmin / export: ${adminUrl}\n${authorMode?`${rowaMode?'Kamus Perawi':hadithMode?'Kutub Hadis':'Penulis & Karya'}: ${url}\n`:''}Sumber dibuka hanya-baca. Tidak ada perubahan pada VPS.\n`);
   if (process.argv.includes('--no-open')) return;
   execFile('powershell.exe', ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', `Start-Process '${url}'`], { windowsHide: true }, error => {
     if (error) console.log('Buka link admin di atas melalui browser.');
   });
 };
 const running=await status();
+if(running&&rowaMode&&!running.features?.includes('rowa-browse-v1'))throw new Error(`Server port ${port} belum mendukung linimasa perawi. Gunakan port 3089 atau port baru.`);
 if(running&&hadithMode&&!running.features?.includes('rowa-mentions-v1'))throw new Error(`Server port ${port} belum mendukung pencarian isi Kutub Hadis. Gunakan port 3087 atau port baru.`);
 if(running&&authorMode&&!hadithMode&&!running.features?.includes('authors-initials-v1'))throw new Error(`Server port ${port} belum mendukung filter abjad penulis. Gunakan port 3088 atau port baru.`);
 if(running&&authorMode&&!running.features?.includes('authors-v1'))throw new Error(`Server port ${port} belum mendukung Penulis & Karya. Pilih port lain dengan --port=PORT.`);

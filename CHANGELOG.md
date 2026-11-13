@@ -550,3 +550,38 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-25-51-934d16.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 08:25:51 +07:00 | `docs/deployment-log.md` | — | 1–8 | module/file | modified |
+
+## [2026-11-13 08:46:45 +07:00] — Kamus Perawi: linimasa horizontal, kartu dan filter abjad global
+
+Waktu pencatatan: **2026-11-13 08:46:45 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1d695ec`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 155 tests passed; TypeScript + production build passed; node --check passed; git diff --check passed; oxlint 0 errors (existing Fast Refresh export warning); Edge browser QA local: horizontal year-only rail, left/right load, selected-year reload, unknown-date pagination, global alphabet/reset page, search/profile context, century and mobile; reader narrator cards and author alphabet regressions passed. VPS deployment pending verification.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-46-45-e46224.json](docs/change-audit/2026-11-13-08-46-45-e46224.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:42:09 +07:00 | `Buka Kamus Perawi Lokal.bat` | — | 1–21 | module/file | added |
+| 2026-11-13 08:46:12 +07:00 | `dist/assets/index-CNI-N0GB.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-C_LdLGFB.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 08:46:12 +07:00 | `dist/assets/index.dev-CCoZynYU.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 08:46:12 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 08:44:48 +07:00 | `docs/rowa-browse.md` | — | 1–23 | module/file | added |
+| 2026-11-13 08:41:42 +07:00 | `scripts/start_local.js` | 23–23 | 23–24 | const hadithMode=process.argv.includes('--hadith'); | modified |
+| 2026-11-13 08:41:42 +07:00 | `scripts/start_local.js` | 25–25 | 26–26 | const adminUrl=authorMode?`${base}/#/admin?view=authors_database`:`${base}/?admi | modified |
+| 2026-11-13 08:41:42 +07:00 | `scripts/start_local.js` | 36–36 | 37–37 | const openWeb = () => { | modified |
+| 2026-11-13 08:41:42 +07:00 | `scripts/start_local.js` | — | 44–44 | const running=await status(); | modified |
+| 2026-11-13 08:37:41 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-13 08:37:41 +07:00 | `server/index.js` | 370–370 | 371–371 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 08:37:41 +07:00 | `server/index.js` | — | 699–699 | registerRowaMentions(app,()=>rowaStore.getDb()); | modified |
+| 2026-11-13 08:46:00 +07:00 | `server/rowa-browse.js` | — | 1–67 | fail, rowaDeathDate, original, raw, sameOrAfter, year, match, date | added |
+| 2026-11-13 08:42:09 +07:00 | `server/rowa-browse.test.js` | — | 1–11 | fixture, db, insert, date, browse, alpha, rail, selected | added |
+| 2026-11-13 08:37:41 +07:00 | `src/components/RowaCards.tsx` | 9–9 | 9–9 | import {BackButton} from './BackButton'; | modified |
+| 2026-11-13 08:37:41 +07:00 | `src/components/RowaCards.tsx` | — | 12–12 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-13 08:37:41 +07:00 | `src/components/RowaCards.tsx` | 15–15 | 16–16 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-13 08:37:41 +07:00 | `src/components/RowaCards.tsx` | 33–33 | 34–34 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-13 08:37:41 +07:00 | `src/components/RowaCards.tsx` | 35–35 | 36–36 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-13 08:45:33 +07:00 | `src/components/RowaDictionary.tsx` | 1–28 | 1–52 | number, RowaDictionary, openRowa, params, view, key, context, go | modified |
+| 2026-11-13 08:45:33 +07:00 | `src/components/RowaDictionary.tsx` | 30–408 | 54–57 | const SkeletonCard = () => ( | modified |
+| 2026-11-13 08:46:00 +07:00 | `src/components/RowaTimeline.tsx` | — | 1–28 | RowaTimeline, rail, load, controller, query, oldWidth, response, data | added |
+| 2026-11-13 08:44:47 +07:00 | `src/components/rowa-browse.css` | — | 1–1 | module/file | added |
