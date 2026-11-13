@@ -4,6 +4,7 @@ import { Folder, ChevronLeft, ChevronRight, BookOpen, User, Info, Download, File
 import { webAPI } from '../api';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
+import { groupCategoryFamilies } from '../lib/category-families';
 
 interface CatalogRoute {
   cat: number | null;
@@ -166,6 +167,7 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
     const lower = route.filter.toLowerCase();
     return categories.filter(c => c.name.toLowerCase().includes(lower));
   }, [categories, route.filter]);
+  const categoryFamilies = useMemo(() => groupCategoryFamilies(filteredCategories), [filteredCategories]);
 
   const error = categoryError || bookError;
 
@@ -202,7 +204,7 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
                 <BookMarked className="text-[var(--app-primary)]" /> Katalog Perpustakaan
               </h2>
               <p className="text-xs md:text-sm text-gray-500 mt-1">
-                Jelajahi kategori di atas dan cari judul kitab secara langsung di bawah.
+                Jelajahi Hasil Bahsul Masail dan Kitab Turats, atau cari judul kitab di bawah.
               </p>
             </div>
           </div>
@@ -260,8 +262,17 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
                 Tidak ada kategori yang cocok dengan kata kunci &ldquo;{route.filter}&rdquo;.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {filteredCategories.map(cat => (
+              <div className="space-y-7">
+                {categoryFamilies.map(family => <section key={family.id} aria-labelledby={`category-family-${family.id}`} data-category-family={family.id}>
+                  <header className="mb-3 rounded-xl border border-[var(--app-primary)]/15 bg-[var(--app-primary)]/5 p-4">
+                    <h4 id={`category-family-${family.id}`} className="font-bold text-lg text-[var(--app-primary)] flex items-center gap-2 flex-wrap">
+                      <Folder size={19} aria-hidden="true" />{family.title}
+                      <span className="text-xs font-semibold rounded-full bg-[var(--reader-paper)] px-2.5 py-1">{family.categories.length.toLocaleString('id-ID')} kategori</span>
+                    </h4>
+                    <p className="text-xs mt-1 text-[var(--app-text)] opacity-65">{family.description}</p>
+                  </header>
+                  {family.categories.length === 0 ? <p className="p-4 text-sm text-gray-500 border border-dashed rounded-xl">Tidak ada kategori yang cocok dalam rumpun ini.</p> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {family.categories.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => go(cat.id, '', 1, '')}
@@ -270,11 +281,13 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
                     <div className="w-10 h-10 rounded-xl bg-[var(--app-primary)]/5 group-hover:bg-[var(--app-primary)]/10 text-[var(--app-primary)] flex items-center justify-center shrink-0 transition-colors">
                       <Folder size={20} />
                     </div>
-                    <span className="font-bold text-base md:text-lg flex-1 text-gray-900 group-hover:text-[var(--app-primary)] transition-colors" dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>
+                    <span className="font-bold text-base md:text-lg flex-1 text-gray-900 group-hover:text-[var(--app-primary)] transition-colors" dir="auto" style={family.id === 'turats' ? { fontFamily: 'var(--arabic-font)' } : undefined}>
                       {cat.name}
                     </span>
                   </button>
                 ))}
+                  </div>}
+                </section>)}
               </div>
             )}
           </div>

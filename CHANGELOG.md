@@ -598,3 +598,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-48-29-1a44bb.
 |---|---|---|---|---|---|
 | 2026-11-13 08:47:07 +07:00 | `Buka Kamus Perawi Lokal.bat` | 21–21 | — | if errorlevel 1 ( | modified |
 | 2026-11-13 08:48:29 +07:00 | `docs/rowa-browse.md` | — | 24–33 | Pemeriksaan sebelum push: `node --test server/*.test.js` (155 lulus), `npm run b | modified |
+
+## [2026-11-13 09:05:36 +07:00] — Rumpun kategori Hasil Bahsul Masail dan Kitab Turats berdasarkan aksara nama
+
+Waktu pencatatan: **2026-11-13 09:05:36 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b940490`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 157 tests passed; TypeScript/production build passed; staged diff --check passed; oxlint 0 errors with pre-existing Catalog hook warning. Local Edge QA: 139 categories assigned once (11 Latin,128 Arabic), unchanged API data, category 321/0 navigation, back, Latin/Arabic search and empty groups, responsive 320/390/768/1440 with no pageerror. No database/schema changes. Online deployment pending verification.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-05-36-c6e161.json](docs/change-audit/2026-11-13-09-05-36-c6e161.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-CNI-N0GB.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 09:03:40 +07:00 | `dist/assets/index-DEcz1-FK.css` | — | 1–2 | module/file | added |
+| 2026-11-13 09:03:40 +07:00 | `dist/assets/index.dev-B0z19LR9.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 09:03:40 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 09:05:35 +07:00 | `docs/category-families.md` | — | 1–14 | module/file | added |
+| 2026-11-13 09:03:29 +07:00 | `server/category-families.test.js` | — | 1–19 | categories, groups | added |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | — | 7–7 | import { navigationHash, parseNavigation, routePage } from '../lib/navigation'; | modified |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | — | 170–170 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | 205–205 | 207–207 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | 263–264 | 265–275 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | 273–273 | 284–284 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-13 09:03:29 +07:00 | `src/components/Catalog.tsx` | — | 289–290 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-13 09:02:59 +07:00 | `src/lib/category-families.ts` | — | 1–20 | categoryFamily, letters, arabic, latin, groupCategoryFamilies | added |
