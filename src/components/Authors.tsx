@@ -14,7 +14,8 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
   const [error,setError]=useState(''),[loading,setLoading]=useState(true),[retry,setRetry]=useState(0);
   const data=reply?.location===location?reply.data:null;
   const params=new URLSearchParams(location.split('?')[1]||''),id=params.get('id'),page=routePage(params.get('page'));
-  const q=params.get('q')||'',century=params.get('century')||'';
+  const q=params.get('q')||'',century=params.get('century')||'',initial=params.get('initial')||'';
+  const [alphabet,setAlphabet]=useState<{initial:string;count:number}[]>([]);
   const view=params.get('view')==='cards'||(!params.has('view')&&params.get('sort')==='name')?'cards':'timeline';
   const sort=view==='timeline'?'death':params.get('sort')==='death'?'death':'name';
   const listPage=id?routePage(params.get('listPage')):page;
@@ -30,15 +31,17 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
     if(id&&!/^[1-9]\d*$/.test(id)){setError('Tautan penulis tidak valid.');setLoading(false);return;}
     const query=new URLSearchParams({q,sort,page:String(page),limit:view==='timeline'?'12':'24'});
     if(century)query.set('century',century);
+    if(initial)query.set('initial',initial);
     const endpoint=id?`/api/authors/${id}?page=${page}`:`/api/authors?${query}`;
     fetch(endpoint,{signal:controller.signal}).then(async r=>{
-      if(!r.headers.get('content-type')?.includes('application/json'))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Layanan penulis pada alamat ini belum diperbarui. Untuk versi lokal terbaru, buka http://127.0.0.1:3082/#/penulis.':'Layanan penulis belum memberikan data. Muat ulang beberapa saat lagi.');
-      const result=await r.json();if(!r.ok)throw Error(result.error||'Gagal memuat penulis.');return result;
-    }).then(data=>{if(!controller.signal.aborted)setReply({location,data});})
+      if(!r.headers.get('content-type')?.includes('application/json'))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Layanan penulis pada alamat ini belum diperbarui. Untuk versi lokal terbaru, buka http://127.0.0.1:3088/#/penulis.':'Layanan penulis belum memberikan data. Muat ulang beberapa saat lagi.');
+      const result=await r.json();if(!id&&view==='cards'&&r.ok&&!Array.isArray(result.initials))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Filter abjad belum tersedia pada layanan ini. Buka http://127.0.0.1:3088/#/penulis?view=cards.':'Filter abjad sedang diperbarui. Silakan muat ulang.');if(!r.ok)throw Error(result.error||'Gagal memuat penulis.');return result;
+    }).then(data=>{if(!controller.signal.aborted){setReply({location,data});if(Array.isArray(data.initials))setAlphabet(data.initials);}})
       .catch(e=>{if(!controller.signal.aborted)setError(e.message);}).finally(()=>{if(!controller.signal.aborted)setLoading(false);});
     return()=>controller.abort();
   },[location,retry]);
-  const context={q:q||undefined,sort,view,century:century||undefined};
+  const context={q:q||undefined,sort,view,century:century||undefined,initial:initial||undefined};
+  const selectedInitial=data?.initial??initial;
   const go=(values:Record<string,string|number|undefined>)=>{
     pushLocation(navigationHash('authors',values));window.dispatchEvent(new Event('maktabah:navigate'));window.scrollTo(0,0);
   };
@@ -74,6 +77,14 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
         {view==='cards'&&<label><span>Urutkan</span><select aria-label="Urutkan" value={sort} onChange={e=>go({...context,q:input.trim(),sort:e.target.value})}><option value="name">Nama</option><option value="death">Tahun wafat</option></select></label>}
         <button className="author-browser-search"><Search size={17} aria-hidden="true"/>Cari</button>
       </form>
+      {view==='cards'&&alphabet.length>0&&<div className="author-alphabet-section">
+        <p className="author-alphabet-heading">Pilih huruf awal nama</p>
+        <p className="author-alphabet-note">Mengikuti nama yang tertulis; أ، إ، آ dikelompokkan pada ا. Awalan ال dan ابن tetap dihitung.</p>
+        <div className="author-alphabet" role="group" aria-label="Abjad nama penulis" dir="rtl" aria-busy={loading}>
+          <button type="button" disabled={loading} aria-pressed={!selectedInitial} onClick={()=>go({...context,q:input.trim(),initial:undefined})} className="author-alphabet-all"><span>Semua</span><small>{number(alphabet.reduce((n,item)=>n+item.count,0))}</small></button>
+          {alphabet.map(item=><button type="button" key={item.initial} data-initial={item.initial} aria-label={item.initial==='other'?'Huruf lainnya':`Huruf ${item.initial}`} aria-pressed={selectedInitial===item.initial} disabled={loading||(item.count===0&&selectedInitial!==item.initial)} onClick={()=>go({...context,q:input.trim(),initial:item.initial})}><span className={item.initial==='other'?'':'author-alphabet-letter'}>{item.initial==='other'?'Lainnya':item.initial}</span><small>{number(item.count)}</small></button>)}
+        </div>
+      </div>}
       <div className="author-browser-bottom">
         <div className="author-view-switch" role="group" aria-label="Tampilan daftar penulis">
           <button aria-pressed={view==='timeline'} onClick={()=>go({...context,q:input.trim(),view:'timeline',sort:'death'})}><GitBranch size={15} aria-hidden="true"/>Linimasa</button>
@@ -82,6 +93,7 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
         <p className="author-result-count" aria-live="polite">{data?<><strong>{number(data.total)}</strong> penulis{q?` untuk “${q}”`:' dalam koleksi'}</>:loading?'Memuat koleksi…':'Telusuri koleksi penulis'}</p>
       </div>
     </div>}
+    {!id&&view==='timeline'&&initial&&<p className="author-result-count">Filter huruf awal: <strong>{initial==='other'?'Lainnya':initial}</strong> <button onClick={()=>go({...context,initial:undefined})} className="underline ml-2">Hapus filter</button></p>}
     {loading&&<p role="status" className="author-journey-loading">Menyiapkan jejak para penulis…</p>}
     {error&&<div role="alert" className="p-5 bg-red-50 text-red-800 rounded-xl border">{error}<button onClick={()=>setRetry(v=>v+1)} className="block underline mt-3">Coba lagi</button></div>}
     {!loading&&!error&&author&&<>

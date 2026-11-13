@@ -500,3 +500,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-12-15-1e4002.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 08:12:14 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |
+
+## [2026-11-13 08:23:51 +07:00] — Tambahkan tombol abjad Arab pada kartu penulis dengan hitungan global dan filter persisten
+
+Waktu pencatatan: **2026-11-13 08:23:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `8e35bca`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 151 tes server lulus; TypeScript/build lokal lulus; browser lokal 3088 lulus jumlah 966 penulis/28 huruf, filter seluruh koleksi sebelum pagination, reset halaman, kembali profil/reload, gabungan q/abad, konsistensi linimasa, Semua mempertahankan filter lain, huruf kosong nonaktif, 320/390/768/1440 tanpa overflow/pageerror. Varian alif/hamzah dan nama asli diuji; tidak membuang awalan ال/ابن. Staged whitespace bersih; tanpa perubahan database.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-23-51-652f6f.json](docs/change-audit/2026-11-13-08-23-51-652f6f.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:19:13 +07:00 | `Buka Penulis Lokal.bat` | 16–16 | 16–16 | if not exist "node_modules\dotenv\package.json" ( | modified |
+| 2026-11-13 08:20:40 +07:00 | `dist/assets/index-C_LdLGFB.css` | — | 1–2 | module/file | added |
+| 2026-11-13 08:20:40 +07:00 | `dist/assets/index.dev-BVeSMuyb.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 08:20:40 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 08:23:50 +07:00 | `docs/authors.md` | 25–25 | 25–25 | Label **Kecocokan metadata** menjelaskan dasar relasinya; bukan klaim bahwa atri | modified |
+| 2026-11-13 08:23:50 +07:00 | `docs/authors.md` | — | 77–89 | Pengujian browser memakai server dan database sementara: import paket lengkap, p | modified |
+| 2026-11-13 08:19:13 +07:00 | `scripts/start_local.js` | — | 44–44 | if(running&&hadithMode&&!running.features?.includes('rowa-mentions-v1'))throw ne | modified |
+| 2026-11-13 08:19:12 +07:00 | `server/author-initials.js` | — | 1–18 | AUTHOR_LETTERS, fold, authorInitial, letter, readAuthorInitial, authorInitialCounts, counts | added |
+| 2026-11-13 08:19:12 +07:00 | `server/authors.js` | — | 4–4 | import {authorDeathDate,compareAuthorDates} from './author-chronology.js'; | modified |
+| 2026-11-13 08:19:12 +07:00 | `server/authors.js` | 39–40 | 40–42 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-13 08:19:12 +07:00 | `server/authors.js` | — | 45–46 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-13 08:19:12 +07:00 | `server/authors.js` | 56–56 | 60–60 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-13 08:20:12 +07:00 | `server/authors.test.js` | — | 5–5 | import {createAuthorStore,registerAuthorTransfer} from './author-store.js';impor | modified |
+| 2026-11-13 08:20:12 +07:00 | `server/authors.test.js` | — | 56–77 | test('chronology and era filters apply to the complete result before pagination' | modified |
+| 2026-11-13 08:20:12 +07:00 | `server/back-navigation.test.js` | 6–6 | 6–6 | test('author profile fallback restores timeline filters and list page independen | modified |
+| 2026-11-13 08:20:12 +07:00 | `server/back-navigation.test.js` | — | 8–8 | test('author profile fallback restores timeline filters and list page independen | modified |
+| 2026-11-13 08:19:13 +07:00 | `server/index.js` | 370–370 | 370–370 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/AuthorTimeline.tsx` | 23–23 | 23–23 | export function AuthorTimeline({context,onOpen}:Props) { | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/AuthorTimeline.tsx` | 28–28 | 28–28 | export function AuthorTimeline({context,onOpen}:Props) { | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/AuthorTimeline.tsx` | 43–43 | 43–43 | export function AuthorTimeline({context,onOpen}:Props) { | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | 17–17 | 17–18 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | — | 34–34 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | 35–37 | 37–39 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | 41–41 | 43–44 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | — | 80–87 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/Authors.tsx` | — | 96–96 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-13 08:19:13 +07:00 | `src/components/author-journey.css` | — | 66–69 | module/file | modified |

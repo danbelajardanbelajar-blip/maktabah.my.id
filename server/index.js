@@ -367,7 +367,7 @@ function titlesUnion() {
 app.get('/api/local/status', (req, res) => {
   if (!localExportMode) return res.sendStatus(404);
   if (!db || !hasTambahan || !hasTafsir) return res.status(503).json({ error: dbError || 'Ketiga database sumber belum terhubung.' });
-  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1','hadith-books-v1','hadith-search-v2','rowa-mentions-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
+  res.json({ app: 'maktabah-local-export', readOnly: true, transferFormats:['parts-v1','sqlite-v1','json-v1'], features:['authors-v1','rowa-v1','hadith-books-v1','hadith-search-v2','rowa-mentions-v1','authors-initials-v1'], sources: [dbPath, tambDbPath, tafsirDbPath] });
 });
 
 app.get('/api/stats', (req, res) => {

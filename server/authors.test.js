@@ -2,6 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import Database from 'better-sqlite3';import express from 'express';
 import {authorSchema,AUTHOR_FORMAT,AUTHOR_VERSION,normalizeIdentity,inspectAuthorPackage,matchAuthorIdentity} from './author-package.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';import {createAuthorService,registerAuthors} from './authors.js';
+import {authorInitial,readAuthorInitial,AUTHOR_LETTERS} from './author-initials.js';
 
 function makePackage(folder,name='source.db') {
   const filename=path.join(folder,name),db=new Database(filename);authorSchema(db);
@@ -51,6 +52,28 @@ test('chronology and era filters apply to the complete result before pagination'
   assert.deepEqual(f.service.authorList({century:'unknown'}).data.map(a=>a.id),[9]);
   assert.equal(f.service.authorList({q:'السيوطي',century:'9'}).total,0);
   assert.throws(()=>f.service.authorList({century:'-1'}),/abad/);
+});
+
+test('initial letters fold Arabic variants without discarding name prefixes',()=>{
+  assert.equal(AUTHOR_LETTERS.length,28);
+  for(const name of ['  «آدَم»','إبراهيم','أحمد','ٱحمد','السيوطي','ابن حجر'])assert.equal(authorInitial(name),'ا');
+  assert.equal(authorInitial(' «مُحَمَّد»'),'م');assert.equal(authorInitial('يَحْيَى'),'ي');assert.equal(authorInitial('John'),'other');assert.equal(authorInitial('123'),'other');
+  assert.equal(readAuthorInitial('إ'),'ا');assert.equal(readAuthorInitial('other'),'other');
+  for(const value of ['محمد','a',[],"' OR 1=1"])assert.throws(()=>readAuthorInitial(value),/huruf/);
+});
+
+test('initial filter/counts apply across the complete collection before pagination and combine with query and era',t=>{
+  const f=fixture(t),db=f.store.getDb(),put=db.prepare('INSERT INTO authors VALUES(?,?,?,?,?,?)');
+  for(const [id,name,death] of [[9,'«آدَم»','700'],[10,'إبراهيم','700'],[11,'محمد الكاتب','700'],[12,'محمود الكاتب','800'],[13,'بكر','700'],[14,'يحيى','900'],[15,'John','']])put.run(id,name,'',death,'Source',normalizeIdentity(name));
+  db.prepare('UPDATE manifest SET authors=9').run();f.service.invalidate();
+  const first=f.service.authorList({initial:'م',limit:1});assert.equal(first.total,2);assert.equal(first.data.length,1);assert.equal(first.totalPages,2);assert.equal(first.initial,'م');
+  assert.equal(first.initials.reduce((n,item)=>n+item.count,0),9);assert.equal(first.initials.find(i=>i.initial==='ا').count,4);
+  const second=f.service.authorList({initial:'م',limit:1,page:2});assert.equal(second.data.length,1);assert.notEqual(first.data[0].id,second.data[0].id);
+  assert.equal(f.service.authorList({initial:'م',century:'7'}).total,1);assert.equal(f.service.authorList({initial:'م',q:'بكر'}).total,0);
+  assert.equal(f.service.authorList({initial:'أ'}).total,4);assert.equal(f.service.authorList({initial:'other'}).data[0].id,15);
+  assert.deepEqual(f.service.authorList({initial:'م'}).eras.map(e=>e.century),[7,8]);
+  const scoped=f.service.authorList({initial:'م',century:'7'});assert.equal(scoped.initials.find(i=>i.initial==='م').count,1);assert.equal(scoped.initials.find(i=>i.initial==='ب').count,1);
+  const timeline=f.service.authorList({timeline:'1',initial:'م'});assert.equal(timeline.totalGroups,2);assert(timeline.groups.flatMap(g=>g.authors).every(a=>a.name.startsWith('م')));
 });
 test('library title edits/deletions and duplicate IDs invalidate public work lists immediately',t=>{
   const f=fixture(t);let version=1;const service=createAuthorService(f.store,()=>f.library,()=>version);

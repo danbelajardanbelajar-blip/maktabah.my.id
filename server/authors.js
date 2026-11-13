@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import {normalizeIdentity,identityHash} from './author-package.js';
 import {authorDeathDate,compareAuthorDates} from './author-chronology.js';
+import {authorInitial,readAuthorInitial,authorInitialCounts} from './author-initials.js';
 const err=(message,status=400)=>Object.assign(Error(message),{status});
 const paging=(q,size=24)=>{const limit=Math.min(100,Math.max(1,parseInt(q.limit)||size)),page=Math.max(1,parseInt(q.page)||1);return{limit,page};};
 const findText=s=>normalizeIdentity(s).replace(/[أإآٱ]/gu,'ا').replace(/ى/gu,'ي').toLowerCase();
@@ -36,10 +37,13 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
     const g=graph(),{limit,page}=paging(query),q=findText(String(query.q||'').slice(0,200));
     const everyone=[...g.authors.values()].map(a=>({...a,deathDate:authorDeathDate(a.death_text)}));
     let all=everyone.filter(a=>!q||findText(a.name).includes(q));
-    const eraCounts=new Map();for(const a of all){const c=a.deathDate.century;if(c)eraCounts.set(c,(eraCounts.get(c)||0)+1);}
-    const unknown=all.filter(a=>a.deathDate.kind==='unknown').length,century=String(query.century||'');
+    const initial=readAuthorInitial(query.initial),eraCandidates=initial?all.filter(a=>authorInitial(a.name)===initial):all;
+    const eraCounts=new Map();for(const a of eraCandidates){const c=a.deathDate.century;if(c)eraCounts.set(c,(eraCounts.get(c)||0)+1);}
+    const unknown=eraCandidates.filter(a=>a.deathDate.kind==='unknown').length,century=String(query.century||'');
     if(century&&century!=='unknown'&&!/^[1-9]\d?$/.test(century))throw err('Pilihan abad tidak valid.');
     if(century)all=all.filter(a=>century==='unknown'?a.deathDate.kind==='unknown':a.deathDate.century===Number(century));
+    const initials=authorInitialCounts(all);
+    if(initial)all=all.filter(a=>authorInitial(a.name)===initial);
     all.sort(query.sort==='death'?compareAuthorDates:(a,b)=>a.name.localeCompare(b.name,'ar')||a.id-b.id);
     if(query.timeline==='1') {
       const groups=new Map();
@@ -53,7 +57,7 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
       const start=Math.min(Math.max(0,ordered.length-size),query.start===undefined?Math.floor(ordered.length/2/size)*size:Number(query.start));
       return{groups:ordered.slice(start,start+size),start,end:Math.min(start+size,ordered.length),totalGroups:ordered.length};
     }
-    return{data:all.slice((page-1)*limit,page*limit).map(({biography,...a})=>({...a,hasBiography:!!biography.trim()})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),
+    return{data:all.slice((page-1)*limit,page*limit).map(({biography,...a})=>({...a,hasBiography:!!biography.trim()})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),initial,initials,
       eras:[...eraCounts].sort((a,b)=>a[0]-b[0]).map(([century,count])=>({century,count})),unknownDates:unknown,
       overview:{authors:everyone.length,dated:everyone.filter(a=>a.deathDate.kind!=='unknown').length,linkedWorks:[...g.works.values()].filter(w=>w.available&&w.links.size>0).length}};
   };

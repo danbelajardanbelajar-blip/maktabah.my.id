@@ -41,6 +41,7 @@ const openWeb = () => {
 };
 const running=await status();
 if(running&&hadithMode&&!running.features?.includes('rowa-mentions-v1'))throw new Error(`Server port ${port} belum mendukung pencarian isi Kutub Hadis. Gunakan port 3087 atau port baru.`);
+if(running&&authorMode&&!hadithMode&&!running.features?.includes('authors-initials-v1'))throw new Error(`Server port ${port} belum mendukung filter abjad penulis. Gunakan port 3088 atau port baru.`);
 if(running&&authorMode&&!running.features?.includes('authors-v1'))throw new Error(`Server port ${port} belum mendukung Penulis & Karya. Pilih port lain dengan --port=PORT.`);
 if(running && !running.transferFormats?.includes('parts-v1'))throw new Error('Server lokal versi lama masih berjalan. Tutup jendela terminal Maktabah Lokal yang lama, lalu buka BAT ini kembali.');
 if (running) {

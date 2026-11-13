@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import {backState,previousLocation,pushLocation,backFallback} from '../src/lib/back-navigation.ts';
 
 test('author profile fallback restores timeline filters and list page independently from works page',()=>{
-  const hash=backFallback('#/penulis?id=54&view=timeline&century=8&q=foo&listPage=3&page=2');
+  const hash=backFallback('#/penulis?id=54&view=timeline&century=8&initial=م&q=foo&listPage=3&page=2');
   const p=new URLSearchParams(hash.split('?')[1]);assert.equal(p.get('page'),'3');assert.equal(p.get('century'),'8');assert.equal(p.get('view'),'timeline');assert.equal(p.has('id'),false);assert.equal(p.has('listPage'),false);
+  assert.equal(p.get('initial'),'م');
 });
 
 test('back remembers the exact internal query/page and preserves reader metadata across reload',()=>{

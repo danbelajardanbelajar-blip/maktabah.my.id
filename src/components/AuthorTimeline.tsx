@@ -20,12 +20,12 @@ export function AuthorTimeline({context,onOpen}:Props) {
   const [groups,setGroups]=useState<YearGroup[]>([]),[selected,setSelected]=useState<string|null>(null);
   const [range,setRange]=useState({start:0,end:0,totalGroups:0}),[busy,setBusy]=useState(true),[error,setError]=useState('');
   const rail=useRef<HTMLDivElement>(null),request=useRef<AbortController|null>(null);
-  const q=context.q||'',century=context.century||'';
+  const q=context.q||'',century=context.century||'',initial=context.initial||'';
   const lastDirection=useRef<'initial'|'left'|'right'>('initial');
   async function load(direction:'initial'|'left'|'right') {
     lastDirection.current=direction;request.current?.abort();const controller=new AbortController();request.current=controller;
     setBusy(true);setError('');
-    const query=new URLSearchParams({timeline:'1',q:String(q),century:String(century)});
+    const query=new URLSearchParams({timeline:'1',q:String(q),century:String(century),initial:String(initial)});
     if(direction!=='initial')query.set('start',String(direction==='left'?Math.max(0,range.start-10):range.end));
     const oldWidth=rail.current?.scrollWidth||0,oldLeft=rail.current?.scrollLeft||0;
     try {
@@ -40,7 +40,7 @@ export function AuthorTimeline({context,onOpen}:Props) {
     }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Gagal memuat linimasa.');}
     finally{if(!controller.signal.aborted)setBusy(false);}
   }
-  useEffect(()=>{setGroups([]);setSelected(null);load('initial');return()=>request.current?.abort();},[q,century]);
+  useEffect(()=>{setGroups([]);setSelected(null);load('initial');return()=>request.current?.abort();},[q,century,initial]);
   const active=groups.find(g=>g.key===selected);
   return <div className="author-year-browser">
     <div className="author-year-controls"><button disabled={busy||range.start===0} onClick={()=>load('left')}><ArrowLeft size={16}/>Muat kiri</button><span aria-live="polite">{busy?'Memuat tahun…':`${groups.length} dari ${range.totalGroups} penanda waktu`}</span><button disabled={busy||range.end>=range.totalGroups} onClick={()=>load('right')}>Muat kanan<ArrowRight size={16}/></button></div>

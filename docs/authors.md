@@ -22,7 +22,7 @@ Label **Kecocokan metadata** menjelaskan dasar relasinya; bukan klaim bahwa atri
 
 ## Halaman admin
 
-Untuk layanan lokal terbaru tanpa menghentikan proses lama, jalankan `Buka Penulis Lokal.bat`. Launcher memakai port 3082: halaman publik `http://127.0.0.1:3082/#/penulis` dan admin `http://127.0.0.1:3082/#/admin?view=authors_database`. Menjalankan launcher lagi memakai proses yang sudah sesuai. Terminal tetap dibuka selama layanan dipakai. Default launcher lokal lama di port 3080 tidak berubah. Port bisa dipilih lewat `node scripts/start_local.js --port=3082 --authors`.
+Untuk layanan lokal terbaru tanpa menghentikan proses lama, jalankan `Buka Penulis Lokal.bat`. Launcher memakai port 3088: halaman publik `http://127.0.0.1:3088/#/penulis` dan admin `http://127.0.0.1:3088/#/admin?view=authors_database`. Menjalankan launcher lagi memakai proses yang sudah sesuai. Terminal tetap dibuka selama layanan dipakai. Default launcher lokal lama di port 3080 tidak berubah. Port bisa dipilih lewat `node scripts/start_local.js --port=3088 --authors`.
 
 Menu **Penulis → Database Penulis** menyediakan upload `.db` maksimal 64 MB, pratinjau, aktivasi, unduh, dan pemulihan versi sebelumnya. Transfer memakai format yang sama di lokal dan online. Database kitab dan Database Perawi tidak diganti.
 
@@ -74,3 +74,16 @@ npm run build
 Build dijalankan di lokal. Push kode/backend dan hasil `dist`, pull di VPS, lalu restart Node setelah memastikan tidak ada transfer aktif. Import paket melalui admin setelah endpoint baru tersedia. Pembuatan/import/review juga didukung pada `LOCAL_EXPORT_MODE=1`; pengecualian izin tulis hanya menuju endpoint penulis yang memerlukan admin. Pembatasan import kitab dalam mode lokal tetap berlaku.
 
 Pengujian browser memakai server dan database sementara: import paket lengkap, profil, tautan metadata kitab, pembaca, penolakan/reset relasi, riwayat, snapshot unduhan, dan tampilan ponsel. Tidak memasukkan keputusan percobaan ke database produksi.
+
+
+## Tombol abjad pada tampilan kartu
+
+Pada `/#/penulis?sort=name&view=cards`, tersedia 28 huruf Arab, **Semua**, serta **Lainnya** untuk nama yang tidak berawalan huruf Arab. Setiap tombol menampilkan jumlah penulis sesuai pencarian/abad aktif, dari seluruh koleksi sebelum pagination. Huruf kosong dinonaktifkan; huruf aktif tetap dapat terlihat ketika hasilnya nol. Tombol Semua melepas hanya filter huruf.
+
+Endpoint daftar menerima `initial=م`, misalnya `/api/authors?initial=م&sort=name&page=1&limit=24`, dan mengembalikan initial ternormalisasi serta initials (jumlah per huruf). Filter diterapkan sebelum sort/pagination; filter abad dan pencarian tetap berlaku. Jumlah pada pilihan abad mengikuti huruf/pencarian aktif. Nilai filter huruf yang tidak valid ditolak dengan 400.
+
+Pengelompokan mengikuti huruf pertama pada nama yang ditampilkan, setelah normalisasi Unicode/harakat/tatweel dan melewati tanda baca awal. أ/إ/آ/ٱ/ء masuk ا, ؤ masuk و, ئ/ى masuk ي, dan ة masuk ه. Awalan seperti ال, ابن, atau أبو tidak dibuang dan nama asli tidak diubah. Tidak ada pengelompokan berdasarkan huruf di tengah nama atau nama panggilan yang ditebak.
+
+Pilihan huruf disimpan di URL dan konteks profil/listPage. Pergantian filter memulai halaman pertama; kembali dari profil/reload mempertahankan huruf dan halaman daftar. Jika beralih ke linimasa dengan filter huruf aktif, filter tersebut tetap diterapkan pada kelompok tahun dan dapat dihapus melalui indikator filter. Tidak ada perubahan/import ulang database.
+
+Launcher Penulis lokal terbaru menggunakan port 3088 dan memeriksa authors-initials-v1. Layanan lama yang belum mendukung filter tidak menampilkan hasil seolah-olah telah tersaring.
