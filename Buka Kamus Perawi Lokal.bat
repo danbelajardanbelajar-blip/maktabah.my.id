@@ -18,4 +18,3 @@ if errorlevel 1 (
   echo Gagal membuka layanan perawi lokal. Lihat pesan di atas.
   pause
 )
-

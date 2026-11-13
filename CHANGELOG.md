@@ -585,3 +585,16 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-46-45-e46224.
 | 2026-11-13 08:45:33 +07:00 | `src/components/RowaDictionary.tsx` | 30–408 | 54–57 | const SkeletonCard = () => ( | modified |
 | 2026-11-13 08:46:00 +07:00 | `src/components/RowaTimeline.tsx` | — | 1–28 | RowaTimeline, rail, load, controller, query, oldWidth, response, data | added |
 | 2026-11-13 08:44:47 +07:00 | `src/components/rowa-browse.css` | — | 1–1 | module/file | added |
+
+## [2026-11-13 08:48:29 +07:00] — Catatan deployment linimasa perawi dan perapian akhir launcher
+
+Waktu pencatatan: **2026-11-13 08:48:29 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2489659`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Feature 2489659 pushed/pulled; VPS HEAD verified; no active transfer/compact import before restart; maktabah.service active; online API counts/source verified; public Edge browser QA passed with no pageerror. BAT trailing empty line removed; staged diff --check passed. Documentation/whitespace only; no application rebuild needed.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-48-29-1a44bb.json](docs/change-audit/2026-11-13-08-48-29-1a44bb.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:47:07 +07:00 | `Buka Kamus Perawi Lokal.bat` | 21–21 | — | if errorlevel 1 ( | modified |
+| 2026-11-13 08:48:29 +07:00 | `docs/rowa-browse.md` | — | 24–33 | Pemeriksaan sebelum push: `node --test server/*.test.js` (155 lulus), `npm run b | modified |

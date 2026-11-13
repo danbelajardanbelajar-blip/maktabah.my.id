@@ -21,3 +21,13 @@ Jalankan `Buka Kamus Perawi Lokal.bat`, atau `node scripts/start_local.js --port
 `src/components/RowaDictionary.tsx`, `RowaTimeline.tsx`: URL state q/century/initial/year/view/sort/page, pembatalan request usang, filter responsif, pemuatan rentang, dan profil melalui RowaCardsProvider.
 
 Pemeriksaan sebelum push: `node --test server/*.test.js` (155 lulus), `npm run build`, pemeriksaan sintaks serta diff. QA browser Edge: tahun tanpa nama sebelum diklik, muat kedua arah, deep link tahun/reload, 24 kartu pada kelompok tanggal kosong, abjad global/reset halaman, pencarian dan bithaqah/kembali, filter abad, ponsel 390px tanpa overflow halaman. Regresi kartu perawi dalam pembaca/hasil Kutub Hadis dan abjad penulis juga lulus. Tidak ada pageerror browser.
+
+## Verifikasi deployment · 2026-11-13 08:48 WIB
+
+Commit fitur `2489659` sudah di-push ke origin/main dan di-pull fast-forward pada `/home/ubuntu/maktabah-baru`. Sebelum restart, pemeriksaan job transfer/penghapusan dan compact import menyatakan tidak ada operasi aktif. `maktabah.service` aktif setelah restart; tidak ada build/install di VPS.
+
+API server: 8.858 perawi, 2.248 rujukan waktu yang dapat dipetakan konservatif, 8.854 biografi, 267 kelompok waktu, 29 kategori huruf (28 Arab + Lainnya). Huruf م berisi 1.296 perawi. Bukhari ID 5739 tetap WHO ت س dan biografi 40.413 karakter; daftar kitab tidak memuat Muwaththa’.
+
+QA browser pada https://maktab.my.id lulus: penanda tahun tanpa daftar nama sebelum diklik, muat kiri/kanan, deep link/reload tahun, kelompok tanpa tanggal dengan paginasi, abjad global/reset halaman, pencarian dan modal/kembali, filter abad, serta ponsel tanpa overflow. Tidak ditemukan pageerror. Build yang dilayani memakai `index.dev-CCoZynYU.js` dan `index-CNI-N0GB.css`.
+
+Catatan whitespace: pemeriksaan staged awal menandai satu baris kosong tambahan pada akhir launcher BAT. Baris tersebut dihapus pada catatan deployment ini; tidak mengubah perilaku launcher. Pemeriksaan diff akhir diulang sebelum push.

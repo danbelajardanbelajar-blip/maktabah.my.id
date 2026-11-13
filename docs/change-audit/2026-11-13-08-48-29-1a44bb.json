@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 08:48:29 +07:00",
+  "title": "Catatan deployment linimasa perawi dan perapian akhir launcher",
+  "baseCommit": "248965990630c06d114bd7050e3edae164bd09b3",
+  "checks": "Feature 2489659 pushed/pulled; VPS HEAD verified; no active transfer/compact import before restart; maktabah.service active; online API counts/source verified; public Edge browser QA passed with no pageerror. BAT trailing empty line removed; staged diff --check passed. Documentation/whitespace only; no application rebuild needed.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "Buka Kamus Perawi Lokal.bat",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 08:47:07 +07:00",
+      "stagedSha256": "f7f6c5f880eb63ecfafd372be589a6caae94683496ebe1b40c3177996f0150a0",
+      "diffSha256": "df474e6cb047dab537429a0e1b7cb578b699a908fce349a0fe5bbf00f86397a8",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 20,
+            "count": 0
+          },
+          "section": "if errorlevel 1 ("
+        }
+      ]
+    },
+    {
+      "file": "docs/rowa-browse.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 08:48:29 +07:00",
+      "stagedSha256": "90bdacfe81d13d1301380a9532c791448c9095765a98674b68f263291a484f0e",
+      "diffSha256": "2f29d279dac57c884f3509956003b436598470053f2d8230989684154105c04d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 23,
+            "count": 0
+          },
+          "after": {
+            "line": 24,
+            "count": 10
+          },
+          "section": "Pemeriksaan sebelum push: `node --test server/*.test.js` (155 lulus), `npm run b"
+        }
+      ]
+    }
+  ]
+}
