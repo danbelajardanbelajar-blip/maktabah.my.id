@@ -417,3 +417,48 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-22-54-7a0fce.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 07:22:53 +07:00 | `docs/deployment-log.md` | — | 1–11 | module/file | modified |
+
+## [2026-11-13 07:49:14 +07:00] — Hubungkan nama perawi pada cuplikan dan pembaca ke bithaqah Kamus Perawi tanpa pindah halaman
+
+Waktu pencatatan: **2026-11-13 07:49:14 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `3e2dc2d`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 149 tes server lulus; TypeScript/build lokal lulus; browser lokal 3087 memverifikasi nama unik langsung, kandidat ambigu, profil asli/biografi, guru murid inline, Escape hanya menutup kartu, fokus kembali, cuplikan bersorotan, kamus perawi lama, tanpa pindah URL dan ponsel tanpa overflow/pageerror. Regresi AI dan pencarian isi lulus; pemilihan teks tetap utuh setelah penautan asinkron. Paket perawi lokal tervalidasi diaktifkan 07:37:34 WIB dari paket yang sudah tersedia: 8858 perawi/8854 biografi, AQUAL Bukhari 40413 dan WHO ت س. Basis pencocokan nama dijelaskan, tidak mengklaim identifikasi sanad. Staged whitespace bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-49-14-75995f.json](docs/change-audit/2026-11-13-07-49-14-75995f.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 07:39:01 +07:00 | `Buka Kutub Hadis Lokal.bat` | 16–16 | 16–16 | if not exist "node_modules\dotenv\package.json" ( | modified |
+| 2026-11-13 07:46:49 +07:00 | `dist/assets/index-DWsuXFHp.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-VvUxaVVz.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 07:46:49 +07:00 | `dist/assets/index.dev-BL6DsWq1.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Dt-qlpeR.js` | 1–16 | — | module/file | deleted |
+| 2026-11-13 07:46:49 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 07:47:48 +07:00 | `docs/hadith-books.md` | — | 50–66 | Lokal versi pencarian memakai `Buka Kutub Hadis Lokal.bat` pada port **3085**, d | modified |
+| 2026-11-13 07:39:01 +07:00 | `scripts/start_local.js` | 43–43 | 43–43 | const running=await status(); | modified |
+| 2026-11-13 07:39:01 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-13 07:39:01 +07:00 | `server/index.js` | 144–144 | 145–145 | app.use((req, res, next) => { | modified |
+| 2026-11-13 07:39:01 +07:00 | `server/index.js` | 369–369 | 370–370 | app.get('/api/local/status', (req, res) => { | modified |
+| 2026-11-13 07:39:01 +07:00 | `server/index.js` | — | 697–697 | registerRowaDatabase(app, {store:rowaStore, requireAdmin}); | modified |
+| 2026-11-13 07:33:50 +07:00 | `server/rowa-mentions.js` | — | 1–62 | invalid, normalizeRowaName, stops, base, words, createRowaNames, people, add | added |
+| 2026-11-13 07:39:01 +07:00 | `server/rowa-mentions.test.js` | — | 1–29 | rows, index, mentions, make, db, first, app, server | added |
+| 2026-11-13 07:36:44 +07:00 | `src/components/HadithTextSearch.tsx` | — | 1–1 | HadithTextSearch, query, key, controller, result | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/components/HadithTextSearch.tsx` | 30–30 | 31–32 | export function HadithTextSearch({q,group,source,edition,matching,page,onPage,re | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/components/ReaderModal.tsx` | — | 1–2 | buildArabicRegex, harakat, safeWord, highlightText, words, regexStr, regex, readingTextRef | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/components/ReaderModal.tsx` | — | 70–71 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/components/ReaderModal.tsx` | — | 492–493 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/components/ReaderModal.tsx` | 498–506 | 504–505 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-13 07:46:40 +07:00 | `src/components/RowaCards.tsx` | — | 1–44 | RowaCards, useRowaCards, RowaCardsProvider, origin, open, close, dialog, previous | added |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | — | 1–2 | SkeletonCard, DerajatBadge, EmptyState, ErrorBanner, SearchHint, LIMIT, inputRef, doSearch | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 2–2 | 4–4 | import React, { useState, useCallback, useRef } from 'react'; | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 4–4 | — | import { webAPI } from '../api'; | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 10–43 | 11–11 | import { rowaFullName } from '../lib/rowa-name'; | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 48–90 | — | interface SearchResponse { | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 150–364 | — | const SearchHint = () => ( | modified |
+| 2026-11-13 07:37:00 +07:00 | `src/components/RowaDictionary.tsx` | 688–688 | 398–398 | const RowaDictionary: React.FC = () => { | modified |
+| 2026-11-13 07:45:17 +07:00 | `src/components/RowaLinkedText.tsx` | — | 1–42 | tags, safeTemplate, template, el, style, linkNames, walker, text | added |
+| 2026-11-13 07:46:40 +07:00 | `src/components/RowaProfileModal.tsx` | — | 1–291 | parseList, parseKutub, sep, formatYear, getKitabColor, RowaProfileModal, dialogRef, guruList | added |
+| 2026-11-13 07:35:58 +07:00 | `src/components/rowa-links.css` | — | 1–2 | module/file | added |
+| 2026-11-13 07:32:46 +07:00 | `src/lib/use-modal-focus.ts` | — | 10–11 | export function useModalFocus(onEscape?:()=>void, enabled=true) { | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/main.tsx` | — | 1–1 | module/file | modified |
+| 2026-11-13 07:36:44 +07:00 | `src/main.tsx` | 8–8 | 9–9 | createRoot(document.getElementById('root')!).render( | modified |

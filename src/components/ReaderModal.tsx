@@ -1,3 +1,5 @@
+import {RowaLinkedText} from './RowaLinkedText';
+import {useRowaCards} from './RowaCards';
 import {ReaderAiPanel} from './ReaderAiPanel';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { webAPI } from '../api';
@@ -65,6 +67,8 @@ const highlightText = (text: string, query?: string) => {
 
 const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highlightQuery, settings, favorites = [], setFavorites, bookmarks = [], setBookmarks, onClose, onPageChange }) => {
   const readingTextRef=useRef<HTMLDivElement>(null);
+  const openRowa=useRowaCards(),[selectedNarrator,setSelectedNarrator]=useState('');
+  useEffect(()=>{const change=()=>{const selection=window.getSelection(),text=selection?.toString().trim()||'';setSelectedNarrator(selection&&readingTextRef.current?.contains(selection.anchorNode)&&readingTextRef.current?.contains(selection.focusNode)&&text.length>=2&&text.length<=250?text:'');};document.addEventListener('selectionchange',change);return()=>document.removeEventListener('selectionchange',change);},[]);
   const [aiRequest,setAiRequest]=useState<AiRequest|null>(null),[aiBusy,setAiBusy]=useState(false);
   const aiActive=useRef(false);
   const onAiBusy=useCallback((busy:boolean)=>{aiActive.current=busy;setAiBusy(busy);},[]);
@@ -485,6 +489,8 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
             <div className="flex flex-wrap gap-2 px-4 md:px-8 py-3 border-b border-gray-200 font-sans" onClick={e=>e.stopPropagation()}>
               <button type="button" disabled={loading||aiBusy} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('explain')} className="min-h-11 rounded-xl px-4 py-2 bg-emerald-700 text-white text-sm font-semibold disabled:opacity-40">Jelaskan halaman ini</button>
               <button type="button" disabled={loading||aiBusy} onMouseDown={e=>e.preventDefault()} onClick={()=>askPage('translate')} className="min-h-11 rounded-xl px-4 py-2 border border-emerald-700 text-emerald-800 text-sm font-semibold disabled:opacity-40">Terjemahkan halaman ini</button>
+              <button type="button" disabled={!selectedNarrator||loading} onMouseDown={e=>e.preventDefault()} onClick={()=>openRowa(selectedNarrator)} className="min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold disabled:opacity-40">Bithaqah perawi pilihan</button>
+              <p className="basis-full text-xs text-gray-500">Nama bergaris bawah membuka bithaqah. Untuk nama pendek yang belum tertaut, pilih namanya lalu tekan Bithaqah perawi pilihan.</p>
               <p className="basis-full text-xs text-gray-500">Pilih teks untuk membahas bagian tertentu, atau gunakan seluruh halaman.</p>
             </div>
             {aiRequest&&!loading&&aiRequest.source?.bookId===bookId&&aiRequest.source?.pageId===currentPage.id&&<ReaderAiPanel request={aiRequest} onBusyChange={onAiBusy} onClose={closeAi} onShowSource={()=>readingTextRef.current?.scrollIntoView({block:'start'})}/>}
@@ -495,15 +501,8 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
                 </div>
               ) : (
                 <div ref={readingTextRef} key={pageKey} className={`flex flex-col ${slideDir ? 'animate-slide-' + slideDir : ''}`} style={{ fontSize: `${fontSize}px`, lineHeight: '2.2', fontFamily: 'var(--arabic-font)' }}>
-                    {(currentPage?.text || '').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line: string, i: number) => (
-                      <div 
-                        key={i} 
-                        dir="auto" 
-                        className="whitespace-pre-wrap text-justify" 
-                        style={{ minHeight: line.trim() === '' ? '1.5em' : 'auto', wordBreak: 'break-word' }}
-                        dangerouslySetInnerHTML={{ __html: highlightText(line, localHighlight) }} 
-                      />
-                    ))}
+                    <RowaLinkedText html={(currentPage?.text||'').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line:string)=>`<div dir="auto" class="whitespace-pre-wrap text-justify" style="min-height:${line.trim()===''?'1.5em':'auto'};word-break:break-word">${highlightText(line,localHighlight)}</div>`).join('\n')}/>
+
                   </div>
               )}
             </div>

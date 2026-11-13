@@ -1,0 +1,2 @@
+.rowa-name-link{display:inline;border:0;padding:0;margin:0;background:transparent;color:inherit;font:inherit;line-height:inherit;cursor:pointer;text-decoration-line:underline;text-decoration-style:dotted;text-decoration-color:var(--app-primary);text-underline-offset:.2em}
+.rowa-name-link:hover{color:var(--app-primary);text-decoration-style:solid}.rowa-name-link:focus-visible{outline:2px solid var(--app-primary);outline-offset:3px;border-radius:3px}

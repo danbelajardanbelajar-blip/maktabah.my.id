@@ -7,6 +7,8 @@ export function useModalFocus(onEscape?:()=>void, enabled=true) {
     const focusable=()=>Array.from(root.current?.querySelectorAll<HTMLElement>('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]')||[]).filter(e=>e.getClientRects().length>0);
     const timer=setTimeout(()=>focusable()[0]?.focus({preventScroll:true}),0);
     const key=(e:KeyboardEvent)=>{
+      const dialogs=Array.from(document.querySelectorAll<HTMLElement>('[role=dialog][aria-modal=true]')).filter(el=>el.getClientRects().length>0);
+      if(dialogs.length&&dialogs.at(-1)!==root.current)return;
       if(e.key==='Escape'&&close.current){e.preventDefault();e.stopPropagation();close.current();return;}
       if(e.key!=='Tab')return;
       const items=focusable(),first=items[0],last=items.at(-1);
