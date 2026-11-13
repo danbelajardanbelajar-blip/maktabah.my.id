@@ -12,12 +12,14 @@ interface Message {
   references?: Array<{bkid: number, title: string, juz: number | string | null, page: number | string | null; pageId?: number | null; excerpt?: string}>;
 }
 
-export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, initialSource, initialIntent, onBusyChange, redirectNotice = '', onCancelRedirect }: { openBook: (id: number, pageId?: number) => void; initialSource?:AiPageSource; initialIntent?:AiIntent; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void; redirectNotice?: string; onCancelRedirect?: () => void }) {
+export default function AskAI({ openBook, initialQuestion = '', questionVersion = 0, initialSource, initialIntent, initialPreviousQuestions, onBusyChange, redirectNotice = '', onCancelRedirect }: { openBook: (id: number, pageId?: number) => void; initialSource?:AiPageSource; initialIntent?:AiIntent; initialPreviousQuestions?:string[]; initialQuestion?: string; questionVersion?: number; onBusyChange?: (busy:boolean)=>void; redirectNotice?: string; onCancelRedirect?: () => void }) {
   const [restored] = useState(() => readAiSession(sessionStorage));
   const welcome: Message[] = [
     { role: "ai", content: "Assalamu'alaikum. Saya Maktabah Bot, asisten AI Anda. Tanyakan apa saja seputar ilmu agama, dan saya akan mencarikannya di dalam ribuan kitab database ini." }
   ];
   const [messages, setMessages] = useState<Message[]>(restored.messages.length ? restored.messages : welcome);
+  const messagesRef=useRef(messages);
+  messagesRef.current=messages;
   const [available, setAvailable] = useState<boolean | null>(null);
   const [availabilityMessage,setAvailabilityMessage]=useState('');
   const [input, setInput] = useState<string>(initialQuestion || restored.input);
@@ -70,6 +72,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
   const sendQuestion = useCallback(async (question:string,options:AiRequest={}) => {
     const q = question.trim();
     if (!q || requestActive.current || available !== true) return;
+    const requestOptions={...options,previousQuestions:options.previousQuestions??messagesRef.current.filter(message=>message.role==='user').slice(-4).map(message=>message.content.slice(0,1500))};
     // A ref closes the gap before React renders loading=true (double clicks/effect replay).
     requestActive.current = true;
     lastQuestion.current = q;
@@ -78,18 +81,18 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     setLoading(true);setProgress('Memeriksa permintaan…');failedRequest.current=null;
 
     try {
-      const res = await webAPI.askAI(q,options,setProgress);
+      const res = await webAPI.askAI(q,requestOptions,setProgress);
       webAPI.getRecentQuestions().then(data => { if (data.data) setRecentQuestions(data.data); }).catch(() => {});
       if (res.status === 'success') {
         setMessages(prev => [...prev, { role: "ai", content: res.answer, references: res.references }]);
       } else {
         setMessages(prev => [...prev, { role: 'error', content: res.message || 'Terjadi kesalahan sistem.' }]);
-        failedRequest.current={q,options};setInput(current=>current || q);
+        failedRequest.current={q,options:requestOptions};setInput(current=>current || q);
       }
     } catch (err: any) {
       if(err.status===409){setAvailable(false);setAvailabilityMessage(aiFailureMessage(err));}
       setMessages(prev => [...prev, { role: 'error', content: aiFailureMessage(err) }]);
-      failedRequest.current={q,options};setInput(current=>current || q);
+      failedRequest.current={q,options:requestOptions};setInput(current=>current || q);
     }
     finally {
       requestActive.current = false;
@@ -102,8 +105,8 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
     // Only an explicit history click creates a new version. Opening the tab or restoring
     // a saved conversation must never resend a question or duplicate a provider request.
     handledQuestionVersion.current = questionVersion;
-    void sendQuestion(initialQuestion,initialSource?{source:initialSource,intent:initialIntent || 'explain'}:{});
-  },[initialQuestion,questionVersion,initialSource,initialIntent,loading,available,sendQuestion]);
+    void sendQuestion(initialQuestion,{...(initialSource?{source:initialSource,intent:initialIntent || 'explain'}:{}),previousQuestions:initialPreviousQuestions||[]});
+  },[initialQuestion,questionVersion,initialSource,initialIntent,initialPreviousQuestions,loading,available,sendQuestion]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,7 +218,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                   {recentQuestions.map((rq, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => { setSource(rq.source);setIntent(rq.intent || 'explain');void sendQuestion(rq.query,rq.source?{source:rq.source,intent:rq.intent || 'explain'}:{}); }}
+                      onClick={() => { setSource(rq.source);setIntent(rq.intent || 'explain');void sendQuestion(rq.query,{...(rq.source?{source:rq.source,intent:rq.intent || 'explain'}:{}),previousQuestions:rq.previousQuestions||[]}); }}
                       disabled={loading || available !== true}
                       className="bg-white hover:bg-emerald-50 hover:text-emerald-700 text-gray-600 border border-gray-200 hover:border-emerald-200 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
                       dir="auto"

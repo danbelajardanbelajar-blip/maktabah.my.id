@@ -1,0 +1,1275 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 10:17:40 +07:00",
+  "title": "Tanya AI: relevansi sumber, pemeriksaan klaim dan konteks pertanyaan lanjutan",
+  "baseCommit": "38a0744c0ef6b2247446b9b008c981f3769af817",
+  "checks": "164 full-suite tests passed; 24 targeted AI/relevance tests passed after final source-context check; TypeScript/production build, node syntax and staged diff checks passed. Edge local QA: user-question-only context, reload, new-chat reset and mobile; reader inline-AI regression passed using mocked provider, no pageerror. Regression covers witir vs tarawih, customary count vs preferred ruling, negative/malformed semantic verdicts, context-aware cache/history and citation compaction. Real provider/online verification follows deployment.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index.dev-8SvpTZYz.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 10:15:30 +07:00",
+      "stagedSha256": "5974baf1cf3ac7cc45d6c744c925178e103a101a5de2c2794ca851ea73801ae8",
+      "diffSha256": "899c28c19e016ecb41918c7d2f1ba6a574f49fb36ca56ea7b5a4adb90b2051ca",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "Ze",
+        "et",
+        "ct",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "R",
+        "z",
+        "B",
+        "oe",
+        "se",
+        "ce",
+        "le",
+        "fe",
+        "me",
+        "he",
+        "ge",
+        "V",
+        "Ie",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "Xe",
+        "Qe",
+        "H",
+        "lt",
+        "dt",
+        "ft",
+        "pt",
+        "mt",
+        "_t",
+        "vt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "Ot",
+        "kt",
+        "At",
+        "jt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "W",
+        "It",
+        "Lt",
+        "Rt",
+        "zt",
+        "G",
+        "Vt",
+        "Ht",
+        "Gt",
+        "Kt",
+        "Jt",
+        "Zt",
+        "en",
+        "cn",
+        "ln",
+        "un",
+        "dn",
+        "fn",
+        "An",
+        "jn",
+        "Gn",
+        "Kn",
+        "Jn",
+        "Yn",
+        "Zn",
+        "Qn",
+        "tr",
+        "nr",
+        "rr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "pr",
+        "mr",
+        "gr",
+        "_r",
+        "vr",
+        "yr",
+        "br",
+        "xr",
+        "Dr",
+        "Or",
+        "Mr",
+        "Hr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "si",
+        "ci",
+        "li",
+        "di",
+        "xi",
+        "Si",
+        "Ci",
+        "wi",
+        "Ti",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Fi",
+        "Ii",
+        "Li",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "Yi",
+        "Xi",
+        "ta",
+        "na",
+        "sa",
+        "ca",
+        "la",
+        "fa",
+        "pa",
+        "ma",
+        "ya",
+        "ba",
+        "xa",
+        "Ca",
+        "wa",
+        "Da",
+        "Oa",
+        "ka",
+        "Aa",
+        "u",
+        "f",
+        "h",
+        "Pa",
+        "Fa",
+        "Ia",
+        "La",
+        "Ra",
+        "za",
+        "Va",
+        "Ha",
+        "Ua",
+        "Wa",
+        "qa",
+        "Ja",
+        "Ya",
+        "Qa",
+        "eo",
+        "to",
+        "no",
+        "io",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "js",
+        "Ms",
+        "Ns",
+        "Rs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Ys",
+        "Xs",
+        "Zs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "fc",
+        "pc",
+        "mc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "Jc",
+        "Yc",
+        "Xc",
+        "nl",
+        "rl",
+        "il",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "dl",
+        "fl",
+        "pl",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "wl",
+        "Tl",
+        "El",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "Ml",
+        "Nl",
+        "Pl",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Q",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "ht",
+        "bt",
+        "xt",
+        "Mt",
+        "Bt",
+        "Ut",
+        "Wt",
+        "qt",
+        "tn",
+        "nn",
+        "rn",
+        "_",
+        "pn",
+        "mn",
+        "hn",
+        "vn",
+        "Sn",
+        "wn",
+        "Dn",
+        "Mn",
+        "Nn",
+        "Fn",
+        "In",
+        "Un",
+        "Wn",
+        "qn",
+        "Sr",
+        "Cr",
+        "Tr",
+        "Er",
+        "Nr",
+        "Pr",
+        "Ir",
+        "Lr",
+        "zr",
+        "Ur"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:15:30 +07:00",
+      "stagedSha256": "eb5aecb6ec21e6c8ea8ff450e3ecffeef618a5464e540ee3c75a8b9a7ad542fd",
+      "diffSha256": "df081170fd3e9d1caea1b6b4824074352d6125c1f4d575fbb6e0775b5fe35f80",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/ai-improvements.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:16:40 +07:00",
+      "stagedSha256": "e94cb95f293afe40652be4ed754a1677654cc56a49d2c4b171c316193ba9bb2d",
+      "diffSha256": "700b6dd2b54dea1726a907134ae517efa3e0f9f7ab01f060d5b316648571f0c3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 48,
+            "count": 0
+          },
+          "after": {
+            "line": 49,
+            "count": 16
+          },
+          "section": "Renderer Markdown dipakai bersama dengan Tanya AI dan melakukan escape HTML sebe"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-relevance.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 10:13:44 +07:00",
+      "stagedSha256": "62f1450714a5a08387bed1f7b98ff6a31a2c99115e03829a0dd910828af8cabc",
+      "diffSha256": "cbe60ad3e4926df575f8c282cf7d61a137c33296a3414f446c3694ee7002cc6b",
+      "symbols": [
+        "topics",
+        "normalizedTopicText",
+        "tokens",
+        "questionTopics",
+        "words",
+        "topicSearchConstraint",
+        "matchesQuestionTopic",
+        "sourceWords",
+        "readPreviousQuestions",
+        "questionContext",
+        "followup",
+        "currentTopics",
+        "relevanceSchema",
+        "reviewSystem",
+        "readRelevanceReview",
+        "result"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 37
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-relevance.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-13 10:10:25 +07:00",
+      "stagedSha256": "0525a2bdc76a3b1855dc22a57d555e7367966fe11ad21ab69612aa4d50f7c8a9",
+      "diffSha256": "a4e5103318ddbbff3bf03806faa16f3fd972669e236d9b9e399f3ae21a637754",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 21
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:17:38 +07:00",
+      "stagedSha256": "06e561ec875648738c66adcbdd0b6ac5db2cb0a39eb60e084761a927da76ad0a",
+      "diffSha256": "0dfa301cee73182452a35e0d36d59d16c43cbbbc360249873b63a187783bf4ca",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "retrieveAiReferences",
+        "terms",
+        "constraint",
+        "results",
+        "matches",
+        "relevant",
+        "seen",
+        "pages",
+        "id",
+        "rows",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "ip",
+        "entry",
+        "controller",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "translated",
+        "expanded",
+        "catalog",
+        "context",
+        "task",
+        "generated",
+        "review",
+        "used",
+        "renumber"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 0
+          },
+          "after": {
+            "line": 2,
+            "count": 1
+          },
+          "section": "import {conversationalReply} from './ai-conversation.js';"
+        },
+        {
+          "before": {
+            "line": 26,
+            "count": 1
+          },
+          "after": {
+            "line": 27,
+            "count": 1
+          },
+          "section": "export function readAiConfig(filename, env = process.env) {"
+        },
+        {
+          "before": {
+            "line": 37,
+            "count": 1
+          },
+          "after": {
+            "line": 38,
+            "count": 1
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 69,
+            "count": 1
+          },
+          "after": {
+            "line": 70,
+            "count": 1
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 70,
+            "count": 0
+          },
+          "after": {
+            "line": 72,
+            "count": 1
+          },
+          "section": "export function retrieveAiReferences(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 80,
+            "count": 3
+          },
+          "after": {
+            "line": 82,
+            "count": 4
+          },
+          "section": "export function retrieveAiReferences(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 138,
+            "count": 0
+          },
+          "after": {
+            "line": 142,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 153,
+            "count": 2
+          },
+          "after": {
+            "line": 157,
+            "count": 4
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 156,
+            "count": 1
+          },
+          "after": {
+            "line": 162,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 177,
+            "count": 2
+          },
+          "after": {
+            "line": 183,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 180,
+            "count": 2
+          },
+          "after": {
+            "line": 186,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 183,
+            "count": 1
+          },
+          "after": {
+            "line": 189,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 198,
+            "count": 1
+          },
+          "after": {
+            "line": 205,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 200,
+            "count": 1
+          },
+          "after": {
+            "line": 207,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 202,
+            "count": 1
+          },
+          "after": {
+            "line": 209,
+            "count": 13
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 205,
+            "count": 5
+          },
+          "after": {
+            "line": 224,
+            "count": 3
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 212,
+            "count": 2
+          },
+          "after": {
+            "line": 229,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:15:19 +07:00",
+      "stagedSha256": "7b14b55b4a59eefee636ff408b988dc5b36b1d14ff3bb1fc051b43e8d7d1a244",
+      "diffSha256": "f5017e3df82f24767f1ff655f4dc189cb3ff2e4bd732861307379eda1524de22",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 29,
+            "count": 2
+          },
+          "after": {
+            "line": 29,
+            "count": 4
+          },
+          "section": "async function serve(t,f,fetchImpl,extras={}) {"
+        },
+        {
+          "before": {
+            "line": 159,
+            "count": 1
+          },
+          "after": {
+            "line": 161,
+            "count": 1
+          },
+          "section": "test('selected page is loaded from database, contextual history/cache stay separ"
+        },
+        {
+          "before": {
+            "line": 161,
+            "count": 1
+          },
+          "after": {
+            "line": 163,
+            "count": 1
+          },
+          "section": "test('unverified prose is suppressed in favor of original source quotes without"
+        },
+        {
+          "before": {
+            "line": 167,
+            "count": 1
+          },
+          "after": {
+            "line": 169,
+            "count": 1
+          },
+          "section": "test('unverified prose is suppressed in favor of original source quotes without"
+        },
+        {
+          "before": {
+            "line": 174,
+            "count": 1
+          },
+          "after": {
+            "line": 176,
+            "count": 1
+          },
+          "section": "test('stream reports actual retrieval/generation/verification, cached branch ski"
+        },
+        {
+          "before": {
+            "line": 225,
+            "count": 0
+          },
+          "after": {
+            "line": 228,
+            "count": 44
+          },
+          "section": "test('reported Arabic poem resolves original quote IDs despite Latin translitera"
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:14:38 +07:00",
+      "stagedSha256": "483746a55a86dce7c7f74eb558c6a7a7d8da67b9269a9c88fee96488ebfb681e",
+      "diffSha256": "f6ef86d9f79a486f8a3a8761d0d366441820d7f0c2473480b7073f7208b4aed4",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "limit",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "key",
+        "targetTab",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 448,
+            "count": 1
+          },
+          "after": {
+            "line": 448,
+            "count": 1
+          },
+          "section": "function App() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AskAI.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:14:38 +07:00",
+      "stagedSha256": "c24b55bae48a7742d9baf0b59a9e87286768ea82054c59925e98a7683112203a",
+      "diffSha256": "03579d6eb3972873ea54a1945e991ae8c202086e717ef648228a96d11e9bdd06",
+      "symbols": [
+        "AskAI",
+        "messagesRef",
+        "failedRequest",
+        "lastQuestion",
+        "requestActive",
+        "handledQuestionVersion",
+        "endRef",
+        "inputRef",
+        "refresh",
+        "r",
+        "data",
+        "visible",
+        "interval",
+        "sendQuestion",
+        "q",
+        "requestOptions",
+        "res",
+        "handleSubmit",
+        "failed"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 15,
+            "count": 1
+          },
+          "after": {
+            "line": 15,
+            "count": 1
+          },
+          "section": "interface Message {"
+        },
+        {
+          "before": {
+            "line": 20,
+            "count": 0
+          },
+          "after": {
+            "line": 21,
+            "count": 2
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 72,
+            "count": 0
+          },
+          "after": {
+            "line": 75,
+            "count": 1
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 81,
+            "count": 1
+          },
+          "after": {
+            "line": 84,
+            "count": 1
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 87,
+            "count": 1
+          },
+          "after": {
+            "line": 90,
+            "count": 1
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 92,
+            "count": 1
+          },
+          "after": {
+            "line": 95,
+            "count": 1
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 105,
+            "count": 2
+          },
+          "after": {
+            "line": 108,
+            "count": 2
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        },
+        {
+          "before": {
+            "line": 218,
+            "count": 1
+          },
+          "after": {
+            "line": 221,
+            "count": 1
+          },
+          "section": "export default function AskAI({ openBook, initialQuestion = '', questionVersion"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/ai-source.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:07:42 +07:00",
+      "stagedSha256": "351cee70fb824f4ec2e940846f88db09313cfdaa3d647d5fbf3501522aa850c4",
+      "diffSha256": "a868bd929e97e856571ccbec3a6015f959d17a0fdddd08ca6a5fc3a043df4d56",
+      "symbols": [
+        "readAiSource",
+        "label"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 1
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "export type AiIntent='explain'|'translate';"
+        }
+      ]
+    }
+  ]
+}

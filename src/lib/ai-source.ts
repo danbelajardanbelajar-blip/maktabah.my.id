@@ -1,6 +1,6 @@
 export type AiPageSource={bookId:number;pageId:number;title?:string;part?:string|number|null;page?:string|number|null;text?:string};
 export type AiIntent='explain'|'translate';
-export type AiRequest={source?:AiPageSource;intent?:AiIntent};
+export type AiRequest={source?:AiPageSource;intent?:AiIntent;previousQuestions?:string[]};
 export type AiHistoryItem={query:string}&AiRequest;
 export function readAiSource(value:any):AiPageSource|undefined {
   if(!value || !Number.isSafeInteger(value.bookId)||value.bookId<1||!Number.isSafeInteger(value.pageId)||value.pageId<0)return;

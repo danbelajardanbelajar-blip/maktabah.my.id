@@ -650,3 +650,52 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-09-57-02-516447.
 | 2026-11-13 09:56:14 +07:00 | `dist/assets/index.dev-B0S5CQb4.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
 | 2026-11-13 09:56:14 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
 | 2026-11-13 09:56:03 +07:00 | `src/components/AskAI.tsx` | 121–122 | 121–125 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+
+## [2026-11-13 10:17:40 +07:00] — Tanya AI: relevansi sumber, pemeriksaan klaim dan konteks pertanyaan lanjutan
+
+Waktu pencatatan: **2026-11-13 10:17:40 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `38a0744`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 164 full-suite tests passed; 24 targeted AI/relevance tests passed after final source-context check; TypeScript/production build, node syntax and staged diff checks passed. Edge local QA: user-question-only context, reload, new-chat reset and mobile; reader inline-AI regression passed using mocked provider, no pageerror. Regression covers witir vs tarawih, customary count vs preferred ruling, negative/malformed semantic verdicts, context-aware cache/history and citation compaction. Real provider/online verification follows deployment.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-17-40-a8326b.json](docs/change-audit/2026-11-13-10-17-40-a8326b.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 10:15:30 +07:00 | `dist/assets/index.dev-8SvpTZYz.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 10:15:30 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-13 10:16:40 +07:00 | `docs/ai-improvements.md` | — | 49–64 | Renderer Markdown dipakai bersama dengan Tanya AI dan melakukan escape HTML sebe | modified |
+| 2026-11-13 10:13:44 +07:00 | `server/ai-relevance.js` | — | 1–37 | topics, normalizedTopicText, tokens, questionTopics, words, topicSearchConstraint, matchesQuestionTopic, sourceWords | added |
+| 2026-11-13 10:10:25 +07:00 | `server/ai-relevance.test.js` | — | 1–21 | module/file | added |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | — | 2–2 | import {conversationalReply} from './ai-conversation.js'; | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 26–26 | 27–27 | export function readAiConfig(filename, env = process.env) { | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 37–37 | 38–38 | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 69–69 | 70–70 | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | — | 72–72 | export function retrieveAiReferences(db, question, additional = false, catalogue | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 80–82 | 82–85 | export function retrieveAiReferences(db, question, additional = false, catalogue | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | — | 142–142 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 153–154 | 157–160 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 156–156 | 162–162 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 177–178 | 183–184 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 180–181 | 186–187 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 183–183 | 189–190 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 198–198 | 205–205 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 200–200 | 207–207 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 202–202 | 209–221 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 205–209 | 224–226 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:17:38 +07:00 | `server/ask-ai.js` | 212–213 | 229–230 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | 29–30 | 29–32 | async function serve(t,f,fetchImpl,extras={}) { | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | 159–159 | 161–161 | test('selected page is loaded from database, contextual history/cache stay separ | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | 161–161 | 163–163 | test('unverified prose is suppressed in favor of original source quotes without | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | 167–167 | 169–169 | test('unverified prose is suppressed in favor of original source quotes without | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | 174–174 | 176–176 | test('stream reports actual retrieval/generation/verification, cached branch ski | modified |
+| 2026-11-13 10:15:19 +07:00 | `server/ask-ai.test.js` | — | 228–271 | test('reported Arabic poem resolves original quote IDs despite Latin translitera | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/App.tsx` | 448–448 | 448–448 | function App() { | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 15–15 | 15–15 | interface Message { | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | — | 21–22 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | — | 75–75 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 81–81 | 84–84 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 87–87 | 90–90 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 92–92 | 95–95 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 105–106 | 108–109 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:14:38 +07:00 | `src/components/AskAI.tsx` | 218–218 | 221–221 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-13 10:07:42 +07:00 | `src/lib/ai-source.ts` | 3–3 | 3–3 | export type AiIntent='explain'\|'translate'; | modified |

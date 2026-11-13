@@ -445,7 +445,7 @@ function App() {
           <BackButton onClick={goBack} title="Kembali ke halaman sebelumnya"/>
           <span className="text-sm font-semibold text-[var(--app-text)] opacity-70 truncate">{pageTitles[activeTab]}</span>
         </nav>}
-        <div hidden={activeTab !== 'ask'}><AskAI initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} redirectNotice={aiRedirectNotice} onCancelRedirect={cancelAiRedirect} /></div>
+        <div hidden={activeTab !== 'ask'}><AskAI initialPreviousQuestions={aiRequest.previousQuestions} initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} redirectNotice={aiRedirectNotice} onCancelRedirect={cancelAiRedirect} /></div>
         {activeTab === 'quran' ? (
           <QuranReader />
         ) : activeTab === 'rowa' ? (
