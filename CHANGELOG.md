@@ -758,3 +758,24 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-16-29-20-e48972.
 | 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | 1225–1226 | 1230–1232 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | — | 1248–1248 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-13 16:27:32 +07:00 | `src/components/AskLogDetail.tsx` | — | 1–90 | parse, v, formatLogTime, d, AskLogDetail, ref, meta, context | added |
+
+## [2026-11-13 18:22:26 +07:00] — Tampilkan seluruh rujukan pada detail log Tanya AI
+
+Waktu pencatatan: **2026-11-13 18:22:26 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b551976`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/ai-history.js lulus; node --test server/ai-history.test.js 2/2 lulus; npm run build (TypeScript dan Vite) sukses; git diff --check lulus
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-18-22-26-dd5be5.json](docs/change-audit/2026-11-13-18-22-26-dd5be5.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 18:21:57 +07:00 | `dist/assets/index.dev-IDAKDhOu.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 18:21:57 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-13 18:21:32 +07:00 | `server/ai-history.js` | 5–5 | — | const SESSION=Symbol('ai-browser-session'); | modified |
+| 2026-11-13 18:21:32 +07:00 | `server/ai-history.js` | 11–12 | 10–11 | export function auditMeta(payload={}) { | modified |
+| 2026-11-13 18:21:32 +07:00 | `server/ai-history.test.js` | 25–25 | 25–25 | test('two browsers on the same IP have isolated history; legacy rows remain admi | modified |
+| 2026-11-13 18:21:32 +07:00 | `server/ai-history.test.js` | 31–31 | 31–33 | test('admin audit metadata stores mode, cited sources and quotes for later answe | modified |
+| 2026-11-13 18:21:32 +07:00 | `server/ai-history.test.js` | 37–38 | 39–41 | test('admin audit metadata stores mode, cited sources and quotes for later answe | modified |
+| 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 67–67 | 67–67 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
+| 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 69–69 | 69–69 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
+| 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 76–77 | 76–77 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |

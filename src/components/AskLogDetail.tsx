@@ -64,17 +64,17 @@ export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => 
             <div className="p-3 rounded-xl border leading-relaxed break-words" dir="auto" dangerouslySetInnerHTML={{ __html: row.response ? renderMarkdown(row.response) : '<span class="text-gray-400">(tidak ada jawaban tersimpan)</span>' }} />
           </section>
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Rujukan yang dikutip ({references.length})</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Semua sumber yang diperiksa ({references.length})</h3>
             {!meta ? <div className="text-xs text-gray-400 italic">Log ini dibuat sebelum rujukan disimpan; hanya pertanyaan dan jawaban yang tersedia.</div>
-              : references.length === 0 ? <div className="text-xs text-gray-400 italic">Tidak ada rujukan pada jawaban ini.</div>
+              : references.length === 0 ? <div className="text-xs text-gray-400 italic">Tidak ada sumber kitab yang disimpan untuk jawaban ini.</div>
               : <ol className="space-y-2">{references.map((r, i) => {
                   const quotes = (meta.quotes || []).filter(q => q.source === i + 1);
                   return (
                     <li key={i} className="p-3 rounded-xl border bg-gray-50">
                       <div className="flex items-start gap-2 font-semibold text-gray-800"><BookOpen size={16} className="mt-0.5 shrink-0 text-emerald-600" /><span dir="auto">[{i + 1}] {r.title || '-'}</span></div>
                       <div className="text-xs text-gray-500 mt-0.5">ID kitab {r.bkid ?? '-'}{r.juz != null && r.juz !== '' ? ` · Juz ${r.juz}` : ''}{r.page != null && r.page !== '' ? ` · Hlm. ${r.page}` : ''}{r.pageId != null ? ` · ID halaman ${r.pageId}` : ''}</div>
-                      {quotes.map((q, j) => <blockquote key={j} className="mt-2 border-r-4 border-emerald-400 pr-3 text-gray-800 whitespace-pre-wrap break-words" dir="auto">{q.text}</blockquote>)}
-                      {r.excerpt && <details className="mt-2"><summary className="text-xs text-blue-600 cursor-pointer">Lihat cuplikan halaman</summary><div className="mt-1 text-gray-700 whitespace-pre-wrap break-words" dir="auto">{r.excerpt}</div></details>}
+                      {quotes.length > 0 && <div className="mt-3"><div className="text-[11px] font-semibold text-emerald-800 mb-1">Kutipan yang digunakan</div>{quotes.map((q, j) => <blockquote key={j} className="mb-2 border-r-4 border-emerald-400 pr-3 text-gray-800 whitespace-pre-wrap break-words" dir="auto">{q.text}</blockquote>)}</div>}
+                      {r.excerpt && <div className="mt-3"><div className="text-[11px] font-semibold text-gray-600 mb-1">Cuplikan halaman sumber</div><div className="p-3 rounded-lg bg-white border text-gray-700 whitespace-pre-wrap break-words" dir="auto">{r.excerpt}</div></div>}
                     </li>
                   );
                 })}</ol>}

@@ -2,14 +2,13 @@ import crypto from 'node:crypto';
 
 const COOKIE='maktabah_ai';
 const SESSION=Symbol('ai-browser-session');
-const clip=(value,max)=>{const text=String(value??'');return text.length>max?text.slice(0,max)+'…':text;};
 // Admin-only audit trail: enough of the cited sources to check an answer without re-running the AI.
 export function auditMeta(payload={}) {
   return {
     mode:payload.mode||null,
     reviewed:payload.reviewed===true,
-    references:(Array.isArray(payload.references)?payload.references:[]).slice(0,10).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:clip(r?.title,300),juz:r?.juz??null,page:r?.page??null,excerpt:clip(r?.excerpt,1200)})),
-    quotes:(Array.isArray(payload.evidence?.quotes)?payload.evidence.quotes:[]).slice(0,20).map(q=>({source:q?.source??null,text:clip(q?.text,800)})),
+    references:(Array.isArray(payload.references)?payload.references:[]).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:typeof r?.title==='string'?r.title:'',juz:r?.juz??null,page:r?.page??null,excerpt:typeof r?.excerpt==='string'?r.excerpt:''})),
+    quotes:(Array.isArray(payload.evidence?.quotes)?payload.evidence.quotes:[]).map(q=>({source:q?.source??null,text:typeof q?.text==='string'?q.text:''})),
   };
 }
 export function registerAiHistory(app,{getStateDb}) {
