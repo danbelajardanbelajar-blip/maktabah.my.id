@@ -11,6 +11,7 @@ import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin
 import { AdminNavigation } from './AdminNavigation';
 import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
+import { AskLogDetail } from './AskLogDetail';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
@@ -1082,6 +1083,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState<any>(null);
   const [error, setError] = useState('');
   
   const [stats, setStats] = useState({ total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 });
@@ -1187,7 +1189,10 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
             {loading ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Memuat...</td></tr> : 
               data.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Belum ada log</td></tr> :
               paginated.map(d => (
-                <tr key={d.id} className="hover:bg-gray-50">
+                <tr key={d.id} className={type === 'ask' ? 'hover:bg-blue-50 cursor-pointer' : 'hover:bg-gray-50'}
+                  onClick={type === 'ask' ? () => setDetail(d) : undefined}
+                  onKeyDown={type === 'ask' ? (e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setDetail(d); } } : undefined}
+                  tabIndex={type === 'ask' ? 0 : undefined} title={type === 'ask' ? 'Klik untuk melihat pertanyaan dan jawaban lengkap' : undefined}>
                 <td className="p-3 text-center"><input type="checkbox" checked={!!selected.find(s => s.id === d.id)} onChange={(e) => toggleOne(e, d)} onClick={(e) => e.stopPropagation()} /></td>
                   <td className="p-3 text-gray-500">{d.id}</td>
                   <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID')}</td>
@@ -1222,8 +1227,9 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                     {type === 'rowa' && <span>{d.rowa_name} (ID: {d.rowa_id})</span>}
                     {type === 'ask' && (
                       <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-blue-600">Q: {d.question}</span>
-                        <span className="text-gray-500 text-xs truncate max-w-md">A: {d.response}</span>
+                        <span className="font-semibold text-blue-600 line-clamp-2 break-words" dir="auto">Q: {d.question}</span>
+                        <span className="text-gray-500 text-xs truncate max-w-md" dir="auto">A: {d.response}</span>
+                        <span className="text-[11px] text-blue-500 font-medium">Lihat detail jawaban →</span>
                       </div>
                     )}
                   </td>
@@ -1239,6 +1245,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       </div>
     
       <Pagination page={currentPage} total={data.length} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
+      {detail && <AskLogDetail row={detail} onClose={() => setDetail(null)} />}
     </div>
   );
 };

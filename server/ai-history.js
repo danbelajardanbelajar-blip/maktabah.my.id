@@ -2,11 +2,22 @@ import crypto from 'node:crypto';
 
 const COOKIE='maktabah_ai';
 const SESSION=Symbol('ai-browser-session');
+const clip=(value,max)=>{const text=String(value??'');return text.length>max?text.slice(0,max)+'…':text;};
+// Admin-only audit trail: enough of the cited sources to check an answer without re-running the AI.
+export function auditMeta(payload={}) {
+  return {
+    mode:payload.mode||null,
+    reviewed:payload.reviewed===true,
+    references:(Array.isArray(payload.references)?payload.references:[]).slice(0,10).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:clip(r?.title,300),juz:r?.juz??null,page:r?.page??null,excerpt:clip(r?.excerpt,1200)})),
+    quotes:(Array.isArray(payload.evidence?.quotes)?payload.evidence.quotes:[]).slice(0,20).map(q=>({source:q?.source??null,text:clip(q?.text,800)})),
+  };
+}
 export function registerAiHistory(app,{getStateDb}) {
   const db=getStateDb();
   if(db?.prepare("SELECT 1 FROM sqlite_master WHERE name='ask_logs'").get()) {
     if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='session_id'))db.exec('ALTER TABLE ask_logs ADD COLUMN session_id TEXT');
     if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='context_json'))db.exec('ALTER TABLE ask_logs ADD COLUMN context_json TEXT');
+    if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='meta_json'))db.exec('ALTER TABLE ask_logs ADD COLUMN meta_json TEXT');
     db.exec('CREATE INDEX IF NOT EXISTS ask_logs_session ON ask_logs(session_id)');
   }
   const session=(req,res,create=false)=>{
@@ -20,8 +31,8 @@ export function registerAiHistory(app,{getStateDb}) {
     if(!token)return null;
     req[SESSION]=crypto.createHash('sha256').update(token).digest('hex');return req[SESSION];
   };
-  const record=(req,res,question,response,context={})=>{
-    try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json) VALUES(?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context));} catch { /* History cannot discard a successful answer. */ }
+  const record=(req,res,question,response,context={},payload)=>{
+    try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json,meta_json) VALUES(?,?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context),payload?JSON.stringify(auditMeta(payload)):null);} catch { /* History cannot discard a successful answer. */ }
   };
   app.get('/api/recent-questions',(req,res)=>{
     res.set('Cache-Control','no-store');

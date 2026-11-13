@@ -159,7 +159,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     const contextData=selected?{source:selected.source,intent}:focusedQuestion!==q?{previousQuestions}:{};
     const cacheKey=crypto.createHash('sha256').update(JSON.stringify(['relevance-v2',focusedQuestion,intent,selected?.reference||null])).digest('hex');
     const cached = cache.get(cacheKey);
-    if (cached && cached.payload.reviewed===true && Date.now()-cached.createdAt < 300000 && validCachedAnswer(getDb(),cached.payload,hasAdditional())) {history.record(req,res,q,cached.payload.answer,contextData);stage('cached','Menampilkan jawaban tersimpan yang telah diperiksa sumbernya…');return finish(cached.payload);}
+    if (cached && cached.payload.reviewed===true && Date.now()-cached.createdAt < 300000 && validCachedAnswer(getDb(),cached.payload,hasAdditional())) {history.record(req,res,q,cached.payload.answer,contextData,cached.payload);stage('cached','Menampilkan jawaban tersimpan yang telah diperiksa sumbernya…');return finish(cached.payload);}
     const ip = req.ip || 'unknown', now = Date.now();
     for (const [id,entry] of limits) if (now-entry.start > 60000) limits.delete(id);
     const entry = limits.get(ip) || { start:now, count:0 };
@@ -177,7 +177,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       const social=!selected && intent==='question'?conversationalReply(q):null;
       if(social){
         const payload={status:'success',mode:'conversation',answer:social,references:[]};
-        history.record(req,res,q,social);finish(payload);return;
+        history.record(req,res,q,social,{},payload);finish(payload);return;
       }
       const db = getDb();
       stage(selected?'preparing':'searching',selected?'Menyiapkan teks halaman yang dipilih…':'Mencari rujukan dalam kitab…');
@@ -231,7 +231,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       const payload = { status:'success', answer, references, mode,reviewed:mode==='grounded'||mode==='catalogue',...(evidence?{evidence}:{}),...contextData };
       if(payload.reviewed)cache.set(cacheKey,{ createdAt:Date.now(), payload });
       if (cache.size > 100) cache.delete(cache.keys().next().value);
-      history.record(req,res,q,answer,contextData);
+      history.record(req,res,q,answer,contextData,payload);
       finish(payload);
     } catch (e) { finish({ status:'error', code:e.status ? e.code : 'SEARCH_ERROR', httpStatus:e.status || 503, message:e.status ? e.message : 'Pencarian rujukan kitab mengalami gangguan. Silakan coba lagi.' }); }
     finally { clearInterval(heartbeat); active--; }

@@ -729,3 +729,32 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-29-36-0db307.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 10:29:36 +07:00 | `docs/ai-improvements.md` | — | 73–82 | Domain `maktabah.quizb.my.id` menyajikan pembungkus iframe dengan src `https://m | modified |
+
+## [2026-11-13 16:29:20 +07:00] — Admin Log Tanya AI: detail pertanyaan, jawaban, dan rujukan yang dapat diklik
+
+Waktu pencatatan: **2026-11-13 16:29:20 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `fda5569`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/ai-history.js & server/ask-ai.js OK; node --test server/*.test.js 165/165 lulus (termasuk tes baru meta_json audit); oxlint tanpa error baru; npm run build (tsc -b + vite) sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-16-29-20-e48972.json](docs/change-audit/2026-11-13-16-29-20-e48972.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BVWVepuA.css` | 1–2 | — | module/file | deleted |
+| 2026-11-13 16:28:22 +07:00 | `dist/assets/index-DZ1745-4.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-8SvpTZYz.js` | 1–17 | — | module/file | deleted |
+| 2026-11-13 16:28:22 +07:00 | `dist/assets/index.dev-BkuRGvqy.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 16:28:22 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-13 16:26:42 +07:00 | `server/ai-history.js` | — | 5–14 | const SESSION=Symbol('ai-browser-session'); | modified |
+| 2026-11-13 16:26:42 +07:00 | `server/ai-history.js` | — | 20–20 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-13 16:26:42 +07:00 | `server/ai-history.js` | 23–24 | 34–35 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-13 16:27:43 +07:00 | `server/ai-history.test.js` | — | 24–40 | test('two browsers on the same IP have isolated history; legacy rows remain admi | modified |
+| 2026-11-13 16:26:46 +07:00 | `server/ask-ai.js` | 162–162 | 162–162 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 16:26:46 +07:00 | `server/ask-ai.js` | 180–180 | 180–180 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 16:26:46 +07:00 | `server/ask-ai.js` | 234–234 | 234–234 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | — | 14–14 | import { StorageCleanup } from './StorageCleanup'; | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | — | 1086–1086 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | 1190–1190 | 1192–1195 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | 1225–1226 | 1230–1232 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/Admin.tsx` | — | 1248–1248 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-13 16:27:32 +07:00 | `src/components/AskLogDetail.tsx` | — | 1–90 | parse, v, formatLogTime, d, AskLogDetail, ref, meta, context | added |
