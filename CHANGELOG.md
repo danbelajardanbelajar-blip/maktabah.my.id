@@ -405,3 +405,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-19-48-6f6561.
 | 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 38–40 | 40–48 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
 | 2026-11-13 07:17:49 +07:00 | `src/components/HadithBooks.tsx` | 42–43 | 50–51 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
 | 2026-11-13 07:09:55 +07:00 | `src/components/HadithTextSearch.tsx` | — | 1–36 | HadithTextSearch, query, key, controller, result | added |
+
+## [2026-11-13 07:22:54 +07:00] — Catat deployment pencarian isi Kutub Hadis dan verifikasi indeks serta browser online
+
+Waktu pencatatan: **2026-11-13 07:22:54 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `74cebb2`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Dokumentasi saja; fungsi 74cebb2 aktif lokal 3085 dan HTTPS, 146 tes/build/browser lulus; indeks lokal dan online 757.404 halaman; seluruh kelompok HTTP 200, scope terjaga, buka hasil dengan sorotan dan kembali/reload sesuai. Hash aset dan regresi kitab/penulis/perawi lulus. Tidak mengubah isi database sumber.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-22-54-7a0fce.json](docs/change-audit/2026-11-13-07-22-54-7a0fce.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 07:22:53 +07:00 | `docs/deployment-log.md` | — | 1–11 | module/file | modified |

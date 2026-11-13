@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 07:22:54 +07:00",
+  "title": "Catat deployment pencarian isi Kutub Hadis dan verifikasi indeks serta browser online",
+  "baseCommit": "74cebb247982d2e43a86e37f8dcc281f50c04406",
+  "checks": "Dokumentasi saja; fungsi 74cebb2 aktif lokal 3085 dan HTTPS, 146 tes/build/browser lulus; indeks lokal dan online 757.404 halaman; seluruh kelompok HTTP 200, scope terjaga, buka hasil dengan sorotan dan kembali/reload sesuai. Hash aset dan regresi kitab/penulis/perawi lulus. Tidak mengubah isi database sumber.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 07:22:53 +07:00",
+      "stagedSha256": "3e327a8d050c5b058a560e2ddd42187d8e9c1ba0e3ccc1ff3038479d72b346d5",
+      "diffSha256": "6655d94b6455b472261510eb67d102f1404c54376bd1dd2ed11361ab0cee8bc2",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 11
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

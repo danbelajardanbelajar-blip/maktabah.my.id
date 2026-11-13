@@ -1,3 +1,14 @@
+## 2026-11-13 07:22:53 WIB — Pencarian isi dalam lingkup Kutub Hadis
+
+- Commit fungsi `74cebb2` sudah push GitHub dan pull VPS. Transfer/import/penghapusan diperiksa tidak aktif, layanan direstart dan aktif. Kode/dependensi dibangun lokal; hosting hanya menghasilkan indeks data turunan.
+- Pilihan Cari dalam → Isi kitab bekerja pada kelompok aktif, sumber tertentu, atau satu edisi. Semua kata/frasa berurutan mengabaikan harakat/tatweel/varian alif dan ya; hasil menampilkan cuplikan, jilid/halaman asli, serta tautan pembaca dengan sorotan. Filter/pagination tersimpan di URL.
+- Indeks terpisah lokal dan online masing-masing selesai pada 757.404 halaman. FTS lama tidak menjamin pencarian berharakat dan database tambahan lokal tanpa FTS, sehingga indeks dinormalisasi khusus sumber Kutub Hadis diperlukan. Generasi baru memakai pointer atomik dan quick_check; sumber dibuka read-only. Indeks tidak masuk Git dan tidak mengganti database kitab/perawi/penulis.
+- 146 tes lulus; sintaks server/worker/launcher, TypeScript/build lokal dan staged whitespace lulus. Unit meliputi scope, dua database, deduplikasi book/page, halaman tambahan, teks Arab berharakat, Latin beraksen, pagination, sumber tidak berubah saat build, indeks stale/rebuild/retensi, dan maintenance.
+- Browser lokal 3085 serta HTTPS online lulus: menunggu 202/pengulangan otomatis, scope kelompok/kitab/edisi, pagination tanpa duplikasi, buka halaman/sorotan, kembali/reload filter, hasil kosong. Viewport 320/390/768/1440 tanpa overflow/pageerror.
+- Uji nyata HTTPS pada semua tujuh pilihan kelompok mengembalikan 200. Kutub Tis‘ah menelusuri 9 sumber/82 edisi; gabungan seluruh sumber 17/123 edisi. Pada pengujian ini respons sekitar 0,8–1,7 detik, bukan jaminan kecepatan setiap kueri.
+- Hash SHA256 aset HTTPS sesuai build lokal. Regresi tetap sesuai: 36.159 kitab, 966 penulis, dan AQUAL perawi 5739 sebanyak 40.413 karakter.
+- Lokal terbaru: Buka Kutub Hadis Lokal.bat, port 3085, kemampuan hadith-search-v2. Proses layanan lokal lama tidak dihentikan.
+
 ## 2026-11-13 06:50:01 WIB — Halaman Kutub Hadis
 
 - Commit fungsi `bbe2d03` sudah push GitHub dan pull VPS; layanan aktif dengan endpoint `/api/hadith-books` dan halaman `/#/kutub-hadis` melalui menu Lainnya.
