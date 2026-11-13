@@ -441,8 +441,8 @@ function App() {
       </header>
       
       <main className="flex-1 w-full mx-auto p-4 md:px-8 md:py-6 max-w-7xl relative">
-        {activeTab !== 'admin' && <nav aria-label="Navigasi halaman" className="flex items-center gap-3 mb-5">
-          <BackButton onClick={goBack} disabled={activeTab==='home' && !previousLocation(window.history.state,window.location.href)} title={activeTab==='home' && !previousLocation(window.history.state,window.location.href)?'Anda berada di beranda':'Kembali ke halaman sebelumnya'}/>
+        {activeTab !== 'home' && activeTab !== 'admin' && <nav aria-label="Navigasi halaman" className="flex items-center gap-3 mb-5">
+          <BackButton onClick={goBack} title="Kembali ke halaman sebelumnya"/>
           <span className="text-sm font-semibold text-[var(--app-text)] opacity-70 truncate">{pageTitles[activeTab]}</span>
         </nav>}
         <div hidden={activeTab !== 'ask'}><AskAI initialSource={aiRequest.source} initialIntent={aiRequest.intent} initialQuestion={aiQuestion} questionVersion={aiQuestionVersion} onBusyChange={setAiBusy} openBook={(bookId,pageId)=>openReader({bookId,pageId})} redirectNotice={aiRedirectNotice} onCancelRedirect={cancelAiRedirect} /></div>

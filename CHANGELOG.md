@@ -474,3 +474,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-07-51-41-17cb75.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-13 07:51:40 +07:00 | `docs/deployment-log.md` | — | 1–11 | module/file | modified |
+
+## [2026-11-13 08:11:22 +07:00] — Sembunyikan navigasi Kembali pada Beranda dan pertahankan konteks halaman lain
+
+Waktu pencatatan: **2026-11-13 08:11:22 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e5e9de9`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 7 tes navigasi/back-navigation lulus; TypeScript dan build lokal lulus; browser lokal 3087: Beranda langsung dan dengan riwayat tanpa tombol Kembali, browser back/forward berfungsi, halaman lain tetap memiliki Kembali, ponsel tanpa overflow, pembaca kembali ke Kutub Hadis, Escape pada bithaqah menjaga pembaca terbuka; tanpa pageerror. Staged whitespace bersih. Frontend saja tanpa perubahan database/backend.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-08-11-22-4f07c6.json](docs/change-audit/2026-11-13-08-11-22-4f07c6.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 08:09:51 +07:00 | `dist/assets/index.dev-nNJ5Hc0Y.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-13 08:09:51 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-13 08:09:37 +07:00 | `src/App.tsx` | 444–445 | 444–445 | function App() { | modified |
