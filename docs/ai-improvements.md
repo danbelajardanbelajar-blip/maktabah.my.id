@@ -70,3 +70,13 @@ Build fitur `08e76d8` sudah aktif setelah pull dan restart VPS, didahului pemeri
 Pemeriksa kini hanya menerima metadata/cuplikannya dari sumber yang benar-benar dikutip (maksimal tiga), bukan seluruh kandidat pencarian. Batas tahap pemeriksa menjadi maksimal 35 detik, dengan anggaran bersama 80 detik untuk seluruh permintaan agar tetap berada di bawah batas klien 90 detik. Pengujian memastikan kandidat yang tidak dikutip tidak ikut dikirim ke pemeriksa. Tidak ada jalur bypass ketika pemeriksa gagal.
 
 Domain `maktabah.quizb.my.id` menyajikan pembungkus iframe dengan src `https://maktab.my.id`; HTML pembungkus memang tidak memiliki hash build aplikasi. Backend yang diperbarui adalah target iframe tersebut.
+
+### Hasil akhir deployment dan uji nyata · 2026-11-13 10:28 WIB
+
+Commit backend `ab98f6d` sudah di-push dan di-pull pada VPS; pemeriksaan transfer/compact import kosong sebelum restart, layanan aktif. Seluruh 164 tes lulus kembali setelah perubahan anggaran waktu. QA browser publik untuk konteks pertanyaan/reload/Percakapan baru lulus. Pembungkus iframe `maktabah.quizb.my.id` juga berhasil membuka halaman Tanya AI terbaru.
+
+Uji provider nyata pada pertanyaan persis “berapa rakaat shalat witir yang utama?” selesai sekitar 4 detik dengan mode `no_context`: jawaban menyatakan bukti belum cukup, references kosong, tidak ada evidence/kutipan tarawih pengganti, dan tidak disimpan ke cache. Ini verifikasi perilaku menahan simpulan tanpa dukungan, bukan klaim bahwa pertanyaan tidak memiliki jawaban dalam fikih.
+
+Uji positif terpisah: terjemahan 350 karakter yang diambil langsung dari kitab 2130/halaman ID 9 selesai 2,824 detik, status success, mode grounded, reviewed=true, satu referensi kanonis, source.text cocok dengan pilihan dan evidence tersedia. Artinya pemeriksaan tetap mengizinkan hasil yang didukung sumber.
+
+Dua percobaan awal pertanyaan witir sempat mengalami TIMEOUT pemeriksa; kegagalan tersebut tidak meneruskan jawaban yang belum diperiksa. Latensi provider tetap dapat bervariasi. Percakapan tersimpan sebelum pembaruan tidak ditulis ulang; gunakan Percakapan baru atau kirim ulang pertanyaan untuk menjalankan pipeline terbaru.

@@ -717,3 +717,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-21-23-b49876.
 | 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | 212–214 | — | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-13 10:20:32 +07:00 | `server/ask-ai.js` | — | 216–218 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-13 10:21:21 +07:00 | `server/ask-ai.test.js` | 268–268 | 268–268 | test('only cited evidence remains visible and its citation numbers stay valid af | modified |
+
+## [2026-11-13 10:29:36 +07:00] — Catat verifikasi nyata perbaikan konteks dan relevansi Tanya AI
+
+Waktu pencatatan: **2026-11-13 10:29:36 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `ab98f6d`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: VPS ab98f6d active after push/pull and safe restart; final full suite 164 passed; public context/browser QA passed; wrapper iframe target verified. Real witir query: no_context in ~4s, no fallback references/evidence. Real selected-page translation: success/grounded/reviewed in2.824s, matching canonical source and one reference. Earlier reviewer TIMEOUT attempts documented without claiming guaranteed zero errors. Documentation-only change; staged diff passed.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-10-29-36-0db307.json](docs/change-audit/2026-11-13-10-29-36-0db307.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-13 10:29:36 +07:00 | `docs/ai-improvements.md` | — | 73–82 | Domain `maktabah.quizb.my.id` menyajikan pembungkus iframe dengan src `https://m | modified |

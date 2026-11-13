@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13 10:29:36 +07:00",
+  "title": "Catat verifikasi nyata perbaikan konteks dan relevansi Tanya AI",
+  "baseCommit": "ab98f6de2d7ba8ad2fa7a32d408e5a84ec171b70",
+  "checks": "VPS ab98f6d active after push/pull and safe restart; final full suite 164 passed; public context/browser QA passed; wrapper iframe target verified. Real witir query: no_context in ~4s, no fallback references/evidence. Real selected-page translation: success/grounded/reviewed in2.824s, matching canonical source and one reference. Earlier reviewer TIMEOUT attempts documented without claiming guaranteed zero errors. Documentation-only change; staged diff passed.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-improvements.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-13 10:29:36 +07:00",
+      "stagedSha256": "9879686411c860d06340b29e1649a5ba29c2a00bbe819b031c43614c0148cc72",
+      "diffSha256": "ee226543d26179b6122aae6d318daa75cbc4d2c0fcc34105e92696c7a9fae6b2",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 72,
+            "count": 0
+          },
+          "after": {
+            "line": 73,
+            "count": 10
+          },
+          "section": "Domain `maktabah.quizb.my.id` menyajikan pembungkus iframe dengan src `https://m"
+        }
+      ]
+    }
+  ]
+}
