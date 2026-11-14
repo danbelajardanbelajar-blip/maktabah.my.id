@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
-import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences,pageQuality,pagePassage,aspectWords} from './ai-retrieval.js';
+import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences,pageQuality,pagePassage,aspectWords,namedPeople} from './ai-retrieval.js';
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {createHash} from 'node:crypto';
 import {evidenceAnswer} from './ai-evidence.js';
@@ -392,6 +392,18 @@ test('passages center on the densest query window and stay exact page text',t=>{
  const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,1,18,?)').run(text);
  f.db.prepare('INSERT INTO pages VALUES(13,1,1,19,?)').run('صلاة الجماعة في المسجد أفضل من صلاة الفذ بسبع وعشرين درجة كما في الحديث الصحيح');
  const refs=retrieveAiReferences(f.db,'حكم صلاة الجماعة');assert.equal(refs[0].pageId,12);assert.ok(refs[0].excerpt.includes('حكم صلاة الجماعة'));
+});
+
+test('biography questions about a named imam prefer his full-name entry over namesakes of the madhhab',t=>{
+ assert.equal(namedPeople('من هو الشافعي')[0].words[0],'محمد بن إدريس');assert.equal(namedPeople('siapa guru imam syafi\'i?').length,1);assert.equal(namedPeople('siapa guru asy-syafii').length,1);
+ assert.deepEqual(namedPeople('حكم صلاة الجماعة'),[]);assert.ok(aspectWords('siapa guru imam syafii').includes('شيوخه'));
+ const f=fixture(t);
+ for(let i=0;i<5;i++)f.db.prepare('INSERT INTO pages VALUES(?,1,1,?,?)').run(20+i,20+i,'ترجمة الشيخ عبد الله بن يوسف الشافعي ولد بدمشق وتوفي بها وكان الشافعي المذهب الشافعي النسبة');
+ f.db.prepare('INSERT INTO pages VALUES(30,1,1,30,?)').run('ترجمة مالك بن أنس إمام دار الهجرة. '.repeat(30)+'الإمام الشافعي: هو محمد بن إدريس الشافعي، ولد بغزة سنة خمسين ومائة، ومن شيوخه مالك بن أنس ومسلم بن خالد الزنجي، وتوفي بمصر.');
+ for(const q of ['من هو الشافعي','siapa guru imam syafii?']){
+  const refs=retrieveAiReferences(f.db,q,false,false,q);assert.equal(refs[0].pageId,30,q);assert.ok(refs[0].excerpt.startsWith('الإمام الشافعي: هو محمد بن إدريس')||refs[0].excerpt.includes('هو محمد بن إدريس الشافعي، ولد بغزة'),q);
+ }
+ const ar=retrieveAiReferences(f.db,'من هو الشافعي');assert.ok(ar.some(r=>r.pageId===20),'namesakes stay as later candidates');
 });
 
 test('a reviewer rejection is stored for admins with its reason and checked sources',async t=>{

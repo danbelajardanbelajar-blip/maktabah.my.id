@@ -1014,3 +1014,23 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-33-34-6e69d5.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 04:33:25 +07:00 | `docs/deployment-log.md` | — | 1–8 | module/file | modified |
+
+## [2026-11-15 04:41:29 +07:00] — Tanya AI: biografi imam lewat nama lengkap
+
+Waktu pencatatan: **2026-11-15 04:41:29 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6eb8cbf`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 209 tes server lulus (37 tes Tanya AI, termasuk tes biografi baru); oxlint bersih; DB lokal: من هو الشافعي dan siapa guru imam syafii kini memunculkan entri محمد بن إدريس الشافعي, 3-4 s
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-41-29-a5caae.json](docs/change-audit/2026-11-15-04-41-29-a5caae.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | 21–21 | 21–22 | const ASPECTS = [ | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | — | 27–40 | const ASPECTS = [ | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | 43–46 | 58–58 | export function pageQuality(text) { | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | 49–55 | 61–75 | export function pagePassage(text, words, size = AI_PASSAGE_LENGTH) { | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | 76–76 | 96–99 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | 87–87 | 110–110 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | — | 120–121 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 04:39:50 +07:00 | `server/ask-ai.test.js` | 9–9 | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
+| 2026-11-15 04:39:50 +07:00 | `server/ask-ai.test.js` | — | 397–408 | test('passages center on the densest query window and stay exact page text',t=>{ | modified |

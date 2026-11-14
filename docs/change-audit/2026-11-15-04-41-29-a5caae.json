@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 04:41:29 +07:00",
+  "title": "Tanya AI: biografi imam lewat nama lengkap",
+  "baseCommit": "6eb8cbfeff3987206522830dc5752cb70051ca85",
+  "checks": "209 tes server lulus (37 tes Tanya AI, termasuk tes biografi baru); oxlint bersih; DB lokal: من هو الشافعي dan siapa guru imam syafii kini memunculkan entri محمد بن إدريس الشافعي, 3-4 s",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:36:46 +07:00",
+      "stagedSha256": "98311506429f5ab5b5ed4566ea68df6cae63f825c29114be6ee53f9caa6816ae",
+      "diffSha256": "927919a5283319dc7890c88dcb7e65dbea9aec62e9d73405167d2682f91f6526",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "AI_PASSAGE_LENGTH",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "ASPECTS",
+        "PEOPLE",
+        "namedPeople",
+        "BIOGRAPHY",
+        "aspectWords",
+        "pageQuality",
+        "letters",
+        "broken",
+        "lines",
+        "leaders",
+        "numbered",
+        "toc",
+        "positions",
+        "hits",
+        "pagePassage",
+        "plain",
+        "count",
+        "n",
+        "lineStart",
+        "space",
+        "retrieveAiCandidates",
+        "terms",
+        "constraint",
+        "aspects",
+        "quoted",
+        "schemas",
+        "statements",
+        "biography",
+        "people",
+        "densityWords",
+        "anchors",
+        "search",
+        "found",
+        "row",
+        "text",
+        "excerpt",
+        "base",
+        "passes",
+        "seen",
+        "ranked",
+        "id",
+        "books",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "pages",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 2
+          },
+          "section": "const ASPECTS = ["
+        },
+        {
+          "before": {
+            "line": 25,
+            "count": 0
+          },
+          "after": {
+            "line": 27,
+            "count": 14
+          },
+          "section": "const ASPECTS = ["
+        },
+        {
+          "before": {
+            "line": 43,
+            "count": 4
+          },
+          "after": {
+            "line": 58,
+            "count": 1
+          },
+          "section": "export function pageQuality(text) {"
+        },
+        {
+          "before": {
+            "line": 49,
+            "count": 7
+          },
+          "after": {
+            "line": 61,
+            "count": 15
+          },
+          "section": "export function pagePassage(text, words, size = AI_PASSAGE_LENGTH) {"
+        },
+        {
+          "before": {
+            "line": 76,
+            "count": 1
+          },
+          "after": {
+            "line": 96,
+            "count": 4
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 87,
+            "count": 1
+          },
+          "after": {
+            "line": 110,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 96,
+            "count": 0
+          },
+          "after": {
+            "line": 120,
+            "count": 2
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:39:50 +07:00",
+      "stagedSha256": "9b490e17471729a5895f7e9ab4f477e8bff87389c7289e0bd16e9bd9db449c10",
+      "diffSha256": "2b081fda3ea3155b44f0c7b2a7dd87f02a60d727c24f1fbb3023af737ea0bdf5",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "meta"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 9,
+            "count": 1
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro"
+        },
+        {
+          "before": {
+            "line": 396,
+            "count": 0
+          },
+          "after": {
+            "line": 397,
+            "count": 12
+          },
+          "section": "test('passages center on the densest query window and stay exact page text',t=>{"
+        }
+      ]
+    }
+  ]
+}

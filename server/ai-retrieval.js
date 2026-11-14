@@ -18,11 +18,26 @@ const searchUnavailable = () => fault('Pencarian rujukan kitab belum dapat disel
 // They only order candidates: a pass without them always follows, so no topic is lost.
 const ASPECTS = [
   { test: /حكم|يجوز|يحرم|\bhukum|\bbolehkah|\bhalal\b|\bharam\b|\bwajib/iu, words: ['حكم', 'يجب', 'واجب', 'فرض', 'سنة', 'مستحب', 'يجوز', 'يحرم', 'مكروه'] },
-  { test: /(?:^|\s)من\s+(?:هو|هي|كان)(?:\s|$)|ترجم|سيرة|\bsiapa\b|biografi|riwayat hidup/iu, words: ['ولد', 'توفي', 'ترجمة', 'اسمه', 'نسبه', 'مولده', 'وفاته', 'شيوخه', 'تلاميذه'] },
+  { test: /(?:^|\s)من\s+(?:هو|هي|كان)(?:\s|$)|ترجم|سيرة|شيوخ|تلاميذ|\bsiapa\b|biografi|riwayat hidup|\bguru\b|\bmurid\b|\blahir\b|\bwafat\b/iu, words: ['ولد', 'توفي', 'ترجمة', 'اسمه', 'نسبه', 'مولده', 'وفاته', 'شيوخه', 'تلاميذه'] },
+  { test: /شيوخ|أساتذ|\bguru\b|berguru/iu, words: ['شيوخه', 'تفقه', 'أخذ عن', 'سمع من'] },
   { test: /فضل|فضائل|ثواب|keutamaan|fadh?ilah|pahala/iu, words: ['فضل', 'فضائل', 'ثواب', 'أجر'] },
   { test: /شروط|شرط|\bsyarat/iu, words: ['شروط', 'شرط', 'يشترط'] },
   { test: /كيفية|صفة|\bcara\b/iu, words: ['كيفية', 'صفة'] },
 ];
+// Well-known imams: a nisba such as الشافعي also names thousands of later scholars of the madhhab,
+// so biography questions first look for the full name next to the nisba.
+const PEOPLE = [
+  { test: /الشافعي|\b(?:asy[-\s]?)?s[yh]afi['’\u02bc]?i[iy]?\b|\bshafi['’\u02bc]?i\b/iu, match: 'NEAR("محمد بن إدريس" "الشافعي", 5)', words: ['محمد بن إدريس', 'الشافعي'] },
+  { test: /[أا]ب[وي] حنيفة|\babu\s+hanifa?h?\b/iu, match: 'NEAR("النعمان بن ثابت" "حنيفة", 8)', words: ['النعمان بن ثابت', 'حنيفة'] },
+  { test: /مالك بن [أا]نس|الإمام مالك|\bimam\s+malik\b/iu, match: '"مالك بن أنس"', words: ['مالك بن أنس'] },
+  { test: /ابن حنبل|بن حنبل|الإمام [أا]حمد|\bimam\s+ahmad\b|\bahmad\s+bin\s+hanbal\b/iu, match: '("أحمد بن حنبل" OR "أحمد بن محمد بن حنبل")', words: ['أحمد بن حنبل', 'أحمد بن محمد بن حنبل'] },
+  { test: /البخاري|\bbukhari\b/iu, match: 'NEAR("محمد بن إسماعيل" "البخاري", 5)', words: ['محمد بن إسماعيل', 'البخاري'] },
+  { test: /مسلم بن الحجاج|الإمام مسلم|\bimam\s+muslim\b/iu, match: '"مسلم بن الحجاج"', words: ['مسلم بن الحجاج'] },
+  { test: /النووي|\bnawawi\b/iu, match: 'NEAR("يحيى بن شرف" "النووي", 6)', words: ['يحيى بن شرف', 'النووي'] },
+  { test: /الغزالي|\bghazal[iy]\b/iu, match: '("أبو حامد الغزالي" OR NEAR("محمد بن محمد" "الغزالي", 6))', words: ['أبو حامد', 'الغزالي'] },
+];
+export const namedPeople = (...texts) => PEOPLE.filter(p => texts.some(t => p.test.test(String(t || ''))));
+const BIOGRAPHY = ASPECTS[1];
 export const aspectWords = (...texts) => [...new Set(ASPECTS.filter(a => texts.some(t => a.test.test(String(t || '')))).flatMap(a => a.words))];
 
 /** Table-of-contents, index and broken-encoding pages rank well on bm25 but rarely answer anything. */
@@ -40,19 +55,24 @@ export function pageQuality(text) {
   return { usable: true, toc, factor: (toc ? 0.25 : 1) * (letters < 200 ? 0.7 : 1) };
 }
 
-/** Densest ~1.4k-character window of the page around the query words, cut at line/word boundaries. */
-export function pagePassage(text, words, size = AI_PASSAGE_LENGTH) {
-  const plain = clean(text);
-  if (plain.length <= size) return plain;
+const positions = (plain, words) => {
   const hits = [];
   for (const word of words) for (let i = plain.indexOf(word); i >= 0 && hits.length < 400; i = plain.indexOf(word, i + word.length)) hits.push(i);
-  hits.sort((a, b) => a - b);
-  let best = 0, bestCount = 0;
-  for (let i = 0, j = 0; i < hits.length; i++) {
-    while (j < hits.length && hits[j] < hits[i] + size - 200) j++;
-    if (j - i > bestCount) { bestCount = j - i; best = hits[i]; }
-  }
-  let start = Math.max(0, best - 200);
+  return hits.sort((a, b) => a - b);
+};
+/**
+ * Densest ~1.4k-character window of the page around the query words, cut at line/word boundaries.
+ * With anchors (a named person's full name), the window starts at an anchor so a page with several
+ * biographies shows the asked person, not a neighbour's entry.
+ */
+export function pagePassage(text, words, size = AI_PASSAGE_LENGTH, anchors = []) {
+  const plain = clean(text);
+  if (plain.length <= size) return plain;
+  const hits = positions(plain, words), starts = positions(plain, anchors);
+  const count = from => { let n = 0; for (const h of hits) if (h >= from && h < from + size - 200) n++; return n; };
+  let best = 0, bestCount = -1;
+  for (const start of starts.length ? starts : hits) { const n = count(start); if (n > bestCount) { bestCount = n; best = start; } }
+  let start = Math.max(0, best - (starts.length ? 120 : 200));
   const lineStart = plain.lastIndexOf('\n', start + 150);
   if (lineStart >= 0 && lineStart >= start - 200) start = lineStart + 1;
   else if (start > 0) { const space = plain.indexOf(' ', start); if (space >= 0 && space < start + 40) start = space + 1; }
@@ -73,7 +93,10 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
     rank: db.prepare(`SELECT rowid,bm25(pages_fts) AS score FROM ${schema}.pages_fts WHERE pages_fts MATCH ? ORDER BY bm25(pages_fts) LIMIT ${AI_CANDIDATE_LIMIT}`),
     detail: db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.rowid=?`),
   }]));
-  const densityWords = [...terms, ...aspects];
+  const biography = !catalogue && [question, focusQuestion].some(t => BIOGRAPHY.test.test(String(t || '')));
+  const people = biography ? namedPeople(question, focusQuestion) : [];
+  const densityWords = [...terms, ...aspects, ...people.flatMap(p => p.words)];
+  const anchors = people.map(p => p.words[0]);
   // Excerpts are passages of the stored page text (no FTS snippet), so verifiedReferences can match them exactly.
   const search = match => {
     const found = [];
@@ -84,7 +107,7 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
         if (!row) continue;
         const text = sourceText(row.nass), quality = pageQuality(text);
         if (!quality.usable) continue;
-        const excerpt = pagePassage(text, densityWords);
+        const excerpt = pagePassage(text, densityWords, AI_PASSAGE_LENGTH, anchors);
         if (!matchesQuestionTopic(excerpt, focusQuestion)) continue;
         const { nass: _nass, ...page } = row;
         found.push({ ...page, excerpt, score: score * quality.factor });
@@ -94,6 +117,8 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   };
   const base = join => '(' + quoted(terms).join(join) + ')' + (constraint ? ' AND ' + constraint : '');
   const passes = [];
+  // Biography of a named imam: full name + nisba near a biography word, ahead of the generic passes.
+  if (people.length) passes.push(search('(' + people.map(p => p.match).join(' OR ') + ') AND (' + quoted(aspects).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : '')));
   // NEAR keeps the aspect word next to the topic (حكم صلاة الجماعة), not anywhere on a long page.
   if (aspects.length) passes.push(search('(' + aspects.map(word => `NEAR(${quoted([...terms, word]).join(' ')}, 10)`).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : '')));
   let pages = search(base(' AND '));
