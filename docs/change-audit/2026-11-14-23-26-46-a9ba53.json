@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-14 23:26:46 +07:00",
+  "title": "Catatan deployment perbaikan timeout Tanya AI",
+  "baseCommit": "5e8dd220bd0775a6f9e7a21122435c310b317fc9",
+  "checks": "Uji HTTPS online sesudah deploy: من هو الشافعي 6,6 s HTTP 200 tanpa timeout; حكم صلاة الجماعة 4,0 s; siapa guru imam syafii 9,6 s grounded.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 23:26:45 +07:00",
+      "stagedSha256": "7488579daa3e634b9007a79d7eaa4677aea7e177d514301feb824771806d3dad",
+      "diffSha256": "de5d3d8dad6b9d91dbc82b1e4f72b9db5ce9b74f26d5a87f2301933591192d5d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 9
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

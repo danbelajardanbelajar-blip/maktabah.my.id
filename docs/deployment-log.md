@@ -1,3 +1,12 @@
+## 2026-11-14 23:26:45 WIB — Tanya AI: pencarian rujukan cepat di worker
+
+- Commit fungsi `5e8dd22` sudah push GitHub. SSH dari komputer lokal ditolak (publickey), sehingga pull VPS dan restart `maktabah.service` dilakukan pengguna sendiri. HEAD server tidak dibaca langsung dari sesi ini; perilaku endpoint online menunjukkan kode baru aktif.
+- Penyebab timeout: snippet() FTS5 dihitung untuk seluruh hasil cocok sebelum LIMIT. Kata umum seperti الشافعي (398.020 halaman) memblokir event loop sekitar 90 detik sehingga tahap Gemini hanya mendapat sisa waktu sekitar 1 ms dan melaporkan "Layanan AI melewati batas waktu".
+- Perbaikan: urutkan rowid dulu lalu buat snippet hanya untuk 60 kandidat, satu pool kandidat per pertanyaan, pencarian file-backed di worker read-only, batas pencarian 35 detik dengan pesan AI_SEARCH_TIMEOUT tersendiri, dan workaround bound `rowid=?` FTS5 SQLite 3.53 yang mengembalikan baris lain.
+- Lokal: 197 tes server lulus; DB asli untuk الشافعي turun dari 91.217 ms menjadi 2.548 ms tanpa memblokir event loop.
+- Online HTTPS sebelum deploy: من هو الشافعي gagal TIMEOUT setelah 96 detik dan semua event baru terkirim di akhir. Sesudah deploy: 6,6 detik, tahap terkirim bertahap, HTTP 200. حكم صلاة الجماعة selesai 4,0 detik dan "siapa guru imam syafii?" selesai 9,6 detik (grounded, 1 rujukan).
+- Catatan terpisah: dua pertanyaan Arab pendek di atas kini selesai tanpa timeout, tetapi berakhir `no_context` karena tahap review relevansi menolak bukti. Ini terkait kualitas pemilihan rujukan/review, bukan batas waktu.
+
 ## 2026-11-13 08:25:51 WIB — Abjad awal nama pada kartu penulis
 
 - Commit fungsi `d2b602e` sudah push GitHub dan pull VPS; layanan aktif setelah pemeriksaan tidak ada transfer/import/penghapusan aktif dan restart.

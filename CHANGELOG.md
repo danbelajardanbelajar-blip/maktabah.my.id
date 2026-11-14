@@ -952,3 +952,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-24-12-9ca507.
 | 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | 198–199 | 167–168 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-14 23:21:18 +07:00 | `server/ask-ai.test.js` | — | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
 | 2026-11-14 23:21:18 +07:00 | `server/ask-ai.test.js` | — | 344–376 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+
+## [2026-11-14 23:26:46 +07:00] — Catatan deployment perbaikan timeout Tanya AI
+
+Waktu pencatatan: **2026-11-14 23:26:46 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `5e8dd22`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Uji HTTPS online sesudah deploy: من هو الشافعي 6,6 s HTTP 200 tanpa timeout; حكم صلاة الجماعة 4,0 s; siapa guru imam syafii 9,6 s grounded.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-26-46-a9ba53.json](docs/change-audit/2026-11-14-23-26-46-a9ba53.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 23:26:45 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |
