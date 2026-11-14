@@ -28,17 +28,18 @@ export function renderMarkdown(text: string): string {
     if (olMatch) {
       if (inUnorderedList) { result.push('</ul>'); inUnorderedList = false; }
       if (!inOrderedList)  { result.push('<ol class="list-decimal list-inside space-y-1 my-2 pl-1">'); inOrderedList = true; }
-      result.push(`<li>${inlineMarkdown(olMatch[2])}</li>`);
+      result.push(`<li dir="auto">${inlineMarkdown(olMatch[2])}</li>`);
     } else if (ulMatch) {
       if (inOrderedList)   { result.push('</ol>'); inOrderedList = false; }
       if (!inUnorderedList){ result.push('<ul class="list-disc list-inside space-y-1 my-2 pl-1">'); inUnorderedList = true; }
-      result.push(`<li>${inlineMarkdown(ulMatch[1])}</li>`);
+      result.push(`<li dir="auto">${inlineMarkdown(ulMatch[1])}</li>`);
     } else {
       closeListsIfOpen();
       if (line.trim() === '') {
         result.push('<br/>');
       } else {
-        result.push(`<p class="mb-1">${inlineMarkdown(line)}</p>`);
+        // Each paragraph takes its own direction, so an Arabic quote in an Indonesian answer reads right-to-left.
+        result.push(`<p class="mb-1" dir="auto">${inlineMarkdown(line)}</p>`);
       }
     }
   }

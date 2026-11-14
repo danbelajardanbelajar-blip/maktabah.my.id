@@ -1103,3 +1103,26 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-45-51-e18fc1.
 | 2026-11-15 04:30:38 +07:00 | `src/components/AdminLogSummary.tsx` | — | 1–17 | AdminLogSummary | added |
 | 2026-11-15 04:27:47 +07:00 | `src/lib/admin-request-identity.ts` | — | 1–17 | adminRequestOptions, url, headers, installAdminRequestIdentity, original | added |
 | 2026-11-15 04:27:47 +07:00 | `src/main.tsx` | — | 6–8 | import App from './App.tsx' | modified |
+
+## [2026-11-15 06:52:50 +07:00] — Tanya AI: kutipan per kalimat dan arah teks
+
+Waktu pencatatan: **2026-11-15 06:52:50 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `ca2c329`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 211 tes server lulus (2 tes baru: kutipan per kalimat lintas baris, tampilan «» satu paragraf, dir=auto per paragraf); tsc dan oxlint bersih; build frontend sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-06-52-50-7069c3.json](docs/change-audit/2026-11-15-06-52-50-7069c3.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 06:52:39 +07:00 | `dist/assets/index.dev-Dqs6Krnx.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-15 06:52:39 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-15 06:50:25 +07:00 | `server/ai-evidence.js` | — | 23–38 | export function verifiedReferences(db,refs,additional=false) { | modified |
+| 2026-11-15 06:50:25 +07:00 | `server/ai-evidence.js` | 31–39 | 47–50 | export function quoteCatalog(refs){ | modified |
+| 2026-11-15 06:50:25 +07:00 | `server/ai-evidence.js` | 69–69 | 80–82 | export function verifyAnswer(text,refs,catalog){ | modified |
+| 2026-11-15 06:51:23 +07:00 | `server/ai-evidence.test.js` | 2–2 | 2–2 | import test from 'node:test';import assert from 'node:assert/strict';import Data | modified |
+| 2026-11-15 06:51:23 +07:00 | `server/ai-evidence.test.js` | — | 43–60 | test('joined line breaks restore exact original quote; synthetic FTS ellipses ca | modified |
+| 2026-11-15 06:50:42 +07:00 | `server/reader-ai.test.js` | 20–20 | 20–20 | test('reader and chat AI render formatting while escaping model HTML',()=>{ | modified |
+| 2026-11-15 06:50:42 +07:00 | `server/reader-ai.test.js` | — | 23–26 | test('reader and chat AI render formatting while escaping model HTML',()=>{ | modified |
+| 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 31–31 | 31–31 | export function renderMarkdown(text: string): string { | modified |
+| 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 35–35 | 35–35 | export function renderMarkdown(text: string): string { | modified |
+| 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 41–41 | 41–42 | export function renderMarkdown(text: string): string { | modified |

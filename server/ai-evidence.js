@@ -20,6 +20,22 @@ export function verifiedReferences(db,refs,additional=false) {
   sourcePages.set(reference,row.text);return reference;
  });
 }
+/**
+ * Splits page text into whole sentences. Many pages hard-wrap lines mid-sentence, so line breaks are
+ * joined first; very short sentences join the next one and very long ones are cut at a word boundary.
+ */
+export function quoteUnits(text,{min=60,max=600}={}){
+ const flat=String(text||'').replace(/\s+/g,' ').trim();
+ const sentences=flat.match(/[^.!?؟]+(?:[.!?؟]+["'”’»)\]]*|$)/gu)||[];
+ const units=[];let current='';
+ for(const sentence of sentences.map(s=>s.trim()).filter(Boolean)){
+  current=current?current+' '+sentence:sentence;
+  while(current.length>max){let end=current.lastIndexOf(' ',max);if(end<max/2)end=max;units.push(current.slice(0,end).trim());current=current.slice(end).trim();}
+  if(current.length>=min){units.push(current);current='';}
+ }
+ if(current){if(units.length&&units[units.length-1].length+current.length<max)units[units.length-1]+=' '+current;else units.push(current);}
+ return units;
+}
 // IDs point to immutable literal spans, never text retyped by the model.
 export function quoteCatalog(refs){
  const catalog=new Map();
@@ -28,15 +44,10 @@ export function quoteCatalog(refs){
   const original=sourcePages.get(ref)||ref.excerpt;let count=0;
   for(const fragment of ref.excerpt.split(/\s*…\s*/)){
    const matched=exactSourceQuote(original,fragment);if(!matched)continue;
-   for(const line of matched.split(/[\r\n]+/)){
-    let rest=line.trim();
-    while(rest.length>=12&&count<12){
-     let end=Math.min(rest.length,800);
-     if(end<rest.length){const space=rest.lastIndexOf(' ',end);if(space>400)end=space;}
-     const text=rest.slice(0,end).trim();rest=rest.slice(end).trim();
-     const actual=exactSourceQuote(original,text);
-     if(actual&&actual.length>=12)catalog.set(`${index+1}.${++count}`,{source:index+1,text:actual});
-    }
+   for(const unit of quoteUnits(matched)){
+    if(count>=24)break;
+    const actual=exactSourceQuote(original,unit);
+    if(actual&&unit.length>=12)catalog.set(`${index+1}.${++count}`,{source:index+1,text:actual});
    }
   }
  });
@@ -66,7 +77,9 @@ export function verifyAnswer(text,refs,catalog){
  // Prose is an AI explanation/translation; only the dedicated quote field is literal evidence.
  return {answer:data.answer.trim(),quotes};
 }
-export const evidenceAnswer=verified=>'**Penjelasan AI**\n\n'+verified.answer+'\n\n**Kutipan sumber**\n\n'+verified.quotes.map(q=>`“${q.text}” [${q.source}]`).join('\n\n');
+// A quote stays one paragraph (wrapped source lines become spaces); Arabic quotes use «» so they read right-to-left.
+const displayQuote=text=>{const flat=text.replace(/\s+/g,' ').trim();return /^[^\p{L}]*[؀-ۿ]/u.test(flat)?`«${flat}»`:`“${flat}”`;};
+export const evidenceAnswer=verified=>'**Penjelasan AI**\n\n'+verified.answer+'\n\n**Kutipan sumber**\n\n'+verified.quotes.map(q=>`${displayQuote(q.text)} [${q.source}]`).join('\n\n');
 export function validCachedAnswer(db,payload,additional=false){
  try{
   if(['no_context','sources_only'].includes(payload.mode))return false;

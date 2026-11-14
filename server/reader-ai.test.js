@@ -17,6 +17,10 @@ test('reader AI sends selected page context and can cancel an in-flight request'
 
 test('reader and chat AI render formatting while escaping model HTML',()=>{
   const result=renderMarkdown('**Terjemahan**\n- satu\n- dua\n<script>alert(1)</script>\n<img src=x onerror=alert(1)>');
-  assert(result.includes('<strong>Terjemahan</strong>'));assert(result.includes('<ul'));assert(result.includes('<li>satu</li>'));
+  assert(result.includes('<strong>Terjemahan</strong>'));assert(result.includes('<ul'));assert(result.includes('<li dir="auto">satu</li>'));
   assert(!result.includes('<script>'));assert(!result.includes('<img'));assert(result.includes('&lt;script&gt;'));
+});
+
+test('each AI paragraph takes its own text direction',()=>{
+  assert(renderMarkdown('**Kutipan sumber**\n\n«نص عربي» [1]').includes('<p class="mb-1" dir="auto">«نص عربي» [1]</p>'));
 });

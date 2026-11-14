@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import Database from 'better-sqlite3';
-import {quoteCatalog,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
+import {quoteCatalog,quoteUnits,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
 test('evidence resolves canonical book/page, restores Arabic marks and rejects forged quotes/citations/cache',()=>{
  const db=new Database(':memory:');try{
  db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);");
@@ -38,5 +38,23 @@ test('joined line breaks restore exact original quote; synthetic FTS ellipses ca
  assert.equal(result.quotes[0].text,'المسترشدين (ص: 132)\nفما يجمعه الناس');
  const snippets=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:'بغية المسترشدين … الناس ويبذلونه'}]);
  assert.throws(()=>verifyAnswer({answer:'Penjelasan [1]',quotes:[{source:1,text:'بغية المسترشدين … الناس ويبذلونه'}]},snippets));
+ }finally{db.close();}
+});
+
+test('quotes are whole sentences across wrapped lines and display as one paragraph in reading direction',()=>{
+ const db=new Database(':memory:');try{
+ db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);INSERT INTO books_meta VALUES(1,'Book');");
+ const id='Ada orang yang menggunakan uang pinjaman untuk membeli saham. Transaksi ini hukumnya\nharam, karena hakikatnya adalah kredit yang\nditambah laba. Ini hukumnya mubah karena\ntermasuk bai\' Murabahah .';
+ const ar='انتهى مجمع الفقه الإسلامى الى القول بجواز انشاء شركات المساهمة حيث ورد مانصه: " بما أن الأصل فى\nالمعاملات الحل فإن تأسيس شركة مساهمة ذات أغراض وأنشطة مشروعة أمر جائز".';
+ db.prepare('INSERT INTO pages VALUES(1,1,1,1,?)').run(id);db.prepare('INSERT INTO pages VALUES(2,1,1,2,?)').run(ar);
+ const refs=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:id},{bkid:1,pageId:2,excerpt:ar}]);
+ const catalog=quoteCatalog(refs),texts=[...catalog.values()].map(q=>q.text.replace(/\s+/g,' '));
+ assert.ok(texts.some(t=>t.startsWith('Transaksi ini hukumnya haram, karena hakikatnya adalah kredit yang ditambah laba.')),texts.join(' | '));
+ assert.ok(!texts.some(t=>t==='untuk membeli saham. Transaksi ini hukumnya'));
+ assert.ok(texts.every(t=>/[.!?؟"]$/.test(t)),'every unit ends at a sentence boundary');
+ const [first]=[...catalog].find(([,q])=>q.source===2);
+ const answer=evidenceAnswer(verifyAnswer({answer:'Penjelasan [2]',quotes:[{source:2,quoteId:first}]},refs,catalog));
+ assert.ok(answer.endsWith('جائز".» [2]'),answer);assert.ok(answer.includes('«انتهى'));assert.ok(!answer.split('**Kutipan sumber**')[1].trim().includes('\n'));
+ assert.ok(quoteUnits('a'.repeat(1500)).every(u=>u.length<=600));
  }finally{db.close();}
 });
