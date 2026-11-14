@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 04:33:34 +07:00",
+  "title": "Catat uji online kualitas rujukan Tanya AI",
+  "baseCommit": "1516583855ddd2af0955c6d87463d9d1c7c67db5",
+  "checks": "Uji HTTPS: حكم صلاة الجماعة grounded 6,0 s; من هو الشافعي 2,2 s dan siapa guru imam syafii 4,8 s no_context tanpa timeout; aset online sama dengan build 1516583",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:33:25 +07:00",
+      "stagedSha256": "0fb3510abfc756f4459d2bbd5944b6dfffc1f0d42a76834c279a7a8e5daf5014",
+      "diffSha256": "ac4b48c3ad046b2e9d71520c862fc14b0556af9b622ac4e16adcde7a830435a3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 8
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

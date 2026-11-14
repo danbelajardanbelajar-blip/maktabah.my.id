@@ -1002,3 +1002,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-38-02-aa908a.
 | 2026-11-14 23:37:11 +07:00 | `server/ask-ai.test.js` | — | 377–404 | test('each ranked page keeps its own snippet',t=>{ | modified |
 | 2026-11-14 23:34:16 +07:00 | `src/components/AskLogDetail.tsx` | 7–7 | 7–11 | type AuditReference = { bkid?: number \| null; pageId?: number \| null; title?: st | modified |
 | 2026-11-14 23:34:16 +07:00 | `src/components/AskLogDetail.tsx` | — | 70–90 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
+
+## [2026-11-15 04:33:34 +07:00] — Catat uji online kualitas rujukan Tanya AI
+
+Waktu pencatatan: **2026-11-15 04:33:34 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1516583`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Uji HTTPS: حكم صلاة الجماعة grounded 6,0 s; من هو الشافعي 2,2 s dan siapa guru imam syafii 4,8 s no_context tanpa timeout; aset online sama dengan build 1516583
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-33-34-6e69d5.json](docs/change-audit/2026-11-15-04-33-34-6e69d5.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 04:33:25 +07:00 | `docs/deployment-log.md` | — | 1–8 | module/file | modified |

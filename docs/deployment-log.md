@@ -1,3 +1,11 @@
+## 2026-11-15 04:33:25 WIB — Tanya AI: kualitas cuplikan rujukan dan alasan penolakan
+
+- Commit fungsi `1516583` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-CdbXY2HS.js` sama dengan build commit tersebut.
+- Perubahan: halaman daftar isi/indeks diturunkan peringkatnya, halaman OCR rusak dibuang, kata aspek (حكم, biografi, فضل, شروط, كيفية) dicari dengan NEAR lebih dulu, cuplikan berupa potongan ~1.400 karakter dari teks halaman, dan alasan penolakan (tahap, alasan reviewer, sumber) tersimpan di riwayat admin.
+- Lokal: 200 tes server, TypeScript dan build lulus.
+- Online HTTPS sesudah deploy: حكم صلاة الجماعة selesai 6,0 detik, grounded dan direview (بداية المجتهد juz 1 hlm. 114). من هو الشافعي selesai 2,2 detik dan "siapa guru imam syafii?" 4,8 detik, keduanya masih no_context. Tidak ada timeout.
+- Analisis lokal sisa no_context: untuk من هو الشافعي, nisbah الشافعي juga cocok dengan banyak ulama bermazhab Syafii, sehingga hanya 2 dari 8 rujukan yang berupa biografi Imam al-Syafii. Untuk pertanyaan berbahasa Indonesia, kata kunci tidak dicari dalam bahasa Arab, sehingga rujukan hanya arsip PISS-KTB yang tidak membahas guru beliau. Alasan pasti reviewer tercatat di Admin, riwayat Tanya AI.
+
 ## 2026-11-14 23:26:45 WIB — Tanya AI: pencarian rujukan cepat di worker
 
 - Commit fungsi `5e8dd22` sudah push GitHub. SSH dari komputer lokal ditolak (publickey), sehingga pull VPS dan restart `maktabah.service` dilakukan pengguna sendiri. HEAD server tidak dibaca langsung dari sesi ini; perilaku endpoint online menunjukkan kode baru aktif.
