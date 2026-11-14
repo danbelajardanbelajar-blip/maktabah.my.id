@@ -929,3 +929,26 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-22-27-20-dd97d2.
 | 2026-11-14 22:17:38 +07:00 | `server/index.js` | 193–193 | 194–194 | let invalidateHadithIndex=()=>{}; | modified |
 | 2026-11-14 22:17:38 +07:00 | `server/index.js` | — | 775–775 | app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |
 | 2026-11-14 22:17:38 +07:00 | `server/index.js` | — | 787–787 | app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |
+
+## [2026-11-14 23:24:12 +07:00] — Tanya AI: pencarian rujukan cepat di worker dan jatah waktu terpisah
+
+Waktu pencatatan: **2026-11-14 23:24:12 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4511b53`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 197 tes server lulus (termasuk 4 tes baru: worker off-thread, timeout pencarian, pemilihan kandidat, snippet per halaman); node --check dan oxlint lulus; frontend tidak berubah sehingga build tidak diperlukan. Uji DB lokal الشافعي: query lama 91.217 ms, jalur baru 2.548 ms di worker tanpa memblokir event loop.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-24-12-9ca507.json](docs/change-audit/2026-11-14-23-24-12-9ca507.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 23:19:23 +07:00 | `server/ai-retrieval-worker.js` | — | 1–13 | module/file | added |
+| 2026-11-14 23:24:04 +07:00 | `server/ai-retrieval.js` | — | 1–101 | AI_CANDIDATE_LIMIT, AI_RETRIEVAL_TIMEOUT, clean, ignored, searchTerms, fault, searchTimeout, searchUnavailable | added |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | 2–2 | 2–2 | import {conversationalReply} from './ai-conversation.js'; | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | — | 10–11 | import {AI_BOOK_POLICY_VERSION,filterAllowedAiReferences,assertAllowedAiBook} fr | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | 15–17 | — | const fault = (message, code = 'AI_ERROR', status = 502) => Object.assign(new Er | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | 71–106 | — | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | — | 142–142 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | — | 144–144 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | — | 160–163 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:20:52 +07:00 | `server/ask-ai.js` | 198–199 | 167–168 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:21:18 +07:00 | `server/ask-ai.test.js` | — | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
+| 2026-11-14 23:21:18 +07:00 | `server/ask-ai.test.js` | — | 344–376 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |

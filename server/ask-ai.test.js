@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
+import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences} from './ai-retrieval.js';
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {createHash} from 'node:crypto';
 import {evidenceAnswer} from './ai-evidence.js';
@@ -339,4 +340,37 @@ test('HTTP requests enforce whole-book policy through the real file-backed worke
  assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v1');
  const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
  assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
+});
+
+test('file-backed retrieval runs off-thread with the same ranked pool as in-process search',async t=>{
+ const f=fixture(t,{file:true});
+ f.db.prepare('INSERT INTO books_meta VALUES(2,?)').run('كتاب الصلاة');
+ for(let i=0;i<5;i++)f.db.prepare('INSERT INTO pages VALUES(?,2,1,?,?)').run(200+i,i+1,'صلاة الجماعة في المسجد فضلها عظيم');
+ const args=['صلاة الجماعة',false,false,'صلاة الجماعة'];
+ const off=await retrieveAiCandidatesOffThread(f.db,args);
+ assert.deepEqual(off,retrieveAiCandidates(f.db,...args));
+ const picked=selectAiReferences(off,false,[]);
+ assert.ok(picked.filter(r=>r.bkid===2).length<=3);assert.ok(picked.some(r=>r.bkid===1));
+ assert.deepEqual(selectAiReferences(off,false,[2]).map(r=>r.bkid),[1]);
+});
+
+test('source search over its budget reports a search timeout, not a provider timeout',async t=>{
+ const f=fixture(t,{file:true});
+ await assert.rejects(retrieveAiCandidatesOffThread(f.db,['صلاة الجماعة'],{timeout:0}),e=>e.code==='AI_SEARCH_TIMEOUT'&&e.status===504&&!/Layanan AI/.test(e.message));
+ const controller=new AbortController();controller.abort();
+ await assert.rejects(retrieveAiCandidatesOffThread(f.db,['صلاة الجماعة'],{signal:controller.signal}),e=>e.code==='CANCELLED');
+});
+
+test('HTTP answers use the off-thread search for file-backed libraries',async t=>{
+ const f=fixture(t,{file:true});let calls=0;
+ const call=await serve(t,f,async()=>{calls++;return response(grounded('جواب [1]'));});
+ const result=await call('/api/ask',{q:'صلاة الجماعة',stream:true});
+ assert.equal(result.data.mode,'grounded');assert.deepEqual(result.data.references.map(r=>r.pageId),[11]);assert.equal(calls,1);
+ assert.deepEqual(result.events.filter(e=>e.type==='stage').map(e=>e.stage).slice(0,1),['searching']);
+});
+
+test('each ranked page keeps its own snippet',t=>{
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,1,18,?)').run('صلاة الجماعة نص مختلف للصفحة الثانية');
+ const refs=retrieveAiReferences(f.db,'صلاة الجماعة');
+ assert.ok(refs.find(r=>r.pageId===12).excerpt.includes('مختلف'));assert.ok(refs.find(r=>r.pageId===11).excerpt.includes('واجبة'));
 });

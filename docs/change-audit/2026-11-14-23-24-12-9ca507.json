@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-14 23:24:12 +07:00",
+  "title": "Tanya AI: pencarian rujukan cepat di worker dan jatah waktu terpisah",
+  "baseCommit": "4511b53e2a0d135dc945c35a8421d8aab1f93870",
+  "checks": "197 tes server lulus (termasuk 4 tes baru: worker off-thread, timeout pencarian, pemilihan kandidat, snippet per halaman); node --check dan oxlint lulus; frontend tidak berubah sehingga build tidak diperlukan. Uji DB lokal الشافعي: query lama 91.217 ms, jalur baru 2.548 ms di worker tanpa memblokir event loop.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-retrieval-worker.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 23:19:23 +07:00",
+      "stagedSha256": "1ab4b376df7470f1fdb45cdd383b34f330766ffd0b1fcd46ba4d41094401a82e",
+      "diffSha256": "a883c6562120d8b21d5cb4185a8a6c56b39ee472dabb69c5d8a9561d306a1794",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 13
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 23:24:04 +07:00",
+      "stagedSha256": "41c6a1ee3ec0898fab768a02c77697b27c748ae8002d853ec0c174e4440eeeb7",
+      "diffSha256": "b49f43a26f0b23e6be5f72c23012fc05246234f7b03d299b64bca61f1a87451f",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "retrieveAiCandidates",
+        "terms",
+        "constraint",
+        "schemas",
+        "pages",
+        "rank",
+        "snippet",
+        "detail",
+        "match",
+        "relevant",
+        "row",
+        "excerpt",
+        "books",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "seen",
+        "id",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 101
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 23:20:52 +07:00",
+      "stagedSha256": "9905c410b1af0ad23a3d3f1c00eb8b6e48264e361c1928aff5533714951e98da",
+      "diffSha256": "55a716d5036e0b6fc58de36220f4fa946b64f951742c5d38ae6fc23861ee0ba1",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "catalog",
+        "context",
+        "task",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "renumber"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 1
+          },
+          "after": {
+            "line": 2,
+            "count": 1
+          },
+          "section": "import {conversationalReply} from './ai-conversation.js';"
+        },
+        {
+          "before": {
+            "line": 9,
+            "count": 0
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "import {AI_BOOK_POLICY_VERSION,filterAllowedAiReferences,assertAllowedAiBook} fr"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 3
+          },
+          "after": {
+            "line": 16,
+            "count": 0
+          },
+          "section": "const fault = (message, code = 'AI_ERROR', status = 502) => Object.assign(new Er"
+        },
+        {
+          "before": {
+            "line": 71,
+            "count": 36
+          },
+          "after": {
+            "line": 69,
+            "count": 0
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 178,
+            "count": 0
+          },
+          "after": {
+            "line": 142,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 179,
+            "count": 0
+          },
+          "after": {
+            "line": 144,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 194,
+            "count": 0
+          },
+          "after": {
+            "line": 160,
+            "count": 4
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 198,
+            "count": 2
+          },
+          "after": {
+            "line": 167,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 23:21:18 +07:00",
+      "stagedSha256": "599f31976d7bcc333416661c72c06d805f610bfb26bba37d70440febbb2941a6",
+      "diffSha256": "76d3c579ee8db837f6d74eb162005a6b6d3372a10d478d68cc685c0a7c0cce2c",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro"
+        },
+        {
+          "before": {
+            "line": 342,
+            "count": 0
+          },
+          "after": {
+            "line": 344,
+            "count": 33
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    }
+  ]
+}

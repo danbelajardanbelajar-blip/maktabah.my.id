@@ -1,5 +1,5 @@
 import {conversationalReply} from './ai-conversation.js';
-import {matchesQuestionTopic,topicSearchConstraint,readPreviousQuestions,questionContext,relevanceSchema,reviewSystem,readRelevanceReview} from './ai-relevance.js';
+import {matchesQuestionTopic,readPreviousQuestions,questionContext,relevanceSchema,reviewSystem,readRelevanceReview} from './ai-relevance.js';
 import {quoteCatalog,answerSchema,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,14 +7,13 @@ import {registerAiHistory} from './ai-history.js';
 import {resolveAiSource} from './ai-source.js';
 import crypto from 'node:crypto';
 import {AI_BOOK_POLICY_VERSION,filterAllowedAiReferences,assertAllowedAiBook} from './ai-book-policy.js';
+import {retrieveAiCandidatesOffThread,selectAiReferences,searchTimeout,AI_RETRIEVAL_TIMEOUT} from './ai-retrieval.js';
+export {searchTerms,retrieveAiReferences} from './ai-retrieval.js';
 
 const DEFAULT_MODEL = 'gemini-flash-latest';
 const keyPattern = /^AIza[A-Za-z0-9_-]{30,100}$/;
 const modelPattern = /^gemini-[a-z0-9._-]{1,70}$/;
 const fault = (message, code = 'AI_ERROR', status = 502) => Object.assign(new Error(message), { code, status });
-const clean = text => String(text ?? '').replace(/<[^>]*>/g, '').replace(/[\u064B-\u065F\u0670]/g, '').trim();
-const ignored = new Set('apa apakah siapa bagaimana kapan mengapa kenapa dimana berapa jelaskan tolong tentang menurut referensi kitab tersedia dalam dari untuk yang dan dengan hukum saya ini itu ada what how the is of in من ما هل عن في على إلى هو هي هذا هذه حكم'.split(' '));
-export const searchTerms = text => [...new Set(clean(text).toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').split(/\s+/).filter(w => w.length > 1 && !ignored.has(w)))].slice(0, 8);
 
 export function readAiConfig(filename, env = process.env) {
   let saved = {};
@@ -66,42 +65,6 @@ export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc
     }
   }
   throw last;
-}
-
-export function retrieveAiReferences(db, question, additional = false, catalogue = false, focusQuestion = question, excludedBooks = []) {
-  const terms = searchTerms(question);
-  const constraint=catalogue?'':topicSearchConstraint(focusQuestion);
-  if (!terms.length) return [];
-  const results = [];
-  const exclude = excludedBooks.length ? ` AND b.bkid NOT IN (${excludedBooks.map(()=>'?').join(',')})` : '';
-  for (const schema of additional ? ['main', 'tambahan'] : ['main']) {
-    if (!db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get()) continue;
-    for (const join of [' AND ', ' OR ']) {
-      const matches = db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,
-        snippet(pages_fts,0,'','',' … ',80) AS excerpt,bm25(pages_fts) AS score
-        FROM ${schema}.pages_fts JOIN ${schema}.pages p ON pages_fts.rowid=p.rowid
-        JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE pages_fts MATCH ?${exclude} ORDER BY bm25(pages_fts) LIMIT 12`)
-        .all('('+terms.map(t => `"${t}"`).join(join)+')'+(constraint?' AND '+constraint:''),...excludedBooks);
-      const relevant=matches.map(r => ({ ...r, excerpt: clean(r.excerpt).slice(0, 1800) })).filter(r=>matchesQuestionTopic(r.excerpt,focusQuestion));
-      results.push(...relevant);
-      if (relevant.length || terms.length === 1) break;
-    }
-  }
-  const seen = new Set(), perBook = new Map();
-  const pages = results.sort((a,b) => a.score-b.score).filter(r => {
-    const id = `${r.bkid}:${r.pageId}`;
-    if (seen.has(id) || (perBook.get(r.bkid) || 0) >= 3) return false;
-    seen.add(id); perBook.set(r.bkid, (perBook.get(r.bkid) || 0) + 1); return true;
-  }).slice(0, 8).map(({ score, ...r }) => r);
-  if (catalogue) {
-    const matches = [];
-    for (const schema of additional ? ['main','tambahan'] : ['main']) {
-      const rows = db.prepare(`SELECT bkid,bk AS title FROM ${schema}.books_meta b WHERE (${terms.map(() => 'bk LIKE ?').join(' OR ')})${exclude} LIMIT 5`).all(...terms.map(t => `%${t}%`),...excludedBooks);
-      matches.push(...rows.map(r => ({ ...r, pageId:null, juz:null, page:null, excerpt:`Informasi katalog: kitab berjudul "${clean(r.title)}" tersedia di perpustakaan. Metadata ini hanya memastikan keberadaan kitab, bukan kutipan isi atau dasar hukum.` })));
-    }
-    return [...matches,...pages].filter((r,i,all) => all.findIndex(x => x.bkid===r.bkid && x.pageId===r.pageId)===i).slice(0,8);
-  }
-  return pages;
 }
 
 export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAdmin, cache, configPath, localExportMode, isMaintenance = ()=>false, fetchImpl = fetch, env = process.env }) {
@@ -176,7 +139,9 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     entry.count++; limits.set(ip,entry); active++;
     const controller = new AbortController();
     const requestStarted=Date.now();
+    // Separate budgets: source search may use at most 35 s so the answer step always keeps its own provider time.
     const providerTimeout=maximum=>Math.min(maximum,Math.max(1,80000-(Date.now()-requestStarted)));
+    const searchRemaining=()=>35000-(Date.now()-requestStarted);
     res.on('close', () => controller.abort());
     headers();
     const heartbeat = setInterval(() => { if (!res.destroyed){if(streaming)emit({type:'heartbeat'});else res.write(' ');} },10000); heartbeat.unref();
@@ -192,11 +157,15 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       stage(selected?'preparing':'searching',selected?'Menyiapkan teks halaman yang dipilih…':'Mencari rujukan dalam kitab…');
       const catalogue = !selected && /tersedia|apakah.*(?:kitab|buku)|(?:kitab|buku).*ada|موجود|متوفر|هل.*كتاب/i.test(q);
       const retrieveEligible=async question=>{
+        assertReady();
+        if(searchRemaining()<=0)throw searchTimeout();
+        // One ranked candidate pool per question; excluded books are skipped in memory instead of re-running FTS.
+        const candidates=await retrieveAiCandidatesOffThread(db,[question,hasAdditional(),catalogue,focusedQuestion],{signal:controller.signal,timeout:Math.min(AI_RETRIEVAL_TIMEOUT,searchRemaining())});
         const excluded=new Set();
         for(let attempt=0;attempt<8;attempt++){
           assertReady();
-          if(Date.now()-requestStarted>60000)throw fault('Pemeriksaan rujukan memerlukan waktu lebih lama. Coba pertanyaan yang lebih spesifik.','AI_SOURCE_CHECK_UNAVAILABLE',503);
-          const found=retrieveAiReferences(db,question,hasAdditional(),catalogue,focusedQuestion,[...excluded]);
+          if(searchRemaining()<=0)throw searchTimeout();
+          const found=selectAiReferences(candidates,catalogue,[...excluded]);
           const allowed=await filterAllowedAiReferences(db,found,hasAdditional(),{signal:controller.signal});
           if(allowed.length||!found.length)return allowed;
           for(const reference of found)excluded.add(reference.bkid);
