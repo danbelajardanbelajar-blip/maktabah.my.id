@@ -9,6 +9,9 @@ export function auditMeta(payload={}) {
     reviewed:payload.reviewed===true,
     references:(Array.isArray(payload.references)?payload.references:[]).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:typeof r?.title==='string'?r.title:'',juz:r?.juz??null,page:r?.page??null,excerpt:typeof r?.excerpt==='string'?r.excerpt:''})),
     quotes:(Array.isArray(payload.evidence?.quotes)?payload.evidence.quotes:[]).map(q=>({source:q?.source??null,text:typeof q?.text==='string'?q.text:''})),
+    // Why an answer ended unverified, with the sources that were checked (admin history only).
+    ...(payload.rejection?{rejection:{stage:String(payload.rejection.stage||''),reason:String(payload.rejection.reason||'').slice(0,800),
+      references:(Array.isArray(payload.rejection.references)?payload.rejection.references:[]).slice(0,8).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:typeof r?.title==='string'?r.title:'',juz:r?.juz??null,page:r?.page??null,excerpt:typeof r?.excerpt==='string'?r.excerpt.slice(0,1500):''}))}}:{}),
   };
 }
 export function registerAiHistory(app,{getStateDb}) {

@@ -4,7 +4,11 @@ import { renderMarkdown } from '../lib/ai-markdown';
 import { useModalFocus } from '../lib/use-modal-focus';
 
 type AuditReference = { bkid?: number | null; pageId?: number | null; title?: string; juz?: number | string | null; page?: number | string | null; excerpt?: string };
-type AuditMeta = { mode?: string | null; reviewed?: boolean; references?: AuditReference[]; quotes?: { source?: number | null; text?: string }[] };
+type AuditRejection = { stage?: string; reason?: string; references?: AuditReference[] };
+type AuditMeta = { mode?: string | null; reviewed?: boolean; references?: AuditReference[]; quotes?: { source?: number | null; text?: string }[]; rejection?: AuditRejection };
+const REJECTION_STAGES: Record<string, string> = {
+  retrieval: 'Pencarian rujukan', verification: 'Pencocokan kutipan', topic: 'Kesesuaian topik', review: 'Review relevansi',
+};
 export type AskLogRow = { id: number; question?: string; response?: string; created_at?: string; ip?: string; user_agent?: string; session_id?: string | null; context_json?: string | null; meta_json?: string | null };
 
 const parse = <T,>(raw?: string | null): T | null => { if (!raw) return null; try { const v = JSON.parse(raw); return v && typeof v === 'object' ? v as T : null; } catch { return null; } };
@@ -63,6 +67,27 @@ export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => 
             </div>
             <div className="p-3 rounded-xl border leading-relaxed break-words" dir="auto" dangerouslySetInnerHTML={{ __html: row.response ? renderMarkdown(row.response) : '<span class="text-gray-400">(tidak ada jawaban tersimpan)</span>' }} />
           </section>
+          {meta?.rejection && (
+            <section>
+              <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Alasan tidak terverifikasi</h3>
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+                <div><span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">{REJECTION_STAGES[meta.rejection.stage || ''] || meta.rejection.stage || '-'}</span></div>
+                <div className="text-amber-900 whitespace-pre-wrap break-words" dir="auto">{meta.rejection.reason || '-'}</div>
+                {meta.rejection.references?.length ? (
+                  <details>
+                    <summary className="cursor-pointer text-xs font-semibold text-amber-900">Sumber yang dikirim ke AI ({meta.rejection.references.length})</summary>
+                    <ol className="mt-2 space-y-2">{meta.rejection.references.map((r, i) => (
+                      <li key={i} className="p-2 rounded-lg bg-white border">
+                        <div className="font-semibold text-gray-800" dir="auto">[{i + 1}] {r.title || '-'}</div>
+                        <div className="text-xs text-gray-500">ID kitab {r.bkid ?? '-'}{r.juz != null && r.juz !== '' ? ` · Juz ${r.juz}` : ''}{r.page != null && r.page !== '' ? ` · Hlm. ${r.page}` : ''}</div>
+                        {r.excerpt && <div className="mt-1 text-gray-700 whitespace-pre-wrap break-words text-xs" dir="auto">{r.excerpt}</div>}
+                      </li>
+                    ))}</ol>
+                  </details>
+                ) : null}
+              </div>
+            </section>
+          )}
           <section>
             <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500 mb-1">Semua sumber yang diperiksa ({references.length})</h3>
             {!meta ? <div className="text-xs text-gray-400 italic">Log ini dibuat sebelum rujukan disimpan; hanya pertanyaan dan jawaban yang tersedia.</div>

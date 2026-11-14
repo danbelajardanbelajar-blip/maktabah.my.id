@@ -964,3 +964,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-26-46-a9ba53.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-14 23:26:45 +07:00 | `docs/deployment-log.md` | — | 1–9 | module/file | modified |
+
+## [2026-11-14 23:38:02 +07:00] — Tanya AI: kualitas rujukan dan alasan penolakan reviewer
+
+Waktu pencatatan: **2026-11-14 23:38:02 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `5845344`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 200 tes server lulus (tes baru: kualitas halaman/daftar isi/encoding, passage, kata aspek, log penolakan reviewer); TypeScript dan build produksi lulus; oxlint tanpa error. Uji DB lokal: daftar isi dan halaman OCR rusak tidak lagi terpilih; حكم صلاة الجماعة memunculkan halaman 'حكم صلاة الجماعة في المسجد'; من هو الشافعي memunculkan halaman biografi Imam asy-Syafi'i. Jawaban Gemini belum diuji lokal (API key hanya di server).
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-23-38-02-aa908a.json](docs/change-audit/2026-11-14-23-38-02-aa908a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 23:35:46 +07:00 | `dist/assets/index.dev-CdbXY2HS.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-14 23:35:46 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-14 23:34:03 +07:00 | `server/ai-history.js` | — | 12–14 | export function auditMeta(payload={}) { | modified |
+| 2026-11-14 23:34:03 +07:00 | `server/ai-relevance.js` | 35–36 | 35–41 | export const reviewSystem='Anda pemeriksa relevansi dan dukungan jawaban, bukan | modified |
+| 2026-11-14 23:34:03 +07:00 | `server/ai-relevance.js` | — | 43–43 | export function readRelevanceReview(text) { | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | — | 3–3 | import {matchesQuestionTopic,topicSearchConstraint} from './ai-relevance.js'; | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 4–4 | 5–5 | import {matchesQuestionTopic,topicSearchConstraint} from './ai-relevance.js'; | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | — | 9–9 | export const AI_RETRIEVAL_TIMEOUT = 20000; | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | — | 17–63 | const searchUnavailable = () => fault('Pencarian rujukan kitab belum dapat disel | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 20–32 | 69–81 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 34–37 | 83–90 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 39–40 | — | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 42–43 | 93–103 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 46–46 | 106–106 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:37:10 +07:00 | `server/ai-retrieval.js` | 51–51 | 111–111 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 2–2 | 2–2 | import {conversationalReply} from './ai-conversation.js'; | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 184–184 | 184–186 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 191–191 | 193–193 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 207–207 | 209–209 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 209–209 | 211–211 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 212–212 | 214–215 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | — | 223–223 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:33:50 +07:00 | `server/ask-ai.js` | 231–231 | 235–235 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 23:37:11 +07:00 | `server/ask-ai.test.js` | 9–9 | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
+| 2026-11-14 23:37:11 +07:00 | `server/ask-ai.test.js` | — | 377–404 | test('each ranked page keeps its own snippet',t=>{ | modified |
+| 2026-11-14 23:34:16 +07:00 | `src/components/AskLogDetail.tsx` | 7–7 | 7–11 | type AuditReference = { bkid?: number \| null; pageId?: number \| null; title?: st | modified |
+| 2026-11-14 23:34:16 +07:00 | `src/components/AskLogDetail.tsx` | — | 70–90 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |

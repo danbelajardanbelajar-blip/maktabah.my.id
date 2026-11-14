@@ -1,5 +1,5 @@
 import {conversationalReply} from './ai-conversation.js';
-import {matchesQuestionTopic,readPreviousQuestions,questionContext,relevanceSchema,reviewSystem,readRelevanceReview} from './ai-relevance.js';
+import {matchesQuestionTopic,readPreviousQuestions,questionContext,relevanceSchema,reviewSystem,relevanceReview} from './ai-relevance.js';
 import {quoteCatalog,answerSchema,verifiedReferences,verifyAnswer,evidenceAnswer,validCachedAnswer} from './ai-evidence.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -181,14 +181,16 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
         const expanded=await retrieveEligible(translated.text);
         references=[...expanded.slice(0,4),...references.slice(0,4),...expanded,...references].filter((r,i,all)=>all.findIndex(x=>x.bkid===r.bkid&&x.pageId===r.pageId)===i).slice(0,8);
       }
-      let answer,evidence, mode = 'grounded';
+      let answer,evidence, mode = 'grounded', rejection = null;
+      // Admin-only diagnosis: why a question ended without a verified answer (never sent to the visitor).
+      const reject=(stage,reason)=>{rejection={stage,reason};throw Object.assign(Error(reason),{code:'UNVERIFIED_ANSWER'});};
       stage('preparing','Memeriksa dan menyiapkan teks sumber…');
       if(references.length)references=verifiedReferences(db,references,hasAdditional());
       references=await filterAllowedAiReferences(db,references,hasAdditional(),{signal:controller.signal});
       assertReady();
       if (!references.length) {
         answer = /[\u0600-\u06FF]/.test(q) ? 'لم أجد نصا مناسبا لهذا السؤال في كتب المكتبة المتاحة. يرجى تحديد الموضوع أو اسم الكتاب.' : 'Saya belum menemukan teks yang sesuai dengan pertanyaan ini di kitab yang tersedia. Coba sebutkan topik atau judul kitab yang lebih spesifik.';
-        mode = 'no_context';
+        mode = 'no_context';rejection={stage:'retrieval',reason:'Tidak ada halaman kitab yang cocok dan lolos kebijakan rujukan.'};
       } else if(references.every(r=>r.pageId==null)){
         mode='catalogue';answer='Kitab berikut tersedia dalam katalog perpustakaan:\n'+references.map((r,i)=>`${i+1}. ${r.title} [${i+1}]`).join('\n')+'\n\nBuka kitab untuk membaca isinya.';
       } else {
@@ -204,12 +206,13 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
         references=verifiedReferences(getDb(),references,hasAdditional());
         try{
           evidence=verifyAnswer(generated.text,references,catalog);
-          if(!selected&&evidence.quotes.some(quote=>!matchesQuestionTopic(references[quote.source-1].excerpt,focusedQuestion)))throw Object.assign(Error('Off-topic evidence'),{code:'UNVERIFIED_ANSWER'});
+          if(!selected&&evidence.quotes.some(quote=>!matchesQuestionTopic(references[quote.source-1].excerpt,focusedQuestion)))reject('topic','Kutipan yang dipilih model tidak memuat topik pertanyaan.');
           const used=[...new Set(evidence.quotes.map(quote=>quote.source))].sort((a,b)=>a-b);
-          if(used.length>3)throw Object.assign(Error('Too many evidence sources'),{code:'UNVERIFIED_ANSWER'});
+          if(used.length>3)reject('verification','Model memakai lebih dari tiga sumber.');
           const review=await generateGemini(settings,JSON.stringify({task:intent,question:focusedQuestion,answer:evidence.answer,quotes:evidence.quotes,sources:used.map(source=>{const r=references[source-1];return{source,title:r.title,page:r.page,juz:r.juz,context:r.excerpt};})}),{fetchImpl,signal:controller.signal,timeout:providerTimeout(35000),maxTokens:2048,json:true,schema:relevanceSchema,system:reviewSystem});
           assertReady();
-          if(!readRelevanceReview(review.text))throw Object.assign(Error('Insufficient relevant evidence'),{code:'UNVERIFIED_ANSWER'});
+          const verdict=relevanceReview(review.text);
+          if(!verdict.accepted)reject('review',`Reviewer menolak (relevant=${verdict.relevant}, supported=${verdict.supported}, complete=${verdict.complete}): ${verdict.reason||'tanpa alasan'}`);
           const renumber=new Map(used.map((source,index)=>[source,index+1]));
           references=used.map(source=>references[source-1]);
           evidence=verifyAnswer({answer:evidence.answer.replace(/\[(\d+)\]/g,(_,n)=>`[${renumber.get(Number(n))}]`),quotes:evidence.quotes.map(quote=>({...quote,source:renumber.get(quote.source)}))},references);
@@ -217,6 +220,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
         }
         catch(error){
           if(error.code!=='UNVERIFIED_ANSWER')throw error;
+          rejection={...(rejection||{stage:'verification',reason:'Jawaban model tidak cocok dengan kutipan atau nomor sumber yang tersedia.'}),references:references.map(r=>({bkid:r.bkid,pageId:r.pageId,title:r.title,juz:r.juz,page:r.page,excerpt:r.excerpt}))};
           // Never substitute arbitrary first excerpts for a failed answer.
           evidence=undefined;references=[];mode='no_context';
           answer=selected?'Saya belum dapat memverifikasi kesesuaian '+(intent==='translate'?'terjemahan':'penjelasan')+' dengan halaman sumber. Coba pilih bagian teks yang lebih spesifik lalu kirim kembali.':/[\u0600-\u06ff]/u.test(q)?'لم أتمكن من التحقق من أن النصوص المتاحة تجيب عن السؤال وتدعم الجواب. يرجى تحديد المذهب أو الكتاب أو اختيار نص من صفحة المصدر.':'Saya belum dapat memastikan jawaban yang tepat dari sumber yang ditemukan. Kutipan yang tersedia belum cukup untuk menjawab inti pertanyaan ini, sehingga saya tidak akan menyimpulkan angka, hukum, atau keutamaan darinya. Coba sebutkan mazhab, judul kitab, atau pilih halaman sumber yang ingin dibahas.';
@@ -228,7 +232,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       const payload = { status:'success', answer, references, mode,reviewed:mode==='grounded'||mode==='catalogue',...(evidence?{evidence}:{}),...contextData };
       if(payload.reviewed)cache.set(cacheKey,{ createdAt:Date.now(), payload });
       if (cache.size > 100) cache.delete(cache.keys().next().value);
-      history.record(req,res,q,answer,contextData,payload);
+      history.record(req,res,q,answer,contextData,rejection?{...payload,rejection}:payload);
       finish(payload);
     } catch (e) { finish({ status:'error', code:e.status ? e.code : 'SEARCH_ERROR', httpStatus:e.status || 503, message:e.status ? e.message : 'Pencarian rujukan kitab mengalami gangguan. Silakan coba lagi.' }); }
     finally { clearInterval(heartbeat); active--; }

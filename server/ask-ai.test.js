@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
-import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences} from './ai-retrieval.js';
+import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences,pageQuality,pagePassage,aspectWords} from './ai-retrieval.js';
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {createHash} from 'node:crypto';
 import {evidenceAnswer} from './ai-evidence.js';
@@ -373,4 +373,32 @@ test('each ranked page keeps its own snippet',t=>{
  const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,1,18,?)').run('صلاة الجماعة نص مختلف للصفحة الثانية');
  const refs=retrieveAiReferences(f.db,'صلاة الجماعة');
  assert.ok(refs.find(r=>r.pageId===12).excerpt.includes('مختلف'));assert.ok(refs.find(r=>r.pageId===11).excerpt.includes('واجبة'));
+});
+
+test('page quality demotes tables of contents and drops broken encodings',()=>{
+ const toc=['1 - مقدمة ... 5','2 - ولادة الإمام الشافعي ونسبه ... 6','3 - أساتذة الشافعي ... 8','4 - رحلته ... 9','5 - تلاميذه ... 11','6 - وفاته ... 12'].join('\n');
+ const q=pageQuality(toc);assert.equal(q.usable,true);assert.equal(q.toc,true);assert.ok(q.factor<0.5);
+ const prose='ولد الإمام محمد بن إدريس الشافعي بغزة سنة خمسين ومائة ثم حمل إلى مكة فنشأ بها وحفظ القرآن وهو ابن سبع سنين وطلب العلم على مسلم بن خالد الزنجي ثم رحل إلى المدينة فلازم مالك بن أنس وقرأ عليه الموطأ ثم ارتحل إلى العراق فأخذ عن محمد بن الحسن ثم عاد إلى مكة ثم رجع إلى بغداد ثم خرج إلى مصر فأقام بها حتى توفي سنة أربع ومائتين';
+ assert.equal(pageQuality(prose).toc,false);assert.equal(pageQuality(prose).factor,1);
+ assert.equal(pageQuality('كشاف القناع LcScLcAkLSSLccSLLLLLGLLeLee ?? ?? ?? ?? ?? ?? ?? ?? ?? mmmmmmm kkkkkk pppppp').usable,false);assert.equal(pageQuality('Keterangan tentang shalat witir dalam kitab berbahasa Indonesia.').usable,true);
+});
+
+test('passages center on the densest query window and stay exact page text',t=>{
+ const filler='كلام عام لا يتعلق بالمسألة المطلوبة في هذا الموضع من الكتاب. '.repeat(40);
+ const text=filler+'حكم صلاة الجماعة: ذهب بعض الفقهاء إلى أن صلاة الجماعة واجبة وذهب آخرون إلى أنها سنة.'+filler;
+ const passage=pagePassage(text,['صلاة','الجماعة','حكم']);
+ assert.ok(passage.length<=1400);assert.ok(passage.includes('حكم صلاة الجماعة'));assert.ok(text.includes(passage));
+ assert.deepEqual(aspectWords('ما حكم صلاة الجماعة').slice(0,1),['حكم']);assert.ok(aspectWords('siapa imam syafii').includes('ولد'));assert.deepEqual(aspectWords('صلاة الجماعة'),[]);
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,1,18,?)').run(text);
+ f.db.prepare('INSERT INTO pages VALUES(13,1,1,19,?)').run('صلاة الجماعة في المسجد أفضل من صلاة الفذ بسبع وعشرين درجة كما في الحديث الصحيح');
+ const refs=retrieveAiReferences(f.db,'حكم صلاة الجماعة');assert.equal(refs[0].pageId,12);assert.ok(refs[0].excerpt.includes('حكم صلاة الجماعة'));
+});
+
+test('a reviewer rejection is stored for admins with its reason and checked sources',async t=>{
+ const f=fixture(t);
+ const call=await serve(t,f,async()=>response(grounded('جواب [1]')),{reviewReply:async()=>response(JSON.stringify({relevant:true,supported:true,complete:false,reason:'Kutipan tidak menyebut hukum.'}))});
+ const result=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(result.data.mode,'no_context');assert.equal(result.data.rejection,undefined);
+ const meta=JSON.parse(f.db.prepare('SELECT meta_json FROM ask_logs ORDER BY rowid DESC LIMIT 1').get().meta_json);
+ assert.equal(meta.rejection.stage,'review');assert.ok(meta.rejection.reason.includes('complete=false'));assert.ok(meta.rejection.reason.includes('Kutipan tidak menyebut hukum.'));
+ assert.equal(meta.rejection.references[0].pageId,11);
 });
