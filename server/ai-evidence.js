@@ -28,7 +28,8 @@ export function quoteUnits(text,{min=60,max=600}={}){
  const flat=String(text||'').replace(/\s+/g,' ').trim();
  const sentences=flat.match(/[^.!?؟]+(?:[.!?؟]+["'”’»)\]]*|$)/gu)||[];
  const units=[];let current='';
- for(const sentence of sentences.map(s=>s.trim()).filter(Boolean)){
+ // A unit starts at a letter, not at punctuation left over from the previous sentence (": أما…").
+ for(const sentence of sentences.map(s=>s.replace(/^[^\p{L}\p{N}«"“([]+/u,'').trim()).filter(Boolean)){
   current=current?current+' '+sentence:sentence;
   while(current.length>max){let end=current.lastIndexOf(' ',max);if(end<max/2)end=max;units.push(current.slice(0,end).trim());current=current.slice(end).trim();}
   if(current.length>=min){units.push(current);current='';}
@@ -70,6 +71,8 @@ export function verifyAnswer(text,refs,catalog){
   const actual=exactSourceQuote(sourcePages.get(reference) || reference.excerpt,q.text);if(!actual)throw invalid();
   return {source:q.source,text:actual};
  });
+ // The model sometimes cites a quote ID ([1.10]) in prose; readers only know source numbers.
+ data={...data,answer:data.answer.replace(/\[(\d+)\.\d+\]/g,'[$1]').replace(/(\[\d+\])([.,;:]?)(?:\s*\1)+/g,'$1$2')};
  const sources=[...new Set(quotes.map(q=>q.source))];
  if(!/\[\d+\]/.test(data.answer)&&sources.length===1&&refs.filter(r=>r.pageId!=null).length===1)data={...data,answer:data.answer.trim()+` [${sources[0]}]`};
  const citations=[...data.answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));

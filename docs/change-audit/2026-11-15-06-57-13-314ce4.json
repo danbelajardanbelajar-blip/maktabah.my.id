@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 06:57:13 +07:00",
+  "title": "Tanya AI: kutipan diawali huruf dan nomor rujukan rapi",
+  "baseCommit": "1b5e648b879d63df675cba417f2eed1c4a7b6d24",
+  "checks": "212 tes server lulus (tes baru: unit kutipan diawali huruf, [1.1] menjadi [1] tanpa duplikat); oxlint bersih; uji online 1b5e648 menemukan «: أما…» dan [1.10]. [1]",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-evidence.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 06:56:29 +07:00",
+      "stagedSha256": "064407107547f51a2cd5d8001d43a738d72f1302806a4c99ec80a5256d8e153e",
+      "diffSha256": "5a220801ce22d0594db3a41a61460574cbcb03d60f4cdc5da793a8c85b6c8a55",
+      "symbols": [
+        "sourcePages",
+        "invalid",
+        "answerSchema",
+        "verifiedReferences",
+        "book",
+        "row",
+        "pieces",
+        "excerpt",
+        "matched",
+        "reference",
+        "quoteUnits",
+        "flat",
+        "sentences",
+        "units",
+        "quoteCatalog",
+        "catalog",
+        "original",
+        "actual",
+        "verifyAnswer",
+        "quotes",
+        "chosen",
+        "sources",
+        "citations",
+        "displayQuote",
+        "evidenceAnswer",
+        "validCachedAnswer",
+        "refs",
+        "verified"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 31,
+            "count": 1
+          },
+          "after": {
+            "line": 31,
+            "count": 2
+          },
+          "section": "export function quoteUnits(text,{min=60,max=600}={}){"
+        },
+        {
+          "before": {
+            "line": 72,
+            "count": 0
+          },
+          "after": {
+            "line": 74,
+            "count": 2
+          },
+          "section": "export function verifyAnswer(text,refs,catalog){"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-evidence.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 06:55:41 +07:00",
+      "stagedSha256": "7792cd0be7aaaf190f809b76eaa030e2294eb28592a395cab0b97efaf6318201",
+      "diffSha256": "c42edb997661d4ef7afc9f896f3921942ac55f0cf99526cb9e165423e24cfc86",
+      "symbols": [
+        "db",
+        "refs",
+        "evidence",
+        "catalog",
+        "payload",
+        "result",
+        "snippets",
+        "id",
+        "ar",
+        "answer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 60,
+            "count": 0
+          },
+          "after": {
+            "line": 61,
+            "count": 11
+          },
+          "section": "test('quotes are whole sentences across wrapped lines and display as one paragra"
+        }
+      ]
+    }
+  ]
+}

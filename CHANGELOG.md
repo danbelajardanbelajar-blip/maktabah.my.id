@@ -1126,3 +1126,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-06-52-50-7069c3.
 | 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 31–31 | 31–31 | export function renderMarkdown(text: string): string { | modified |
 | 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 35–35 | 35–35 | export function renderMarkdown(text: string): string { | modified |
 | 2026-11-15 06:50:26 +07:00 | `src/lib/ai-markdown.ts` | 41–41 | 41–42 | export function renderMarkdown(text: string): string { | modified |
+
+## [2026-11-15 06:57:13 +07:00] — Tanya AI: kutipan diawali huruf dan nomor rujukan rapi
+
+Waktu pencatatan: **2026-11-15 06:57:13 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1b5e648`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 212 tes server lulus (tes baru: unit kutipan diawali huruf, [1.1] menjadi [1] tanpa duplikat); oxlint bersih; uji online 1b5e648 menemukan «: أما…» dan [1.10]. [1]
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-06-57-13-314ce4.json](docs/change-audit/2026-11-15-06-57-13-314ce4.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 06:56:29 +07:00 | `server/ai-evidence.js` | 31–31 | 31–32 | export function quoteUnits(text,{min=60,max=600}={}){ | modified |
+| 2026-11-15 06:56:29 +07:00 | `server/ai-evidence.js` | — | 74–75 | export function verifyAnswer(text,refs,catalog){ | modified |
+| 2026-11-15 06:55:41 +07:00 | `server/ai-evidence.test.js` | — | 61–71 | test('quotes are whole sentences across wrapped lines and display as one paragra | modified |

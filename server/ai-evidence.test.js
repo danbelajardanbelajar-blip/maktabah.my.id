@@ -58,3 +58,14 @@ test('quotes are whole sentences across wrapped lines and display as one paragra
  assert.ok(quoteUnits('a'.repeat(1500)).every(u=>u.length<=600));
  }finally{db.close();}
 });
+
+test('quote units start at a letter and quote IDs in prose become source numbers',()=>{
+ assert.ok(quoteUnits('هل يجب عليه أن يصلى مع الجماعة الصلاة التي قد صلاها، أم لا؟: أما المسألة الاولى: فإن العلماء اختلفوا فيها، فذهب الجمهور إلى أنها سنة.').every(u=>/^[\p{L}«"“(]/u.test(u)));
+ const db=new Database(':memory:');try{
+ db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);INSERT INTO books_meta VALUES(1,'Book');");
+ db.prepare('INSERT INTO pages VALUES(1,1,1,1,?)').run('صلاة الجماعة واجبة عند بعض الفقهاء وهي سنة عند غيرهم من أهل العلم.');
+ const refs=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:'صلاة الجماعة واجبة عند بعض الفقهاء وهي سنة عند غيرهم من أهل العلم.'}]);
+ const result=verifyAnswer({answer:'Ulama berbeda pendapat [1.1]. [1]',quotes:[{source:1,quoteId:'1.1'}]},refs,quoteCatalog(refs));
+ assert.equal(result.answer,'Ulama berbeda pendapat [1].');
+ }finally{db.close();}
+});
