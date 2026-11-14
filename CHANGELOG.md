@@ -892,3 +892,40 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-22-08-22-1585b7.
 | 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 15–15 | 15–15 | const titles: Record<AdminView,string> = { | modified |
 | 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 21–21 | 21–21 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
 | 2026-11-14 21:55:26 +07:00 | `src/lib/library-activity.ts` | — | 1–22 | recordLibraryActivity, useCatalogueActivity, serialized, timer | added |
+
+## [2026-11-14 22:27:20 +07:00] — Kecualikan seluruh kitab dari rujukan AI berdasarkan nama pada halaman mana pun
+
+Waktu pencatatan: **2026-11-14 22:27:20 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c4c6b0a`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 48 tes ai-book-policy/ask-ai/ai-evidence/ai-source/ai-relevance/ai-errors/ai-history/ai-stream/ai-conversation; node --check server/index.js, server/ask-ai.js, server/ai-book-policy.js, server/ai-book-policy-worker.js; oxlint modul/worker/tes kebijakan; npx tsc -b; diff ditinjau dan staged whitespace lulus. Verifikasi mencakup empat nama, harakat/tatweel/alif/HTML/spasi, pemicu pada halaman lain, seluruh kitab/katalog, dua database dan ID lintas sumber, penjelasan/terjemahan pembaca HTTP 403, namespace cache lama dan validasi cache baru, mutasi saat generasi/review, pencarian kandidat pengganti, pembatalan dan kegagalan storage. Worker SQLite file hanya-baca dibuktikan hash sumber tidak berubah; perubahan koneksi eksternal terdeteksi. HTTP fixture file-backed melalui worker lulus dan status menyediakan sourcePolicyVersion. Provider tiruan, tanpa perubahan dataset produksi atau klaim uji provider nyata. Hanya backend/tes/dokumentasi; aset frontend tidak berubah sehingga build frontend tidak diperlukan. SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull/HEAD server/restart/fungsi online versi baru belum terverifikasi. Tidak menjalankan install/build di hosting atau menghentikan transfer.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-22-27-20-dd97d2.json](docs/change-audit/2026-11-14-22-27-20-dd97d2.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 22:26:49 +07:00 | `docs/ai-book-policy.md` | — | 1–29 | module/file | added |
+| 2026-11-14 22:18:42 +07:00 | `server/ai-book-policy-worker.js` | — | 1–19 | excluded | added |
+| 2026-11-14 22:21:37 +07:00 | `server/ai-book-policy.js` | — | 1–102 | AI_BOOK_POLICY_VERSION, excludedAiNames, patterns, normalizePolicyText, containsExcludedAiName, normalized, fault, unavailable | added |
+| 2026-11-14 22:24:04 +07:00 | `server/ai-book-policy.test.js` | — | 1–80 | fixture, db, put, refs, dir, hash, before, other | added |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | — | 9–9 | import crypto from 'node:crypto'; | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 70–70 | 71–71 | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | — | 76–76 | export function retrieveAiReferences(db, question, additional = false, catalogue | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 81–82 | 83–84 | export function retrieveAiReferences(db, question, additional = false, catalogue | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 97–97 | 99–99 | export function retrieveAiReferences(db, question, additional = false, catalogue | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 113–113 | 115–115 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 149–149 | 151–151 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 160–160 | 162–162 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 162–162 | 164–171 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 185–185 | 194–206 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | 191–191 | 212–212 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | — | 218–219 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | — | 233–234 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.js` | — | 256–258 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.test.js` | — | 9–11 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.test.js` | 13–13 | 16–16 | const response = text => new Response(JSON.stringify({ candidates:[{content:{par | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.test.js` | 17–17 | 20–20 | function fixture(t) { | modified |
+| 2026-11-14 22:26:43 +07:00 | `server/ask-ai.test.js` | — | 275–342 | test('only cited evidence remains visible and its citation numbers stay valid af | modified |
+| 2026-11-14 22:17:38 +07:00 | `server/index.js` | — | 24–24 | import {createLibraryActivity,registerLibraryActivity} from './library-activity. | modified |
+| 2026-11-14 22:17:38 +07:00 | `server/index.js` | 193–193 | 194–194 | let invalidateHadithIndex=()=>{}; | modified |
+| 2026-11-14 22:17:38 +07:00 | `server/index.js` | — | 775–775 | app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |
+| 2026-11-14 22:17:38 +07:00 | `server/index.js` | — | 787–787 | app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |

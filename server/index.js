@@ -21,6 +21,7 @@ import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
+import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
@@ -190,7 +191,7 @@ let hasTafsir = false;
 // Cache untuk query AI
 const askCache = new Map();
 let invalidateHadithIndex=()=>{};
-const invalidateLibraryCache=()=>{askCache.clear();invalidateHadithIndex();};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();};
 
 try {
   if (fs.existsSync(dbPath)) {
@@ -771,6 +772,7 @@ app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {
     const pageId = parseInt(req.params.pageId);
     const { nass, part, page } = req.body;
     const info = db.prepare(`UPDATE pages SET nass = ?, part = ?, page = ? WHERE book_id = ? AND id = ?`).run(nass, part, page, bookId, pageId);
+    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); }
     if (info.changes > 0) res.json({ success: true });
     else res.status(404).json({ error: 'Page not found' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -782,6 +784,7 @@ app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {
     const bookId = parseInt(req.params.bookId);
     const pageId = parseInt(req.params.pageId);
     const info = db.prepare(`DELETE FROM pages WHERE book_id = ? AND id = ?`).run(bookId, pageId);
+    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); }
     if (info.changes > 0) res.json({ success: true });
     else res.status(404).json({ error: 'Page not found' });
   } catch (error) { res.status(500).json({ error: error.message }); }

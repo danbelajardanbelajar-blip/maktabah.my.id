@@ -1,0 +1,665 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-14 22:27:20 +07:00",
+  "title": "Kecualikan seluruh kitab dari rujukan AI berdasarkan nama pada halaman mana pun",
+  "baseCommit": "c4c6b0af047312d96d19d1c7af2ced907325ad66",
+  "checks": "LULUS: 48 tes ai-book-policy/ask-ai/ai-evidence/ai-source/ai-relevance/ai-errors/ai-history/ai-stream/ai-conversation; node --check server/index.js, server/ask-ai.js, server/ai-book-policy.js, server/ai-book-policy-worker.js; oxlint modul/worker/tes kebijakan; npx tsc -b; diff ditinjau dan staged whitespace lulus. Verifikasi mencakup empat nama, harakat/tatweel/alif/HTML/spasi, pemicu pada halaman lain, seluruh kitab/katalog, dua database dan ID lintas sumber, penjelasan/terjemahan pembaca HTTP 403, namespace cache lama dan validasi cache baru, mutasi saat generasi/review, pencarian kandidat pengganti, pembatalan dan kegagalan storage. Worker SQLite file hanya-baca dibuktikan hash sumber tidak berubah; perubahan koneksi eksternal terdeteksi. HTTP fixture file-backed melalui worker lulus dan status menyediakan sourcePolicyVersion. Provider tiruan, tanpa perubahan dataset produksi atau klaim uji provider nyata. Hanya backend/tes/dokumentasi; aset frontend tidak berubah sehingga build frontend tidak diperlukan. SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull/HEAD server/restart/fungsi online versi baru belum terverifikasi. Tidak menjalankan install/build di hosting atau menghentikan transfer.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-book-policy.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 22:26:49 +07:00",
+      "stagedSha256": "6651597802de9f016055a986ac67ac49564309bc8b04ecc103bcc7e654f3fe0c",
+      "diffSha256": "619814162b1cae6e0b2f5be1a0e807519122611aa6f7b48a6683429cdcc5047a",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 29
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy-worker.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 22:18:42 +07:00",
+      "stagedSha256": "fc0c4d6504b58e8f9275c0ea1607bcc31fb8ad2ed424661a38b22c8111dc75a6",
+      "diffSha256": "c51a1f3d37be0478736d7c372ea7cb665345581ce46cae5807267a1148168556",
+      "symbols": [
+        "excluded"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 19
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 22:21:37 +07:00",
+      "stagedSha256": "a989016bd436969fb220029b475f7073ce0d0abd58c5ac7dfa0621f2945d8f99",
+      "diffSha256": "275fa3460b68cf045ae0fac72e5c7b94b5a5fca5e93b24368d49864ae2bd5c84",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "patterns",
+        "normalizePolicyText",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 102
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-14 22:24:04 +07:00",
+      "stagedSha256": "0b8d91f6e46bc5ba267efd3dddc915a94feb70d2ca4c01b0de17ef71b3eaa581",
+      "diffSha256": "d91ff777834ce25278ff07cec377fbabdb9dd1bde768343b3c5276246a72e286",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 80
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 22:26:43 +07:00",
+      "stagedSha256": "13b91bc08cddc4a0e45adc1ee47b5d4c6e5faa0b28f022e236edf99cc472fd5a",
+      "diffSha256": "dae2b4305986b0927ccdb9acd0c63d6d4dcf6b6417ca672f3922935b0c9d98ce",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "retrieveAiReferences",
+        "terms",
+        "constraint",
+        "results",
+        "exclude",
+        "matches",
+        "relevant",
+        "seen",
+        "pages",
+        "id",
+        "rows",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "retrieveEligible",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "catalog",
+        "context",
+        "task",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "renumber"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "import crypto from 'node:crypto';"
+        },
+        {
+          "before": {
+            "line": 70,
+            "count": 1
+          },
+          "after": {
+            "line": 71,
+            "count": 1
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 74,
+            "count": 0
+          },
+          "after": {
+            "line": 76,
+            "count": 1
+          },
+          "section": "export function retrieveAiReferences(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 81,
+            "count": 2
+          },
+          "after": {
+            "line": 83,
+            "count": 2
+          },
+          "section": "export function retrieveAiReferences(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 97,
+            "count": 1
+          },
+          "after": {
+            "line": 99,
+            "count": 1
+          },
+          "section": "export function retrieveAiReferences(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 113,
+            "count": 1
+          },
+          "after": {
+            "line": 115,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 149,
+            "count": 1
+          },
+          "after": {
+            "line": 151,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 160,
+            "count": 1
+          },
+          "after": {
+            "line": 162,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 162,
+            "count": 1
+          },
+          "after": {
+            "line": 164,
+            "count": 8
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 185,
+            "count": 1
+          },
+          "after": {
+            "line": 194,
+            "count": 13
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 191,
+            "count": 1
+          },
+          "after": {
+            "line": 212,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 196,
+            "count": 0
+          },
+          "after": {
+            "line": 218,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 209,
+            "count": 0
+          },
+          "after": {
+            "line": 233,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 230,
+            "count": 0
+          },
+          "after": {
+            "line": 256,
+            "count": 3
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 22:26:43 +07:00",
+      "stagedSha256": "eef63edb81f156b8838e67ef45bdc883a007679a9bba187f0896abcbd13fdc3e",
+      "diffSha256": "62cae22c4900b515a5bf7da102529937c61799a817e54ac27af64f788fb6fb8e",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 9,
+            "count": 3
+          },
+          "section": "import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro"
+        },
+        {
+          "before": {
+            "line": 13,
+            "count": 1
+          },
+          "after": {
+            "line": 16,
+            "count": 1
+          },
+          "section": "const response = text => new Response(JSON.stringify({ candidates:[{content:{par"
+        },
+        {
+          "before": {
+            "line": 17,
+            "count": 1
+          },
+          "after": {
+            "line": 20,
+            "count": 1
+          },
+          "section": "function fixture(t) {"
+        },
+        {
+          "before": {
+            "line": 271,
+            "count": 0
+          },
+          "after": {
+            "line": 275,
+            "count": 68
+          },
+          "section": "test('only cited evidence remains visible and its citation numbers stay valid af"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-14 22:17:38 +07:00",
+      "stagedSha256": "d7bbb302b70705628cb27a607ee8c299848bf315eb7601d0a7828fe4c70ef965",
+      "diffSha256": "30a3d34ac2838128e1e42776e24da9d7f8acb440a8ec0bd070a649ed22c322de",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "tableMap",
+        "tableName",
+        "query",
+        "statsQuery",
+        "statsRow",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "rawQuery",
+        "targetBookId",
+        "getQuery",
+        "selectFields",
+        "countExactStmt",
+        "totalExact",
+        "countAndStmt",
+        "totalAnd",
+        "fetchExactStmt",
+        "params",
+        "remLimit",
+        "fetchAndStmt",
+        "params2",
+        "andOffset",
+        "countStmt",
+        "fetchStmt",
+        "buildFtsQuery",
+        "ftsTable",
+        "pagesTable",
+        "execSearch",
+        "sql",
+        "stmt",
+        "prefixes",
+        "r",
+        "pfxTotal",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 23,
+            "count": 0
+          },
+          "after": {
+            "line": 24,
+            "count": 1
+          },
+          "section": "import {createLibraryActivity,registerLibraryActivity} from './library-activity."
+        },
+        {
+          "before": {
+            "line": 193,
+            "count": 1
+          },
+          "after": {
+            "line": 194,
+            "count": 1
+          },
+          "section": "let invalidateHadithIndex=()=>{};"
+        },
+        {
+          "before": {
+            "line": 773,
+            "count": 0
+          },
+          "after": {
+            "line": 775,
+            "count": 1
+          },
+          "section": "app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 784,
+            "count": 0
+          },
+          "after": {
+            "line": 787,
+            "count": 1
+          },
+          "section": "app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {"
+        }
+      ]
+    }
+  ]
+}

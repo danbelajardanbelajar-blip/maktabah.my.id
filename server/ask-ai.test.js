@@ -6,15 +6,18 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
+import {invalidateAiBookPolicy} from './ai-book-policy.js';
+import {createHash} from 'node:crypto';
+import {evidenceAnswer} from './ai-evidence.js';
 
 const key = 'AIza' + 'a'.repeat(35);
 const grounded=text=>JSON.stringify({answer:text,quotes:[{source:1,quoteId:'1.1'}]});
 const response = text => new Response(JSON.stringify({ candidates:[{content:{parts:[{text}]}}] }),{status:200});
-function fixture(t) {
+function fixture(t,{file=false}={}) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'maktabah-ai-'));
   const configPath=path.join(dir,'ai-config.local.json');
   fs.writeFileSync(configPath,JSON.stringify({apiKey:key,model:'gemini-flash-latest'}));
-  const db=new Database(':memory:');
+  const db=new Database(file?path.join(dir,'source.db'):':memory:');
   db.exec(`CREATE TABLE books_meta(bkid INTEGER PRIMARY KEY,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);
     CREATE VIRTUAL TABLE pages_fts USING fts5(nass,content='pages');
     CREATE TRIGGER pages_ai AFTER INSERT ON pages BEGIN INSERT INTO pages_fts(rowid,nass) VALUES(new.rowid,new.nass);END;
@@ -268,4 +271,72 @@ test('only cited evidence remains visible and its citation numbers stay valid af
  const call=await serve(t,f,async()=>response(JSON.stringify({answer:'Penjelasan dari sumber kedua [2]',quotes:[{source:2,quoteId:'2.1'}]})),{reviewReply:async(u,o)=>{const input=JSON.parse(JSON.parse(o.body).contents[0].parts[0].text);assert.deepEqual(input.sources.map(source=>source.source),[2]);return response(JSON.stringify({relevant:true,supported:true,complete:true,reason:'Synthetic fixture supported.'}));}});
  const result=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(result.data.mode,'grounded');assert.equal(result.data.references.length,1);assert.equal(result.data.evidence.quotes[0].source,1);assert.ok(result.data.answer.includes('[1]'));assert.ok(!result.data.answer.includes('[2]'));
  const cached=await call('/api/ask',{q:'صلاة الجماعة',stream:true});assert.equal(cached.events[0].stage,'cached');assert.equal(cached.data.references.length,1);
+});
+
+test('whole-book exclusion removes clean-looking hits and catalogue metadata without calling the provider',async t=>{
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('ذكر ابن تيمية في صفحة لا تطابق السؤال');let calls=0;
+ const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ for(const q of ['صلاة الجماعة','هل كتاب الفقه متوفر']){
+  const result=await call('/api/ask',{q});assert.equal(result.data.mode,'no_context');assert.deepEqual(result.data.references,[]);
+ }
+ assert.equal(calls,0);
+});
+
+test('selected-page explanation and translation reject the entire excluded book before any provider request',async t=>{
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال محمد بن عبد الوهاب');let calls=0;
+ const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ for(const intent of ['explain','translate']){
+  const result=await call('/api/ask',{q:'Terangkan halaman ini',intent,source:{bookId:1,pageId:11,text:'صلاة الجماعة واجبة'}});
+  assert.equal(result.status,403);assert.equal(result.data.code,'AI_SOURCE_EXCLUDED');assert.equal(result.data.references,undefined);
+ }
+ assert.equal(calls,0);
+});
+
+test('only eligible books reach the provider and cached answers are rechecked after a different page changes',async t=>{
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال بن باز');
+ f.db.prepare('INSERT INTO books_meta VALUES(2,?)').run('كتاب مسموح');
+ f.db.prepare('INSERT INTO pages VALUES(21,2,1,1,?)').run('صلاة الجماعة واجبة عند بعض الفقهاء وهي سنة عند غيرهم');
+ let calls=0;const call=await serve(t,f,async(url,options)=>{calls++;const prompt=JSON.parse(options.body).contents[0].parts[0].text;assert.ok(!prompt.includes('كتاب الفقه'));assert.ok(!prompt.includes('بن باز'));return response(grounded('جواب [1]'));});
+ const first=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(first.data.mode,'grounded');assert.deepEqual(first.data.references.map(r=>r.bkid),[2]);
+ const cached=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(cached.data.mode,'grounded');assert.equal(calls,1);
+ f.db.prepare('INSERT INTO pages VALUES(22,2,1,2,?)').run('قال العثيمين');invalidateAiBookPolicy(f.db);
+ const next=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(next.data.mode,'no_context');assert.deepEqual(next.data.references,[]);assert.equal(calls,1);
+});
+
+test('a book becoming excluded during generation or semantic review cannot be returned or cached',async t=>{
+ for(const phase of ['generation','review']){
+  const f=fixture(t);
+  const exclude=()=>{f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن تيمية');invalidateAiBookPolicy(f.db);};
+  const call=await serve(t,f,async()=>{if(phase==='generation')exclude();return response(grounded('جواب [1]'));},
+   {reviewReply:async()=>{if(phase==='review')exclude();return response(JSON.stringify({relevant:true,supported:true,complete:true,reason:'Synthetic fixture'}));}});
+  const result=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(result.data.status,'error');assert.equal(result.data.code,'AI_SOURCE_CHANGED');assert.equal(result.data.references,undefined);assert.equal(f.cache.size,0);
+ }
+});
+
+test('old cache namespace cannot restore an answer from a newly excluded book',async t=>{
+ const f=fixture(t),q='صلاة الجماعة';
+ f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('ذكر عثيمين');
+ const evidence={answer:'جواب قديم [1]',quotes:[{source:1,text:'صلاة الجماعة واجبة'}]};
+ const payload={status:'success',reviewed:true,mode:'grounded',answer:evidenceAnswer(evidence),evidence,references:[{bkid:1,pageId:11,title:'كتاب الفقه',excerpt:'صلاة الجماعة واجبة'}]};
+ f.cache.set(createHash('sha256').update(JSON.stringify(['relevance-v2',q,'question',null])).digest('hex'),{createdAt:Date.now(),payload});
+ let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ const result=await call('/api/ask',{q});assert.equal(result.data.mode,'no_context');assert.deepEqual(result.data.references,[]);assert.equal(calls,0);assert.notEqual(result.data.answer,payload.answer);
+});
+
+test('excluded top-ranked pages do not hide an eligible lower-ranked book',async t=>{
+ const f=fixture(t),text='صلاة الجماعة واجبة عند بعض الفقهاء وهي سنة عند غيرهم';
+ for(let i=0;i<15;i++)f.db.prepare('INSERT INTO pages VALUES(?,1,2,?,?)').run(100+i,100+i,text);
+ f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('ذكر بن باز');
+ f.db.prepare('INSERT INTO books_meta VALUES(2,?)').run('كتاب مسموح');f.db.prepare('INSERT INTO pages VALUES(21,2,1,1,?)').run(text);
+ const call=await serve(t,f,async()=>response(grounded('جواب [1]')));
+ const result=await call('/api/ask',{q:'صلاة الجماعة'});assert.equal(result.data.mode,'grounded');assert.deepEqual(result.data.references.map(r=>r.bkid),[2]);
+});
+
+test('HTTP requests enforce whole-book policy through the real file-backed worker',async t=>{
+ const f=fixture(t,{file:true});f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن تيمية');
+ let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ const [question,status]=await Promise.all([call('/api/ask',{q:'صلاة الجماعة'}),call('/api/ai/status')]);
+ assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v1');
+ const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
+ assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
 });
