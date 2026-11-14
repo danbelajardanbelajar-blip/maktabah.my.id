@@ -1,6 +1,6 @@
 export interface AiQueryDetectionResult {
   shouldRedirect: boolean;
-  reason: 'question_word' | 'question_mark' | 'long_sentence' | 'none';
+  reason: 'question_word' | 'question_mark' | 'none';
   matchedKeywords: string[];
   wordCount: number;
 }
@@ -49,13 +49,6 @@ const ARABIC_QUESTION_PHRASES = [
   'من هو', 'من هي', 'من هم', 'من قال'
 ];
 
-// Indonesian sentence connectors that confirm natural language sentence syntax
-const SENTENCE_CONNECTORS = new Set([
-  'yang', 'dan', 'di', 'ke', 'dari', 'pada', 'untuk', 'tentang', 'menurut',
-  'karena', 'agar', 'dalam', 'atau', 'ketika', 'saat', 'bila', 'jika', 'kalau',
-  'dengan', 'tanpa', 'atas', 'bawah', 'antara', 'setelah', 'sebelum', 'sesudah'
-]);
-
 /**
  * Normalizes text for intent detection:
  * - strips Arabic harakat (tashkeel)
@@ -71,8 +64,8 @@ export function normalizeQueryForDetection(text: string): string {
 }
 
 /**
- * Detects whether a search query represents a question, conversational sentence,
- * or long inquiry that is better routed to the AI Assistant rather than literal book search.
+ * Routes a search query to the AI Assistant only when it contains a question mark
+ * or a recognized question/intent keyword or phrase, regardless of query length.
  */
 export function detectAiQuery(rawQuery: string): AiQueryDetectionResult {
   const trimmed = String(rawQuery ?? '').trim();
@@ -147,31 +140,6 @@ export function detectAiQuery(rawQuery: string): AiQueryDetectionResult {
       matchedKeywords: matchedWords,
       wordCount
     };
-  }
-
-  // 4. Long Sentence / Conversational Detection:
-  // - Word count >= 6: Almost definitely a natural language sentence/inquiry.
-  // - Word count >= 5 with at least one sentence connector (yang, dan, di, tentang, etc.):
-  //   Confirms grammatical sentence structure rather than a classical book title.
-  if (wordCount >= 6) {
-    return {
-      shouldRedirect: true,
-      reason: 'long_sentence',
-      matchedKeywords: [`${wordCount}_words`],
-      wordCount
-    };
-  }
-
-  if (wordCount >= 5) {
-    const hasConnector = tokens.some(token => SENTENCE_CONNECTORS.has(token));
-    if (hasConnector) {
-      return {
-        shouldRedirect: true,
-        reason: 'long_sentence',
-        matchedKeywords: ['sentence_with_connector'],
-        wordCount
-      };
-    }
   }
 
   return {

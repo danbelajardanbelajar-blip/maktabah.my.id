@@ -60,16 +60,35 @@ test('detectAiQuery detects Arabic question particles and phrases', () => {
   }
 });
 
-test('detectAiQuery detects long conversational sentences (word count >= 6 or 5 with connectors)', () => {
-  const sentence1 = 'panduan tata shalat gerhana matahari sesuai sunnah nabi';
-  const res1 = detectAiQuery(sentence1);
-  assert.equal(res1.shouldRedirect, true);
-  assert.equal(res1.reason, 'long_sentence');
+test('detectAiQuery keeps five-word connector searches and longer searches in normal search', () => {
+  const queries = [
+    ['shalat sunnah sebelum subuh berjamaah', 5],
+    ['shalat sunnah sebelum subuh dan sesudahnya', 6],
+    ['panduan tata shalat gerhana matahari sesuai sunnah nabi', 8],
+    ['شرح كتاب الصلاة من صحيح البخاري', 6],
+  ];
+  for (const [query, count] of queries) {
+    const result = detectAiQuery(query);
+    assert.equal(result.shouldRedirect, false, query);
+    assert.equal(result.reason, 'none', query);
+    assert.deepEqual(result.matchedKeywords, [], query);
+    assert.equal(result.wordCount, count, query);
+  }
+});
 
-  const sentence2 = 'shalat sunnah sebelum subuh dan sesudahnya';
-  const res2 = detectAiQuery(sentence2);
-  assert.equal(res2.shouldRedirect, true);
-  assert.equal(res2.reason, 'long_sentence');
+test('detectAiQuery still redirects short and long searches with explicit question triggers', () => {
+  for (const query of ['apa', 'hukum', 'dalil', 'hadits', 'jelaskan', 'هل', 'what']) {
+    assert.equal(detectAiQuery(query).shouldRedirect, true, query);
+    assert.equal(detectAiQuery(query).reason, 'question_word', query);
+  }
+  for (const mark of ['?', '؟']) {
+    const result = detectAiQuery(`panduan tata shalat gerhana matahari sesuai sunnah nabi${mark}`);
+    assert.equal(result.shouldRedirect, true);
+    assert.equal(result.reason, 'question_mark');
+  }
+  const result = detectAiQuery('bagaimana panduan shalat gerhana matahari sesuai sunnah nabi');
+  assert.equal(result.shouldRedirect, true);
+  assert.equal(result.reason, 'question_word');
 });
 
 test('detectAiQuery does NOT redirect normal book titles and short classical search keywords', () => {

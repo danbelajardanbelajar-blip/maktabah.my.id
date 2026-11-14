@@ -779,3 +779,22 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-13-18-22-26-dd5be5.
 | 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 67–67 | 67–67 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
 | 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 69–69 | 69–69 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
 | 2026-11-13 18:21:32 +07:00 | `src/components/AskLogDetail.tsx` | 76–77 | 76–77 | export function AskLogDetail({ row, onClose }: { row: AskLogRow; onClose: () => | modified |
+
+## [2026-11-14 21:00:59 +07:00] — Hapus redirect Tanya AI berdasarkan jumlah kata; pertahankan kata/frasa pemicu dan tanda tanya
+
+Waktu pencatatan: **2026-11-14 21:00:59 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `f6c7856`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 14 tes detector/navigasi/back-navigation; node --check server/ai-query-detector.test.js; npm run build (TypeScript dan Vite); diff ditinjau dan git diff --cached --check. Build memberi peringatan konfigurasi Vite dan ukuran bundle, tanpa error. Deployment belum dilakukan: SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); HEAD server dan perilaku online versi baru belum terverifikasi.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-21-00-59-09b93e.json](docs/change-audit/2026-11-14-21-00-59-09b93e.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 21:00:02 +07:00 | `dist/assets/index.dev-CDY5dfig.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-14 21:00:02 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-14 20:59:13 +07:00 | `server/ai-query-detector.test.js` | 63–67 | 63–77 | test('detectAiQuery detects Arabic question particles and phrases', () => { | modified |
+| 2026-11-14 20:59:13 +07:00 | `server/ai-query-detector.test.js` | 69–72 | 79–91 | test('detectAiQuery detects long conversational sentences (word count >= 6 or 5 | modified |
+| 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 3–3 | 3–3 | export interface AiQueryDetectionResult { | modified |
+| 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 52–58 | — | const ARABIC_QUESTION_PHRASES = [ | modified |
+| 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 74–75 | 67–68 | export function normalizeQueryForDetection(text: string): string { | modified |
+| 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 152–176 | — | export function detectAiQuery(rawQuery: string): AiQueryDetectionResult { | modified |
