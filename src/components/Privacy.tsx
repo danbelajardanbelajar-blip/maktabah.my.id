@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Privacy: React.FC = () => {
-  const LAST_UPDATED = '7 November 2026';
+  const LAST_UPDATED = '14 November 2026';
   const SITE_URL     = 'https://maktab.my.id';
   const CONTACT      = '6285743399595';
 
@@ -24,6 +24,7 @@ const Privacy: React.FC = () => {
 
           <p className="mb-2"><strong>Riwayat & Preferensi Pencarian</strong></p>
           <p className="mb-4">Sistem mencatat pencarian serta pertanyaan dan jawaban Tanya AI. Log layanan juga dapat memuat alamat IP dan informasi peramban untuk operasional, statistik, dan perbaikan layanan.</p>
+          <p className="mb-4">Aktivitas Kutub Hadis dan Penulis & Karya juga dicatat, termasuk pencarian, filter, penelusuran linimasa, profil penulis, serta pembukaan detail atau pembaca kitab. Catatan mencakup waktu, konteks aktivitas, alamat IP, dan informasi peramban; hanya administrator yang dapat melihat log terperinci.</p>
           <p className="mb-4">Riwayat Tanya AI pengunjung dipisahkan menggunakan cookie pengenal acak pada browser. Cookie ini dipakai untuk fungsi riwayat, bukan untuk iklan. Menghapus cookie dapat membuat riwayat sebelumnya tidak dapat diakses dari browser tersebut. Administrator dapat mengakses log layanan untuk pengelolaan dan penanganan masalah.</p>
         </section>
 

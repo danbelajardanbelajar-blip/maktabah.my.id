@@ -12,6 +12,7 @@ import { AdminNavigation } from './AdminNavigation';
 import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
 import { AskLogDetail } from './AskLogDetail';
+import { LibraryLogData } from './LibraryLogData';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
@@ -30,7 +31,7 @@ const downloadCSV = (data: any[], filename: string) => {
   const keys = Object.keys(data[0]);
   const csvContent = [
     keys.join(','),
-    ...data.map(row => keys.map(k => '"' + String(row[k] || '').replace(/"/g, '""') + '"').join(','))
+    ...data.map(row => keys.map(k => '"' + String(row[k] ?? '').replace(/"/g, '""') + '"').join(','))
   ].join('\n');
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement("a");
@@ -87,8 +88,8 @@ const Pagination = ({ page, total, limit, onChange, loading, onLimitChange }: an
         )}
       </div>
       <div className="flex gap-2">
-        <button onClick={() => onChange(page - 1)} disabled={page === 1 || loading} className="p-2 rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40"><ChevronLeft size={18} /></button>
-        <button onClick={() => onChange(page + 1)} disabled={page >= totalPages || loading} className="p-2 rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40"><ChevronRight size={18} /></button>
+        <button aria-label="Halaman sebelumnya" onClick={() => onChange(page - 1)} disabled={page === 1 || loading} className="p-2 rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40"><ChevronLeft size={18} /></button>
+        <button aria-label="Halaman berikutnya" onClick={() => onChange(page + 1)} disabled={page >= totalPages || loading} className="p-2 rounded-lg border bg-white shadow-sm hover:bg-gray-50 disabled:opacity-40"><ChevronRight size={18} /></button>
       </div>
     </div>
   );
@@ -1064,6 +1065,10 @@ const SubmissionsView = ({ token, onLogout }: { token: string, onLogout: () => v
 
 // ==================== LOGS VIEW ====================
 const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: () => void, type: string, title: string }) => {
+  const libraryLog = type === 'hadith' || type === 'authors';
+  const [logFilter,setLogFilter] = useState('');
+  const [actionFilter,setActionFilter] = useState('');
+  const [refresh,setRefresh] = useState(0);
   const [data, setData] = useState<any[]>([]);
   const [selected, setSelected] = useState<any[]>([]);
   const toggleAll = (e: any, list: any[]) => {
@@ -1089,9 +1094,11 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
   const [stats, setStats] = useState({ total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 });
 
   useEffect(() => {
+    let disposed = false;
     const load = async () => {
       setLoading(true);
       const res = await adminFetch(token, () => webAPI.getAdminLogs(token, type), onLogout, setError);
+      if (disposed) return;
       if (res) {
         if (Array.isArray(res)) {
           setData(res);
@@ -1111,7 +1118,8 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       setLoading(false);
     };
     load();
-  }, [token, type]);
+    return () => { disposed = true; };
+  }, [token, type, refresh]);
 
   useEffect(() => {
     // Fallback hitung statistik dari data log jika server tidak mengembalikan objek stats
@@ -1139,7 +1147,9 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
     }
   }, [data]);
 
-  const paginated = data.slice((currentPage - 1) * limit, currentPage * limit);
+  const visible = libraryLog ? data.filter(row=>(!actionFilter || row.action === actionFilter) &&
+    (!logFilter.trim() || [row.query,row.target_name,row.target_id,row.context,row.ip,row.user_agent].join(' ').toLowerCase().includes(logFilter.trim().toLowerCase()))) : data;
+  const paginated = visible.slice((currentPage - 1) * limit, currentPage * limit);
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 flex items-center justify-between flex-wrap gap-2">
@@ -1172,6 +1182,19 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       </div>
 
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
+      {libraryLog && <div className="p-4 border-b bg-gray-50 space-y-3">
+        <p className="text-xs text-gray-500">Maksimal 500 aktivitas terbaru ditampilkan; statistik mencakup seluruh catatan. Waktu dalam WIB.</p>
+        <div className="flex flex-wrap gap-2">
+          <input aria-label="Cari aktivitas" placeholder="Cari kata, kitab, penulis, filter, atau IP…" value={logFilter} onChange={e=>{setLogFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:flex-1 min-w-0 bg-white" />
+          <select aria-label="Jenis aktivitas" value={actionFilter} onChange={e=>{setActionFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">Semua aktivitas</option><option value="browse">Telusur & filter</option><option value="search">Pencarian</option>
+            <option value="profile">Profil penulis</option><option value="timeline">Muat linimasa</option><option value="timeline_year">Pilih tahun</option>
+            <option value="read_book">Buka pembaca</option><option value="book_detail">Detail kitab</option><option value="edition">Pilih edisi</option>
+          </select>
+          <button disabled={loading} onClick={()=>{setSelected([]);setCurrentPage(1);setRefresh(n=>n+1);}} className="border rounded-lg px-3 py-2 text-sm bg-white disabled:opacity-50">Muat ulang</button>
+        </div>
+        <p className="text-xs text-gray-500">{visible.length} aktivitas sesuai filter.</p>
+      </div>}
       
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'logsview_export.csv')} />
       <div className="overflow-x-auto">
@@ -1187,7 +1210,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
           </thead>
           <tbody className="divide-y">
             {loading ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Memuat...</td></tr> : 
-              data.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Belum ada log</td></tr> :
+              visible.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">{data.length ? 'Tidak ada aktivitas sesuai filter.' : 'Belum ada log'}</td></tr> :
               paginated.map(d => (
                 <tr key={d.id} className={type === 'ask' ? 'hover:bg-blue-50 cursor-pointer' : 'hover:bg-gray-50'}
                   onClick={type === 'ask' ? () => setDetail(d) : undefined}
@@ -1195,7 +1218,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                   tabIndex={type === 'ask' ? 0 : undefined} title={type === 'ask' ? 'Klik untuk melihat pertanyaan dan jawaban lengkap' : undefined}>
                 <td className="p-3 text-center"><input type="checkbox" checked={!!selected.find(s => s.id === d.id)} onChange={(e) => toggleOne(e, d)} onClick={(e) => e.stopPropagation()} /></td>
                   <td className="p-3 text-gray-500">{d.id}</td>
-                  <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID')}</td>
+                  <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID',libraryLog?{timeZone:'Asia/Jakarta'}:undefined)}{libraryLog?' WIB':''}</td>
                   <td className="p-3 font-medium">
                     {type === 'search' && <span>{d.query}</span>}
                     {type === 'download' && (() => {
@@ -1225,6 +1248,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                     {type === 'visit' && <span>Path: {d.path}</span>}
                     {type === 'quran' && <span>Surah ID: {d.surah_id}</span>}
                     {type === 'rowa' && <span>{d.rowa_name} (ID: {d.rowa_id})</span>}
+                    {(type === 'hadith' || type === 'authors') && <LibraryLogData row={d} />}
                     {type === 'ask' && (
                       <div className="flex flex-col gap-1">
                         <span className="font-semibold text-blue-600 line-clamp-2 break-words" dir="auto">Q: {d.question}</span>
@@ -1244,7 +1268,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
         </table>
       </div>
     
-      <Pagination page={currentPage} total={data.length} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
+      <Pagination page={currentPage} total={visible.length} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
       {detail && <AskLogDetail row={detail} onClose={() => setDetail(null)} />}
     </div>
   );
@@ -1346,7 +1370,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   const goBack = () => setView(adminParent(view));
 
   return (
-    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Panel administrator" tabIndex={-1} className="fixed inset-0 bg-gray-100 flex flex-col z-[80] overflow-hidden font-sans">
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Panel administrator" tabIndex={-1} className="fixed inset-0 bg-gray-100 text-gray-800 flex flex-col z-[80] overflow-hidden font-sans">
       {/* Header */}
       <div className="bg-white border-b px-3 md:px-6 py-3 flex flex-wrap justify-between items-center gap-2 shadow-sm flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
@@ -1407,6 +1431,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {view === 'log_visit' && <LogsView token={token} onLogout={onLogout} type="visit" title="Log Kunjungan Halaman" />}
           {view === 'log_quran' && <LogsView token={token} onLogout={onLogout} type="quran" title="Log Penggunaan Al Qur'an" />}
           {view === 'log_rowa' && <LogsView token={token} onLogout={onLogout} type="rowa" title="Log Kamus Perawi" />}
+          {view === 'log_hadith' && <LogsView key="hadith" token={token} onLogout={onLogout} type="hadith" title="Log Kutub Hadis" />}
+          {view === 'log_authors' && <LogsView key="authors" token={token} onLogout={onLogout} type="authors" title="Log Penulis & Karya" />}
           {view === 'log_ask' && <LogsView token={token} onLogout={onLogout} type="ask" title="Log Tanya AI" />}
           </>}
         </div>

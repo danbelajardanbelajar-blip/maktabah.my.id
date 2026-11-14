@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react';
+import {recordLibraryActivity} from '../lib/library-activity';
 import {BookOpen,Search,Users,ArrowLeft,ArrowRight,GitBranch,LayoutGrid,Library,Feather} from 'lucide-react';
 import {pushLocation} from '../lib/back-navigation';
 import {navigationHash,routePage} from '../lib/navigation';
@@ -29,10 +30,10 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
   useEffect(()=>{
     const controller=new AbortController();setLoading(true);setError('');setReply(null);
     if(id&&!/^[1-9]\d*$/.test(id)){setError('Tautan penulis tidak valid.');setLoading(false);return;}
-    const query=new URLSearchParams({q,sort,page:String(page),limit:view==='timeline'?'12':'24'});
+    const query=new URLSearchParams({q,sort,view,page:String(page),limit:!id&&view==='timeline'?'12':'24'});
     if(century)query.set('century',century);
     if(initial)query.set('initial',initial);
-    const endpoint=id?`/api/authors/${id}?page=${page}`:`/api/authors?${query}`;
+    const endpoint=id?`/api/authors/${id}?${query}`:`/api/authors?${query}`;
     fetch(endpoint,{signal:controller.signal}).then(async r=>{
       if(!r.headers.get('content-type')?.includes('application/json'))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Layanan penulis pada alamat ini belum diperbarui. Untuk versi lokal terbaru, buka http://127.0.0.1:3088/#/penulis.':'Layanan penulis belum memberikan data. Muat ulang beberapa saat lagi.');
       const result=await r.json();if(!id&&view==='cards'&&r.ok&&!Array.isArray(result.initials))throw Error(['127.0.0.1','localhost'].includes(window.location.hostname)?'Filter abjad belum tersedia pada layanan ini. Buka http://127.0.0.1:3088/#/penulis?view=cards.':'Filter abjad sedang diperbarui. Silakan muat ulang.');if(!r.ok)throw Error(result.error||'Gagal memuat penulis.');return result;
@@ -48,6 +49,8 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
   const openAuthor=(authorId:number)=>go({...context,id:authorId,listPage:page});
   const changePage=(n:number)=>go({...context,id:id||undefined,page:n,listPage:id?listPage:undefined});
   const author:Author|undefined=id?data?.data:undefined;
+  const logBook=(action:'read_book'|'book_detail',work:Work)=>recordLibraryActivity('authors',{action,query:q,target_id:work.book_id,target_name:work.title,
+    context:{view,sort,century,initial,page,author_id:author?.id,author_name:author?.name}});
   const overview=data?.overview;
   return <section className="author-journey">
     {!id?<header className="author-journey-hero">
@@ -100,7 +103,7 @@ export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook
       <article className="bg-[var(--reader-bg)] border rounded-2xl p-5 sm:p-7 space-y-4"><h2 className="text-3xl leading-relaxed font-bold break-words" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{author.name}</h2><div className="flex flex-wrap gap-3 text-sm"><span className="px-3 py-1 rounded-full bg-[var(--app-primary)]/10">{author.workCount} kitab tersedia</span>{author.death_text?.trim()&&<span>Wafat: <span dir="auto">{author.death_text}</span></span>}</div><h3 className="font-bold border-t pt-4">Biografi</h3>{author.biography?.trim()?<div className="whitespace-pre-wrap break-words text-lg leading-loose" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{author.biography}</div>:<p className="opacity-60 text-sm">Biografi belum tersedia dalam sumber ini.</p>}<p className="text-xs opacity-60 border-t pt-3 break-words">Sumber: {author.source_ref}</p></article>
       <div><h3 className="text-xl font-bold mb-2">Kitab di Pustaka Ini</h3><p className="text-sm opacity-70">Daftar ini memuat karya yang sudah tertaut. Metadata yang belum cocok menunggu pemeriksaan admin.</p></div>
       {data.works.length===0&&<p className="p-7 text-center rounded-xl border bg-[var(--reader-bg)]">Belum ada kitab tersedia yang tertaut dengan penulis ini.</p>}
-      {data.works.map((w:Work)=><article key={w.book_id} className="p-5 border rounded-2xl bg-[var(--reader-bg)] space-y-3"><button onClick={()=>openBook(w.book_id)} className="block w-full text-right text-xl font-bold hover:text-[var(--app-primary)]" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{w.title}</button><div className="flex gap-2 items-center flex-wrap"><span className="text-xs rounded-full bg-[var(--app-primary)]/10 px-3 py-1">{basisName(w.basis)}</span><button onClick={()=>readBook(w.book_id)} className="ml-auto px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white font-semibold flex items-center gap-2"><BookOpen size={16}/>Baca kitab</button></div><details className="text-sm"><summary className="cursor-pointer opacity-70">Dasar relasi & sumber</summary><p className="mt-2 whitespace-pre-wrap break-words" dir="auto">{w.evidence}</p><p className="text-xs opacity-60 mt-2 break-words">{w.source_ref}</p></details></article>)}
+      {data.works.map((w:Work)=><article key={w.book_id} className="p-5 border rounded-2xl bg-[var(--reader-bg)] space-y-3"><button onClick={()=>{logBook('book_detail',w);openBook(w.book_id);}} className="block w-full text-right text-xl font-bold hover:text-[var(--app-primary)]" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{w.title}</button><div className="flex gap-2 items-center flex-wrap"><span className="text-xs rounded-full bg-[var(--app-primary)]/10 px-3 py-1">{basisName(w.basis)}</span><button onClick={()=>{logBook('read_book',w);readBook(w.book_id);}} className="ml-auto px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white font-semibold flex items-center gap-2"><BookOpen size={16}/>Baca kitab</button></div><details className="text-sm"><summary className="cursor-pointer opacity-70">Dasar relasi & sumber</summary><p className="mt-2 whitespace-pre-wrap break-words" dir="auto">{w.evidence}</p><p className="text-xs opacity-60 mt-2 break-words">{w.source_ref}</p></details></article>)}
     </>}
     {!loading&&!error&&data&&!id&&<>
       <div className="author-journey-section-heading"><div><h2>{view==='timeline'?'Jejak Penulis Lintas Zaman':'Mengenal Para Penulis'}</h2><p>{view==='timeline'?'Klik tahun untuk melihat penulis. Geser linimasa ke kiri atau kanan, lalu muat rentang sebelumnya atau berikutnya. Jarak penanda tidak berskala.':'Pilih nama untuk membuka biografi dan karya yang tersedia.'}</p></div><span dir="rtl">أعلام ومؤلفات</span></div>

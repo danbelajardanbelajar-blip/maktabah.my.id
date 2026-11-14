@@ -1,4 +1,5 @@
 import {RowaLinkedText,escapeRowaHtml} from './RowaLinkedText';
+import {recordLibraryActivity} from '../lib/library-activity';
 import {useEffect,useState} from 'react';
 import {BookOpen,ArrowLeft,ArrowRight} from 'lucide-react';
 interface Result {bookId:number;pageId:number;bookName:string;sourceName:string;part:string|number|null;page:string|number|null;snippet:string;}
@@ -30,7 +31,7 @@ export function HadithTextSearch({q,group,source,edition,matching,page,onPage,re
         <div className="flex justify-between items-start gap-3 flex-wrap"><div className="min-w-0"><h3 className="font-bold text-xl break-words text-[var(--app-primary)]" dir="rtl" style={{fontFamily:'var(--arabic-font)'}}>{result.bookName}</h3><p className="text-xs opacity-60 mt-2">{result.sourceName} · Jilid {result.part??'—'} · Halaman {result.page??'—'}</p></div></div>
         <RowaLinkedText className="text-xl leading-loose my-4 whitespace-pre-wrap break-words" style={{fontFamily:'var(--arabic-font)'}} html={escapeRowaHtml(result.snippet).replace(/\uE000/g,'<mark class="bg-amber-200 text-amber-950 rounded px-0.5">').replace(/\uE001/g,'</mark>')}/>
 
-        <a href={`#/read/${result.bookId}/${result.pageId}`} onClick={e=>{if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();readBook(result.bookId,result.pageId,q);}}} className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--app-primary)] text-white rounded-xl font-semibold text-sm"><BookOpen size={16}/>Baca halaman ini</a>
+        <a href={`#/read/${result.bookId}/${result.pageId}`} onClick={e=>{recordLibraryActivity('hadith',{action:'read_book',query:q,target_id:result.bookId,target_name:result.bookName,context:{mode:'content',group,book:source,edition,matching,page,page_id:result.pageId,part:result.part??undefined,source_page:result.page??undefined}});if(!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();readBook(result.bookId,result.pageId,q);}}} className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--app-primary)] text-white rounded-xl font-semibold text-sm"><BookOpen size={16}/>Baca halaman ini</a>
       </article>)}
       {(data.page>1||data.hasMore)&&<nav aria-label="Halaman hasil pencarian isi" className="flex items-center justify-between gap-2 text-xs sm:text-sm"><button disabled={data.page<=1} onClick={()=>onPage(data.page-1)} className="inline-flex items-center gap-1 border rounded-xl px-3 py-2 disabled:opacity-40"><ArrowLeft size={15}/>Sebelumnya</button><span>Halaman {data.page}</span><button disabled={!data.hasMore||data.page>=100} onClick={()=>onPage(data.page+1)} className="inline-flex items-center gap-1 border rounded-xl px-3 py-2 disabled:opacity-40">Berikutnya<ArrowRight size={15}/></button></nav>}
     </>}

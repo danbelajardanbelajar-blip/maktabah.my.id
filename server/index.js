@@ -20,6 +20,7 @@ import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
+import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
@@ -145,6 +146,7 @@ const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
     && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
+    && !req.path.startsWith('/api/log/library/')
     && !req.path.startsWith('/api/admin/category')
     && !req.path.startsWith('/api/admin/rowa-database/')
     && !req.path.startsWith('/api/admin/authors-database/')
@@ -343,6 +345,11 @@ function booksMeta() {
   }
   return `main.books_meta`;
 }
+
+const libraryActivity = createLibraryActivity(() => stateDb);
+registerLibraryActivity(app,{activity:libraryActivity,
+  getBook:id=>db?.prepare(`SELECT bkid,bk FROM ${booksMeta()} WHERE bkid=? LIMIT 1`).get(id),
+  isBusy:()=>Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession)});
 
 function authorsUnion() {
   if (hasTambahan && hasTambahanAuthors) {
@@ -569,6 +576,8 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             log_visit: stateDb.prepare("SELECT COUNT(*) as c FROM visit_logs").get().c,
             log_quran: stateDb.prepare("SELECT COUNT(*) as c FROM quran_logs").get().c,
             log_rowa: stateDb.prepare("SELECT COUNT(*) as c FROM rowa_logs").get().c,
+            log_hadith: stateDb.prepare("SELECT COUNT(*) as c FROM hadith_logs").get().c,
+            log_authors: stateDb.prepare("SELECT COUNT(*) as c FROM authors_logs").get().c,
             log_ask: stateDb.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c
         };
         res.json({ success: true, data: stats });
@@ -586,6 +595,8 @@ app.get('/api/admin/logs/:type', requireAdmin, (req, res) => {
       visit: 'visit_logs',
       quran: 'quran_logs',
       rowa: 'rowa_logs',
+      hadith: 'hadith_logs',
+      authors: 'authors_logs',
       ask: 'ask_logs'
     };
     const tableName = tableMap[type];
@@ -699,11 +710,11 @@ registerRowaDatabase(app, {store:rowaStore, requireAdmin});
 registerRowaMentions(app,()=>rowaStore.getDb());
 registerRowaBrowser(app,()=>rowaStore.getDb());
 const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR || path.join(rootDir,'dev-data','authors-database')));
-invalidateHadithIndex=registerHadithSearch(app,{directory:path.join(rootDir,'dev-data','hadith-search'),getPaths:()=>db?[path.resolve(dbPath),...(hasTambahan?[path.resolve(tambDbPath)]:[])]:[],isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession)});
+invalidateHadithIndex=registerHadithSearch(app,{onActivity:(req,event)=>libraryActivity.record('hadith',req,event),directory:path.join(rootDir,'dev-data','hadith-search'),getPaths:()=>db?[path.resolve(dbPath),...(hasTambahan?[path.resolve(tambDbPath)]:[])]:[],isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession)});
 registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all();});
-const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
+const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n-libraryActivity.changesFor(db)}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
 registerAuthorTransfer(app,{store:authorStore,requireAdmin});
-registerAuthors(app,{service:authorService,requireAdmin});
+registerAuthors(app,{service:authorService,requireAdmin,onActivity:(req,event)=>libraryActivity.record('authors',req,event)});
 registerCompactTransfer(app,{
   getDb:()=>db,getDbPath:()=>dbPath,getAdditionalPath:()=>hasTambahan?path.resolve(tambDbPath):null,
   requireAdmin,localExportMode,runtime:transferRuntime,clearCache:()=>invalidateLibraryCache(),

@@ -110,11 +110,18 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
   }
   return{authorList,detail,related,review,bookCase,decide,invalidate};
 }
-export function registerAuthors(app,{service,requireAdmin}) {
-  const route=handler=>(req,res)=>{try{res.json(handler(req));}catch(e){res.status(e.status||400).json({error:e.message});}};
-  app.get('/api/authors',route(req=>service.authorList(req.query)));
+export function registerAuthors(app,{service,requireAdmin,onActivity=()=>{}}) {
+  const route=(handler,activity=false)=>(req,res)=>{try{
+    const result=handler(req);
+    if(activity && !(req.query.view==='timeline' && req.query.timeline!=='1' && !result.works))try{onActivity(req,{action:result.works?'profile':req.query.timeline==='1'?'timeline':req.query.q?'search':'browse',
+      query:req.query.q,target_id:result.works?result.data?.id:null,target_name:result.works?result.data?.name:'',
+      result_count:result.groups?result.groups.reduce((n,g)=>n+g.authors.length,0):result.works?result.works.length:result.data?.length,
+      context:{...req.query,total:result.total,total_pages:result.totalPages,total_groups:result.totalGroups,start:result.start,end:result.end}});}catch{/* Logging must not interrupt author browsing. */}
+    res.json(result);
+  }catch(e){res.status(e.status||400).json({error:e.message});}};
+  app.get('/api/authors',route(req=>service.authorList(req.query),true));
   app.get('/api/authors/book/:id',route(req=>({data:service.related(Number(req.params.id))})));
-  app.get('/api/authors/:id',route(req=>service.detail(Number(req.params.id),req.query)));
+  app.get('/api/authors/:id',route(req=>service.detail(Number(req.params.id),req.query),true));
   app.get('/api/admin/authors/review',requireAdmin,route(req=>service.review(req.query)));
   app.get('/api/admin/authors/book/:id',requireAdmin,route(req=>service.bookCase(Number(req.params.id))));
   app.post('/api/admin/authors/decision',requireAdmin,route(req=>service.decide(req.body||{})));

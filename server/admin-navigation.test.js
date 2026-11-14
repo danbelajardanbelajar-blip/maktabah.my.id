@@ -15,4 +15,5 @@ test('admin routes restore nested entities and all menu views belong to exactly 
   assert.equal(adminLocation('#/admin?view=constructor').view,'categories');
   const views=adminGroups.flatMap(g=>g.views);assert.equal(new Set(views).size,views.length);
   assert.equal(adminGroup('edit_page'),'Kitab');assert.equal(adminGroup('storage'),'Pengaturan');
+  for(const view of ['log_hadith','log_authors']){assert.equal(adminLocation(`#/admin?view=${view}`).view,view);assert.equal(adminGroup(view),'Aktivitas');}
 });

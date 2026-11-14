@@ -822,3 +822,73 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-21-14-56-bd59e0.
 | 2026-11-14 21:12:09 +07:00 | `src/App.tsx` | — | 856–857 | function App() { | modified |
 | 2026-11-14 21:07:42 +07:00 | `src/api.ts` | — | 58–59 | export const webAPI = { | modified |
 | 2026-11-14 21:07:42 +07:00 | `src/components/SearchSuggestions.tsx` | — | 1–28 | SearchSuggestions, categoryKey, controller | added |
+
+## [2026-11-14 22:08:22 +07:00] — Log aktivitas Kutub Hadis dan Penulis & Karya pada admin
+
+Waktu pencatatan: **2026-11-14 22:08:22 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6bb2fb7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 50 tes library-activity/hadith-search/hadith-books/authors/admin-navigation/admin-loader/navigation/back-navigation/search-suggestions/ai-query-detector; node --check server/index.js, server/authors.js, server/hadith-search.js, server/library-activity.js; oxlint file modul/test/hook/komponen log baru; TypeScript dan build produksi lokal; diff ditinjau dan staged whitespace lulus. Browser Chrome headless dengan server lengkap serta database/paket penulis sintetis sementara: perekaman katalog/filter/edisi/detail/pembaca/pencarian isi/profil/linimasa/tahun; akses log tanpa admin 401; statistik dashboard dan log; filter teks/jenis; pagination; CSV menjaga hasil nol; 1440 dan 390 piksel tanpa overflow halaman/pageerror. Tema green/sepia/dark diperiksa, termasuk kontras input dan screenshot akhir. Riwayat sumber tidak direkonstruksi, tidak mengubah/import dataset produksi. Build hanya memberi peringatan konfigurasi Vite dan ukuran bundle tanpa error. SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull/HEAD server/restart dan fungsi online versi baru belum terverifikasi; tidak menghentikan transfer atau menjalankan install/build di hosting.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-22-08-22-1585b7.json](docs/change-audit/2026-11-14-22-08-22-1585b7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-CZxWudRA.css` | 1–2 | — | module/file | deleted |
+| 2026-11-14 22:07:00 +07:00 | `dist/assets/index-DlP13NX6.css` | — | 1–2 | module/file | added |
+| 2026-11-14 22:07:00 +07:00 | `dist/assets/index.dev-Br7rxYnW.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-14 22:07:00 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-14 22:07:01 +07:00 | `dist/privacy-policy.html` | 18–18 | 18–18 | a{color:#047857;overflow-wrap:anywhere} | modified |
+| 2026-11-14 22:07:01 +07:00 | `dist/privacy-policy/index.html` | 18–18 | 18–18 | a{color:#047857;overflow-wrap:anywhere} | modified |
+| 2026-11-14 22:04:38 +07:00 | `docs/library-activity.md` | — | 1–24 | module/file | added |
+| 2026-11-14 21:58:19 +07:00 | `server/admin-navigation.test.js` | — | 18–18 | test('admin routes restore nested entities and all menu views belong to exactly | modified |
+| 2026-11-14 21:56:32 +07:00 | `server/authors.js` | 113–115 | 113–122 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-14 21:56:32 +07:00 | `server/authors.js` | 117–117 | 124–124 | export function registerAuthors(app,{service,requireAdmin}) { | modified |
+| 2026-11-14 21:53:58 +07:00 | `server/hadith-search.js` | 4–4 | 4–4 | import {activeHadithIndex} from './hadith-search-core.js'; | modified |
+| 2026-11-14 21:53:58 +07:00 | `server/hadith-search.js` | — | 31–32 | export function registerHadithSearch(app,{getPaths,isBusy=()=>false,directory}) | modified |
+| 2026-11-14 21:58:19 +07:00 | `server/hadith-search.test.js` | 54–54 | 54–54 | test('HTTP worker endpoint searches real fixture text and rejects maintenance an | modified |
+| 2026-11-14 21:58:19 +07:00 | `server/hadith-search.test.js` | — | 59–60 | test('HTTP worker endpoint searches real fixture text and rejects maintenance an | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | — | 23–23 | import { registerSearchSuggestions } from './search-suggestions.js'; | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | — | 149–149 | app.use((req, res, next) => { | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | — | 349–353 | function booksMeta() { | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | — | 579–580 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | — | 598–599 | app.get('/api/admin/logs/:type', requireAdmin, (req, res) => { | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | 702–702 | 713–713 | const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | 704–704 | 715–715 | registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return d | modified |
+| 2026-11-14 21:59:25 +07:00 | `server/index.js` | 706–706 | 717–717 | registerAuthorTransfer(app,{store:authorStore,requireAdmin}); | modified |
+| 2026-11-14 22:02:20 +07:00 | `server/library-activity.js` | — | 1–79 | libraryLogTables, actions, contextKeys, text, sanitizeLibraryActivity, context, value, createLibraryActivity | added |
+| 2026-11-14 21:59:24 +07:00 | `server/library-activity.test.js` | — | 1–92 | fixture, db, activity, app, service, server, request, r | added |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 15–15 | import { AskLogDetail } from './AskLogDetail'; | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 33–33 | 34–34 | const downloadCSV = (data: any[], filename: string) => { | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 90–91 | 91–92 | const Pagination = ({ page, total, limit, onChange, loading, onLimitChange }: an | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1068–1071 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1097–1097 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1101–1101 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1114–1114 | 1121–1122 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1142–1142 | 1150–1152 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1185–1197 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1190–1190 | 1213–1213 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1198–1198 | 1221–1221 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1251–1251 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1247–1247 | 1271–1271 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | 1349–1349 | 1373–1373 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Admin.tsx` | — | 1434–1435 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-14 21:56:33 +07:00 | `src/components/AuthorTimeline.tsx` | — | 2–2 | import {useEffect,useRef,useState} from 'react'; | modified |
+| 2026-11-14 21:56:33 +07:00 | `src/components/AuthorTimeline.tsx` | 48–48 | 49–49 | export function AuthorTimeline({context,onOpen}:Props) { | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Authors.tsx` | — | 2–2 | import {useEffect,useState} from 'react'; | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Authors.tsx` | 32–32 | 33–33 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Authors.tsx` | 35–35 | 36–36 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Authors.tsx` | — | 52–53 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-14 22:06:46 +07:00 | `src/components/Authors.tsx` | 103–103 | 106–106 | export function Authors({openBook,readBook}:{openBook:(id:number)=>void;readBook | modified |
+| 2026-11-14 21:59:24 +07:00 | `src/components/HadithBooks.tsx` | — | 2–2 | import {HadithTextSearch} from './HadithTextSearch'; | modified |
+| 2026-11-14 21:59:24 +07:00 | `src/components/HadithBooks.tsx` | — | 33–36 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-14 21:59:24 +07:00 | `src/components/HadithBooks.tsx` | 56–56 | 61–61 | export function HadithBooks({openBook,readBook}:{openBook:(id:number)=>void;read | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/components/HadithTextSearch.tsx` | — | 2–2 | import {RowaLinkedText,escapeRowaHtml} from './RowaLinkedText'; | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/components/HadithTextSearch.tsx` | 33–33 | 34–34 | export function HadithTextSearch({q,group,source,edition,matching,page,onPage,re | modified |
+| 2026-11-14 21:56:32 +07:00 | `src/components/LibraryLogData.tsx` | — | 1–19 | LibraryLogData, parsed | added |
+| 2026-11-14 21:55:26 +07:00 | `src/components/Privacy.tsx` | 4–4 | 4–4 | const Privacy: React.FC = () => { | modified |
+| 2026-11-14 21:55:26 +07:00 | `src/components/Privacy.tsx` | — | 27–27 | const Privacy: React.FC = () => { | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 1–1 | 1–1 | adminParent, adminTitle, adminGroup, adminLocation, p, raw, id, v | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 8–8 | 8–8 | const parents: Record<AdminView, AdminView> = { | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 15–15 | 15–15 | const titles: Record<AdminView,string> = { | modified |
+| 2026-11-14 21:55:27 +07:00 | `src/lib/admin-navigation.ts` | 21–21 | 21–21 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+| 2026-11-14 21:55:26 +07:00 | `src/lib/library-activity.ts` | — | 1–22 | recordLibraryActivity, useCatalogueActivity, serialized, timer | added |

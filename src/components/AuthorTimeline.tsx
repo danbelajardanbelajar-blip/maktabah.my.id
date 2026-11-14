@@ -1,4 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
+import {recordLibraryActivity} from '../lib/library-activity';
 import {ArrowUpRight,ArrowLeft,ArrowRight,BookOpen} from 'lucide-react';
 import {navigationHash} from '../lib/navigation';
 export interface AuthorDate {kind:string;year:number|null;century:number|null;sortYear:number|null;label:string;original:string;}
@@ -45,7 +46,7 @@ export function AuthorTimeline({context,onOpen}:Props) {
   return <div className="author-year-browser">
     <div className="author-year-controls"><button disabled={busy||range.start===0} onClick={()=>load('left')}><ArrowLeft size={16}/>Muat kiri</button><span aria-live="polite">{busy?'Memuat tahun…':`${groups.length} dari ${range.totalGroups} penanda waktu`}</span><button disabled={busy||range.end>=range.totalGroups} onClick={()=>load('right')}>Muat kanan<ArrowRight size={16}/></button></div>
     <div className="author-year-scroll" ref={rail} tabIndex={0} role="region" aria-label="Linimasa horizontal tahun wafat Hijriah; geser kiri atau kanan">
-      <ol className="author-year-rail">{groups.map(group=><li key={group.key}><button aria-pressed={selected===group.key} aria-controls="author-year-detail" onClick={()=>setSelected(group.key)}><span className="author-year-label">{group.label}</span><span className="author-year-dot" aria-hidden="true"/><span className="author-year-count">{group.authors.length} penulis</span></button></li>)}</ol>
+      <ol className="author-year-rail">{groups.map(group=><li key={group.key}><button aria-pressed={selected===group.key} aria-controls="author-year-detail" onClick={()=>{setSelected(group.key);recordLibraryActivity('authors',{action:'timeline_year',query:String(q),result_count:group.authors.length,context:{view:'timeline',century:String(century),initial:String(initial),year:group.label}});}}><span className="author-year-label">{group.label}</span><span className="author-year-dot" aria-hidden="true"/><span className="author-year-count">{group.authors.length} penulis</span></button></li>)}</ol>
     </div>
     {error&&<div role="alert" className="author-journey-empty">{error}<button onClick={()=>load(lastDirection.current)}>Coba lagi</button></div>}
     <section id="author-year-detail" className="author-year-detail" aria-live="polite">

@@ -1,7 +1,7 @@
 import {Worker} from 'node:worker_threads';
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
 import {activeHadithIndex} from './hadith-search-core.js';
-export function registerHadithSearch(app,{getPaths,isBusy=()=>false,directory}) {
+export function registerHadithSearch(app,{getPaths,isBusy=()=>false,directory,onActivity=()=>{}}) {
   let active=0,building=false,progress=null,buildError='',failedAt=0;
   fs.mkdirSync(directory,{recursive:true});
   const startBuild=()=>{
@@ -28,6 +28,8 @@ export function registerHadithSearch(app,{getPaths,isBusy=()=>false,directory}) 
     res.once('close',()=>{if(!settled){settled=true;stop();}});
     worker.once('message',message=>{
       if(message.code==='HADITH_INDEX_STALE'){if(!settled){settled=true;fs.writeFileSync(path.join(directory,'dirty'),crypto.randomUUID());startBuild();preparing(res);stop();}return;}
+      if(!message.error&&!settled)try{onActivity(req,{action:'search',query:message.result.q,result_count:message.result.results.length,
+        context:{mode:'content',...message.result.scope,group_name:message.result.scope.name,matching:message.result.matching,page:message.result.page,has_more:message.result.hasMore}});}catch{/* Optional analytics. */}
       finish(message.error?message.status:200,message.error?{error:message.error}:message.result);
     });
     worker.once('error',()=>finish(503,{error:'Pencarian belum dapat diselesaikan. Silakan coba lagi.'}));

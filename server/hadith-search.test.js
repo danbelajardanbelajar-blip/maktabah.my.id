@@ -51,9 +51,11 @@ test('phrase/all modes differ, punctuation is literal, page bounds and empty inp
   const missing=new Database(paths[1]);missing.exec('DROP TABLE pages_fts');missing.close();assert.equal(searchHadith({paths,query:{q:'إِنَّمَا',book:'muslim'}}).results.length,1);
 });
 test('HTTP worker endpoint searches real fixture text and rejects maintenance and invalid scope',async t=>{
-  const paths=fixture(t);let busy=false;const app=express();registerHadithSearch(app,{getPaths:()=>paths,isBusy:()=>busy,directory:path.join(path.dirname(paths[0]),'http-index')});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>{server.closeAllConnections();server.close();});
+  const paths=fixture(t);let busy=false;const events=[];const app=express();registerHadithSearch(app,{getPaths:()=>paths,isBusy:()=>busy,directory:path.join(path.dirname(paths[0]),'http-index'),onActivity:(req,event)=>events.push(event)});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(()=>{server.closeAllConnections();server.close();});
   const base=`http://127.0.0.1:${server.address().port}/api/hadith-books/search?`;
   let response;for(let attempt=0;attempt<30;attempt++){response=await fetch(base+new URLSearchParams({q:'إنما الأعمال',group:'two',book:'muslim'}));if(response.status!==202)break;await new Promise(r=>setTimeout(r,100));}assert.equal(response.status,200);const data=await response.json();assert.equal(data.results[0].bookId,400);assert.equal(data.scope.editions,1);
   assert.equal((await fetch(base+new URLSearchParams({q:'إنما',group:'none'}))).status,400);
   busy=true;assert.equal((await fetch(base+new URLSearchParams({q:'إنما'}))).status,409);
+  assert.equal(events.length,1);assert.equal(events[0].action,'search');assert.equal(events[0].query,'إنما الأعمال');
+  assert.equal(events[0].result_count,data.results.length);assert.equal(events[0].context.book,'muslim');assert.equal(events[0].context.mode,'content');
 });
