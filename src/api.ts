@@ -293,10 +293,16 @@ export const webAPI = {
     return fetchQuran(`/quran/tafsir-page/${bookId}/${pageId}`,signal);
   },
   // ===== ADMIN LOGS =====
-  getAdminLogs: async (token: string, type: string) => {
-    const res = await fetch(`${API_BASE}/admin/logs/${type}`, { headers: { 'Authorization': `Bearer ${token}` } });
-    if (!res.ok) throw new Error(`${res.status}`);
+  getAdminLogs: async (token: string, type: string, filters:Record<string,string>={},signal?:AbortSignal) => {
+    const res = await fetch(`${API_BASE}/admin/logs/${type}?${new URLSearchParams(filters)}`, { headers: { 'Authorization': `Bearer ${token}` },signal });
+    if (!res.ok) {const data=await res.json().catch(()=>({}));throw new Error(res.status===401?'401':data.error||`${res.status}`);}
     return res.json();
+  },
+  deleteAdminLogs: async (token:string,type:string,body:unknown) => {
+    const res=await fetch(`${API_BASE}/admin/logs/${type}`,{method:'DELETE',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw new Error(res.status===401?'401':data.error||'Log belum dapat dihapus.');
+    return data;
   },
   
   // ===== CLIENT LOGS =====

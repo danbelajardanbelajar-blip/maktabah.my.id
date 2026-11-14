@@ -2,7 +2,7 @@
 
 Admin → Aktivitas menyediakan **Log Kutub Hadis** dan **Log Penulis & Karya**. Keduanya memakai `LogsView` yang sama dengan riwayat kegiatan lain: statistik keseluruhan/24 jam/7 hari/30 hari, IP unik, tabel waktu/IP/peramban, pagination, pemilihan baris, serta ekspor CSV. Log baru juga menyediakan pencarian teks, pilihan jenis aktivitas, tombol muat ulang, dan detail filter/konteks. Waktu ditampilkan dalam WIB sampai detik; penyimpanan timestamp memakai UTC dengan milidetik. CSV mempertahankan jumlah hasil nol.
 
-Tabel menampilkan maksimal 500 aktivitas terbaru seperti log lama. Pencarian, filter, pagination, dan ekspor pilihan berlaku pada kumpulan tersebut; statistik menghitung seluruh riwayat. Catatan yang lebih lama tetap tersimpan di database. Ini bukan rekonstruksi aktivitas sebelum fitur dipasang.
+Tabel kini menggunakan pagination server pada seluruh riwayat, dengan maksimal 500 baris per halaman. Ringkasan terbanyak, filter, pemilihan, dan penghapusan dijelaskan pada [pengelolaan riwayat admin](admin-log-management.md). Statistik menghitung seluruh riwayat. Ini bukan rekonstruksi aktivitas sebelum fitur dipasang.
 
 ## Aktivitas yang dicatat
 
@@ -15,7 +15,7 @@ Pencarian isi hadis dan hasil API penulis dicatat di server sesudah permintaan b
 
 `hadith_logs` dan `authors_logs` dibuat secara idempoten pada database state yang sudah dipakai aplikasi. Mode lokal memakai `local-web-state.db` yang terpisah dari sumber kitab. Kolom menyimpan jenis aktivitas, kueri, nama/ID tujuan, jumlah hasil, konteks JSON dengan daftar kolom yang diizinkan, IP, peramban, dan waktu. Pencatatan tidak mengubah isi kitab atau paket penulis. Hitungan insert log baru dikecualikan dari revisi cache relasi penulis agar setiap log tidak memaksa pembangunan ulang relasi.
 
-Endpoint baca `/api/admin/logs/hadith` dan `/api/admin/logs/authors`, beserta statistik dashboard, tetap memerlukan autentikasi admin. Endpoint tulis `/api/log/library/:feature` menerima hanya jenis aktivitas browser yang diizinkan, membatasi panjang field/konteks dan 120 event per IP per menit, memeriksa ID kitab, serta mengambil judul kitab dari katalog server. Aktivitas dari browser adalah telemetri, bukan bukti identitas seseorang. Tidak ada endpoint baca riwayat publik. Kegagalan log tidak menghalangi pencarian atau pembaca.
+Endpoint baca `/api/admin/logs/hadith` dan `/api/admin/logs/authors`, beserta statistik dashboard, tetap memerlukan autentikasi admin. Endpoint tulis `/api/log/library/:feature` menerima hanya jenis aktivitas browser yang diizinkan, membatasi panjang field/konteks dan 120 event per IP per menit, memeriksa ID kitab, serta mengambil judul kitab dari katalog server. Aktivitas admin terverifikasi tidak disimpan sebagai aktivitas pengunjung. Aktivitas dari browser adalah telemetri, bukan bukti identitas seseorang. Tidak ada endpoint baca riwayat publik. Kegagalan log tidak menghalangi pencarian atau pembaca.
 
 ## Verifikasi dan deployment
 

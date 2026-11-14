@@ -1,0 +1,1575 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 04:45:51 +07:00",
+  "title": "Ringkasan terbanyak, filter seluruh riwayat, penghapusan log, dan pengecualian aktivitas admin",
+  "baseCommit": "79c7fc1d57cba08832f4750408a50f95531f5d64",
+  "checks": "LULUS: 209 tes regresi server pada snapshot terisolasi, 52 tes integrasi setelah kode dasar terbaru diselaraskan, serta 8 tes fitur setelah penyempurnaan snapshot baca; lint modul/test/helper/komponen baru; node --check server/index.js, server/admin-logs.js, server/admin-log-identity.js; TypeScript dan build produksi lokal. Browser Chrome headless dengan server lengkap dan database sementara: delapan log, ringkasan lima teratas, pagination server, filter kelompok, penghapusan 510 baris, snapshot mempertahankan catatan baru, batal hapus, hapus pilihan, CSV, visitor tetap tercatat, admin Bearer/cookie tidak tercatat, logout kembali mencatat visitor, 1440/390 px dan tema green/sepia/dark tanpa overflow/pageerror. File sumber fitur cocok hash snapshot yang diuji. Tidak menghapus catatan/database produksi. Diff dan staged whitespace lulus. Build hanya memberi peringatan konfigurasi Vite dan ukuran bundle tanpa error. Perubahan lain di ai-retrieval/tes AI ditangani terpisah dan tidak dicakup audit ini. SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull/HEAD server/restart/fungsi online versi baru belum terverifikasi; tidak menjalankan install/build di hosting atau menghentikan transfer.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BWQ9QzD0.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:40:42 +07:00",
+      "stagedSha256": "67813d003c1690bce9dd528dafee85ca3f31d376d5e3b6cadbde3ca78db7d8d0",
+      "diffSha256": "e3462528b4e9dde792e92e55ac8223bfe59ca7c12f4db16f2c4b040363bc0e73",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-DlP13NX6.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "18a935ce1fe6315af39a1dfbe9bc92b886a786e9bf359fd4c208418dee3cfa2b",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-CSrdI66x.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:40:42 +07:00",
+      "stagedSha256": "8b1bc1c2871345ebffc24704dd9eafc066e7bf0267650da0a37d2248fc59a5a2",
+      "diffSha256": "92b9ad84ca0d7e93e9ec9b540f260f210ea20da962c73c1797d838f15879c0cd",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "ee",
+        "P",
+        "r",
+        "o",
+        "c",
+        "Xe",
+        "Qe",
+        "G",
+        "st",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "R",
+        "z",
+        "B",
+        "oe",
+        "se",
+        "ce",
+        "le",
+        "fe",
+        "me",
+        "he",
+        "ge",
+        "H",
+        "Fe",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "U",
+        "Ye",
+        "Ze",
+        "W",
+        "ot",
+        "ct",
+        "ut",
+        "dt",
+        "ft",
+        "ht",
+        "gt",
+        "bt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "Ot",
+        "kt",
+        "jt",
+        "Mt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "K",
+        "Lt",
+        "zt",
+        "Bt",
+        "Vt",
+        "Ut",
+        "Wt",
+        "Kt",
+        "Yt",
+        "Zt",
+        "Qt",
+        "on",
+        "sn",
+        "cn",
+        "ln",
+        "un",
+        "On",
+        "kn",
+        "Un",
+        "Wn",
+        "Kn",
+        "qn",
+        "Yn",
+        "Xn",
+        "er",
+        "tr",
+        "or",
+        "sr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "mr",
+        "hr",
+        "gr",
+        "_r",
+        "vr",
+        "yr",
+        "Tr",
+        "Er",
+        "Ar",
+        "Br",
+        "Gr",
+        "Kr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "si",
+        "li",
+        "yi",
+        "bi",
+        "xi",
+        "Si",
+        "Ci",
+        "ki",
+        "Ai",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Fi",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "ea",
+        "aa",
+        "oa",
+        "sa",
+        "ua",
+        "da",
+        "fa",
+        "_a",
+        "va",
+        "ya",
+        "xa",
+        "Sa",
+        "Ta",
+        "Ea",
+        "Da",
+        "Oa",
+        "u",
+        "f",
+        "h",
+        "Ma",
+        "Na",
+        "Pa",
+        "Fa",
+        "Ia",
+        "La",
+        "za",
+        "Ba",
+        "Va",
+        "Ha",
+        "Ga",
+        "Ka",
+        "qa",
+        "Xa",
+        "Za",
+        "Qa",
+        "eo",
+        "no",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "js",
+        "Is",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Ys",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "fc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "Jc",
+        "el",
+        "tl",
+        "nl",
+        "al",
+        "ol",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "dl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "wl",
+        "El",
+        "Dl",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "Ml",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "pt",
+        "mt",
+        "_t",
+        "vt",
+        "yt",
+        "At",
+        "Rt",
+        "Ht",
+        "Gt",
+        "qt",
+        "Jt",
+        "tn",
+        "nn",
+        "rn",
+        "an",
+        "_",
+        "fn",
+        "mn",
+        "hn",
+        "gn",
+        "yn",
+        "Cn",
+        "Tn",
+        "jn",
+        "Nn",
+        "Pn",
+        "In",
+        "Ln",
+        "Gn",
+        "Jn",
+        "ir",
+        "Dr",
+        "kr",
+        "jr",
+        "Mr",
+        "Nr",
+        "Fr",
+        "Ir",
+        "Rr",
+        "zr",
+        "ci",
+        "ui"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-CdbXY2HS.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "d940829e05b6f481805191bcfcf4203cf9d93def601621399a5ea622b49a5c99",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 17
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:40:42 +07:00",
+      "stagedSha256": "773e0933d4dba0e03262de81d52fd53a83c9235b34f2a10e56fe7f75bff45f7d",
+      "diffSha256": "7a50acfbfe778c65576480ccf25946ca8764da54205a1496bfcb64d8ff537d21",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/admin-log-management.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:38:55 +07:00",
+      "stagedSha256": "3e6085755a69f9f5c4d60cce694d698b241b56fb40a89b24dc5b6dd67a6256ce",
+      "diffSha256": "22f76c49b277b54350cfd40109b2659d270a4faec727ad0c9de72fa75f77823b",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 28
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/library-activity.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:38:55 +07:00",
+      "stagedSha256": "0edc2574e3551459f264d0208b73572542bded4487f7e16b3cfc1ce38d5e01e0",
+      "diffSha256": "a4fe8459d67ad04a13618d1042145ff6677419e656b4d6ddcc764085766e5a48",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 5,
+            "count": 1
+          },
+          "after": {
+            "line": 5,
+            "count": 1
+          },
+          "section": "Admin → Aktivitas menyediakan **Log Kutub Hadis** dan **Log Penulis & Karya**."
+        },
+        {
+          "before": {
+            "line": 18,
+            "count": 1
+          },
+          "after": {
+            "line": 18,
+            "count": 1
+          },
+          "section": "Pencarian isi hadis dan hasil API penulis dicatat di server sesudah permintaan b"
+        }
+      ]
+    },
+    {
+      "file": "server/admin-log-identity.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:27:47 +07:00",
+      "stagedSha256": "e92c5b4982b15a988ac96f15f6dbb89efa6d4fbdca2380e07dc4fe98ce535c76",
+      "diffSha256": "94cfa919cdfc3a04467f7eaee4d639c983b2a4db14b91379fa027f0acd38f51f",
+      "symbols": [
+        "cookieName",
+        "adminActivityIdentity",
+        "bearer",
+        "cookie",
+        "setAdminActivityCookie"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 16
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/admin-logs.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:39:57 +07:00",
+      "stagedSha256": "0a5e7b47b29db138259cda698851b823951bd10c91f36b43f29013d4a5c2ce4d",
+      "diffSha256": "d400099b6d3aacd4a5c15b0dbc96b6427bab72381aadee94cfb999df5ee92417",
+      "symbols": [
+        "tables",
+        "fail",
+        "column",
+        "definitions",
+        "table",
+        "query",
+        "page",
+        "filtersFor",
+        "value",
+        "filters",
+        "conditions",
+        "fields",
+        "integer",
+        "readAdminLogs",
+        "def",
+        "limit",
+        "stats",
+        "scope",
+        "data",
+        "top",
+        "deleteAdminLogs",
+        "ids",
+        "f",
+        "where",
+        "count",
+        "registerAdminLogs"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 88
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/admin-logs.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:33:05 +07:00",
+      "stagedSha256": "077faf77daba3104eed620f930f2c222190ab039ccb0eb1fda440fd9dd796986",
+      "diffSha256": "d2953ab01a4b19770270d635398437ed526fca5dde32798fba14fd68e951b7b0",
+      "symbols": [
+        "fixture",
+        "db",
+        "fields",
+        "first",
+        "filtered",
+        "date",
+        "type",
+        "filters",
+        "app",
+        "activity",
+        "server",
+        "request",
+        "values",
+        "res"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 89
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/admin-request-identity.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:33:05 +07:00",
+      "stagedSha256": "4f5aa7dcb8d0fa6f8034fc145818a3a334d1de111d670d3feed47f79f63808b2",
+      "diffSha256": "b4c4d3de4606523c36ecc07c50c4ff22e51b8de1a38e608999f6b2d5004bca46",
+      "symbols": [
+        "options",
+        "result",
+        "request"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-history.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:29:11 +07:00",
+      "stagedSha256": "b175773a225edefbea9e616095fc17923dbb673b8fa6feff45fe675ab781c758",
+      "diffSha256": "2f49756a9856bf04a6bd2811b2832bfd57e589d646d5ec1359e3a85ed38429dd",
+      "symbols": [
+        "COOKIE",
+        "SESSION",
+        "auditMeta",
+        "registerAiHistory",
+        "db",
+        "session",
+        "raw",
+        "record",
+        "id",
+        "rows",
+        "limit",
+        "key"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 36,
+            "count": 0
+          },
+          "after": {
+            "line": 37,
+            "count": 1
+          },
+          "section": "export function registerAiHistory(app,{getStateDb}) {"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:29:22 +07:00",
+      "stagedSha256": "e9a9a89096b9b37e76d254421068cef9d02c5249384d83e70934b08684597d96",
+      "diffSha256": "0ac09ce3f9ea1af2e1f754a8145d166b2369ede3c51bf73c5a095238d3ca6339",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "rawQuery",
+        "targetBookId",
+        "getQuery",
+        "selectFields",
+        "countExactStmt",
+        "totalExact",
+        "countAndStmt",
+        "totalAnd",
+        "fetchExactStmt",
+        "params",
+        "remLimit",
+        "fetchAndStmt",
+        "params2",
+        "andOffset",
+        "countStmt",
+        "fetchStmt",
+        "buildFtsQuery",
+        "ftsTable",
+        "pagesTable",
+        "execSearch",
+        "sql",
+        "stmt",
+        "prefixes",
+        "r",
+        "pfxTotal",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 24,
+            "count": 0
+          },
+          "after": {
+            "line": 25,
+            "count": 2
+          },
+          "section": "import {invalidateAiBookPolicy} from './ai-book-policy.js';"
+        },
+        {
+          "before": {
+            "line": 327,
+            "count": 0
+          },
+          "after": {
+            "line": 330,
+            "count": 3
+          },
+          "section": "try {"
+        },
+        {
+          "before": {
+            "line": 350,
+            "count": 0
+          },
+          "after": {
+            "line": 356,
+            "count": 1
+          },
+          "section": "const libraryActivity = createLibraryActivity(() => stateDb);"
+        },
+        {
+          "before": {
+            "line": 503,
+            "count": 0
+          },
+          "after": {
+            "line": 510,
+            "count": 1
+          },
+          "section": "app.post('/api/admin/login', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 510,
+            "count": 0
+          },
+          "after": {
+            "line": 518,
+            "count": 1
+          },
+          "section": "app.post('/api/admin/logout', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 546,
+            "count": 1
+          },
+          "after": {
+            "line": 554,
+            "count": 1
+          },
+          "section": "app.post('/api/log/download', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 558,
+            "count": 1
+          },
+          "after": {
+            "line": 566,
+            "count": 1
+          },
+          "section": "app.post('/api/log/visit', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 590,
+            "count": 51
+          },
+          "after": {
+            "line": 598,
+            "count": 1
+          },
+          "section": "app.get('/api/admin/stats', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 953,
+            "count": 5
+          },
+          "after": {
+            "line": 910,
+            "count": 0
+          },
+          "section": "app.get('/api/search', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1139,
+            "count": 0
+          },
+          "after": {
+            "line": 1093,
+            "count": 3
+          },
+          "section": "app.get('/api/search', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1161,
+            "count": 1
+          },
+          "after": {
+            "line": 1117,
+            "count": 1
+          },
+          "section": "app.get('/api/download/:id', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1209,
+            "count": 1
+          },
+          "after": {
+            "line": 1165,
+            "count": 1
+          },
+          "section": "const handlePdfExport = async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1268,
+            "count": 1
+          },
+          "after": {
+            "line": 1224,
+            "count": 1
+          },
+          "section": "app.get('/api/book/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1425,
+            "count": 1
+          },
+          "after": {
+            "line": 1381,
+            "count": 1
+          },
+          "section": "app.get('/api/quran/surah/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1466,
+            "count": 1
+          },
+          "after": {
+            "line": 1422,
+            "count": 1
+          },
+          "section": "app.get('/api/rowa/:id', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1563,
+            "count": 0
+          },
+          "after": {
+            "line": 1520,
+            "count": 3
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/library-activity.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:29:11 +07:00",
+      "stagedSha256": "348b3ac1ec8b2e222629c6499a0a2a970e69989c3104bfd7e6c79d3c1e3b1ef9",
+      "diffSha256": "630554116aad21225dffb12d909be0a9e474228ce9cce913c8e3d04fae9c933c",
+      "symbols": [
+        "libraryLogTables",
+        "actions",
+        "contextKeys",
+        "text",
+        "sanitizeLibraryActivity",
+        "context",
+        "value",
+        "createLibraryActivity",
+        "changes",
+        "initialize",
+        "db",
+        "record",
+        "table",
+        "row",
+        "inserted",
+        "registerLibraryActivity",
+        "limits",
+        "feature",
+        "allowed",
+        "ip",
+        "clean",
+        "book",
+        "success"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 37,
+            "count": 0
+          },
+          "after": {
+            "line": 38,
+            "count": 1
+          },
+          "section": "export function createLibraryActivity(getStateDb) {"
+        }
+      ]
+    },
+    {
+      "file": "src/api.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:29:11 +07:00",
+      "stagedSha256": "400237a6c02a3bcf0552e267a8d15673477fbaf536812f8dbaa0fb7e06988750",
+      "diffSha256": "00ee29e513bab05c586f4e525f9d143dea395cb01daca1f23112680d7bfaa916",
+      "symbols": [
+        "API_BASE",
+        "fetchAPI",
+        "res",
+        "errObj",
+        "fetchQuran",
+        "controller",
+        "cancel",
+        "timer",
+        "deletionStorageKey",
+        "rememberDeletion",
+        "waitForDeletion",
+        "progress",
+        "response",
+        "webAPI",
+        "err",
+        "r",
+        "params",
+        "data",
+        "o"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 296,
+            "count": 3
+          },
+          "after": {
+            "line": 296,
+            "count": 3
+          },
+          "section": "export const webAPI = {"
+        },
+        {
+          "before": {
+            "line": 300,
+            "count": 0
+          },
+          "after": {
+            "line": 301,
+            "count": 6
+          },
+          "section": "export const webAPI = {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Admin.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:39:57 +07:00",
+      "stagedSha256": "672027c983d41c201110f487be32ee7fa29a30b5b97f1c5e468806c48a3879c0",
+      "diffSha256": "d0af8f9ba97f3e2295de9b2c949327c7dff2d913ccc4aa3d3b93b39b6f9e9e78",
+      "symbols": [
+        "downloadCSV",
+        "keys",
+        "csvContent",
+        "blob",
+        "link",
+        "url",
+        "SelectionBar",
+        "adminFetch",
+        "Pagination",
+        "totalPages",
+        "ErrorBanner",
+        "LoginForm",
+        "dialogRef",
+        "handleSubmit",
+        "res",
+        "useDeletionFeedback",
+        "locked",
+        "run",
+        "message",
+        "recoveryCallback",
+        "feedback",
+        "CategoriesView",
+        "toggleAll",
+        "newSel",
+        "toggleOne",
+        "n",
+        "deletion",
+        "current",
+        "load",
+        "filtered",
+        "handleEdit",
+        "handleDelete",
+        "paginated",
+        "handleBulkDelete",
+        "ids",
+        "bookCount",
+        "BooksView",
+        "handleBulkMove",
+        "handleSearch",
+        "PagesView",
+        "handleDeletePage",
+        "EditPageView",
+        "fetch",
+        "handleSave",
+        "FeedbackView",
+        "t",
+        "RequestsView",
+        "handleStatus",
+        "SubmissionsView",
+        "LogsView",
+        "filters",
+        "filterKey",
+        "readyPreview",
+        "hasFilter",
+        "timer",
+        "controller",
+        "remove",
+        "count",
+        "choose",
+        "reset",
+        "AdminDashboard",
+        "drawerRef",
+        "requestId",
+        "restoreRef",
+        "route",
+        "nested",
+        "setView",
+        "previous",
+        "category",
+        "book",
+        "page",
+        "old",
+        "hash",
+        "restore",
+        "fetchStats",
+        "breadcrumb",
+        "goBack",
+        "Admin"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 15,
+            "count": 0
+          },
+          "after": {
+            "line": 16,
+            "count": 1
+          },
+          "section": "import { LibraryLogData } from './LibraryLogData';"
+        },
+        {
+          "before": {
+            "line": 1068,
+            "count": 18
+          },
+          "after": {
+            "line": 1069,
+            "count": 40
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1087,
+            "count": 66
+          },
+          "after": {
+            "line": 1110,
+            "count": 3
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1185,
+            "count": 2
+          },
+          "after": {
+            "line": 1145,
+            "count": 3
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1188,
+            "count": 7
+          },
+          "after": {
+            "line": 1149,
+            "count": 11
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1196,
+            "count": 4
+          },
+          "after": {
+            "line": 1161,
+            "count": 6
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1213,
+            "count": 1
+          },
+          "after": {
+            "line": 1180,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1221,
+            "count": 1
+          },
+          "after": {
+            "line": 1188,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1223,
+            "count": 1
+          },
+          "after": {
+            "line": 1190,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1271,
+            "count": 1
+          },
+          "after": {
+            "line": 1238,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1359,
+            "count": 1
+          },
+          "after": {
+            "line": 1326,
+            "count": 2
+          },
+          "section": "const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AdminLogSummary.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:30:38 +07:00",
+      "stagedSha256": "bb804d434d852708b916376335cbeb8c93db76daa864ccf78955e3557d000f35",
+      "diffSha256": "69d3acd70e0327a7e20d8b9a76fd0c92c7106d48f72b9d8148c3703c9ba60b5e",
+      "symbols": [
+        "AdminLogSummary"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/admin-request-identity.ts",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-15 04:27:47 +07:00",
+      "stagedSha256": "f30768cd6b4a68320ccbdd2e1bbeb2ac09faad55d50bea1fef1a625145ccf99e",
+      "diffSha256": "1d1b3ef4421e1b72f03935b1bfdb01c1f905104a20bd46f41045cf4102de9bd6",
+      "symbols": [
+        "adminRequestOptions",
+        "url",
+        "headers",
+        "installAdminRequestIdentity",
+        "original"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/main.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:27:47 +07:00",
+      "stagedSha256": "34c75e34488af09ca345d4ab135d4eec8907b8a31b1d82ef90b72c5c9c0cafc0",
+      "diffSha256": "b84695a86127e3cbcfe407d2eb68695025f43966c3173e01011601aa51dce61f",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 5,
+            "count": 0
+          },
+          "after": {
+            "line": 6,
+            "count": 3
+          },
+          "section": "import App from './App.tsx'"
+        }
+      ]
+    }
+  ]
+}

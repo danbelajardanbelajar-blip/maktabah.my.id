@@ -22,6 +22,8 @@ import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
+import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
+import {registerAdminLogs} from './admin-logs.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
@@ -325,6 +327,9 @@ try {
             try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN user_agent TEXT;`); } catch(e) {}
         }
         
+        try {stateDb.exec('ALTER TABLE search_logs ADD COLUMN result_count INTEGER');}catch{}
+        try {stateDb.exec("ALTER TABLE search_logs ADD COLUMN mode TEXT DEFAULT 'text'");}catch{}
+
         // Migrate book_submissions to add file_type
         try { stateDb.exec(`ALTER TABLE book_submissions ADD COLUMN file_type TEXT;`); } catch(e) {}
         
@@ -348,6 +353,7 @@ function booksMeta() {
 }
 
 const libraryActivity = createLibraryActivity(() => stateDb);
+app.use(adminActivityIdentity(()=>stateDb));
 registerLibraryActivity(app,{activity:libraryActivity,
   getBook:id=>db?.prepare(`SELECT bkid,bk FROM ${booksMeta()} WHERE bkid=? LIMIT 1`).get(id),
   isBusy:()=>Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession)});
@@ -501,6 +507,7 @@ app.post('/api/admin/login', (req, res) => {
     try {
         stateDb.prepare("INSERT INTO admin_tokens (token) VALUES (?)").run(token);
     } catch(e) {}
+    setAdminActivityCookie(req,res,token);
     res.json({ success: true, token });
   } else {
     res.status(401).json({ success: false, error: 'Invalid credentials' });
@@ -508,6 +515,7 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 app.post('/api/admin/logout', requireAdmin, (req, res) => {
+  setAdminActivityCookie(req,res,'');
   const authHeader = req.headers.authorization;
   if (authHeader) {
       const token = authHeader.split(' ')[1];
@@ -543,7 +551,7 @@ app.post('/api/log/download', (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     try {
         const { book_id, book_title } = req.body;
-        stateDb.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(book_id || null, book_title || 'Unknown', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+        if (!req.isAdminActivity) stateDb.prepare("INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)").run(book_id || null, book_title || 'Unknown', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         res.json({ success: true });
     } catch(err) {
         res.status(500).json({ error: err.message });
@@ -555,7 +563,7 @@ app.post('/api/log/visit', (req, res) => {
     try {
         const { path } = req.body;
         if (path) {
-            stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(path, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            if (!req.isAdminActivity) stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(path, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
         res.json({ success: true });
     } catch(err) {
@@ -587,57 +595,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
     }
 });
 
-app.get('/api/admin/logs/:type', requireAdmin, (req, res) => {
-    if (!db) return res.status(500).json({ error: 'Database not loaded' });
-    const { type } = req.params;
-    const tableMap = {
-      search: 'search_logs',
-      download: 'download_logs',
-      visit: 'visit_logs',
-      quran: 'quran_logs',
-      rowa: 'rowa_logs',
-      hadith: 'hadith_logs',
-      authors: 'authors_logs',
-      ask: 'ask_logs'
-    };
-    const tableName = tableMap[type];
-    if (!tableName) return res.status(400).json({ error: 'Invalid log type' });
-
-    try {
-        const query = `SELECT * FROM ${tableName} ORDER BY id DESC LIMIT 500`;
-        const data = stateDb.prepare(query).all();
-        
-        let stats = { total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 };
-        try {
-          const statsQuery = `
-            SELECT 
-              COUNT(*) as total,
-              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-1 day') OR date(created_at, 'localtime') = date('now', 'localtime') THEN 1 ELSE 0 END), 0) as today,
-              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-7 days') THEN 1 ELSE 0 END), 0) as weekly,
-              COALESCE(SUM(CASE WHEN created_at >= datetime('now', '-30 days') THEN 1 ELSE 0 END), 0) as monthly,
-              COUNT(DISTINCT CASE WHEN ip IS NOT NULL AND ip != '' THEN ip END) as unique_ips
-            FROM ${tableName}
-          `;
-          const statsRow = stateDb.prepare(statsQuery).get();
-          if (statsRow) {
-            stats = {
-              total: Number(statsRow.total) || 0,
-              today: Number(statsRow.today) || 0,
-              weekly: Number(statsRow.weekly) || 0,
-              monthly: Number(statsRow.monthly) || 0,
-              unique_ips: Number(statsRow.unique_ips) || 0
-            };
-          }
-        } catch (e) {
-          stats.total = data.length;
-        }
-
-        res.json({ data, stats });
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ error: err.message });
-    }
-});
+registerAdminLogs(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
 
 app.get('/api/admin/categories', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
@@ -950,11 +908,6 @@ app.get('/api/search', (req, res) => {
     const limit = parseInt(req.query.limit) || 50;
     const offset = (page - 1) * limit;
 
-    // Log pencarian (hanya ke main database)
-    if (page === 1 && query && query.length >= 3) {
-        try { stateDb.prepare("INSERT INTO main.search_logs (query, ip, user_agent) VALUES (?, ?, ?)").run(query, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']); } catch(e) {}
-    }
-
     let cat_ids = [];
     if (req.query.cat_id) {
       cat_ids = req.query.cat_id.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
@@ -1137,6 +1090,9 @@ app.get('/api/search', (req, res) => {
       }
     }
 
+    if (!req.isAdminActivity && page===1 && query.length>=3) {
+      try {stateDb.prepare('INSERT INTO search_logs(query,ip,user_agent,result_count,mode) VALUES(?,?,?,?,?)').run(query,req.ip,req.headers['user-agent'],total,'text');}catch{}
+    }
     res.json({ results, total, error: null });
   } catch (error) {
     try {
@@ -1158,7 +1114,7 @@ app.get('/api/download/:id', async (req, res) => {
         const bookStmt = db.prepare(`SELECT bk as title FROM ${booksMeta()} WHERE bkid = ?`);
         const book = bookStmt.get(bookId);
         if (book) {
-            stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            if (!req.isAdminActivity) stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
     } catch(e) {}
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
@@ -1206,7 +1162,7 @@ const handlePdfExport = async (req, res) => {
         const bookStmt = db.prepare(`SELECT bk as title FROM ${booksMeta()} WHERE bkid = ?`);
         const book = bookStmt.get(bookId);
         if (book) {
-            stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, '[PDF] ' + book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+            if (!req.isAdminActivity) stateDb.prepare('INSERT INTO download_logs (book_id, book_title, ip, user_agent) VALUES (?, ?, ?, ?)').run(bookId, '[PDF] ' + book.title, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
         }
     } catch(e) {}
     if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
@@ -1265,7 +1221,7 @@ app.get('/api/book/:id', (req, res) => {
     if (data) {
       try {data.author_profiles=authorService.related(bookId,data.bk);}catch {data.author_profiles=[];}
       try {
-        stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(
+        if (!req.isAdminActivity) stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(
           `/book/${bookId} - ${data.bk}`, 
           req.ip || req.headers['x-forwarded-for'], 
           req.headers['user-agent']
@@ -1422,7 +1378,7 @@ app.get('/api/quran/surahs', (req, res) => {
 
 app.get('/api/quran/surah/:id', (req, res) => {
     try {
-        stateDb.prepare("INSERT INTO quran_logs (surah_id, ip, user_agent) VALUES (?, ?, ?)").run(parseInt(req.params.id), req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
+        if (!req.isAdminActivity) stateDb.prepare("INSERT INTO quran_logs (surah_id, ip, user_agent) VALUES (?, ?, ?)").run(parseInt(req.params.id), req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
     } catch(e) {}
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
@@ -1463,7 +1419,7 @@ app.get('/api/rowa/:id', (req, res) => {
 
     // Log kunjungan (non-blocking)
     try {
-      stateDb.prepare("INSERT INTO rowa_logs (rowa_id, rowa_name, ip, user_agent) VALUES (?, ?, ?, ?)").run(
+      if (!req.isAdminActivity) stateDb.prepare("INSERT INTO rowa_logs (rowa_id, rowa_name, ip, user_agent) VALUES (?, ?, ?, ?)").run(
         rowaId, data.Name || data.name || '', req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']
       );
     } catch(e) {}
@@ -1561,6 +1517,9 @@ app.get('/api/search_titles', (req, res) => {
     params.push(limit, offset);
     const data = stmt.all(...params);
 
+    if (!req.isAdminActivity && page===1 && query.length>=3) {
+      try {stateDb.prepare('INSERT INTO search_logs(query,ip,user_agent,result_count,mode) VALUES(?,?,?,?,?)').run(String(req.query.q).trim(),req.ip,req.headers['user-agent'],total,'title');}catch{}
+    }
     res.json({ data, total, page, limit });
   } catch (error) {
     res.status(500).json({ error: error.message });

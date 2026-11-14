@@ -1046,3 +1046,60 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-43-51-46ecf9.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 04:43:50 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |
+
+## [2026-11-15 04:45:51 +07:00] — Ringkasan terbanyak, filter seluruh riwayat, penghapusan log, dan pengecualian aktivitas admin
+
+Waktu pencatatan: **2026-11-15 04:45:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `79c7fc1`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 209 tes regresi server pada snapshot terisolasi, 52 tes integrasi setelah kode dasar terbaru diselaraskan, serta 8 tes fitur setelah penyempurnaan snapshot baca; lint modul/test/helper/komponen baru; node --check server/index.js, server/admin-logs.js, server/admin-log-identity.js; TypeScript dan build produksi lokal. Browser Chrome headless dengan server lengkap dan database sementara: delapan log, ringkasan lima teratas, pagination server, filter kelompok, penghapusan 510 baris, snapshot mempertahankan catatan baru, batal hapus, hapus pilihan, CSV, visitor tetap tercatat, admin Bearer/cookie tidak tercatat, logout kembali mencatat visitor, 1440/390 px dan tema green/sepia/dark tanpa overflow/pageerror. File sumber fitur cocok hash snapshot yang diuji. Tidak menghapus catatan/database produksi. Diff dan staged whitespace lulus. Build hanya memberi peringatan konfigurasi Vite dan ukuran bundle tanpa error. Perubahan lain di ai-retrieval/tes AI ditangani terpisah dan tidak dicakup audit ini. SSH ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull/HEAD server/restart/fungsi online versi baru belum terverifikasi; tidak menjalankan install/build di hosting atau menghentikan transfer.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-45-51-e18fc1.json](docs/change-audit/2026-11-15-04-45-51-e18fc1.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 04:40:42 +07:00 | `dist/assets/index-BWQ9QzD0.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DlP13NX6.css` | 1–2 | — | module/file | deleted |
+| 2026-11-15 04:40:42 +07:00 | `dist/assets/index.dev-CSrdI66x.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CdbXY2HS.js` | 1–17 | — | module/file | deleted |
+| 2026-11-15 04:40:42 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-15 04:38:55 +07:00 | `docs/admin-log-management.md` | — | 1–28 | module/file | added |
+| 2026-11-15 04:38:55 +07:00 | `docs/library-activity.md` | 5–5 | 5–5 | Admin → Aktivitas menyediakan **Log Kutub Hadis** dan **Log Penulis & Karya**. | modified |
+| 2026-11-15 04:38:55 +07:00 | `docs/library-activity.md` | 18–18 | 18–18 | Pencarian isi hadis dan hasil API penulis dicatat di server sesudah permintaan b | modified |
+| 2026-11-15 04:27:47 +07:00 | `server/admin-log-identity.js` | — | 1–16 | cookieName, adminActivityIdentity, bearer, cookie, setAdminActivityCookie | added |
+| 2026-11-15 04:39:57 +07:00 | `server/admin-logs.js` | — | 1–88 | tables, fail, column, definitions, table, query, page, filtersFor | added |
+| 2026-11-15 04:33:05 +07:00 | `server/admin-logs.test.js` | — | 1–89 | fixture, db, fields, first, filtered, date, type, filters | added |
+| 2026-11-15 04:33:05 +07:00 | `server/admin-request-identity.test.js` | — | 1–17 | options, result, request | added |
+| 2026-11-15 04:29:11 +07:00 | `server/ai-history.js` | — | 37–37 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 25–26 | import {invalidateAiBookPolicy} from './ai-book-policy.js'; | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 330–332 | try { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 356–356 | const libraryActivity = createLibraryActivity(() => stateDb); | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 510–510 | app.post('/api/admin/login', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 518–518 | app.post('/api/admin/logout', requireAdmin, (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 546–546 | 554–554 | app.post('/api/log/download', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 558–558 | 566–566 | app.post('/api/log/visit', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 590–640 | 598–598 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 953–957 | — | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 1093–1095 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 1161–1161 | 1117–1117 | app.get('/api/download/:id', async (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 1209–1209 | 1165–1165 | const handlePdfExport = async (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 1268–1268 | 1224–1224 | app.get('/api/book/:id', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 1425–1425 | 1381–1381 | app.get('/api/quran/surah/:id', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | 1466–1466 | 1422–1422 | app.get('/api/rowa/:id', (req, res) => { | modified |
+| 2026-11-15 04:29:22 +07:00 | `server/index.js` | — | 1520–1522 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-15 04:29:11 +07:00 | `server/library-activity.js` | — | 38–38 | export function createLibraryActivity(getStateDb) { | modified |
+| 2026-11-15 04:29:11 +07:00 | `src/api.ts` | 296–298 | 296–298 | export const webAPI = { | modified |
+| 2026-11-15 04:29:11 +07:00 | `src/api.ts` | — | 301–306 | export const webAPI = { | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | — | 16–16 | import { LibraryLogData } from './LibraryLogData'; | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1068–1085 | 1069–1108 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1087–1152 | 1110–1112 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1185–1186 | 1145–1147 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1188–1194 | 1149–1159 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1196–1199 | 1161–1166 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1213–1213 | 1180–1180 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1221–1221 | 1188–1188 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1223–1223 | 1190–1190 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1271–1271 | 1238–1238 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 04:39:57 +07:00 | `src/components/Admin.tsx` | 1359–1359 | 1326–1327 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-15 04:30:38 +07:00 | `src/components/AdminLogSummary.tsx` | — | 1–17 | AdminLogSummary | added |
+| 2026-11-15 04:27:47 +07:00 | `src/lib/admin-request-identity.ts` | — | 1–17 | adminRequestOptions, url, headers, installAdminRequestIdentity, original | added |
+| 2026-11-15 04:27:47 +07:00 | `src/main.tsx` | — | 6–8 | import App from './App.tsx' | modified |

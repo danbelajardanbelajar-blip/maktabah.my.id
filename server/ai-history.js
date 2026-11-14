@@ -34,6 +34,7 @@ export function registerAiHistory(app,{getStateDb}) {
     req[SESSION]=crypto.createHash('sha256').update(token).digest('hex');return req[SESSION];
   };
   const record=(req,res,question,response,context={},payload)=>{
+    if(req.isAdminActivity)return;
     try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json,meta_json) VALUES(?,?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context),payload?JSON.stringify(auditMeta(payload)):null);} catch { /* History cannot discard a successful answer. */ }
   };
   app.get('/api/recent-questions',(req,res)=>{

@@ -35,6 +35,7 @@ export function createLibraryActivity(getStateDb) {
     return db;
   }
   function record(feature, req, event) {
+    if(req.isAdminActivity)return true;
     try {
       const table = Object.hasOwn(libraryLogTables,feature) ? libraryLogTables[feature] : null;
       if (!table) return false;

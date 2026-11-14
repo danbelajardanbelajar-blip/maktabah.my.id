@@ -13,6 +13,7 @@ import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
 import { AskLogDetail } from './AskLogDetail';
 import { LibraryLogData } from './LibraryLogData';
+import {AdminLogSummary} from './AdminLogSummary';
 import { BackButton } from './BackButton';
 import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
@@ -1065,91 +1066,50 @@ const SubmissionsView = ({ token, onLogout }: { token: string, onLogout: () => v
 
 // ==================== LOGS VIEW ====================
 const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: () => void, type: string, title: string }) => {
-  const libraryLog = type === 'hadith' || type === 'authors';
-  const [logFilter,setLogFilter] = useState('');
-  const [actionFilter,setActionFilter] = useState('');
-  const [refresh,setRefresh] = useState(0);
-  const [data, setData] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any[]>([]);
-  const toggleAll = (e: any, list: any[]) => {
-    if (e.target.checked) {
-      const newSel = [...selected];
-      list.forEach(item => { if (!newSel.find(s => s.id === item.id)) newSel.push(item); });
-      setSelected(newSel);
-    } else {
-      setSelected(selected.filter(s => !list.find(item => item.id === s.id)));
-    }
+  const [data,setData]=useState<any[]>([]),[selected,setSelected]=useState<any[]>([]);
+  const [currentPage,setCurrentPage]=useState(1),[limit,setLimit]=useState(20);
+  const [loading,setLoading]=useState(true),[deleting,setDeleting]=useState(false),[detail,setDetail]=useState<any>(null),[error,setError]=useState('');
+  const [refresh,setRefresh]=useState(0),[logFilter,setLogFilter]=useState(''),[search,setSearch]=useState('');
+  const [actionFilter,setActionFilter]=useState(''),[outcome,setOutcome]=useState(''),[from,setFrom]=useState(''),[to,setTo]=useState('');
+  const [group,setGroup]=useState({dimension:'',value:''});
+  const [top,setTop]=useState<Record<string,{value:string;count:number}[]>>({});
+  const [capabilities,setCapabilities]=useState({action:false,outcome:false});
+  const [matchedTotal,setMatchedTotal]=useState(0);
+  const [preview,setPreview]=useState<{key:string;filters:Record<string,string>;snapshotId:number;total:number}|null>(null);
+  const [stats,setStats]=useState({total:0,today:0,weekly:0,monthly:0,unique_ips:0});
+  const filters={q:search,action:actionFilter,outcome,from,to,...group};
+  const filterKey=JSON.stringify([type,filters]);
+  const readyPreview=!loading&&!deleting&&preview?.key===filterKey&&logFilter.trim()===search;
+  const hasFilter=Object.values(filters).some(Boolean);
+  useEffect(()=>{if(logFilter.trim()===search)return;const timer=setTimeout(()=>{setSearch(logFilter.trim());setCurrentPage(1);},300);return()=>clearTimeout(timer);},[logFilter,search]);
+  useEffect(()=>{
+    const controller=new AbortController();setLoading(true);setSelected([]);setData([]);setError('');
+    webAPI.getAdminLogs(token,type,{...JSON.parse(filterKey)[1],page:String(currentPage),limit:String(limit)},controller.signal).then(res=>{
+      if(controller.signal.aborted)return;
+      if(!res.top||!res.capabilities||!Number.isInteger(res.page))throw new Error('Layanan riwayat admin belum diperbarui. Muat ulang setelah backend direstart.');
+      setData(res.data||[]);setStats(res.stats);setTop(res.top||{});setMatchedTotal(res.total||0);setCapabilities(res.capabilities);
+      setPreview({key:filterKey,filters:res.filters,snapshotId:res.snapshotId,total:res.total});
+      if(res.page!==currentPage)setCurrentPage(res.page);
+    }).catch(err=>{if(!controller.signal.aborted){if(err.message==='401')onLogout();else setError(err.message);setPreview(null);}})
+      .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
+    return()=>controller.abort();
+  },[token,type,filterKey,currentPage,limit,refresh]);
+  const toggleAll=(event:any,list:any[])=>setSelected(event.target.checked?list:[]);
+  const toggleOne=(event:any,item:any)=>setSelected(old=>event.target.checked?[...old,item]:old.filter(row=>row.id!==item.id));
+  const remove=async(all=false)=>{
+    if(!readyPreview||!preview)return;
+    const count=all?preview.total:selected.length;
+    if(!count||!window.confirm(`Hapus ${count} catatan log ${title}${all?' sesuai filter aktif':' yang dipilih'}?`))return;
+    setDeleting(true);setError('');
+    try{
+      await webAPI.deleteAdminLogs(token,type,all?{filters:preview.filters,throughId:preview.snapshotId,expectedCount:preview.total,confirm:'DELETE_MATCHING_LOGS'}:{ids:selected.map(row=>row.id)});
+      setSelected([]);setRefresh(n=>n+1);window.dispatchEvent(new Event('maktabah:logs-changed'));
+    }catch(err:any){if(err.message==='401')onLogout();else setError(err.message);}
+    finally{setDeleting(false);}
   };
-  const toggleOne = (e: any, item: any) => {
-    if (e.target.checked) setSelected([...selected, item]);
-    else setSelected(selected.filter(s => s.id !== item.id));
-  };
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(20);
-  const [loading, setLoading] = useState(true);
-  const [detail, setDetail] = useState<any>(null);
-  const [error, setError] = useState('');
-  
-  const [stats, setStats] = useState({ total: 0, today: 0, weekly: 0, monthly: 0, unique_ips: 0 });
-
-  useEffect(() => {
-    let disposed = false;
-    const load = async () => {
-      setLoading(true);
-      const res = await adminFetch(token, () => webAPI.getAdminLogs(token, type), onLogout, setError);
-      if (disposed) return;
-      if (res) {
-        if (Array.isArray(res)) {
-          setData(res);
-        } else if (res.data) {
-          setData(res.data);
-          if (res.stats) {
-            setStats({
-              total: Number(res.stats.total) || 0,
-              today: Number(res.stats.today) || 0,
-              weekly: Number(res.stats.weekly) || 0,
-              monthly: Number(res.stats.monthly) || 0,
-              unique_ips: Number(res.stats.unique_ips) || 0
-            });
-          }
-        }
-      }
-      setLoading(false);
-    };
-    load();
-    return () => { disposed = true; };
-  }, [token, type, refresh]);
-
-  useEffect(() => {
-    // Fallback hitung statistik dari data log jika server tidak mengembalikan objek stats
-    if (data && data.length > 0 && stats.total === 0) {
-      const now = Date.now();
-      const oneDayAgo = now - 24 * 60 * 60 * 1000;
-      const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-      const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
-
-      let d = 0, w = 0, m = 0;
-      const ips = new Set<string>();
-
-      data.forEach(item => {
-        if (item.ip) ips.add(item.ip);
-        const itemDateStr = (item.created_at || '').replace(' ', 'T');
-        if (!itemDateStr) return;
-        const itemTime = new Date(itemDateStr + 'Z').getTime();
-        if (isNaN(itemTime)) return;
-        
-        if (itemTime >= oneDayAgo) d++;
-        if (itemTime >= sevenDaysAgo) w++;
-        if (itemTime >= thirtyDaysAgo) m++;
-      });
-      setStats({ total: data.length, today: d, weekly: w, monthly: m, unique_ips: ips.size });
-    }
-  }, [data]);
-
-  const visible = libraryLog ? data.filter(row=>(!actionFilter || row.action === actionFilter) &&
-    (!logFilter.trim() || [row.query,row.target_name,row.target_id,row.context,row.ip,row.user_agent].join(' ').toLowerCase().includes(logFilter.trim().toLowerCase()))) : data;
-  const paginated = visible.slice((currentPage - 1) * limit, currentPage * limit);
+  const choose=(dimension:string,value:string)=>{setGroup({dimension,value});setCurrentPage(1);};
+  const reset=()=>{setLogFilter('');setSearch('');setActionFilter('');setOutcome('');setFrom('');setTo('');setGroup({dimension:'',value:''});setCurrentPage(1);};
+  const paginated=data;
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 flex items-center justify-between flex-wrap gap-2">
@@ -1182,21 +1142,28 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       </div>
 
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
-      {libraryLog && <div className="p-4 border-b bg-gray-50 space-y-3">
-        <p className="text-xs text-gray-500">Maksimal 500 aktivitas terbaru ditampilkan; statistik mencakup seluruh catatan. Waktu dalam WIB.</p>
+      <AdminLogSummary top={top} total={matchedTotal} disabled={loading||deleting} onChoose={choose} />
+      <div className="p-4 border-b bg-gray-50 space-y-3">
+        <p className="text-xs text-gray-500">Filter berlaku pada seluruh riwayat. Waktu dan tanggal dalam WIB. Aktivitas admin terautentikasi tidak dicatat sebagai aktivitas pengunjung.</p>
         <div className="flex flex-wrap gap-2">
-          <input aria-label="Cari aktivitas" placeholder="Cari kata, kitab, penulis, filter, atau IP…" value={logFilter} onChange={e=>{setLogFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:flex-1 min-w-0 bg-white" />
-          <select aria-label="Jenis aktivitas" value={actionFilter} onChange={e=>{setActionFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
-            <option value="">Semua aktivitas</option><option value="browse">Telusur & filter</option><option value="search">Pencarian</option>
-            <option value="profile">Profil penulis</option><option value="timeline">Muat linimasa</option><option value="timeline_year">Pilih tahun</option>
-            <option value="read_book">Buka pembaca</option><option value="book_detail">Detail kitab</option><option value="edition">Pilih edisi</option>
-          </select>
-          <button disabled={loading} onClick={()=>{setSelected([]);setCurrentPage(1);setRefresh(n=>n+1);}} className="border rounded-lg px-3 py-2 text-sm bg-white disabled:opacity-50">Muat ulang</button>
+          <input aria-label="Cari aktivitas" placeholder="Cari pencarian, pertanyaan, halaman, atau IP…" value={logFilter} onChange={e=>setLogFilter(e.target.value)} className="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:flex-1 min-w-0 bg-white" />
+          {capabilities.action&&<select aria-label="Jenis aktivitas" value={actionFilter} onChange={e=>{setActionFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">Semua aktivitas</option><option value="browse">Telusur & filter</option><option value="search">Pencarian</option><option value="profile">Profil penulis</option><option value="timeline">Muat linimasa</option><option value="timeline_year">Pilih tahun</option><option value="read_book">Buka pembaca</option><option value="book_detail">Detail kitab</option><option value="edition">Pilih edisi</option>
+          </select>}
+          {capabilities.outcome&&<select aria-label="Hasil pencarian" value={outcome} onChange={e=>{setOutcome(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">Semua hasil</option><option value="zero">Hasil nol</option><option value="positive">Ada hasil</option><option value="unknown">Jumlah hasil tidak dicatat</option>
+          </select>}
+          <label className="text-xs">Dari (WIB)<input aria-label="Tanggal awal" type="date" value={from} onChange={e=>{setFrom(e.target.value);setCurrentPage(1);}} className="block border rounded-lg px-2 py-2 bg-white" /></label>
+          <label className="text-xs">Sampai (WIB)<input aria-label="Tanggal akhir" type="date" value={to} onChange={e=>{setTo(e.target.value);setCurrentPage(1);}} className="block border rounded-lg px-2 py-2 bg-white" /></label>
+          <button disabled={loading||deleting} onClick={()=>setRefresh(n=>n+1)} className="border rounded-lg px-3 py-2 text-sm bg-white disabled:opacity-50">Muat ulang</button>
+          <button onClick={reset} className="border rounded-lg px-3 py-2 text-sm bg-white">Reset filter</button>
         </div>
-        <p className="text-xs text-gray-500">{visible.length} aktivitas sesuai filter.</p>
-      </div>}
-      
-      <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'logsview_export.csv')} />
+        {group.dimension&&<p className="text-xs break-words">Filter ringkasan ({({query:'Pencarian',question:'Pertanyaan',ip:'IP',page:'Halaman / sumber'} as Record<string,string>)[group.dimension]}): <strong dir="auto">{group.value}</strong> <button className="underline ml-2" onClick={()=>{setGroup({dimension:'',value:''});setCurrentPage(1);}}>Hapus filter ringkasan</button></p>}
+        <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-gray-500">{matchedTotal.toLocaleString('id-ID')} aktivitas sesuai filter.</p>
+          <button disabled={!readyPreview||!hasFilter||!matchedTotal} onClick={()=>void remove(true)} className="text-xs border border-red-200 text-red-700 rounded-lg px-3 py-2 disabled:opacity-40">Hapus seluruh hasil filter ({matchedTotal})</button>
+        </div>
+      </div>
+      <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, `${type}_logs.csv`)} extraActions={<button disabled={!readyPreview} onClick={()=>void remove()} className="bg-red-700 text-white px-3 py-1.5 rounded font-bold text-sm disabled:opacity-40">Hapus terpilih ({selected.length})</button>} />
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-gray-100">
@@ -1210,7 +1177,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
           </thead>
           <tbody className="divide-y">
             {loading ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Memuat...</td></tr> : 
-              visible.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">{data.length ? 'Tidak ada aktivitas sesuai filter.' : 'Belum ada log'}</td></tr> :
+              data.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">{hasFilter ? 'Tidak ada aktivitas sesuai filter.' : 'Belum ada log'}</td></tr> :
               paginated.map(d => (
                 <tr key={d.id} className={type === 'ask' ? 'hover:bg-blue-50 cursor-pointer' : 'hover:bg-gray-50'}
                   onClick={type === 'ask' ? () => setDetail(d) : undefined}
@@ -1218,9 +1185,9 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                   tabIndex={type === 'ask' ? 0 : undefined} title={type === 'ask' ? 'Klik untuk melihat pertanyaan dan jawaban lengkap' : undefined}>
                 <td className="p-3 text-center"><input type="checkbox" checked={!!selected.find(s => s.id === d.id)} onChange={(e) => toggleOne(e, d)} onClick={(e) => e.stopPropagation()} /></td>
                   <td className="p-3 text-gray-500">{d.id}</td>
-                  <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID',libraryLog?{timeZone:'Asia/Jakarta'}:undefined)}{libraryLog?' WIB':''}</td>
+                  <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</td>
                   <td className="p-3 font-medium">
-                    {type === 'search' && <span>{d.query}</span>}
+                    {type === 'search' && <div><span dir="auto">{d.query}</span><p className="text-xs text-gray-500 mt-1">{d.mode==='title'?'Judul kitab':'Isi kitab'} · {d.result_count==null?'Jumlah hasil belum dicatat':`${d.result_count} hasil`}</p></div>}
                     {type === 'download' && (() => {
                       let t = d.book_title || '';
                       let badge = 'Kitab (Word)';
@@ -1268,7 +1235,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
         </table>
       </div>
     
-      <Pagination page={currentPage} total={visible.length} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
+      <Pagination page={currentPage} total={matchedTotal} limit={limit} onLimitChange={(l: any) => { setLimit(l); setCurrentPage(1); }} onChange={(p: number) => setCurrentPage(p)} loading={loading} />
       {detail && <AskLogDetail row={detail} onClose={() => setDetail(null)} />}
     </div>
   );
@@ -1356,7 +1323,8 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
   }, [token, onLogout]);
 
   useEffect(() => {
-    fetchStats();
+    fetchStats();window.addEventListener('maktabah:logs-changed',fetchStats);
+    return()=>window.removeEventListener('maktabah:logs-changed',fetchStats);
   }, [fetchStats]);
 
   const breadcrumb = [
