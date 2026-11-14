@@ -798,3 +798,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-21-00-59-09b93e.
 | 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 52–58 | — | const ARABIC_QUESTION_PHRASES = [ | modified |
 | 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 74–75 | 67–68 | export function normalizeQueryForDetection(text: string): string { | modified |
 | 2026-11-14 20:59:13 +07:00 | `src/lib/ai-query-detector.ts` | 152–176 | — | export function detectAiQuery(rawQuery: string): AiQueryDetectionResult { | modified |
+
+## [2026-11-14 21:14:56 +07:00] — Saran kata terverifikasi pada hasil pencarian kosong
+
+Waktu pencatatan: **2026-11-14 21:14:56 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e7a453f`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 47 tes search-suggestions/ask-ai/ai-query-detector/ai-errors/navigation/back-navigation; node --check server/index.js dan server/search-suggestions.js; oxlint modul/test/komponen baru; TypeScript dan build produksi lokal; diff dan staged whitespace. Browser Chrome headless 1440/390 px dengan respons terkendali: tombol saran mencari literal tanpa redirect AI, mode/kategori tetap, hasil positif menyembunyikan saran, kegagalan endpoint saran tetap menampilkan hasil kosong dan tombol Tanya AI, tanpa pageerror/overflow. Data nyata lokal: typo الفقخ memprioritaskan الفقه; endpoint judul memastikan hasil tersedia (847 untuk الفقه). AI diuji memakai provider tiruan; tidak mengklaim uji provider nyata. Build memberi peringatan Vite konfigurasi/ukuran bundle tanpa error. SSH deployment ubuntu@43.173.50.61 menolak autentikasi kunci (Permission denied publickey,password); pull, HEAD server, restart dan fungsi online versi baru belum terverifikasi. Build/install tidak dijalankan di hosting; database dan rahasia tidak di-stage.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-14-21-14-56-bd59e0.json](docs/change-audit/2026-11-14-21-14-56-bd59e0.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-14 21:12:54 +07:00 | `dist/assets/index-CZxWudRA.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DZ1745-4.css` | 1–2 | — | module/file | deleted |
+| 2026-11-14 21:12:54 +07:00 | `dist/assets/index.dev-CuIoOxSu.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-14 21:12:54 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-14 21:13:52 +07:00 | `docs/search-suggestions.md` | — | 1–11 | module/file | added |
+| 2026-11-14 21:07:42 +07:00 | `server/index.js` | — | 22–22 | import { registerAskAi } from './ask-ai.js'; | modified |
+| 2026-11-14 21:07:42 +07:00 | `server/index.js` | — | 1476–1479 | app.get('/api/toc/:bookId', (req, res) => { | modified |
+| 2026-11-14 21:12:32 +07:00 | `server/search-suggestions.js` | — | 1–148 | normalizeSuggestion, wordDistance, rows, row, textMatch, words, options, hasSuggestionResults | added |
+| 2026-11-14 21:12:32 +07:00 | `server/search-suggestions.test.js` | — | 1–119 | key, response, likeMatch, fixture, db, app, server, request | added |
+| 2026-11-14 21:12:09 +07:00 | `src/App.tsx` | — | 21–21 | import { detectAiQuery } from './lib/ai-query-detector'; | modified |
+| 2026-11-14 21:12:09 +07:00 | `src/App.tsx` | — | 856–857 | function App() { | modified |
+| 2026-11-14 21:07:42 +07:00 | `src/api.ts` | — | 58–59 | export const webAPI = { | modified |
+| 2026-11-14 21:07:42 +07:00 | `src/components/SearchSuggestions.tsx` | — | 1–28 | SearchSuggestions, categoryKey, controller | added |

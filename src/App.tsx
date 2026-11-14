@@ -18,6 +18,7 @@ import BookSubmit from './components/BookSubmit';
 import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
 import { detectAiQuery } from './lib/ai-query-detector';
+import { SearchSuggestions } from './components/SearchSuggestions';
 import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
 import { readingPositions } from './lib/reading-position';
@@ -852,6 +853,8 @@ function App() {
                 <div className="text-center py-12 bg-[var(--reader-bg)] rounded-2xl border border-black/5">
                   <Search className="mx-auto text-gray-300 mb-3" size={48} />
                   <p className="text-[var(--app-text)] opacity-60 text-lg">Tidak ada hasil ditemukan.</p>
+                  {totalResults === 0 && searchMode !== 'pdf' && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories]) && <SearchSuggestions key={JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
+                    onSearch={suggestion => { void executeSearch(suggestion, 1, searchMode, 'push', selectedCategories, true); }} />}
                   <button type="button" onClick={() => openAiQuestion(query, {}, query)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium shadow-sm transition-all text-sm cursor-pointer mt-4"><Bot size={18} />Tanyakan ke Tanya AI</button>
                 </div>
               )}

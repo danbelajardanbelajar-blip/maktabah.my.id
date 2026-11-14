@@ -55,6 +55,8 @@ async function waitForDeletion(token: string, job: any, onProgress?: (message: s
 }
 
 export const webAPI = {
+  searchSuggestions: (query:string, mode:'text'|'title', categories:string, signal?:AbortSignal) =>
+    fetchAPI(`/search-suggestions?${new URLSearchParams({q:query,mode,cat_id:categories})}`, signal),
   resumeDeletion: async (token: string, onProgress: (message: string) => void) => {
     let id;
     try { id = localStorage.getItem(deletionStorageKey); } catch {}

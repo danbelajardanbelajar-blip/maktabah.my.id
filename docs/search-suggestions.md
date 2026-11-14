@@ -1,0 +1,11 @@
+# Saran pada pencarian kosong
+
+Halaman pencarian isi dan judul meminta `GET /api/search-suggestions?q=...&mode=text|title&cat_id=...` hanya sesudah pencarian selesai dengan total nol. Tidak berlaku pada PDF eksternal atau halaman pagination kosong dengan total hasil positif. Tombol saran mencari secara literal pada mode dan kategori yang sama; tidak memicu redirect Tanya AI.
+
+Kandidat lokal berasal dari kosakata judul di database utama dan tambahan. Normalisasi mengabaikan harakat, tatweel, dan variasi alif/ya. Jarak edit, pertukaran huruf bersebelahan, serta frekuensi kemunculan dalam katalog menentukan urutan kandidat. Koreksi gabungan dapat memperbaiki lebih dari satu kata. Kemiripan ejaan tidak menjamin kesamaan makna.
+
+Jika belum ada tiga saran lokal, konfigurasi Gemini yang sudah digunakan Tanya AI dapat memberikan alternatif ejaan/transliterasi/istilah terkait. Tidak ada provider atau kunci baru yang dipasang. Mode lokal hanya memakai kandidat lokal. Setiap kandidat wajib memiliki hasil pada mode dan filter kategori yang diminta sebelum ditampilkan; hasil AI tidak dipercaya sebagai bukti keberadaan kitab. Maksimal tiga saran ditampilkan. Jika AI gagal, saran lokal tetap tersedia.
+
+Cache memori maksimal 500 kueri selama lima menit, terpisah menurut kueri, mode, kategori, dan generasi kosakata. Kosakata diperbarui setelah lima menit atau penggantian koneksi database; saran dalam cache diperiksa ulang sebelum dikirim. Permintaan identik yang sedang berjalan berbagi pekerjaan. Batas publik: 12 permintaan per IP per menit, maksimal dua panggilan AI bersamaan, delapan detik waktu provider, kueri 2–120 karakter dan maksimal delapan kata. Pembaruan/import/penghapusan database menghentikan pemberian saran. Kosakata dibatasi 100.000 istilah.
+
+Verifikasi memakai database SQLite sementara dan provider tiruan untuk koreksi, validasi sumber/kategori, cache, koalesensi, pembatasan permintaan, kegagalan provider, dan mode lokal. Uji browser memeriksa desktop/ponsel, klik literal dengan kata pemicu AI, filter/mode, tampilan tanpa hasil, serta kegagalan endpoint saran. Dataset nyata lokal juga diperiksa melalui endpoint pencarian judul. Build dan dependensi hanya dikerjakan lokal.

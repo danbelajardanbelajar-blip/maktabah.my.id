@@ -19,6 +19,7 @@ import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
+import { registerSearchSuggestions } from './search-suggestions.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
@@ -1471,6 +1472,10 @@ app.get('/api/toc/:bookId', (req, res) => {
   }
 });
 
+
+registerSearchSuggestions(app, {getDb:()=>db, hasAdditional:()=>hasTambahan, likeMatch:buildLikeMatch,
+  configPath:path.join(rootDir,'dev-data','ai-config.local.json'), localExportMode,
+  isMaintenance:()=>Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession)});
 
 registerAskAi(app, { getDb: () => db, getStateDb: () => stateDb, hasAdditional: () => hasTambahan,
   requireAdmin, cache: askCache, configPath: path.join(rootDir, 'dev-data', 'ai-config.local.json'), localExportMode,
