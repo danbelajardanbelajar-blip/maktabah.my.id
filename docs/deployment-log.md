@@ -1,3 +1,9 @@
+## 2026-11-15 04:43:50 WIB — Tanya AI: biografi imam lewat nama lengkap
+
+- Commit fungsi `40eb699` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perubahan hanya di server sehingga aset frontend tetap `index.dev-CdbXY2HS.js`, dan perilaku endpoint berubah sesuai commit ini.
+- Lokal: 209 tes server lulus, oxlint bersih. DB asli: من هو الشافعي dan siapa guru imam syafii memunculkan entri محمد بن إدريس الشافعي.
+- Online HTTPS: من هو الشافعي sekarang grounded dan direview, 4,8 detik (sebelumnya no_context), dengan rujukan الشمائل المحمدية hlm. 9 yang menyebut beliau secara singkat, bukan biografi lengkap. حكم صلاة الجماعة tetap grounded, 4,2 detik. "siapa guru imam syafii?" masih no_context, 6,3 detik; alasan reviewer tercatat di riwayat admin. Tidak ada timeout.
+
 ## 2026-11-15 04:33:25 WIB — Tanya AI: kualitas cuplikan rujukan dan alasan penolakan
 
 - Commit fungsi `1516583` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-CdbXY2HS.js` sama dengan build commit tersebut.

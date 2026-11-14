@@ -1034,3 +1034,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-41-29-a5caae.
 | 2026-11-15 04:36:46 +07:00 | `server/ai-retrieval.js` | — | 120–121 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
 | 2026-11-15 04:39:50 +07:00 | `server/ask-ai.test.js` | 9–9 | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
 | 2026-11-15 04:39:50 +07:00 | `server/ask-ai.test.js` | — | 397–408 | test('passages center on the densest query window and stay exact page text',t=>{ | modified |
+
+## [2026-11-15 04:43:51 +07:00] — Catat uji online biografi imam Tanya AI
+
+Waktu pencatatan: **2026-11-15 04:43:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `40eb699`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: HTTPS: من هو الشافعي grounded 4,8 s; حكم صلاة الجماعة grounded 4,2 s; siapa guru imam syafii no_context 6,3 s; tanpa timeout
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-04-43-51-46ecf9.json](docs/change-audit/2026-11-15-04-43-51-46ecf9.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 04:43:50 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |

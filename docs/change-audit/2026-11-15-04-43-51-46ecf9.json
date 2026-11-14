@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 04:43:51 +07:00",
+  "title": "Catat uji online biografi imam Tanya AI",
+  "baseCommit": "40eb6990206271d75fe149b4b560f74766e16187",
+  "checks": "HTTPS: من هو الشافعي grounded 4,8 s; حكم صلاة الجماعة grounded 4,2 s; siapa guru imam syafii no_context 6,3 s; tanpa timeout",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 04:43:50 +07:00",
+      "stagedSha256": "d787c693803be5a8b5ea78237167b9eb9d1c4eebed2f2feac5681054401243f7",
+      "diffSha256": "6e1096a5ad50379fea0cd96dcfd1e9c23bea61ac35c7459c6058024ba7a3f732",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 6
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}
