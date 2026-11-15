@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 19:26:07 +07:00",
+  "title": "Catat uji deployment fitur Pesan",
+  "baseCommit": "e606bf9646ae8ff73c6a8a597ab3a4c2d870f3af",
+  "checks": "Uji online https://maktab.my.id: aset build e606bf9 tersaji; endpoint pesan, validasi, honeypot, 401 admin, SSE lewat nginx tanpa buffer; tombol responsif, sembunyi saat gulir turun dan saat membaca kitab",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 19:26:01 +07:00",
+      "stagedSha256": "da9959c1d82bb7bad1dcd855fb0c4572fe7cb23bf340cb18dcd63e7d56bb12d2",
+      "diffSha256": "22f46991d45b36973f66e2729c63621a324cd4d094981841a21c7e88a0bfa079",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 7
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

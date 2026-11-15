@@ -1501,3 +1501,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-22-52-d5e562.
 | 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 14–14 | 14–14 | const titles: Record<AdminView,string> = { | modified |
 | 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 22–22 | 22–22 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
 | 2026-11-15 19:13:54 +07:00 | `src/lib/messages.ts` | — | 1–90 | MESSAGE_MAX, request, res, auth, messagesAPI, adminMessagesAPI, mergeMessages, byId | added |
+
+## [2026-11-15 19:26:07 +07:00] — Catat uji deployment fitur Pesan
+
+Waktu pencatatan: **2026-11-15 19:26:07 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e606bf9`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Uji online https://maktab.my.id: aset build e606bf9 tersaji; endpoint pesan, validasi, honeypot, 401 admin, SSE lewat nginx tanpa buffer; tombol responsif, sembunyi saat gulir turun dan saat membaca kitab
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-26-07-cdf5bb.json](docs/change-audit/2026-11-15-19-26-07-cdf5bb.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 19:26:01 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |

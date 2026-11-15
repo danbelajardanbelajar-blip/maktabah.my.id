@@ -1,3 +1,10 @@
+## 2026-11-15 19:25:47 WIB — Fitur Pesan (pengunjung ↔ admin)
+
+- Commit fungsi `e606bf9` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-BSHgaGOK.js` dan `index-CPQduW1l.css` sama dengan build `e606bf9`.
+- API online: GET /api/messages 200 (kosong tanpa cookie); /api/messages/stream 204 tanpa cookie dan 200 `text/event-stream` lewat nginx dengan `retry: 5000` langsung diterima (tidak dibuffer); endpoint admin dan stream admin 401 tanpa login; pesan kosong 400; 2.001 karakter 400; honeypot 200 tanpa menyimpan dan tanpa cookie. Tidak ada pesan uji yang disimpan di produksi.
+- Browser online (375×812): tombol di atas navigasi bawah (tombol 672–728 px, navigasi mulai 742 px); gulir ke bawah menyembunyikan, gulir ke atas memunculkan; panel "Pesan ke Admin" terbuka; di #/read/1/4 tombol tersembunyi (aria-hidden).
+- Belum diuji online: alur kirim → balas admin → badge/bunyi/notifikasi (sudah diuji lokal), karena memerlukan login admin produksi dan akan meninggalkan pesan uji di kotak masuk.
+
 ## 2026-11-15 13:01:33 WIB — Saran pencarian untuk hasil sedikit
 
 - Commit fungsi `338ee5e`, `faf9b84`, dan `4ce0390` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-Cd4wLIyH.js` sama dengan build `faf9b84`, dan perilaku saran sesuai `4ce0390`.
