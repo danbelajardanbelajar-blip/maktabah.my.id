@@ -1389,3 +1389,34 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-11-22-26-6e7a56.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 11:22:25 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |
+
+## [2026-11-15 12:16:54 +07:00] — Saran pencarian juga untuk hasil sedikit
+
+Waktu pencatatan: **2026-11-15 12:16:54 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6c28ab6`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 229 tes server lulus (tes baru: hasil 1-4 memakai koreksi lokal dan satu panggilan Gemini, hasil 5-19 hanya koreksi lokal; pencarian >=20 hasil tidak memakai kuota); tsc dan build lulus; DB lokal: hitungan dibatasi 20 hasil, 27-111 ms, kata umum dengan filter kategori 365 ms
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-12-16-54-0c1ca7.json](docs/change-audit/2026-11-15-12-16-54-0c1ca7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 12:16:43 +07:00 | `dist/assets/index.dev-DIFosRPN.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-15 12:16:43 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 35–35 | 35–40 | function textMatch(query) { | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 37–37 | 42–43 | export function hasSuggestionResults(db, additional, query, mode, categories, li | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 41–43 | 47–50 | export function hasSuggestionResults(db, additional, query, mode, categories, li | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 45–45 | 52–52 | export function hasSuggestionResults(db, additional, query, mode, categories, li | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | — | 54–54 | export function hasSuggestionResults(db, additional, query, mode, categories, li | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 81–82 | 89–92 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 99–99 | 109–109 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-15 12:14:44 +07:00 | `server/search-suggestions.js` | 127–127 | 137–137 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | 5–5 | 5–5 | import express from 'express'; | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | — | 11–13 | const likeMatch = query => query.replace(/[\u064B-\u065F\u0670]/g,'').replace(/[ | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | 60–60 | 63–63 | test('AI alternatives are verified, deduplicated, cached by mode/category, and c | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | 62–62 | 65–67 | test('positive searches, invalid inputs, maintenance and local export never cons | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | 86–86 | 91–92 | test('concurrent requests share one provider call and request limits bound publi | modified |
+| 2026-11-15 12:15:16 +07:00 | `server/search-suggestions.test.js` | — | 126–136 | test('three verified local alternatives avoid AI and prefer frequent catalogue t | modified |
+| 2026-11-15 12:16:06 +07:00 | `src/App.tsx` | — | 855–860 | function App() { | modified |
+| 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 4–5 | 4–7 | import {webAPI} from '../api'; | modified |
+| 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 19–19 | 21–21 | export function SearchSuggestions({query, mode, categories, onSearch}: { | modified |
+| 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 21–22 | 23–24 | export function SearchSuggestions({query, mode, categories, onSearch}: { | modified |

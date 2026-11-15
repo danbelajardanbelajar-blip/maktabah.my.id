@@ -32,18 +32,26 @@ function textMatch(query) {
   }).join(' AND ');
 }
 
-export function hasSuggestionResults(db, additional, query, mode, categories, likeMatch) {
+// Suggestions are offered when a search finds fewer than FEW_RESULTS matches (a typo may still hit a few pages);
+// the model is consulted only below AI_RESULTS, so ordinary searches never use provider quota.
+export const FEW_RESULTS = 20, AI_RESULTS = 5;
+
+/** Number of matching pages (text) or books (title), counted only up to `cap`. */
+export function countSuggestionResults(db, additional, query, mode, categories, likeMatch, cap = 1) {
   const match = mode === 'title' ? `%${likeMatch(query)}%` : textMatch(query);
-  if (!match) return false;
+  if (!match) return 0;
+  let found = 0;
   for (const schema of additional ? ['main','tambahan'] : ['main']) {
     const filter = categories.length ? ` AND b.cat IN (${categories.map(() => '?').join(',')})` : '';
     const sql = mode === 'title'
-      ? `SELECT 1 FROM ${schema}.books_meta b WHERE b.bk LIKE ?${filter} LIMIT 1`
-      : `SELECT 1 FROM ${schema}.pages_fts JOIN ${schema}.pages p ON pages_fts.rowid=p.rowid JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE pages_fts MATCH ?${filter} LIMIT 1`;
-    if (db.prepare(sql).get(match, ...categories)) return true;
+      ? `SELECT 1 FROM ${schema}.books_meta b WHERE b.bk LIKE ?${filter} LIMIT ?`
+      : `SELECT 1 FROM ${schema}.pages_fts JOIN ${schema}.pages p ON pages_fts.rowid=p.rowid JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE pages_fts MATCH ?${filter} LIMIT ?`;
+    found += db.prepare(sql).all(match, ...categories, cap - found).length;
+    if (found >= cap) return found;
   }
-  return false;
+  return found;
 }
+export const hasSuggestionResults = (db, additional, query, mode, categories, likeMatch) => countSuggestionResults(db, additional, query, mode, categories, likeMatch, 1) > 0;
 
 export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, configPath, localExportMode,
   isMaintenance = () => false, fetchImpl = fetch, env = process.env, now = Date.now}) {
@@ -78,8 +86,10 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
       limits.set(identity, {at:now(), count:1});
     } else limit.count++;
     try {
-      // Never call the provider for a query that already has results, including later pages.
-      if (exists(q)) return res.json({suggestions:[]});
+      // A search with many matches needs no suggestion; only near-empty ones may consult the model.
+      const found = countSuggestionResults(db, additional, q, mode, categories, likeMatch, FEW_RESULTS);
+      if (found >= FEW_RESULTS) return res.json({suggestions:[]});
+      const allowAi = found < AI_RESULTS;
       if (vocabularyDb !== db || now()-vocabularyAt > ttl) {
         vocabulary = new Map(); cache.clear(); vocabularyDb = db; vocabularyAt = now();
         for (const schema of additional ? ['main','tambahan'] : ['main']) {
@@ -96,7 +106,7 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
         }
       }
       // Include mode, filters, original spelling, and dataset generation in the cache key.
-      const key = JSON.stringify([q,mode,categories,vocabularyAt]);
+      const key = JSON.stringify([q,mode,categories,vocabularyAt,allowAi]);
       const cached = cache.get(key);
       if (cached && now()-cached.at < ttl) return res.json({suggestions:cached.suggestions.filter(exists)});
       if (!pending.has(key)) {
@@ -124,7 +134,7 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
           };
           for (const candidate of candidates) { add(candidate); if (suggestions.length >= 3) break; }
           const settings = readAiConfig(configPath, env);
-          if (suggestions.length < 3 && !localExportMode && settings.keys.length && activeAi < 2 && !isMaintenance()) {
+          if (suggestions.length < 3 && allowAi && !localExportMode && settings.keys.length && activeAi < 2 && !isMaintenance()) {
             activeAi++;
             try {
               const generated = await generateGemini(settings, JSON.stringify({query:q}), {fetchImpl, timeout:8000, maxTokens:512, json:true,

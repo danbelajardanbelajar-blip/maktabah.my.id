@@ -2,11 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import Database from 'better-sqlite3';
 import express from 'express';
-import {normalizeSuggestion, wordDistance, registerSearchSuggestions} from './search-suggestions.js';
+import {normalizeSuggestion, wordDistance, registerSearchSuggestions, FEW_RESULTS} from './search-suggestions.js';
 
 const key = 'AIza' + 'a'.repeat(35);
 const response = suggestions => new Response(JSON.stringify({candidates:[{content:{parts:[{text:JSON.stringify({suggestions})}]}}]}));
 const likeMatch = query => query.replace(/[\u064B-\u065F\u0670]/g,'').replace(/[اأإآ]/g,'_').replace(/[يى](?=\s|$)/g,'_').replace(/[هة](?=\s|$)/g,'_');
+
+// Pages enough for a search to count as ordinary: suggestions are only for fewer than FEW_RESULTS matches.
+const manyPages = (db, text) => { const put = db.prepare('INSERT INTO pages(book_id,nass) VALUES(1,?)'); for (let i = 0; i < FEW_RESULTS; i++) put.run(text); db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')"); };
 
 async function fixture(t, options = {}) {
   const db = new Database(':memory:');
@@ -57,9 +60,11 @@ test('AI alternatives are verified, deduplicated, cached by mode/category, and c
   assert.equal(calls,3);
 });
 
-test('positive searches, invalid inputs, maintenance and local export never consume provider quota',async t=>{
+test('ordinary searches, invalid inputs, maintenance and local export never consume provider quota',async t=>{
   let calls=0, busy=false;
-  const {request} = await fixture(t,{env:{GEMINI_API_KEY:key},isMaintenance:()=>busy,fetchImpl:async()=>{calls++;return response([]);}});
+  const {db,request} = await fixture(t,{env:{GEMINI_API_KEY:key},isMaintenance:()=>busy,fetchImpl:async()=>{calls++;return response([]);}});
+  manyPages(db,'صلاة');
+  const book=db.prepare('INSERT INTO books_meta(bk,cat) VALUES(?,10)');for(let i=0;i<FEW_RESULTS;i++)book.run('shalat '+i);
   assert.deepEqual((await request('صلاة')).suggestions,[]);
   assert.deepEqual((await request('shalat','title')).suggestions,[]);
   assert.equal((await request('a'.repeat(121))).status,400);
@@ -83,7 +88,8 @@ test('AI failure retains local suggestions and cache revalidates after data dele
 test('concurrent requests share one provider call and request limits bound public usage',async t=>{
   let calls=0, release;
   const gate = new Promise(resolve=>{release=resolve;});
-  const {request}=await fixture(t,{env:{GEMINI_API_KEY:key},fetchImpl:async()=>{calls++;await gate;return response(['صلاة التهجد']);}});
+  const {db,request}=await fixture(t,{env:{GEMINI_API_KEY:key},fetchImpl:async()=>{calls++;await gate;return response(['صلاة التهجد']);}});
+  manyPages(db,'صلاة');
   const a=request('solat tahajut'), b=request('solat tahajut');
   await new Promise(resolve=>setTimeout(resolve,50));release();
   assert.deepEqual((await a).suggestions,['shalat tahajud','صلاة التهجد']);
@@ -116,4 +122,15 @@ test('three verified local alternatives avoid AI and prefer frequent catalogue t
   assert.equal(result.suggestions.length,3);
   assert.ok(!result.suggestions.includes('الفقة'));
   assert.equal(calls,0);
+});
+
+test('searches with few results still get suggestions; the model is used only when results are very few',async t=>{
+  let calls=0;
+  const {db,request}=await fixture(t,{env:{GEMINI_API_KEY:key},fetchImpl:async()=>{calls++;return response(['صلاة التهجد']);}});
+  // "tahajut" (typo) appears on 2 pages: local correction plus one model call.
+  const put=db.prepare('INSERT INTO pages(book_id,nass) VALUES(3,?)');put.run('tahajut');put.run('tahajut lagi');db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
+  const few=await request('tahajut');assert.ok(few.suggestions.includes('tahajud'),JSON.stringify(few));assert.equal(calls,1);
+  // 5–19 results: local corrections only.
+  for(let i=0;i<6;i++)put.run('tahajdu');db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
+  const some=await request('tahajdu');assert.ok(some.suggestions.includes('tahajud'),JSON.stringify(some));assert.equal(calls,1);
 });

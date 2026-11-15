@@ -1,8 +1,10 @@
 import {useEffect, useState} from 'react';
 import {webAPI} from '../api';
 
-export function SearchSuggestions({query, mode, categories, onSearch}: {
-  query:string; mode:'text'|'title'; categories:number[]; onSearch:(query:string)=>void;
+// Shown for searches without results, and (afterResults) below a short list of results, where a typo may still
+// have matched a few pages. The server returns nothing for searches with many results.
+export function SearchSuggestions({query, mode, categories, onSearch, afterResults = false}: {
+  query:string; mode:'text'|'title'; categories:number[]; onSearch:(query:string)=>void; afterResults?:boolean;
 }) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,10 +18,10 @@ export function SearchSuggestions({query, mode, categories, onSearch}: {
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [query, mode, categoryKey]);
-  if (loading) return <p role="status" className="mt-4 text-sm opacity-60">Mencari saran kata yang memiliki hasil…</p>;
+  if (loading) return afterResults ? null : <p role="status" className="mt-4 text-sm opacity-60">Mencari saran kata yang memiliki hasil…</p>;
   if (!suggestions.length) return null;
-  return <div className="mt-5 px-4" aria-label="Saran pencarian">
-    <p className="text-sm mb-3">Coba kata atau istilah terkait berikut:</p>
+  return <div className={afterResults ? 'mt-6 p-4 rounded-2xl border border-black/5 bg-[var(--reader-bg)] text-center' : 'mt-5 px-4'} aria-label="Saran pencarian">
+    <p className="text-sm mb-3">{afterResults ? 'Hasilnya sedikit. Mungkin maksud Anda:' : 'Coba kata atau istilah terkait berikut:'}</p>
     <div className="flex flex-wrap justify-center gap-2">
       {suggestions.map(suggestion => <button type="button" key={suggestion} onClick={() => onSearch(suggestion)}
         className="min-h-11 max-w-full break-words px-4 py-2 rounded-xl border border-emerald-600 text-[var(--app-text)] hover:bg-emerald-500/10 focus-visible:outline-2 focus-visible:outline-emerald-600" dir="auto">{suggestion}</button>)}
