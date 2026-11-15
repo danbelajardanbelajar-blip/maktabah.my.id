@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 07:01:45 +07:00",
+  "title": "Catat uji online rujukan kutipan berkelompok",
+  "baseCommit": "0ff85d7329a000ec8f52232c04917f11729c7511",
+  "checks": "HTTPS: hukum membeli saham grounded 6,0 s dengan [1][2][3]; حكم صلاة الجماعة grounded 4,7 s; siapa guru imam syafii no_context 5,0 s",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:01:44 +07:00",
+      "stagedSha256": "8f22506ea34538c155b0021e40de8c4857f11a91f980a4fc2a50d1047b8cc484",
+      "diffSha256": "b182287971d277a774770bfae8263f80ac697f508ce34e14b4999c7aeba173a5",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 5
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

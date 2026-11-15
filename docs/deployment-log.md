@@ -1,3 +1,8 @@
+## 2026-11-15 07:01:44 WIB — Tanya AI: rujukan kutipan berkelompok
+
+- Commit `0ff85d7` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perilaku endpoint sesuai commit ini.
+- Uji online: "hukum membeli saham" grounded 6,0 detik, 3 rujukan, penjelasan hanya memakai [1] [2] [3] (tidak ada ID kutipan atau nomor di luar daftar). حكم صلاة الجماعة grounded 4,7 detik dengan [1]. "siapa guru imam syafii?" masih no_context 5,0 detik; alasan reviewer ada di riwayat admin.
+
 ## 2026-11-15 07:00:17 WIB — Tanya AI: kutipan per kalimat, arah teks, dan nomor rujukan
 
 - Commit `1b5e648` dan `4fee5da` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-Dqs6Krnx.js` sama dengan build `1b5e648`, dan perilaku endpoint sesuai `4fee5da`.

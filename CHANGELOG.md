@@ -1154,3 +1154,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-00-18-bc2a82.
 | 2026-11-15 07:00:17 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |
 | 2026-11-15 06:59:24 +07:00 | `server/ai-evidence.js` | 75–75 | 75–75 | export function verifyAnswer(text,refs,catalog){ | modified |
 | 2026-11-15 06:59:31 +07:00 | `server/ai-evidence.test.js` | — | 72–82 | test('quote units start at a letter and quote IDs in prose become source numbers | modified |
+
+## [2026-11-15 07:01:45 +07:00] — Catat uji online rujukan kutipan berkelompok
+
+Waktu pencatatan: **2026-11-15 07:01:45 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0ff85d7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: HTTPS: hukum membeli saham grounded 6,0 s dengan [1][2][3]; حكم صلاة الجماعة grounded 4,7 s; siapa guru imam syafii no_context 5,0 s
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-01-45-6f8abc.json](docs/change-audit/2026-11-15-07-01-45-6f8abc.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 07:01:44 +07:00 | `docs/deployment-log.md` | — | 1–5 | module/file | modified |
