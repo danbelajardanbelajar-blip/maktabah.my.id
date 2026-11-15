@@ -134,3 +134,12 @@ test('searches with few results still get suggestions; the model is used only wh
   for(let i=0;i<6;i++)put.run('tahajdu');db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
   const some=await request('tahajdu');assert.ok(some.suggestions.includes('tahajud'),JSON.stringify(some));assert.equal(calls,1);
 });
+
+test('a spelling variant of the query itself is never suggested back',async t=>{
+  const {db,request}=await fixture(t);
+  db.prepare('INSERT INTO books_meta VALUES(9,?,10)').run('إحياء علوم الدين');
+  db.prepare('INSERT INTO pages VALUES(9,9,?)').run('احياء علوم الدبن إحياء علوم الدبن إحياء علوم الدين');db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
+  const result=await request('احياء علوم الدبن');
+  assert.ok(result.suggestions.includes('إحياء علوم الدين'),JSON.stringify(result));
+  assert.ok(!result.suggestions.some(s=>normalizeSuggestion(s)===normalizeSuggestion('احياء علوم الدبن')),JSON.stringify(result));
+});

@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 12:54:25 +07:00",
+  "title": "Saran pencarian: jangan sarankan varian ejaan kueri itu sendiri",
+  "baseCommit": "faf9b84a1e75ab7db09c65c6b918070a7bad8a23",
+  "checks": "230 tes server lulus (tes baru: احياء علوم الدبن tidak menyarankan إحياء علوم الدبن); oxlint bersih; uji online faf9b84: kotak saran tampil di bawah Total Hasil dan di atas daftar (browser), tahajut 1 hasil menyarankan Tahajjud/صلاة التهجد",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/search-suggestions.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 12:53:17 +07:00",
+      "stagedSha256": "eb22ae1b0ea01acc568c442ba2fe182a8b1e0f21b07dffd1e4cc2c1b902538e8",
+      "diffSha256": "09ed0555265b17aa67ea3073ba0f7f7236d8c9afa8b73b4a2cc614d18683a078",
+      "symbols": [
+        "normalizeSuggestion",
+        "wordDistance",
+        "rows",
+        "row",
+        "textMatch",
+        "words",
+        "options",
+        "FEW_RESULTS",
+        "countSuggestionResults",
+        "match",
+        "filter",
+        "sql",
+        "hasSuggestionResults",
+        "registerSearchSuggestions",
+        "cache",
+        "ttl",
+        "remember",
+        "q",
+        "mode",
+        "rawCategories",
+        "db",
+        "categories",
+        "additional",
+        "exists",
+        "identity",
+        "limit",
+        "found",
+        "allowAi",
+        "normalized",
+        "known",
+        "key",
+        "cached",
+        "work",
+        "candidates",
+        "matches",
+        "distance",
+        "suggestions",
+        "normalizedQuery",
+        "seen",
+        "add",
+        "settings",
+        "generated",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 127,
+            "count": 1
+          },
+          "after": {
+            "line": 127,
+            "count": 3
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        },
+        {
+          "before": {
+            "line": 131,
+            "count": 1
+          },
+          "after": {
+            "line": 133,
+            "count": 1
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        }
+      ]
+    },
+    {
+      "file": "server/search-suggestions.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 12:53:19 +07:00",
+      "stagedSha256": "2a5d425e408ccb515505768b4e6a3a901fec6c56daa283adf4f36cd95218a63d",
+      "diffSha256": "441313c64382a9dd0bc3cb73ac3fd403b257fdc971daa72423d70a6f43c17c71",
+      "symbols": [
+        "key",
+        "response",
+        "likeMatch",
+        "manyPages",
+        "put",
+        "fixture",
+        "db",
+        "app",
+        "server",
+        "request",
+        "res",
+        "book",
+        "local",
+        "gate",
+        "a",
+        "result",
+        "few",
+        "some"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 136,
+            "count": 0
+          },
+          "after": {
+            "line": 137,
+            "count": 9
+          },
+          "section": "test('searches with few results still get suggestions; the model is used only wh"
+        }
+      ]
+    }
+  ]
+}

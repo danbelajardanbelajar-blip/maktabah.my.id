@@ -124,11 +124,13 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
           }
           candidates.unshift(corrections.join(' '));
           const suggestions = [];
-          const seen = new Set();
+          // The query itself, in any spelling variant (احياء/إحياء), is never offered back as a suggestion.
+          const normalizedQuery = normalizeSuggestion(q).replace(/ة(?=\s|$)/g, 'ه');
+          const seen = new Set([normalizedQuery]);
           const add = candidate => {
             if (typeof candidate !== 'string' || candidate.length > 120 || !/^[\p{L}\p{M}\p{N}\s-]+$/u.test(candidate)) return;
             const normalized = normalizeSuggestion(candidate).replace(/ة(?=\s|$)/g, 'ه');
-            if (!normalized || candidate.trim() === q || seen.has(normalized)) return;
+            if (!normalized || seen.has(normalized)) return;
             seen.add(normalized);
             if (exists(candidate)) suggestions.push(candidate.trim());
           };

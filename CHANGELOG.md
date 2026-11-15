@@ -1439,3 +1439,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-12-50-19-83376a.
 | 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 6–7 | 6–7 | import {webAPI} from '../api'; | modified |
 | 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 21–21 | 21–21 | export function SearchSuggestions({query, mode, categories, onSearch, afterResul | modified |
 | 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 23–24 | 23–24 | export function SearchSuggestions({query, mode, categories, onSearch, afterResul | modified |
+
+## [2026-11-15 12:54:25 +07:00] — Saran pencarian: jangan sarankan varian ejaan kueri itu sendiri
+
+Waktu pencatatan: **2026-11-15 12:54:25 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `faf9b84`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 230 tes server lulus (tes baru: احياء علوم الدبن tidak menyarankan إحياء علوم الدبن); oxlint bersih; uji online faf9b84: kotak saran tampil di bawah Total Hasil dan di atas daftar (browser), tahajut 1 hasil menyarankan Tahajjud/صلاة التهجد
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-12-54-25-d87119.json](docs/change-audit/2026-11-15-12-54-25-d87119.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 12:53:17 +07:00 | `server/search-suggestions.js` | 127–127 | 127–129 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-15 12:53:17 +07:00 | `server/search-suggestions.js` | 131–131 | 133–133 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-15 12:53:19 +07:00 | `server/search-suggestions.test.js` | — | 137–145 | test('searches with few results still get suggestions; the model is used only wh | modified |
