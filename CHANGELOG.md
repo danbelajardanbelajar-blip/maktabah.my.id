@@ -1293,3 +1293,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-26-35-455086.
 | 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 287–287 | 287–287 | test('selected-page explanation and translation reject the entire excluded book | modified |
 | 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
 | 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 446–446 | 446–446 | test('when every matching page belongs to an excluded book, the reply names the | modified |
+
+## [2026-11-15 08:45:09 +07:00] — Tanya AI: isi kitab dari mukadimah dan percobaan ulang istilah kitab
+
+Waktu pencatatan: **2026-11-15 08:45:09 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `aa2b39a`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 224 tes server lulus (2 tes baru: isi kitab dari halaman pembuka; jawaban Arab yang ditolak diulang dengan istilah kitab); oxlint bersih; DB lokal: apa isi kitab إحياء علوم الدين kini memberi hlm. 1-3 (mukadimah dan empat rubu') dan dikenali sebagai pertanyaan Indonesia
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-45-09-3b7dc8.json](docs/change-audit/2026-11-15-08-45-09-3b7dc8.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 08:43:21 +07:00 | `server/ai-retrieval.js` | 86–86 | 86–89 | export const mostlyArabic = text => { | modified |
+| 2026-11-15 08:43:21 +07:00 | `server/ai-retrieval.js` | 90–90 | 93–94 | export const mostlyArabic = text => { | modified |
+| 2026-11-15 08:43:21 +07:00 | `server/ai-retrieval.js` | — | 128–136 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 08:43:21 +07:00 | `server/ai-retrieval.js` | 128–128 | 141–141 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 08:43:21 +07:00 | `server/ai-retrieval.js` | — | 206–206 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | — | 70–70 | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | — | 189–203 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | 238–238 | 254–257 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | 243–243 | 262–262 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | 249–249 | 268–268 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:44:25 +07:00 | `server/ask-ai.test.js` | — | 453–475 | test('when every matching page belongs to an excluded book, the reply names the | modified |

@@ -450,6 +450,29 @@ test('when every matching page belongs to an excluded book, the reply names the 
  const meta=JSON.parse(f.db.prepare('SELECT meta_json FROM ask_logs ORDER BY rowid DESC LIMIT 1').get().meta_json);assert.ok(meta.rejection.reason.includes('dikecualikan kebijakan rujukan'));
 });
 
+test('asking what a named book contains uses its opening pages and stays an Indonesian question',t=>{
+ assert.equal(mostlyArabic('apa isi kitab إحياء علوم الدين'),false);assert.equal(mostlyArabic('الموضوعغيرالموجودفيالكتاب'),true);assert.equal(mostlyArabic('ما محتوى كتاب إحياء علوم الدين'),true);
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO books_meta VALUES(6,?)').run('إحياء علوم الدين');
+ f.db.prepare('INSERT INTO pages VALUES(1,6,1,1,?)').run('بسم الله الرحمن الرحيم أحمد الله أولا وأستخيره فيما انبعث عزمي من تحرير كتاب في إحياء علوم الدين.');
+ f.db.prepare('INSERT INTO pages VALUES(2,6,1,2,?)').run('وقد أسسته على أربعة أرباع: ربع العبادات وربع العادات وربع المهلكات وربع المنجيات.');
+ f.db.prepare('INSERT INTO pages VALUES(3,6,1,3,?)').run('كتاب العلم وفيه سبعة أبواب.');
+ const refs=retrieveAiReferences(f.db,'apa isi kitab إحياء علوم الدين',false,false,'apa isi kitab إحياء علوم الدين');
+ assert.deepEqual(refs.map(r=>[r.bkid,r.pageId]),[[6,1],[6,2],[6,3]]);assert.ok(refs[1].excerpt.includes('أربعة أرباع'));
+});
+
+test('a rejected Arabic answer is retried once with standard book terms written by the model',async t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO pages VALUES(90,1,1,90,?)').run('صلاة الخوف بلا إمام واحد جائزة عند حضور العدو.');
+ f.db.prepare('INSERT INTO pages VALUES(91,1,1,91,?)').run('صلاة المنفرد صحيحة مع الكراهة لمن ترك الجماعة بغير عذر.');
+ let rewrites=0,reviewed=0;
+ const call=await serve(t,f,async(u,o)=>{if(!JSON.parse(o.body).generationConfig.responseSchema){rewrites++;return response('صلاة المنفرد');}return response(grounded('صلاة المنفرد صحيحة [1].'));},
+  {reviewReply:async()=>response(JSON.stringify(++reviewed===1?{relevant:false,supported:false,complete:false,reason:'Salat khauf.'}:{relevant:true,supported:true,complete:true,reason:'Cocok.'}))});
+ const result=await call('/api/ask',{q:'ما حكم صلاة بلا إمام',stream:true});
+ assert.equal(rewrites,1);assert.equal(reviewed,2);assert.equal(result.data.mode,'grounded');assert.deepEqual(result.data.references.map(r=>r.pageId),[91]);
+ assert.ok(result.events.some(e=>e.type==='stage'&&e.message.includes('istilah kitab')));
+});
+
 test('a section heading at the end of a page brings the start of the next page right after it',t=>{
  const f=fixture(t);
  f.db.prepare('INSERT INTO pages VALUES(40,1,1,40,?)').run('الإمام الشافعي: هو محمد بن إدريس الشافعي، ولد بغزة سنة خمسين ومائة ونشأ بمكة.\n* شيوخه:');

@@ -83,11 +83,15 @@ export function pagePassage(text, words, size = AI_PASSAGE_LENGTH, anchors = [])
 
 /** True when Arabic letters outnumber Latin ones, so an Indonesian question that names an Arabic book stays Indonesian. */
 export const mostlyArabic = text => {
-  const value = String(text || '');
+  // A named Arabic title ("apa isi kitab إحياء علوم الدين") does not make the question Arabic.
+  let value = clean(text);
+  const title = bookPhrases(value)[0];
+  if (title && /\p{L}/u.test(value.replace(title, ''))) value = value.replace(title, ' ');
   return (value.match(/[؀-ۿ]/gu) || []).length > (value.match(/[a-z]/giu) || []).length;
 };
 
-const BOOK_CUE = /\b(?:kitab|buku|karya|kitabnya)\b|كتاب/iu;
+// كتاب must be its own word (كتاب، الكتاب، في كتاب), not part of a longer word.
+const BOOK_CUE = /\b(?:kitab|buku|karya|kitabnya)\b|(?:^|\s)[وفبل]?(?:ال)?كتاب(?=\s|$)/iu;
 /** Arabic title candidates after a book cue, longest first: "كتاب تعليم المتعلم" → "تعليم المتعلم", "تعليم". */
 export function bookPhrases(text) {
   const value = String(text || '');
@@ -121,11 +125,20 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   let schemas = (additional ? ['main', 'tambahan'] : ['main']).filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
   // "menurut kitab تعليم المتعلم …": search inside the named book only, without its title words as search terms.
   const focus = catalogue ? null : mentionedBooks(db, schemas, question, focusQuestion);
+  // Nothing in the named book matches, or only its title was asked ("apa isi kitab …"): its opening pages,
+  // where the author usually describes the book and its parts, answer questions about its contents.
+  const opening = () => {
+    const schema = schemas.find(name => focus.books[name]?.length);
+    if (!schema) return [];
+    return db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.book_id=? ORDER BY p.id LIMIT 8`).all(focus.books[schema][0])
+      .map(row => { const text = sourceText(row.nass); if (!pageQuality(text).usable) return null; const { nass: _nass, ...page } = row; return { ...page, excerpt: pagePassage(text, [], AI_PASSAGE_LENGTH) }; })
+      .filter(Boolean).slice(0, 4);
+  };
   if (focus) {
     schemas = schemas.filter(schema => focus.books[schema]?.length);
     const titleWords = new Set(focus.phrase.split(' ').concat('كتاب'));
     terms = terms.filter(term => !titleWords.has(term));
-    if (!terms.length) return [];
+    if (!terms.length) return opening();
   }
   const within = schema => focus ? ` AND rowid IN (SELECT rowid FROM ${schema}.pages WHERE book_id IN (${focus.books[schema].join(',')}))` : '';
   const statements = Object.fromEntries(schemas.map(schema => [schema, {
@@ -190,6 +203,7 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   passes.push(pages);
   const seen = new Set();
   const ranked = passes.flat().filter(r => { const id = `${r.bkid}:${r.pageId}`; if (seen.has(id)) return false; seen.add(id); return true; });
+  if (focus && !ranked.length) return opening();
   const books = [];
   if (catalogue) {
     for (const schema of additional ? ['main', 'tambahan'] : ['main']) {

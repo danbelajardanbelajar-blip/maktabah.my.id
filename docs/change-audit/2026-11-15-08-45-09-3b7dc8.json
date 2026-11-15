@@ -1,0 +1,389 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 08:45:09 +07:00",
+  "title": "Tanya AI: isi kitab dari mukadimah dan percobaan ulang istilah kitab",
+  "baseCommit": "aa2b39abe9f9e87f98670f96b8ee1625d7ba125f",
+  "checks": "224 tes server lulus (2 tes baru: isi kitab dari halaman pembuka; jawaban Arab yang ditolak diulang dengan istilah kitab); oxlint bersih; DB lokal: apa isi kitab إحياء علوم الدين kini memberi hlm. 1-3 (mukadimah dan empat rubu') dan dikenali sebagai pertanyaan Indonesia",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:43:21 +07:00",
+      "stagedSha256": "745dc62ad7a6d4b38f556571b63af755312b595efdc92e0133eacf34fcb8b61b",
+      "diffSha256": "29ec2d5bcee59cb03c7ce3510e9ed8c09eb3c3a690b0ff45d70c7b7b51d8ff3e",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "AI_PASSAGE_LENGTH",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "ASPECTS",
+        "PEOPLE",
+        "namedPeople",
+        "BIOGRAPHY",
+        "aspectWords",
+        "pageQuality",
+        "letters",
+        "broken",
+        "lines",
+        "leaders",
+        "numbered",
+        "toc",
+        "positions",
+        "hits",
+        "pagePassage",
+        "plain",
+        "count",
+        "n",
+        "lineStart",
+        "space",
+        "mostlyArabic",
+        "title",
+        "BOOK_CUE",
+        "bookPhrases",
+        "value",
+        "phrases",
+        "cue",
+        "mentionedBooks",
+        "books",
+        "retrieveAiCandidates",
+        "constraint",
+        "aspects",
+        "quoted",
+        "focus",
+        "opening",
+        "schema",
+        "text",
+        "titleWords",
+        "within",
+        "statements",
+        "biography",
+        "people",
+        "densityWords",
+        "anchors",
+        "anchorSource",
+        "anchorPattern",
+        "entryPattern",
+        "search",
+        "found",
+        "row",
+        "excerpt",
+        "entry",
+        "ranked",
+        "following",
+        "followingText",
+        "start",
+        "base",
+        "passes",
+        "requireAnchor",
+        "seen",
+        "id",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "pages",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 86,
+            "count": 1
+          },
+          "after": {
+            "line": 86,
+            "count": 4
+          },
+          "section": "export const mostlyArabic = text => {"
+        },
+        {
+          "before": {
+            "line": 90,
+            "count": 1
+          },
+          "after": {
+            "line": 93,
+            "count": 2
+          },
+          "section": "export const mostlyArabic = text => {"
+        },
+        {
+          "before": {
+            "line": 123,
+            "count": 0
+          },
+          "after": {
+            "line": 128,
+            "count": 9
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 128,
+            "count": 1
+          },
+          "after": {
+            "line": 141,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 192,
+            "count": 0
+          },
+          "after": {
+            "line": 206,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:41:19 +07:00",
+      "stagedSha256": "0b5fedeab475e8c8a82b67fb830406532575941be8f8466b491024e010a61f97",
+      "diffSha256": "3262aa2f7dc687979a5d857523428b143e1639caeccce23670e37c8e6dfbbd48",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "REWRITE_SYSTEM",
+        "ANSWER_SYSTEM",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "policyTitles",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "canRewrite",
+        "rewriteSearch",
+        "terms",
+        "reject",
+        "prepare",
+        "blocked",
+        "task",
+        "attempt",
+        "catalog",
+        "context",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "verdict",
+        "renumber",
+        "usedRefs",
+        "failed",
+        "retryLabel",
+        "arabic",
+        "same"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 69,
+            "count": 0
+          },
+          "after": {
+            "line": 70,
+            "count": 1
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 187,
+            "count": 0
+          },
+          "after": {
+            "line": 189,
+            "count": 15
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 238,
+            "count": 1
+          },
+          "after": {
+            "line": 254,
+            "count": 4
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 243,
+            "count": 1
+          },
+          "after": {
+            "line": 262,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 249,
+            "count": 1
+          },
+          "after": {
+            "line": 268,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:44:25 +07:00",
+      "stagedSha256": "af991c842af2be70134d052df34a547cb0a7815b13501138f24d8b914bba22ed",
+      "diffSha256": "bd717c12035ea66b7f98b3ad8cd60052d458a001aad264abf24c8ba10378bfa2",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 452,
+            "count": 0
+          },
+          "after": {
+            "line": 453,
+            "count": 23
+          },
+          "section": "test('when every matching page belongs to an excluded book, the reply names the"
+        }
+      ]
+    }
+  ]
+}
