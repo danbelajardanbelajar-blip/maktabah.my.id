@@ -1066,7 +1066,7 @@ function App() {
       )}
 
       {/* Floating visitor messages: hidden while a book is open and inside the admin panel. */}
-      <MessageWidget suppressed={Boolean(readingConfig) || activeTab === 'admin'} />
+      <MessageWidget reading={Boolean(readingConfig)} adminPanel={activeTab === 'admin'} />
 
       {/* Reader Modal */}
       {readingConfig && (

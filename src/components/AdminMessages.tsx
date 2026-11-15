@@ -1,110 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
-import {
-  MESSAGE_MAX, adminMessagesAPI, mergeMessages, messageTime, notificationPermission, playMessageSound,
-  requestNotifications, showMessageNotification, unlockMessageSound,
-} from '../lib/messages';
-import type { ChatMessage, MessageThreadRow } from '../lib/messages';
+import { MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
+import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
 
-const threadName = (t: {name?: string; id: number}) => t.name || `Pengunjung #${t.id}`;
-
-// Admin inbox for visitor messages: live via the admin SSE stream (HttpOnly admin cookie), with a
-// slow poll as a fallback for sessions that logged in before that cookie existed.
+// Full admin inbox page for visitor messages (the floating button offers a compact version).
 export function AdminMessages({ token, onLogout, onUnreadChange }: { token: string; onLogout: () => void; onUnreadChange: () => void }) {
-  const [threads, setThreads] = useState<MessageThreadRow[]>([]);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+  const inbox = useAdminInbox({token, onAuthError:onLogout, onUnreadChange});
+  const {threads, total, page, setPage, pages, search, setSearch, selected, thread, messages, loading, sending, error, setError, loadList, openThread, closeThread, remove} = inbox;
   const [query, setQuery] = useState('');
-  const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<number | null>(null);
-  const [thread, setThread] = useState<MessageThreadRow | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
   const [permission, setPermission] = useState(notificationPermission);
   const listRef = useRef<HTMLDivElement>(null);
-  const selectedRef = useRef<number | null>(null);
-  selectedRef.current = selected;
-
-  const handle = useCallback((e: unknown) => {
-    const message = e instanceof Error ? e.message : 'Terjadi kesalahan.';
-    if (message === '401') onLogout(); else setError(message);
-  }, [onLogout]);
-
-  const loadList = useCallback(async () => {
-    try {
-      const res = await adminMessagesAPI.list(token, page, search);
-      setThreads(res.data); setTotal(res.total); setPages(res.pages);
-      if (res.page !== page) setPage(res.page);
-    } catch (e) { handle(e); }
-  }, [token, page, search, handle]);
-
-  const openThread = useCallback(async (id: number) => {
-    setSelected(id); setLoading(true); setError('');
-    try {
-      const res = await adminMessagesAPI.thread(token, id);
-      setThread(res.thread); setMessages(res.messages);
-      setThreads(list => list.map(t => t.id === id ? {...t, admin_unread:0} : t));
-      onUnreadChange();
-    } catch (e) { handle(e); setSelected(null); } finally { setLoading(false); }
-  }, [token, handle, onUnreadChange]);
-
-  useEffect(() => { void loadList(); }, [loadList]);
-
-  // The stream stays open across renders; it reads the latest callbacks through this ref.
-  const latest = useRef({loadList, openThread, onUnreadChange});
-  latest.current = {loadList, openThread, onUnreadChange};
-  useEffect(() => {
-    const source = new EventSource('/api/admin/messages/stream');
-    source.addEventListener('message', event => {
-      let payload: {threadId?: number; name?: string; message?: ChatMessage};
-      try { payload = JSON.parse((event as MessageEvent).data); } catch { return; }
-      const {threadId, message} = payload;
-      if (!threadId || !message) return;
-      if (threadId === selectedRef.current) {
-        setMessages(current => mergeMessages(current, [message]));
-        if (message.sender === 'visitor' && document.visibilityState === 'visible') void adminMessagesAPI.thread(token, threadId).then(() => latest.current.onUnreadChange()).catch(() => {});
-      }
-      if (message.sender === 'visitor') {
-        playMessageSound();
-        if (document.visibilityState !== 'visible' || threadId !== selectedRef.current)
-          showMessageNotification(`Pesan baru dari ${threadName({name:payload.name, id:threadId})}`, message.body, () => void latest.current.openThread(threadId));
-        latest.current.onUnreadChange();
-      }
-      void latest.current.loadList();
-    });
-    source.addEventListener('deleted', () => { void latest.current.loadList(); latest.current.onUnreadChange(); });
-    // Fallback poll: covers a missing admin cookie (stream answers 401) and proxies that drop streams.
-    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void latest.current.loadList(); }, 30000);
-    const unlock = () => unlockMessageSound();
-    window.addEventListener('pointerdown', unlock);
-    return () => { source.close(); window.clearInterval(timer); window.removeEventListener('pointerdown', unlock); };
-  }, [token]);
 
   useEffect(() => { listRef.current?.scrollTo({top:listRef.current.scrollHeight}); }, [messages.length, selected, loading]);
 
-  const reply = async () => {
-    const body = draft.trim();
-    if (!selected || !body || sending) return;
-    if (body.length > MESSAGE_MAX) { setError(`Balasan maksimal ${MESSAGE_MAX.toLocaleString('id-ID')} karakter.`); return; }
-    setSending(true); setError('');
-    try {
-      const res = await adminMessagesAPI.reply(token, selected, body);
-      setMessages(current => mergeMessages(current, [res.message])); setDraft('');
-      void loadList();
-    } catch (e) { handle(e); } finally { setSending(false); }
-  };
-
-  const remove = async () => {
-    if (!selected || !window.confirm('Hapus seluruh percakapan ini? Pesan di peramban pengunjung juga akan hilang. Tindakan ini tidak dapat dibatalkan.')) return;
-    try {
-      await adminMessagesAPI.remove(token, selected);
-      setSelected(null); setThread(null); setMessages([]); void loadList(); onUnreadChange();
-    } catch (e) { handle(e); }
-  };
+  const reply = async () => { if (await inbox.reply(draft)) setDraft(''); };
 
   const unreadTotal = threads.reduce((n, t) => n + (t.admin_unread || 0), 0);
 
@@ -163,7 +73,7 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
           ) : (
             <>
               <div className="flex items-center gap-3 border-b px-4 py-3">
-                <button type="button" onClick={() => setSelected(null)} className="md:hidden p-1.5 rounded-lg border" aria-label="Kembali ke daftar percakapan"><ArrowLeft size={16} /></button>
+                <button type="button" onClick={closeThread} className="md:hidden p-1.5 rounded-lg border" aria-label="Kembali ke daftar percakapan"><ArrowLeft size={16} /></button>
                 <div className="min-w-0 flex-1">
                   <div className="font-bold truncate">{thread ? threadName(thread) : 'Memuat…'}</div>
                   {thread && <div className="text-xs text-gray-500 truncate" title={thread.user_agent}>Mulai {messageTime(thread.created_at, true)} · IP {thread.ip || '-'}</div>}

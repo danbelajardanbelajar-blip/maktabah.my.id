@@ -1513,3 +1513,48 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-26-07-cdf5bb.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 19:26:01 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |
+
+## [2026-11-15 19:38:28 +07:00] — Pesan melayang mode admin: baca dan balas tanpa membuka panel admin
+
+Waktu pencatatan: **2026-11-15 19:38:28 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0ecb77b`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js: 239 lulus; npx tsc --noEmit -p . lulus; oxlint file berubah 0 peringatan; npm run build sukses; uji browser lokal (DB uji kecil, login admin uji): tombol melayang menampilkan 'Pesan Pengunjung · Mode admin', pesan pengunjung baru menaikkan badge realtime saat panel tertutup, membuka percakapan dan membalas dari panel melayang tersimpan dan badge kembali 0; halaman admin Pesan Pengunjung (kini memakai hook bersama) tetap memuat daftar dan percakapan; tombol melayang tetap tersembunyi di panel admin
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-38-28-ce2541.json](docs/change-audit/2026-11-15-19-38-28-ce2541.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 19:37:19 +07:00 | `dist/assets/index-Bo_y6Yh2.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-CPQduW1l.css` | 1–2 | — | module/file | deleted |
+| 2026-11-15 19:37:19 +07:00 | `dist/assets/index.dev-B10OIskn.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BSHgaGOK.js` | 1–17 | — | module/file | deleted |
+| 2026-11-15 19:37:19 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/App.tsx` | 1069–1069 | 1069–1069 | function App() { | modified |
+| 2026-11-15 19:35:29 +07:00 | `src/components/AdminInboxMini.tsx` | — | 1–80 | AdminInboxMini, listRef, inputRef, reply | added |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 1–1 | 1–1 | AdminMessages, inbox, listRef, reply, unreadTotal | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 3–7 | 3–4 | import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshC | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 9–12 | 6–6 | import type { ChatMessage, MessageThreadRow } from '../lib/messages'; | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 14–17 | 8–9 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 19–22 | — | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 24–26 | — | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 29–85 | — | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 89–107 | 17–17 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:34:54 +07:00 | `src/components/AdminMessages.tsx` | 166–166 | 76–76 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | — | 10–11 | import type { ChatMessage } from '../lib/messages'; | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 11–11 | 13–13 | import type { ChatMessage } from '../lib/messages'; | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 13–15 | 15–19 | const isAdminBrowser = () => { try { return Boolean(localStorage.getItem('adminT | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | — | 37–46 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 58–58 | 72–72 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 79–79 | 93–96 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 81–81 | 98–106 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 85–85 | 110–110 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 90–90 | 115–115 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 148–148 | — | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 158–159 | 182–183 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | — | 196–196 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 173–178 | 198–198 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 195–216 | 215–235 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 221–221 | 240–240 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 224–224 | 243–243 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 226–226 | 245–245 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
+| 2026-11-15 19:34:45 +07:00 | `src/lib/use-admin-inbox.ts` | — | 1–121 | threadName, useAdminInbox, selectedRef, handle, message, loadList, res, openThread | added |

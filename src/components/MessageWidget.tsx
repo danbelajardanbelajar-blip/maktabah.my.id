@@ -7,12 +7,16 @@ import {
   requestNotifications, setAppBadge, showMessageNotification, unlockMessageSound,
 } from '../lib/messages';
 import type { ChatMessage } from '../lib/messages';
+import { useAdminInbox } from '../lib/use-admin-inbox';
+import { AdminInboxMini } from './AdminInboxMini';
 
-const isAdminBrowser = () => { try { return Boolean(localStorage.getItem('adminToken')); } catch { return false; } };
+const readAdminToken = () => { try { return localStorage.getItem('adminToken') || ''; } catch { return ''; } };
 
-// Floating visitor ↔ admin chat. `suppressed` hides it (e.g. while a book is open) but keeps the
-// live connection so new replies still raise the badge, sound and notification.
-export function MessageWidget({ suppressed }: { suppressed: boolean }) {
+// Floating visitor ↔ admin chat. While reading a book (or inside the admin page) it is hidden but keeps
+// the live connection so new messages still raise the badge, sound and notification. A browser logged
+// in as admin gets a compact admin inbox here instead, so replies do not require opening the admin page.
+export function MessageWidget({ reading, adminPanel }: { reading: boolean; adminPanel: boolean }) {
+  const suppressed = reading || adminPanel;
   const [open, setOpen] = useState(false);
   const [scrollHidden, setScrollHidden] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -29,6 +33,16 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
   const lastId = useRef(0);
   const viewing = useRef(false);
   viewing.current = open && !suppressed;
+
+  // Admin mode follows the stored admin token; a token the server rejects falls back to visitor mode.
+  const adminToken = readAdminToken();
+  const [rejectedToken, setRejectedToken] = useState('');
+  const adminMode = Boolean(adminToken) && rejectedToken !== adminToken;
+  const inbox = useAdminInbox({
+    token:adminToken, enabled:adminMode && !adminPanel, isViewing:() => viewing.current,
+    onAuthError:() => setRejectedToken(adminToken),
+    onNotificationClick:id => { setOpen(true); void inbox.openThread(id); },
+  });
 
   const apply = useCallback((incoming: ChatMessage[]) => {
     if (!incoming.length) return;
@@ -55,7 +69,7 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
   // Live replies over Server-Sent Events. EventSource reconnects by itself; after each (re)connect we
   // fetch anything newer than the last message we have, so nothing is missed while offline.
   useEffect(() => {
-    if (!hasThread) return;
+    if (!hasThread || adminMode) return;
     const source = new EventSource('/api/messages/stream');
     source.addEventListener('open', () => {
       messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (!viewing.current) setUnread(data.unread); }).catch(() => {});
@@ -76,18 +90,29 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
     source.addEventListener('read', () => setUnread(0));
     source.addEventListener('reset', () => { setMessages([]); lastId.current = 0; setHasThread(false); setUnread(0); });
     return () => source.close();
-  }, [hasThread, apply, markRead]);
+  }, [hasThread, adminMode, apply, markRead]);
 
-  useEffect(() => { setAppBadge(unread); }, [unread]);
+  const badge = adminMode ? inbox.unread : unread;
+  useEffect(() => { setAppBadge(badge); }, [badge]);
+
+  // Opening the panel in admin mode refreshes the inbox and reads the conversation left open.
+  const {loadList, openThread, selected:adminSelected} = inbox;
+  useEffect(() => {
+    if (!open || suppressed || !adminMode) return;
+    void loadList();
+    if (adminSelected) void openThread(adminSelected);
+    // Only on opening; later updates arrive through the admin stream.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, suppressed, adminMode]);
 
   // Opening the panel (or returning to the tab with it open) reads the conversation.
   useEffect(() => {
-    if (!open || suppressed) return;
+    if (!open || suppressed || adminMode) return;
     if (unread > 0) markRead();
     const onVisible = () => { if (document.visibilityState === 'visible' && unread > 0) markRead(); };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [open, suppressed, unread, markRead]);
+  }, [open, suppressed, adminMode, unread, markRead]);
 
   useEffect(() => {
     if (open) listRef.current?.scrollTo({top:listRef.current.scrollHeight});
@@ -145,7 +170,6 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
 
   const openAdminMessages = () => { setOpen(false); pushLocation(navigationHash('admin', {view:'messages'})); window.dispatchEvent(new Event('maktabah:navigate')); };
   const buttonHidden = suppressed || (scrollHidden && !open);
-  const admin = isAdminBrowser();
 
   return (
     <>
@@ -155,8 +179,8 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
           <header className="flex items-center gap-3 bg-[var(--app-primary)] text-white px-4 py-3">
             <MessageCircle size={22} aria-hidden="true" />
             <div className="min-w-0 flex-1">
-              <h2 id="message-panel-title" className="font-bold leading-tight">Pesan ke Admin</h2>
-              <p className="text-xs text-white/80">Pertanyaan, laporan kesalahan, atau saran</p>
+              <h2 id="message-panel-title" className="font-bold leading-tight">{adminMode ? 'Pesan Pengunjung' : 'Pesan ke Admin'}</h2>
+              <p className="text-xs text-white/80">{adminMode ? `Mode admin · ${inbox.unread} belum dibaca` : 'Pertanyaan, laporan kesalahan, atau saran'}</p>
             </div>
             {permission !== 'unsupported' && (
               <button type="button" onClick={enableNotifications} disabled={permission !== 'default'}
@@ -169,13 +193,9 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
             <button type="button" onClick={() => setOpen(false)} aria-label="Tutup pesan" className="p-2 rounded-full hover:bg-white/15"><X size={20} /></button>
           </header>
 
+          {adminMode ? <AdminInboxMini inbox={inbox} onOpenFull={openAdminMessages} /> : <>
           <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-[var(--reader-bg)]" aria-live="polite">
-            {admin ? (
-              <div className="m-2 rounded-xl border bg-[var(--reader-paper)] p-4 text-sm space-y-3">
-                <p>Anda sedang masuk sebagai admin. Pesan pengunjung dibaca dan dibalas dari panel admin.</p>
-                <button type="button" onClick={openAdminMessages} className="rounded-lg bg-[var(--app-primary)] text-white px-4 py-2 font-semibold">Buka Pesan di panel admin</button>
-              </div>
-            ) : messages.length === 0 ? (
+            {messages.length === 0 ? (
               <div className="m-2 rounded-xl border bg-[var(--reader-paper)] p-4 text-sm leading-relaxed">
                 <p className="font-semibold mb-1">Assalamu‘alaikum 👋</p>
                 <p>Tulis pesan untuk admin al Maktabah as Sunniyyah. Balasan akan muncul di sini dan Anda akan diberi tahu.</p>
@@ -192,38 +212,37 @@ export function MessageWidget({ suppressed }: { suppressed: boolean }) {
             ))}
           </div>
 
-          {!admin && (
-            <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void send(); }}>
-              {/* Honeypot for bots: hidden from people and assistive technology. */}
-              <input type="text" name="website" value={website} onChange={e => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
-              {!hasThread && (
-                <input type="text" value={name} onChange={e => setName(e.target.value)} maxLength={80} placeholder="Nama (opsional)" aria-label="Nama (opsional)"
-                  className="w-full rounded-lg border border-black/15 bg-[var(--reader-bg)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
-              )}
-              {error && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-              <div className="flex items-end gap-2">
-                <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} rows={1} maxLength={MESSAGE_MAX} dir="auto"
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }}
-                  placeholder="Tulis pesan…" aria-label="Tulis pesan"
-                  className="flex-1 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
-                <button type="submit" disabled={sending || !draft.trim()} aria-label="Kirim pesan"
-                  className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-[var(--app-primary)] text-white disabled:opacity-50 hover:brightness-110 transition">
-                  <Send size={18} />
-                </button>
-              </div>
-              {draft.length > MESSAGE_MAX - 200 && <p className="text-xs text-right opacity-70">{draft.length}/{MESSAGE_MAX}</p>}
-            </form>
-          )}
+          <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void send(); }}>
+            {/* Honeypot for bots: hidden from people and assistive technology. */}
+            <input type="text" name="website" value={website} onChange={e => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
+            {!hasThread && (
+              <input type="text" value={name} onChange={e => setName(e.target.value)} maxLength={80} placeholder="Nama (opsional)" aria-label="Nama (opsional)"
+                className="w-full rounded-lg border border-black/15 bg-[var(--reader-bg)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
+            )}
+            {error && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+            <div className="flex items-end gap-2">
+              <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} rows={1} maxLength={MESSAGE_MAX} dir="auto"
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }}
+                placeholder="Tulis pesan…" aria-label="Tulis pesan"
+                className="flex-1 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
+              <button type="submit" disabled={sending || !draft.trim()} aria-label="Kirim pesan"
+                className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-[var(--app-primary)] text-white disabled:opacity-50 hover:brightness-110 transition">
+                <Send size={18} />
+              </button>
+            </div>
+            {draft.length > MESSAGE_MAX - 200 && <p className="text-xs text-right opacity-70">{draft.length}/{MESSAGE_MAX}</p>}
+          </form>
+          </>}
         </section>
       )}
 
       <button type="button" onClick={() => { unlockMessageSound(); setOpen(v => !v); }}
-        aria-label={unread > 0 ? `Pesan, ${unread} belum dibaca` : 'Pesan'} aria-expanded={open} aria-hidden={buttonHidden || undefined} tabIndex={buttonHidden ? -1 : 0}
+        aria-label={badge > 0 ? `Pesan, ${badge} belum dibaca` : 'Pesan'} aria-expanded={open} aria-hidden={buttonHidden || undefined} tabIndex={buttonHidden ? -1 : 0}
         className={`fixed z-[55] right-4 xl:right-6 bottom-[calc(84px+env(safe-area-inset-bottom))] xl:bottom-6 grid place-items-center w-14 h-14 rounded-full bg-[var(--app-primary)] text-white shadow-[0_8px_24px_rgba(0,0,0,0.25)] ring-4 ring-white/40 transition-[transform,opacity] duration-300 ease-out hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-[var(--app-primary)]/40 ${open ? 'max-xl:hidden' : ''} ${buttonHidden ? 'translate-y-[calc(100%+120px)] opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
         {open ? <X size={26} /> : <MessageCircle size={26} />}
-        {unread > 0 && !open && (
+        {badge > 0 && !open && (
           <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-600 text-white text-xs font-bold grid place-items-center ring-2 ring-white motion-safe:animate-bounce">
-            {unread > 99 ? '99+' : unread}
+            {badge > 99 ? '99+' : badge}
           </span>
         )}
       </button>
