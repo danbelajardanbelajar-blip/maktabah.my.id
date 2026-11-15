@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 13:01:33 +07:00",
+  "title": "Catat uji online saran pencarian",
+  "baseCommit": "4ce0390435ff0f248d91c0c63634236e16e06e07",
+  "checks": "Browser dan API online: posisi kotak saran benar, varian ejaan kueri tidak disarankan balik, pencarian dengan banyak hasil tanpa saran",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 13:01:33 +07:00",
+      "stagedSha256": "8fb7d9709314fbe808f1f3e63799f92c45d1d0feaeb8af005623717db67420c9",
+      "diffSha256": "501cba627b83e1bd304c143d387c4dddb721f092ca2133881ce25d60a5831a98",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 6
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,9 @@
+## 2026-11-15 13:01:33 WIB — Saran pencarian untuk hasil sedikit
+
+- Commit fungsi `338ee5e`, `faf9b84`, dan `4ce0390` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-Cd4wLIyH.js` sama dengan build `faf9b84`, dan perilaku saran sesuai `4ce0390`.
+- Browser online: "احياء علوم الدبن" (3 hasil) menampilkan kotak "Hasilnya sedikit. Mungkin maksud Anda" di bawah Total Hasil dan di atas daftar.
+- API online sesudah `4ce0390`: "احياء علوم الدبن" menyarankan إحياء علوم الدين tanpa varian hamzah kueri itu sendiri; "tahajut" (1 hasil) menyarankan Tahajjud dan صلاة التهجد; kueri dengan 327 hasil tidak mendapat saran.
+
 ## 2026-11-15 11:22:25 WIB — Pencarian teks: total dibatasi dan berjalan di worker
 
 - Commit fungsi `27eedfa` (dan `afa27ba` peringkat log admin) sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; respons API memuat field `capped` dari commit ini.
