@@ -1,14 +1,13 @@
 import {Worker} from 'node:worker_threads';
 import {sourceText} from './ai-source.js';
 
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v3';
-export const excludedAiNames = ['ابن تيمية','محمد بن عبد الوهاب','ابن باز','ابن عثيمين','الألباني'];
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v4';
+export const excludedAiNames = ['ابن تيمية','ابن باز','ابن عثيمين','الألباني'];
 // Patterns run on normalized text: no marks/tatweel, أإآٱ→ا, ة→ه, ى→ي, punctuation→space.
 // A word may carry the proclitics و ف ب ل ك (لابن تيمية، وابن باز، للألباني); ابن may be written بن.
 const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
 const patterns = [
   `${START}ا?بن\\s*تيميه${END}`,                    // ابن تيمية، بن تيمية، ابن تيميه، لابن تيمية
-  `${START}محمد\\s*ا?بن\\s*عبد\\s*ال?وهاب${END}`,     // محمد بن عبد الوهاب، محمد ابن عبدالوهاب
   `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
   'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين
   `${START}ا?لالباني${END}`,                         // الألباني، للألباني، والألباني (not الباني "the builder")

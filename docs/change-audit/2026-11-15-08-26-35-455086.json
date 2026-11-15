@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 08:26:35 +07:00",
+  "title": "Tanya AI: hapus محمد بن عبد الوهاب dari pengecualian",
+  "baseCommit": "e47b0672562921a264a17faffee3339499cc89c3",
+  "checks": "222 tes server lulus (sanad حدثنا محمد بن عبد الوهاب الفراء kini tidak diblokir; empat nama lain tetap); oxlint bersih; DB lokal: dari 40 kitab hadits, blokir turun dari 17 menjadi 7 (صحيح مسلم 3 edisi, سنن الترمذي 6 edisi, سنن ابن ماجه, سنن النسائي الكبرى kembali tersedia)",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:25:13 +07:00",
+      "stagedSha256": "fcd34b23e8600122ba0c4d9d4cc513d267802ec733962627babde68074444329",
+      "diffSha256": "c3eeddbd909339a73103472cd462b7ded86a5470fef76042ec76a21f59a60c2f",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 2
+          },
+          "after": {
+            "line": 4,
+            "count": 2
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 0
+          },
+          "section": "const patterns = ["
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:25:13 +07:00",
+      "stagedSha256": "7cf13bd4449468bf00b0d672021d8a5bb01cba791b8792ec1658f905684ef6ce",
+      "diffSha256": "2ea30d9c0ab283b327fe841d85aad9cd8ac8acc70a86360ae9bfbc765c79004a",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 14,
+            "count": 1
+          },
+          "after": {
+            "line": 14,
+            "count": 1
+          },
+          "section": "function fixture(t, filename=':memory:') {"
+        },
+        {
+          "before": {
+            "line": 19,
+            "count": 1
+          },
+          "after": {
+            "line": 19,
+            "count": 1
+          },
+          "section": "function fixture(t, filename=':memory:') {"
+        },
+        {
+          "before": {
+            "line": 22,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 0
+          },
+          "section": "test('all five names match despite harakat, tatweel, HTML entities, line breaks,"
+        },
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 26,
+            "count": 2
+          },
+          "section": "test('all five names match despite harakat, tatweel, HTML entities, line breaks,"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:25:13 +07:00",
+      "stagedSha256": "f1cb845dbcdf4e7dcfc093a430b8e58f7fc799cbcae643755db53626d7ba684e",
+      "diffSha256": "f99901eb2021c08dcc96ed263cf320199751a394a8de891c999330e26e5b01a0",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 287,
+            "count": 1
+          },
+          "after": {
+            "line": 287,
+            "count": 1
+          },
+          "section": "test('selected-page explanation and translation reject the entire excluded book"
+        },
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        },
+        {
+          "before": {
+            "line": 446,
+            "count": 1
+          },
+          "after": {
+            "line": 446,
+            "count": 1
+          },
+          "section": "test('when every matching page belongs to an excluded book, the reply names the"
+        }
+      ]
+    }
+  ]
+}

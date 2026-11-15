@@ -1273,3 +1273,23 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-13-50-ee6469.
 | 2026-11-15 08:11:26 +07:00 | `server/ai-book-policy.js` | 8–8 | 17–17 | export const normalizePolicyText = text => sourceText(text).normalize('NFKC') | modified |
 | 2026-11-15 08:09:34 +07:00 | `server/ai-book-policy.test.js` | 19–21 | 19–27 | function fixture(t, filename=':memory:') { | modified |
 | 2026-11-15 08:09:35 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+
+## [2026-11-15 08:26:35 +07:00] — Tanya AI: hapus محمد بن عبد الوهاب dari pengecualian
+
+Waktu pencatatan: **2026-11-15 08:26:35 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e47b067`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 222 tes server lulus (sanad حدثنا محمد بن عبد الوهاب الفراء kini tidak diblokir; empat nama lain tetap); oxlint bersih; DB lokal: dari 40 kitab hadits, blokir turun dari 17 menjadi 7 (صحيح مسلم 3 edisi, سنن الترمذي 6 edisi, سنن ابن ماجه, سنن النسائي الكبرى kembali tersedia)
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-26-35-455086.json](docs/change-audit/2026-11-15-08-26-35-455086.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.js` | 4–5 | 4–5 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.js` | 11–11 | — | const patterns = [ | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.test.js` | 14–14 | 14–14 | function fixture(t, filename=':memory:') { | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.test.js` | 19–19 | 19–19 | function fixture(t, filename=':memory:') { | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.test.js` | 22–22 | — | test('all five names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ai-book-policy.test.js` | 27–27 | 26–27 | test('all five names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 287–287 | 287–287 | test('selected-page explanation and translation reject the entire excluded book | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-15 08:25:13 +07:00 | `server/ask-ai.test.js` | 446–446 | 446–446 | test('when every matching page belongs to an excluded book, the reply names the | modified |

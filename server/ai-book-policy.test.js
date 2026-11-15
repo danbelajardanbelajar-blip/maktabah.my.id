@@ -11,20 +11,20 @@ function fixture(t, filename=':memory:') {
   const db=new Database(filename);
   db.exec('CREATE TABLE pages(id INTEGER,book_id INTEGER,nass TEXT); CREATE INDEX pages_book ON pages(book_id);');
   const put=db.prepare('INSERT INTO pages VALUES(?,?,?)');
-  put.run(1,1,'نص مباح في الصفحة المختارة');put.run(2,1,'ذكر محمد بن عبد الوهاب في صفحة أخرى');
+  put.run(1,1,'نص مباح في الصفحة المختارة');put.run(2,1,'ذكر ابن تيمية في صفحة أخرى');
   put.run(1,2,'كتاب آخر بلا أسماء مستبعدة');
   t.after(()=>db.close());return db;
 }
 
-test('all five names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
+test('all four names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
   for(const text of [
     'ابن تيمية','بن تيمية','قال شيخ الإسلام بن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابـن\nتيمية','<p>ابن&nbsp;تيمية</p>','ابن &#1578;يمية','ابنتيمية',
-    'محمد بن عبد الوهاب','محمدُ بنُ عبدِ الْوَهّابِ','محمد بن عبدالوهاب','محمد ابن عبد الوهاب','لمحمد بن عبد الوهاب','الشيخ محمد بن عبد الوهاب رحمه الله',
     'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:',
     'عُثَيْمِين','العثيمين','ابن عثيمين','محمد بن صالح العثيمين','لابن عثيمين',
     'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ',
   ])assert.equal(containsExcludedAiName(text),true,text);
-  for(const text of ['محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
+  // محمد بن عبد الوهاب is no longer excluded: it is also the name of hadith narrators in the isnads of Muslim and the Sunan.
+  for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });
 
 test('a mention on any other page excludes every reference and catalogue entry of that book only',async t=>{

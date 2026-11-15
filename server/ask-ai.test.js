@@ -284,7 +284,7 @@ test('whole-book exclusion removes clean-looking hits and catalogue metadata wit
 });
 
 test('selected-page explanation and translation reject the entire excluded book before any provider request',async t=>{
- const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال محمد بن عبد الوهاب');let calls=0;
+ const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن تيمية');let calls=0;
  const call=await serve(t,f,async()=>{calls++;return response('unused');});
  for(const intent of ['explain','translate']){
   const result=await call('/api/ask',{q:'Terangkan halaman ini',intent,source:{bookId:1,pageId:11,text:'صلاة الجماعة واجبة'}});
@@ -337,7 +337,7 @@ test('HTTP requests enforce whole-book policy through the real file-backed worke
  const f=fixture(t,{file:true});f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن تيمية');
  let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
  const [question,status]=await Promise.all([call('/api/ask',{q:'صلاة الجماعة'}),call('/api/ai/status')]);
- assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v3');
+ assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v4');
  const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
  assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
 });
@@ -443,7 +443,7 @@ test('an Indonesian question naming an Arabic book still gets Arabic keywords an
 test('when every matching page belongs to an excluded book, the reply names the book and the policy',async t=>{
  const f=fixture(t);
  f.db.prepare('INSERT INTO books_meta VALUES(5,?)').run('كتاب مستثنى');
- f.db.prepare('INSERT INTO pages VALUES(80,5,1,1,?)').run('أسباب الغنى والفقر في هذا الباب.');f.db.prepare('INSERT INTO pages VALUES(81,5,1,2,?)').run('قال محمد بن عبد الوهاب كذا.');
+ f.db.prepare('INSERT INTO pages VALUES(80,5,1,1,?)').run('أسباب الغنى والفقر في هذا الباب.');f.db.prepare('INSERT INTO pages VALUES(81,5,1,2,?)').run('قال ابن تيمية كذا.');
  let answered=0;const call=await serve(t,f,async()=>{answered++;return response(grounded('x [1]'));});
  const result=await call('/api/ask',{q:'ما أسباب الفقر والغنى'});
  assert.equal(result.data.mode,'no_context');assert.equal(answered,0);assert.ok(result.data.answer.includes('«كتاب مستثنى»'),result.data.answer);assert.ok(result.data.answer.includes('مستثنى من مراجع الذكاء الاصطناعي'));
