@@ -1,12 +1,15 @@
 import {Worker} from 'node:worker_threads';
 import {sourceText} from './ai-source.js';
 
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v1';
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v2';
 export const excludedAiNames = ['بن باز','عثيمين','محمد بن عبد الوهاب','ابن تيمية'];
 const patterns = excludedAiNames.map(name=>new RegExp(name.split(' ').join('\\s*'),'u'));
 export const normalizePolicyText = text => sourceText(text).normalize('NFKC')
   .replace(/[\p{M}\p{Cf}\u0640]/gu,'').replace(/[أإآٱ]/g,'ا')
   .replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
+// An editor's footnotes (below the '______' rule) are not the book's own text: a hadith grading that cites
+// one of the names must not exclude the whole book. The quoted excerpt itself is still checked in full.
+export const policyBody = text => sourceText(text).split(/_{4,}/u)[0];
 export const containsExcludedAiName = text => {
   const normalized = normalizePolicyText(text);
   return patterns.some(pattern=>pattern.test(normalized));
@@ -24,7 +27,7 @@ export function scanAiBooks(db, bookIds, schemas=['main']) {
     for (const schema of schemas) {
       if (!['main','tambahan'].includes(schema)) throw unavailable();
       for (const page of db.prepare(`SELECT nass FROM ${schema}.pages WHERE book_id=?`).iterate(id)) {
-        if (containsExcludedAiName(page.nass)) return [id,true];
+        if (containsExcludedAiName(policyBody(page.nass))) return [id,true];
       }
     }
     return [id,false];
@@ -92,11 +95,11 @@ export async function filterAllowedAiReferences(db, references, additional=false
       state.books.set(id,excluded);
     }
   }
-  return references.filter(reference=>state.books.get(reference.bkid)===false);
+  return references.filter(reference=>state.books.get(reference.bkid)===false&&!containsExcludedAiName(reference.excerpt||''));
 }
 
 export async function assertAllowedAiBook(db, reference, additional=false, options) {
   if (!(await filterAllowedAiReferences(db,[reference],additional,options)).length) {
-    throw fault('Kitab ini dikecualikan dari rujukan AI karena salah satu halamannya memuat nama yang termasuk daftar pengecualian.','AI_SOURCE_EXCLUDED',403);
+    throw fault('Kitab atau halaman ini dikecualikan dari rujukan AI karena teksnya memuat nama yang termasuk daftar pengecualian.','AI_SOURCE_EXCLUDED',403);
   }
 }

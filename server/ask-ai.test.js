@@ -337,7 +337,7 @@ test('HTTP requests enforce whole-book policy through the real file-backed worke
  const f=fixture(t,{file:true});f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن تيمية');
  let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
  const [question,status]=await Promise.all([call('/api/ask',{q:'صلاة الجماعة'}),call('/api/ai/status')]);
- assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v1');
+ assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v2');
  const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
  assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
 });
@@ -438,6 +438,16 @@ test('an Indonesian question naming an Arabic book still gets Arabic keywords an
   {reviewReply:async()=>response(JSON.stringify({relevant:false,supported:false,complete:false,reason:'Uji.'}))});
  const result=await call('/api/ask',{q:'menurut kitab تعليم المتعلم apa saja penyebab faqir'});
  assert.equal(translated,1);assert.equal(result.data.mode,'no_context');assert.ok(result.data.answer.startsWith('Saya belum dapat memastikan'),result.data.answer);
+});
+
+test('when every matching page belongs to an excluded book, the reply names the book and the policy',async t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO books_meta VALUES(5,?)').run('كتاب مستثنى');
+ f.db.prepare('INSERT INTO pages VALUES(80,5,1,1,?)').run('أسباب الغنى والفقر في هذا الباب.');f.db.prepare('INSERT INTO pages VALUES(81,5,1,2,?)').run('قال محمد بن عبد الوهاب كذا.');
+ let answered=0;const call=await serve(t,f,async()=>{answered++;return response(grounded('x [1]'));});
+ const result=await call('/api/ask',{q:'ما أسباب الفقر والغنى'});
+ assert.equal(result.data.mode,'no_context');assert.equal(answered,0);assert.ok(result.data.answer.includes('«كتاب مستثنى»'),result.data.answer);assert.ok(result.data.answer.includes('مستثنى من مراجع الذكاء الاصطناعي'));
+ const meta=JSON.parse(f.db.prepare('SELECT meta_json FROM ask_logs ORDER BY rowid DESC LIMIT 1').get().meta_json);assert.ok(meta.rejection.reason.includes('dikecualikan kebijakan rujukan'));
 });
 
 test('a section heading at the end of a page brings the start of the next page right after it',t=>{

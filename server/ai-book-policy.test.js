@@ -78,3 +78,12 @@ test('missing page storage cannot approve a book for use as evidence',async t=>{
   const db=new Database(':memory:');t.after(()=>db.close());
   await assert.rejects(filterAllowedAiReferences(db,[{bkid:1}]));
 });
+
+test('a name only in an editor footnote does not exclude the book, but an excerpt quoting it is never used',async t=>{
+  const db=fixture(t);const put=db.prepare('INSERT INTO pages VALUES(?,?,?)');
+  put.run(1,3,'وقيل: من علم عبدا آية من كتاب الله فهو له عبد.\n__________\n(¬2) علق شيخ الإسلام ابن تيمية عليه بأنه موضوع.');
+  put.run(2,3,'الكذب يورث الفقر وكثرة النوم تورث الفقر.');
+  put.run(1,4,'قال ابن تيمية في متن الكتاب كذا.\n__________\n(1) حاشية عادية.');
+  const body={bkid:3,pageId:2,excerpt:'الكذب يورث الفقر'},footnote={bkid:3,pageId:1,excerpt:'فهو له عبد. (¬2) علق شيخ الإسلام ابن تيمية عليه بأنه موضوع.'},main={bkid:4,pageId:1,excerpt:'حاشية عادية'};
+  assert.deepEqual(await filterAllowedAiReferences(db,[body,footnote,main]),[body]);
+});

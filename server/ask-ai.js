@@ -157,6 +157,8 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       const db = getDb();
       stage(selected?'preparing':'searching',selected?'Menyiapkan teks halaman yang dipilih…':'Mencari rujukan dalam kitab…');
       const catalogue = !selected && /tersedia|apakah.*(?:kitab|buku)|(?:kitab|buku).*ada|موجود|متوفر|هل.*كتاب/i.test(q);
+      // Titles of matching books that the source policy excluded, so an empty result can say why.
+      const policyTitles=new Set();
       const retrieveEligible=async question=>{
         assertReady();
         if(searchRemaining()<=0)throw searchTimeout();
@@ -169,7 +171,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
           const found=selectAiReferences(candidates,catalogue,[...excluded]);
           const allowed=await filterAllowedAiReferences(db,found,hasAdditional(),{signal:controller.signal});
           if(allowed.length||!found.length)return allowed;
-          for(const reference of found)excluded.add(reference.bkid);
+          for(const reference of found){excluded.add(reference.bkid);policyTitles.add(String(reference.title||'').trim());}
         }
         return [];
       };
@@ -190,8 +192,11 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       stage('preparing','Memeriksa dan menyiapkan teks sumber…');
       references=await prepare(references);
       if (!references.length) {
-        answer = mostlyArabic(q) ? 'لم أجد نصا مناسبا لهذا السؤال في كتب المكتبة المتاحة. يرجى تحديد الموضوع أو اسم الكتاب.' : 'Saya belum menemukan teks yang sesuai dengan pertanyaan ini di kitab yang tersedia. Coba sebutkan topik atau judul kitab yang lebih spesifik.';
-        mode = 'no_context';rejection={stage:'retrieval',reason:'Tidak ada halaman kitab yang cocok dan lolos kebijakan rujukan.'};
+        const blocked=[...policyTitles].filter(Boolean).slice(0,3).map(title=>'«'+title+'»').join(', ');
+        answer = blocked
+          ? (mostlyArabic(q) ? `وُجدت نصوص متعلقة بالسؤال في ${blocked}، لكن هذا الكتاب مستثنى من مراجع الذكاء الاصطناعي وفق سياسة المراجع، فلا يُعتمد عليه في الجواب.` : `Teks yang berkaitan ditemukan di ${blocked}, tetapi kitab tersebut dikecualikan dari rujukan Tanya AI oleh kebijakan rujukan, sehingga tidak dapat dijadikan dasar jawaban.`)
+          : mostlyArabic(q) ? 'لم أجد نصا مناسبا لهذا السؤال في كتب المكتبة المتاحة. يرجى تحديد الموضوع أو اسم الكتاب.' : 'Saya belum menemukan teks yang sesuai dengan pertanyaan ini di kitab yang tersedia. Coba sebutkan topik atau judul kitab yang lebih spesifik.';
+        mode = 'no_context';rejection={stage:'retrieval',reason:blocked?`Halaman yang cocok hanya berasal dari kitab yang dikecualikan kebijakan rujukan: ${blocked}.`:'Tidak ada halaman kitab yang cocok dan lolos kebijakan rujukan.'};
       } else if(references.every(r=>r.pageId==null)){
         mode='catalogue';answer='Kitab berikut tersedia dalam katalog perpustakaan:\n'+references.map((r,i)=>`${i+1}. ${r.title} [${i+1}]`).join('\n')+'\n\nBuka kitab untuk membaca isinya.';
       } else {

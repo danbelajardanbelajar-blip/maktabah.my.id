@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 08:04:43 +07:00",
+  "title": "Tanya AI: catatan kaki tidak memblokir kitab, pesan pengecualian jujur",
+  "baseCommit": "6ba97203d94c1576012558007e7c437fc0875789",
+  "checks": "222 tes server lulus (2 tes baru: nama di catatan kaki tidak mengecualikan kitab tetapi cuplikan yang memuatnya tetap ditolak; jawaban menyebut kitab yang dikecualikan); oxlint bersih; DB lokal: تعليم المتعلم (93084, 108544, tambahan 8404) kini lolos kebijakan, sebelumnya terblokir karena catatan kaki hlm. 24 dan 45",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:02:35 +07:00",
+      "stagedSha256": "699576fd2aec06bd9ffb49d3ffc94e55cf489ee3ca5a0f1dd8b299dfbc14dc61",
+      "diffSha256": "1fd8de0d4a2a64ba54f46c246b65f26f4f4c2afbf6357895659b1ca657e25243",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 1
+          },
+          "after": {
+            "line": 4,
+            "count": 1
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 9,
+            "count": 0
+          },
+          "after": {
+            "line": 10,
+            "count": 3
+          },
+          "section": "export const normalizePolicyText = text => sourceText(text).normalize('NFKC')"
+        },
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 30,
+            "count": 1
+          },
+          "section": "export function scanAiBooks(db, bookIds, schemas=['main']) {"
+        },
+        {
+          "before": {
+            "line": 95,
+            "count": 1
+          },
+          "after": {
+            "line": 98,
+            "count": 1
+          },
+          "section": "export async function filterAllowedAiReferences(db, references, additional=false"
+        },
+        {
+          "before": {
+            "line": 100,
+            "count": 1
+          },
+          "after": {
+            "line": 103,
+            "count": 1
+          },
+          "section": "export async function assertAllowedAiBook(db, reference, additional=false, optio"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:03:58 +07:00",
+      "stagedSha256": "0c35cee78193bc7c3ad6b6c9d2d57805033d00dfbf4f8cda9704b17f465a203a",
+      "diffSha256": "8530dea88d3a69818dd84c9c5ad0059289d336d4ecb81159937f569178a72f25",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 80,
+            "count": 0
+          },
+          "after": {
+            "line": 81,
+            "count": 9
+          },
+          "section": "test('missing page storage cannot approve a book for use as evidence',async t=>{"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:02:56 +07:00",
+      "stagedSha256": "ac34864f4c413d69f6d6b0473649f5d771cb4fddfbe909ba484cb5a232548254",
+      "diffSha256": "2e7db6aa95f24a502dc5a382cae24437790e77409b0e7622bd76825a8a6441a1",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "ANSWER_SYSTEM",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "policyTitles",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "reject",
+        "prepare",
+        "blocked",
+        "task",
+        "attempt",
+        "catalog",
+        "context",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "verdict",
+        "renumber",
+        "usedRefs",
+        "failed",
+        "arabic",
+        "same"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 159,
+            "count": 0
+          },
+          "after": {
+            "line": 160,
+            "count": 2
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 172,
+            "count": 1
+          },
+          "after": {
+            "line": 174,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 193,
+            "count": 2
+          },
+          "after": {
+            "line": 195,
+            "count": 5
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:03:58 +07:00",
+      "stagedSha256": "e458fd091501255b16cded0a6a400e21136376cd6bca3b40a79643afb2fa010c",
+      "diffSha256": "0a5f28f987c47eec109b14e61100cc81ad153c10216bceba4f31e5b56bf942a5",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        },
+        {
+          "before": {
+            "line": 442,
+            "count": 0
+          },
+          "after": {
+            "line": 443,
+            "count": 10
+          },
+          "section": "test('an Indonesian question naming an Arabic book still gets Arabic keywords an"
+        }
+      ]
+    }
+  ]
+}

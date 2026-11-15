@@ -1236,3 +1236,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-41-46-a1b2dc.
 | 2026-11-15 07:40:16 +07:00 | `server/ask-ai.js` | 247–247 | 247–247 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 07:41:09 +07:00 | `server/ask-ai.test.js` | 9–9 | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
 | 2026-11-15 07:41:09 +07:00 | `server/ask-ai.test.js` | — | 418–442 | test('his own entry ranks above another scholars biography that only mentions hi | modified |
+
+## [2026-11-15 08:04:43 +07:00] — Tanya AI: catatan kaki tidak memblokir kitab, pesan pengecualian jujur
+
+Waktu pencatatan: **2026-11-15 08:04:43 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6ba9720`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 222 tes server lulus (2 tes baru: nama di catatan kaki tidak mengecualikan kitab tetapi cuplikan yang memuatnya tetap ditolak; jawaban menyebut kitab yang dikecualikan); oxlint bersih; DB lokal: تعليم المتعلم (93084, 108544, tambahan 8404) kini lolos kebijakan, sebelumnya terblokir karena catatan kaki hlm. 24 dan 45
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-04-43-b858a5.json](docs/change-audit/2026-11-15-08-04-43-b858a5.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 08:02:35 +07:00 | `server/ai-book-policy.js` | 4–4 | 4–4 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-15 08:02:35 +07:00 | `server/ai-book-policy.js` | — | 10–12 | export const normalizePolicyText = text => sourceText(text).normalize('NFKC') | modified |
+| 2026-11-15 08:02:35 +07:00 | `server/ai-book-policy.js` | 27–27 | 30–30 | export function scanAiBooks(db, bookIds, schemas=['main']) { | modified |
+| 2026-11-15 08:02:35 +07:00 | `server/ai-book-policy.js` | 95–95 | 98–98 | export async function filterAllowedAiReferences(db, references, additional=false | modified |
+| 2026-11-15 08:02:35 +07:00 | `server/ai-book-policy.js` | 100–100 | 103–103 | export async function assertAllowedAiBook(db, reference, additional=false, optio | modified |
+| 2026-11-15 08:03:58 +07:00 | `server/ai-book-policy.test.js` | — | 81–89 | test('missing page storage cannot approve a book for use as evidence',async t=>{ | modified |
+| 2026-11-15 08:02:56 +07:00 | `server/ask-ai.js` | — | 160–161 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:02:56 +07:00 | `server/ask-ai.js` | 172–172 | 174–174 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:02:56 +07:00 | `server/ask-ai.js` | 193–194 | 195–199 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 08:03:58 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-15 08:03:58 +07:00 | `server/ask-ai.test.js` | — | 443–452 | test('an Indonesian question naming an Arabic book still gets Arabic keywords an | modified |
