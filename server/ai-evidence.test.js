@@ -80,3 +80,8 @@ test('grouped quote IDs in prose become separate source citations that survive r
  assert.equal(result.answer,'Boleh [1][2] tetapi kredit haram [2].');
  }finally{db.close();}
 });
+
+test('a quote never spans the footnote rule between page text and its notes',()=>{
+ const units=quoteUnits('حيث علم الناس عامة وأهل العراق ثم مصر خاصة معنى الاحتجاج بالسنة __________ (1) بضم السين منسوب الى بنى سليم بالتصغير قبيلة من غيلان.');
+ assert.ok(units.length>=2);assert.ok(units.every(u=>!u.includes('_')));assert.ok(units[0].endsWith('بالسنة'));assert.ok(units[1].startsWith('(1) بضم السين')||units[1].startsWith('بضم السين'));
+});

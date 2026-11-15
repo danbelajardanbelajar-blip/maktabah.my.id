@@ -98,7 +98,11 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   const people = biography ? namedPeople(question, focusQuestion) : [];
   const densityWords = [...terms, ...aspects, ...people.flatMap(p => p.words)];
   const anchors = people.map(p => p.words[0]);
-  const anchorPattern = anchors.length ? new RegExp(anchors.map(a => a.replace(/[أإآا]/g, '[أإآا]')).join('|'), 'u') : null;
+  const anchorSource = anchors.map(a => a.replace(/[أإآا]/g, '[أإآا]')).join('|');
+  const anchorPattern = anchors.length ? new RegExp(anchorSource, 'u') : null;
+  // His own entry introduces him ("هو محمد بن إدريس…", "نسبه: هو أبو عبد الله محمد بن إدريس"); a page that only
+  // mentions him inside another scholar's biography (al-Tirmidhi's teachers) ranks below it.
+  const entryPattern = anchors.length ? new RegExp(`(?:هو|ترجمة|اسمه|نسبه)\\s*:?\\s*(?:\\S+\\s+){0,4}?(?:${anchorSource})`, 'u') : null;
   // Excerpts are passages of the stored page text (no FTS snippet), so verifiedReferences can match them exactly.
   const search = (match, { requireAnchor = false } = {}) => {
     const found = [];
@@ -114,7 +118,9 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
         const excerpt = pagePassage(text, densityWords, AI_PASSAGE_LENGTH, anchors);
         if (!matchesQuestionTopic(excerpt, focusQuestion)) continue;
         const { nass: _nass, ...page } = row;
-        found.push({ ...page, excerpt, score: score * quality.factor });
+        const entry = entryPattern ? (entryPattern.test(clean(text)) ? 2 : 0.5) : 1;
+        const ranked = score * quality.factor * entry;
+        found.push({ ...page, excerpt, score: ranked });
         // A section heading at the very end of a page ("شيوخه:") continues on the next page: add its start right after.
         const plain = clean(text), last = Math.max(-1, ...aspects.map(word => plain.lastIndexOf(word)));
         if (last < 0 || plain.length - last > 40) continue;
@@ -125,7 +131,7 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
         const start = pagePassage(followingText, [], AI_PASSAGE_LENGTH);
         if (!matchesQuestionTopic(start, focusQuestion)) continue;
         const { nass: _next, ...followingPage } = following;
-        found.push({ ...followingPage, excerpt: start, score: score * quality.factor, continuation: true });
+        found.push({ ...followingPage, excerpt: start, score: ranked, continuation: true });
       }
     }
     // Stable sort keeps a continuation page directly after the page it continues.

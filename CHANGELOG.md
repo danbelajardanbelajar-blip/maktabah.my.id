@@ -1197,3 +1197,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-27-32-848341.
 | 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 221–223 | 242–244 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 226–226 | 247–247 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 07:26:44 +07:00 | `server/ask-ai.test.js` | 406–406 | 406–446 | test('biography questions about a named imam prefer his full-name entry over nam | modified |
+
+## [2026-11-15 07:34:06 +07:00] — Tanya AI: utamakan entri sang imam dan pisahkan catatan kaki
+
+Waktu pencatatan: **2026-11-15 07:34:06 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `75e26a5`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 218 tes server lulus (2 tes baru: entri sendiri di atas biografi ulama lain, kutipan tidak melewati garis catatan kaki); oxlint bersih; DB lokal: siapa imam syafii tidak lagi memuat الشمائل (biografi al-Tirmidzi), siapa guru imam syafii memuat hlm. 16 lalu 17
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-34-06-cb2604.json](docs/change-audit/2026-11-15-07-34-06-cb2604.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 07:32:27 +07:00 | `server/ai-evidence.js` | — | 29–31 | export function quoteUnits(text,{min=60,max=600}={}){ | modified |
+| 2026-11-15 07:32:38 +07:00 | `server/ai-evidence.test.js` | — | 83–87 | test('grouped quote IDs in prose become separate source citations that survive r | modified |
+| 2026-11-15 07:32:14 +07:00 | `server/ai-retrieval.js` | 101–101 | 101–105 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:32:14 +07:00 | `server/ai-retrieval.js` | 117–117 | 121–123 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:32:14 +07:00 | `server/ai-retrieval.js` | 128–128 | 134–134 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:33:23 +07:00 | `server/ask-ai.test.js` | — | 411–417 | test('biography questions about a named imam prefer his full-name entry over nam | modified |

@@ -26,6 +26,9 @@ export function verifiedReferences(db,refs,additional=false) {
  */
 export function quoteUnits(text,{min=60,max=600}={}){
  const flat=String(text||'').replace(/\s+/g,' ').trim();
+ // A footnote rule ("______") separates the body from its notes: a quote never spans both.
+ const parts=flat.split(/\s*[_ـ]{4,}\s*/u).filter(part=>part.trim());
+ if(parts.length>1)return parts.flatMap(part=>quoteUnits(part,{min,max}));
  const sentences=flat.match(/[^.!?؟]+(?:[.!?؟]+["'”’»)\]]*|$)/gu)||[];
  const units=[];let current='';
  // A unit starts at a letter, not at punctuation left over from the previous sentence (": أما…").

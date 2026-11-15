@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 07:34:06 +07:00",
+  "title": "Tanya AI: utamakan entri sang imam dan pisahkan catatan kaki",
+  "baseCommit": "75e26a5f6fac2d580944f7e334a05095b23f1243",
+  "checks": "218 tes server lulus (2 tes baru: entri sendiri di atas biografi ulama lain, kutipan tidak melewati garis catatan kaki); oxlint bersih; DB lokal: siapa imam syafii tidak lagi memuat الشمائل (biografi al-Tirmidzi), siapa guru imam syafii memuat hlm. 16 lalu 17",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-evidence.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:32:27 +07:00",
+      "stagedSha256": "00ce974a46157fb560ca5dd9a1303c71e20e914d24ec88d5bf9ca029cb2978f1",
+      "diffSha256": "da19f045d626ba08d45a6132d2e73db1000aed9bbf760476eda9162f65aa7248",
+      "symbols": [
+        "sourcePages",
+        "invalid",
+        "answerSchema",
+        "verifiedReferences",
+        "book",
+        "row",
+        "pieces",
+        "excerpt",
+        "matched",
+        "reference",
+        "quoteUnits",
+        "flat",
+        "parts",
+        "sentences",
+        "units",
+        "quoteCatalog",
+        "catalog",
+        "original",
+        "actual",
+        "verifyAnswer",
+        "quotes",
+        "chosen",
+        "sources",
+        "citations",
+        "displayQuote",
+        "evidenceAnswer",
+        "validCachedAnswer",
+        "refs",
+        "verified"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 28,
+            "count": 0
+          },
+          "after": {
+            "line": 29,
+            "count": 3
+          },
+          "section": "export function quoteUnits(text,{min=60,max=600}={}){"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-evidence.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:32:38 +07:00",
+      "stagedSha256": "6fa1b9b8c48737c75f358ed3b4c2352e167a12da1ab3c96fbf7ef5f2a483a94a",
+      "diffSha256": "3b44564527846334fbea75d3cbe176e493a81286e5733bea53f9bf5b6202ed03",
+      "symbols": [
+        "db",
+        "refs",
+        "evidence",
+        "catalog",
+        "payload",
+        "result",
+        "snippets",
+        "id",
+        "ar",
+        "answer",
+        "a",
+        "units"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 82,
+            "count": 0
+          },
+          "after": {
+            "line": 83,
+            "count": 5
+          },
+          "section": "test('grouped quote IDs in prose become separate source citations that survive r"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:32:14 +07:00",
+      "stagedSha256": "5bc0917116fe0825aa0f5800e46f9f04106cc34d2d06afe41c2d2e07bd4533fe",
+      "diffSha256": "8ca3fd47a29f48679c7f5f2a7f1d86c095b50ea9db42578062cd21f616a82ff8",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "AI_PASSAGE_LENGTH",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "ASPECTS",
+        "PEOPLE",
+        "namedPeople",
+        "BIOGRAPHY",
+        "aspectWords",
+        "pageQuality",
+        "letters",
+        "broken",
+        "lines",
+        "leaders",
+        "numbered",
+        "toc",
+        "positions",
+        "hits",
+        "pagePassage",
+        "plain",
+        "count",
+        "n",
+        "lineStart",
+        "space",
+        "retrieveAiCandidates",
+        "terms",
+        "constraint",
+        "aspects",
+        "quoted",
+        "schemas",
+        "statements",
+        "biography",
+        "people",
+        "densityWords",
+        "anchors",
+        "anchorSource",
+        "anchorPattern",
+        "entryPattern",
+        "search",
+        "found",
+        "row",
+        "text",
+        "excerpt",
+        "entry",
+        "ranked",
+        "following",
+        "followingText",
+        "start",
+        "base",
+        "passes",
+        "requireAnchor",
+        "seen",
+        "id",
+        "books",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "pages",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 101,
+            "count": 1
+          },
+          "after": {
+            "line": 101,
+            "count": 5
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 117,
+            "count": 1
+          },
+          "after": {
+            "line": 121,
+            "count": 3
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 128,
+            "count": 1
+          },
+          "after": {
+            "line": 134,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:33:23 +07:00",
+      "stagedSha256": "30031db8d88ee943394f9a81ba961828ca12920b1ebc347e63cbf27259cd7b06",
+      "diffSha256": "c96878ea5070258fb9c3a1677d4f729e10a775503bdb5de49e6cdd7a08133293",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "at",
+        "sources",
+        "meta"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 410,
+            "count": 0
+          },
+          "after": {
+            "line": 411,
+            "count": 7
+          },
+          "section": "test('biography questions about a named imam prefer his full-name entry over nam"
+        }
+      ]
+    }
+  ]
+}

@@ -408,6 +408,13 @@ test('biography questions about a named imam prefer his full-name entry over nam
  assert.ok(retrieveAiReferences(f.db,'من هو الشافعي').some(r=>r.pageId===20),'without a full-name entry, pages naming the nisba remain candidates');
 });
 
+test('his own entry ranks above another scholars biography that only mentions him',t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO pages VALUES(50,1,1,50,?)').run('ترجمة الإمام الترمذي: ولد الإمام الترمذي سنة تسع ومائتين. شيوخه وتلاميذه: كان رائد علم الحديث الإمام محمد بن إدريس الشافعي ناصر السنة. توفي الترمذي سنة تسع وسبعين ومائتين.');
+ f.db.prepare('INSERT INTO pages VALUES(51,1,1,51,?)').run('المذهب الشافعي. '.repeat(20)+'نسبه: هو أبو عبد الله محمد بن إدريس الشافعي المطلبي، ولد بغزة سنة خمسين ومائة وتوفي بمصر.');
+ for(const q of ['siapa imam syafii','من هو الشافعي']){const refs=retrieveAiReferences(f.db,q,false,false,q);assert.equal(refs[0].pageId,51,q);}
+});
+
 test('a section heading at the end of a page brings the start of the next page right after it',t=>{
  const f=fixture(t);
  f.db.prepare('INSERT INTO pages VALUES(40,1,1,40,?)').run('الإمام الشافعي: هو محمد بن إدريس الشافعي، ولد بغزة سنة خمسين ومائة ونشأ بمكة.\n* شيوخه:');
