@@ -1214,3 +1214,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-34-06-cb2604.
 | 2026-11-15 07:32:14 +07:00 | `server/ai-retrieval.js` | 117–117 | 121–123 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
 | 2026-11-15 07:32:14 +07:00 | `server/ai-retrieval.js` | 128–128 | 134–134 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
 | 2026-11-15 07:33:23 +07:00 | `server/ask-ai.test.js` | — | 411–417 | test('biography questions about a named imam prefer his full-name entry over nam | modified |
+
+## [2026-11-15 07:41:46 +07:00] — Tanya AI: cari di dalam kitab yang disebut
+
+Waktu pencatatan: **2026-11-15 07:41:46 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `38ef866`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 220 tes server lulus (2 tes baru: pembatasan ke kitab yang disebut, pertanyaan Indonesia berjudul Arab tetap diterjemahkan dan pesan berbahasa Indonesia); oxlint bersih; DB lokal: kata kunci أسباب الفقر untuk kitab تعليم المتعلم menemukan hlm. 63 (الكذب يورث الفقر، كثرة النوم تورث الفقر) dalam 0,4 detik
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-41-46-a1b2dc.json](docs/change-audit/2026-11-15-07-41-46-a1b2dc.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 07:39:28 +07:00 | `server/ai-retrieval.js` | — | 84–113 | export function pagePassage(text, words, size = AI_PASSAGE_LENGTH, anchors = []) | modified |
+| 2026-11-15 07:39:28 +07:00 | `server/ai-retrieval.js` | 86–86 | 116–116 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:39:28 +07:00 | `server/ai-retrieval.js` | 91–91 | 121–130 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:39:28 +07:00 | `server/ai-retrieval.js` | 93–93 | 132–132 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:39:28 +07:00 | `server/ai-retrieval.js` | 149–149 | 188–189 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:40:16 +07:00 | `server/ask-ai.js` | 10–10 | 10–10 | import {AI_BOOK_POLICY_VERSION,filterAllowedAiReferences,assertAllowedAiBook} fr | modified |
+| 2026-11-15 07:40:16 +07:00 | `server/ask-ai.js` | 178–178 | 178–178 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:40:16 +07:00 | `server/ask-ai.js` | 193–193 | 193–193 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:40:16 +07:00 | `server/ask-ai.js` | 247–247 | 247–247 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:41:09 +07:00 | `server/ask-ai.test.js` | 9–9 | 9–9 | import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro | modified |
+| 2026-11-15 07:41:09 +07:00 | `server/ask-ai.test.js` | — | 418–442 | test('his own entry ranks above another scholars biography that only mentions hi | modified |

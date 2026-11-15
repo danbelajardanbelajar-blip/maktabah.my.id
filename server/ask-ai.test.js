@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import express from 'express';
 import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } from './ask-ai.js';
-import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences,pageQuality,pagePassage,aspectWords,namedPeople} from './ai-retrieval.js';
+import {retrieveAiCandidates,retrieveAiCandidatesOffThread,selectAiReferences,pageQuality,pagePassage,aspectWords,namedPeople,bookPhrases,mostlyArabic} from './ai-retrieval.js';
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {createHash} from 'node:crypto';
 import {evidenceAnswer} from './ai-evidence.js';
@@ -413,6 +413,31 @@ test('his own entry ranks above another scholars biography that only mentions hi
  f.db.prepare('INSERT INTO pages VALUES(50,1,1,50,?)').run('ترجمة الإمام الترمذي: ولد الإمام الترمذي سنة تسع ومائتين. شيوخه وتلاميذه: كان رائد علم الحديث الإمام محمد بن إدريس الشافعي ناصر السنة. توفي الترمذي سنة تسع وسبعين ومائتين.');
  f.db.prepare('INSERT INTO pages VALUES(51,1,1,51,?)').run('المذهب الشافعي. '.repeat(20)+'نسبه: هو أبو عبد الله محمد بن إدريس الشافعي المطلبي، ولد بغزة سنة خمسين ومائة وتوفي بمصر.');
  for(const q of ['siapa imam syafii','من هو الشافعي']){const refs=retrieveAiReferences(f.db,q,false,false,q);assert.equal(refs[0].pageId,51,q);}
+});
+
+test('a named book limits the search to that book and drops its title words',t=>{
+ assert.deepEqual(bookPhrases('menurut kitab تعليم المتعلم apa saja penyebab faqir').slice(0,2),['تعليم المتعلم','تعليم']);
+ assert.equal(bookPhrases('ما أسباب الفقر في كتاب تعليم المتعلم')[0],'تعليم المتعلم');assert.deepEqual(bookPhrases('ما حكم صلاة الجماعة'),[]);
+ assert.equal(mostlyArabic('menurut kitab تعليم المتعلم apa saja penyebab faqir'),false);assert.equal(mostlyArabic('ما أسباب الفقر في كتاب تعليم المتعلم'),true);
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO books_meta VALUES(2,?)').run('تعليم المتعلم طريق التعلم');f.db.prepare('INSERT INTO books_meta VALUES(3,?)').run('كتاب آخر');
+ f.db.prepare('INSERT INTO pages VALUES(70,2,1,63,?)').run('الكذب يورث الفقر وكثرة النوم تورث الفقر.');
+ f.db.prepare('INSERT INTO pages VALUES(71,3,1,5,?)').run('أسباب الفقر كثيرة عند الناس وأسباب الفقر في الاقتصاد.');
+ const focus='menurut kitab تعليم المتعلم apa saja penyebab faqir';
+ const refs=retrieveAiReferences(f.db,'أسباب الفقر تعليم المتعلم',false,false,focus);
+ assert.deepEqual(refs.map(r=>r.bkid),[2]);assert.equal(refs[0].pageId,70);
+ assert.ok(retrieveAiReferences(f.db,'أسباب الفقر',false,false,'أسباب الفقر').some(r=>r.bkid===3),'without a named book other books are searched');
+});
+
+test('an Indonesian question naming an Arabic book still gets Arabic keywords and an Indonesian message',async t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO books_meta VALUES(2,?)').run('تعليم المتعلم طريق التعلم');
+ f.db.prepare('INSERT INTO pages VALUES(70,2,1,63,?)').run('الكذب يورث الفقر وكثرة النوم تورث الفقر.');
+ let translated=0;
+ const call=await serve(t,f,async(u,o)=>{if(!JSON.parse(o.body).generationConfig.responseSchema){translated++;return response('الفقر');}return response(grounded('Dusta dan banyak tidur menyebabkan fakir [1].'));},
+  {reviewReply:async()=>response(JSON.stringify({relevant:false,supported:false,complete:false,reason:'Uji.'}))});
+ const result=await call('/api/ask',{q:'menurut kitab تعليم المتعلم apa saja penyebab faqir'});
+ assert.equal(translated,1);assert.equal(result.data.mode,'no_context');assert.ok(result.data.answer.startsWith('Saya belum dapat memastikan'),result.data.answer);
 });
 
 test('a section heading at the end of a page brings the start of the next page right after it',t=>{

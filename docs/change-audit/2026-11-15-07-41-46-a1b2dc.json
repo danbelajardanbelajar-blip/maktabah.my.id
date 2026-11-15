@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 07:41:46 +07:00",
+  "title": "Tanya AI: cari di dalam kitab yang disebut",
+  "baseCommit": "38ef866b88e011fabd42d414921632b43d55a3a3",
+  "checks": "220 tes server lulus (2 tes baru: pembatasan ke kitab yang disebut, pertanyaan Indonesia berjudul Arab tetap diterjemahkan dan pesan berbahasa Indonesia); oxlint bersih; DB lokal: kata kunci أسباب الفقر untuk kitab تعليم المتعلم menemukan hlm. 63 (الكذب يورث الفقر، كثرة النوم تورث الفقر) dalam 0,4 detik",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:39:28 +07:00",
+      "stagedSha256": "57bd3ebd04192e93c3b938ced490b2e2b9e26417282f69a13b167eca5c476554",
+      "diffSha256": "7afd6dacdc2bff4308542015591ecc43ee026cf2ee23fb5047b6b865a012f447",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "AI_PASSAGE_LENGTH",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "ASPECTS",
+        "PEOPLE",
+        "namedPeople",
+        "BIOGRAPHY",
+        "aspectWords",
+        "pageQuality",
+        "letters",
+        "broken",
+        "lines",
+        "leaders",
+        "numbered",
+        "toc",
+        "positions",
+        "hits",
+        "pagePassage",
+        "plain",
+        "count",
+        "n",
+        "lineStart",
+        "space",
+        "mostlyArabic",
+        "value",
+        "BOOK_CUE",
+        "bookPhrases",
+        "phrases",
+        "cue",
+        "mentionedBooks",
+        "books",
+        "retrieveAiCandidates",
+        "constraint",
+        "aspects",
+        "quoted",
+        "focus",
+        "titleWords",
+        "within",
+        "statements",
+        "biography",
+        "people",
+        "densityWords",
+        "anchors",
+        "anchorSource",
+        "anchorPattern",
+        "entryPattern",
+        "search",
+        "found",
+        "row",
+        "text",
+        "excerpt",
+        "entry",
+        "ranked",
+        "following",
+        "followingText",
+        "start",
+        "base",
+        "passes",
+        "requireAnchor",
+        "seen",
+        "id",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "pages",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 83,
+            "count": 0
+          },
+          "after": {
+            "line": 84,
+            "count": 30
+          },
+          "section": "export function pagePassage(text, words, size = AI_PASSAGE_LENGTH, anchors = [])"
+        },
+        {
+          "before": {
+            "line": 86,
+            "count": 1
+          },
+          "after": {
+            "line": 116,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 91,
+            "count": 1
+          },
+          "after": {
+            "line": 121,
+            "count": 10
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 93,
+            "count": 1
+          },
+          "after": {
+            "line": 132,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 149,
+            "count": 1
+          },
+          "after": {
+            "line": 188,
+            "count": 2
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:40:16 +07:00",
+      "stagedSha256": "48520dcc73ba3df2be45ccbfc76a4beffe7d278f133e3332be21d3b01bbccfcb",
+      "diffSha256": "bfd06efc1545ba1b674c91a9d632ac5d9fb2ed296827d4a45e8f2d4fdd6a31ff",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "ANSWER_SYSTEM",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "reject",
+        "prepare",
+        "task",
+        "attempt",
+        "catalog",
+        "context",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "verdict",
+        "renumber",
+        "usedRefs",
+        "failed",
+        "arabic",
+        "same"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "import {AI_BOOK_POLICY_VERSION,filterAllowedAiReferences,assertAllowedAiBook} fr"
+        },
+        {
+          "before": {
+            "line": 178,
+            "count": 1
+          },
+          "after": {
+            "line": 178,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 193,
+            "count": 1
+          },
+          "after": {
+            "line": 193,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 247,
+            "count": 1
+          },
+          "after": {
+            "line": 247,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:41:09 +07:00",
+      "stagedSha256": "8dc384fcaa17796dd7c85cc8fa0b173428aded15e3f2218427c44136283bf8c9",
+      "diffSha256": "751ec09bb85bfe39e3d39fbf9670c5b807e61f6ff5cc867a23cb3d8dfd70d094",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "at",
+        "sources",
+        "meta"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 9,
+            "count": 1
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "import { readAiConfig, generateGemini, retrieveAiReferences, registerAskAi } fro"
+        },
+        {
+          "before": {
+            "line": 417,
+            "count": 0
+          },
+          "after": {
+            "line": 418,
+            "count": 25
+          },
+          "section": "test('his own entry ranks above another scholars biography that only mentions hi"
+        }
+      ]
+    }
+  ]
+}

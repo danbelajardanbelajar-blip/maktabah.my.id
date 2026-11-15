@@ -81,16 +81,55 @@ export function pagePassage(text, words, size = AI_PASSAGE_LENGTH, anchors = [])
   return plain.slice(start, end).trim();
 }
 
+/** True when Arabic letters outnumber Latin ones, so an Indonesian question that names an Arabic book stays Indonesian. */
+export const mostlyArabic = text => {
+  const value = String(text || '');
+  return (value.match(/[؀-ۿ]/gu) || []).length > (value.match(/[a-z]/giu) || []).length;
+};
+
+const BOOK_CUE = /\b(?:kitab|buku|karya|kitabnya)\b|كتاب/iu;
+/** Arabic title candidates after a book cue, longest first: "كتاب تعليم المتعلم" → "تعليم المتعلم", "تعليم". */
+export function bookPhrases(text) {
+  const value = String(text || '');
+  if (!BOOK_CUE.test(value)) return [];
+  const phrases = [];
+  for (const run of value.match(/[؀-ۿ]+(?:\s+[؀-ۿ]+)*/gu) || []) {
+    let words = clean(run).split(/\s+/).filter(Boolean);
+    const cue = words.lastIndexOf('كتاب');
+    if (cue >= 0) words = words.slice(cue + 1);
+    for (let n = Math.min(words.length, 6); n >= 1; n--) phrases.push(words.slice(0, n).join(' '));
+  }
+  return [...new Set(phrases.filter(p => p.replace(/\s/g, '').length >= 4))];
+}
+
+/** Books whose title is, or starts with, a phrase named in the question (at most 10 per library). */
+function mentionedBooks(db, schemas, ...texts) {
+  for (const phrase of [...new Set(texts.flatMap(bookPhrases))].sort((a, b) => b.length - a.length)) {
+    const books = Object.fromEntries(schemas.map(schema => [schema, db.prepare(`SELECT bkid FROM ${schema}.books_meta WHERE bk=? OR bk LIKE ? LIMIT 10`).all(phrase, phrase + ' %').map(r => Number(r.bkid)).filter(Number.isSafeInteger)]));
+    if (Object.values(books).some(ids => ids.length)) return { phrase, books };
+  }
+  return null;
+}
+
 /** Candidate pool for one question: ranked pages (and catalogue books), without policy exclusions applied. */
 export function retrieveAiCandidates(db, question, additional = false, catalogue = false, focusQuestion = question) {
-  const terms = searchTerms(question);
+  let terms = searchTerms(question);
   if (!terms.length) return [];
   const constraint = catalogue ? '' : topicSearchConstraint(focusQuestion);
   const aspects = catalogue ? [] : aspectWords(question, focusQuestion);
   const quoted = words => words.map(t => `"${t}"`);
-  const schemas = (additional ? ['main', 'tambahan'] : ['main']).filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
+  let schemas = (additional ? ['main', 'tambahan'] : ['main']).filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
+  // "menurut kitab تعليم المتعلم …": search inside the named book only, without its title words as search terms.
+  const focus = catalogue ? null : mentionedBooks(db, schemas, question, focusQuestion);
+  if (focus) {
+    schemas = schemas.filter(schema => focus.books[schema]?.length);
+    const titleWords = new Set(focus.phrase.split(' ').concat('كتاب'));
+    terms = terms.filter(term => !titleWords.has(term));
+    if (!terms.length) return [];
+  }
+  const within = schema => focus ? ` AND rowid IN (SELECT rowid FROM ${schema}.pages WHERE book_id IN (${focus.books[schema].join(',')}))` : '';
   const statements = Object.fromEntries(schemas.map(schema => [schema, {
-    rank: db.prepare(`SELECT rowid,bm25(pages_fts) AS score FROM ${schema}.pages_fts WHERE pages_fts MATCH ? ORDER BY bm25(pages_fts) LIMIT ${AI_CANDIDATE_LIMIT}`),
+    rank: db.prepare(`SELECT rowid,bm25(pages_fts) AS score FROM ${schema}.pages_fts WHERE pages_fts MATCH ?${within(schema)} ORDER BY bm25(pages_fts) LIMIT ${AI_CANDIDATE_LIMIT}`),
     detail: db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.rowid=?`),
     next: db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.book_id=? AND p.id>? ORDER BY p.id LIMIT 1`),
   }]));
@@ -146,7 +185,8 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   // NEAR keeps the aspect word next to the topic (حكم صلاة الجماعة), not anywhere on a long page.
   if (aspects.length) passes.push(search('(' + aspects.map(word => `NEAR(${quoted([...terms, word]).join(' ')}, 10)`).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : ''), { requireAnchor }));
   let pages = search(base(' AND '), { requireAnchor });
-  if (!pages.length && terms.length > 1) pages = search(base(' OR '), { requireAnchor });
+  // Inside one named book any of the words is a useful hit.
+  if (!pages.length && (terms.length > 1 || focus)) pages = search(base(' OR '), { requireAnchor });
   passes.push(pages);
   const seen = new Set();
   const ranked = passes.flat().filter(r => { const id = `${r.bkid}:${r.pageId}`; if (seen.has(id)) return false; seen.add(id); return true; });
