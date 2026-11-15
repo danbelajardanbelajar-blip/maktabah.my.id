@@ -1420,3 +1420,22 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-12-16-54-0c1ca7.
 | 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 4–5 | 4–7 | import {webAPI} from '../api'; | modified |
 | 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 19–19 | 21–21 | export function SearchSuggestions({query, mode, categories, onSearch}: { | modified |
 | 2026-11-15 12:16:05 +07:00 | `src/components/SearchSuggestions.tsx` | 21–22 | 23–24 | export function SearchSuggestions({query, mode, categories, onSearch}: { | modified |
+
+## [2026-11-15 12:50:19 +07:00] — Saran pencarian di atas daftar hasil
+
+Waktu pencatatan: **2026-11-15 12:50:19 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `338ee5e`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: tsc dan build frontend lulus; hanya posisi tampilan yang berubah (di bawah baris Total Hasil, di atas daftar), aturan saran tetap
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-12-50-19-83376a.json](docs/change-audit/2026-11-15-12-50-19-83376a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 12:50:09 +07:00 | `dist/assets/index.dev-Cd4wLIyH.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-15 12:50:09 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-15 12:49:52 +07:00 | `src/App.tsx` | — | 760–765 | function App() { | modified |
+| 2026-11-15 12:49:52 +07:00 | `src/App.tsx` | 855–859 | — | function App() { | modified |
+| 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 4–4 | 4–4 | import {webAPI} from '../api'; | modified |
+| 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 6–7 | 6–7 | import {webAPI} from '../api'; | modified |
+| 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 21–21 | 21–21 | export function SearchSuggestions({query, mode, categories, onSearch, afterResul | modified |
+| 2026-11-15 12:49:53 +07:00 | `src/components/SearchSuggestions.tsx` | 23–24 | 23–24 | export function SearchSuggestions({query, mode, categories, onSearch, afterResul | modified |

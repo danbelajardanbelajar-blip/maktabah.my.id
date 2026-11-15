@@ -757,6 +757,12 @@ function App() {
               </div>
             )}
 
+            {/* Few results (fewer than 20) may come from a typo: offer verified alternatives above the list. */}
+            {activeTab !== 'home' && hasSearched && !loading && !error && searchMode !== 'pdf' && currentPage === 1 && totalResults > 0 && totalResults < 20 && !totalCapped && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories]) && (
+              <SearchSuggestions withResults key={'few:'+JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
+                onSearch={suggestion => { void executeSearch(suggestion, 1, searchMode, 'push', selectedCategories, true); }} />
+            )}
+
             
             <div className="space-y-4 md:space-y-6">
               {activeTab !== 'home' && searchMode === 'text' && results.map((r, i) => (
@@ -852,11 +858,6 @@ function App() {
                 }
               })}
 
-              {/* Few results (fewer than 20) may come from a typo: offer verified alternatives below the list. */}
-              {activeTab !== 'home' && hasSearched && !loading && !error && searchMode !== 'pdf' && currentPage === 1 && totalResults > 0 && totalResults < 20 && !totalCapped && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories]) && (
-                <SearchSuggestions afterResults key={'few:'+JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
-                  onSearch={suggestion => { void executeSearch(suggestion, 1, searchMode, 'push', selectedCategories, true); }} />
-              )}
 
               {activeTab !== 'home' && hasSearched && !loading && results.length === 0 && query && !error && (
                 <div className="text-center py-12 bg-[var(--reader-bg)] rounded-2xl border border-black/5">
