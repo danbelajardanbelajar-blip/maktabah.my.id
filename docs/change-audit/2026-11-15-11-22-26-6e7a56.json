@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 11:22:26 +07:00",
+  "title": "Catat uji online pencarian teks",
+  "baseCommit": "27eedfa051ee4ac13fed5bac236640d97fc65aab",
+  "checks": "HTTPS: kueri pengguna 0,56 s; الله 0,29 s; قال الله 2,3 s; في من 12,1 s dengan /api/health tetap 1,4 s selama pencarian",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 11:22:25 +07:00",
+      "stagedSha256": "31dd1b30170c9dce1e68ee38eb6521a913b39ed333e48181f77e679a17920244",
+      "diffSha256": "8d31672ee79e70e324fe7c9d94e9ca007829fa866abbcf67f6239511cf1a3b42",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 6
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

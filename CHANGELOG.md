@@ -1377,3 +1377,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-10-58-16-3c311f.
 | 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 304–304 | 306–306 | function App() { | modified |
 | 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | — | 314–314 | function App() { | modified |
 | 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 752–752 | 755–755 | function App() { | modified |
+
+## [2026-11-15 11:22:26 +07:00] — Catat uji online pencarian teks
+
+Waktu pencatatan: **2026-11-15 11:22:26 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `27eedfa`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: HTTPS: kueri pengguna 0,56 s; الله 0,29 s; قال الله 2,3 s; في من 12,1 s dengan /api/health tetap 1,4 s selama pencarian
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-11-22-26-6e7a56.json](docs/change-audit/2026-11-15-11-22-26-6e7a56.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 11:22:25 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |

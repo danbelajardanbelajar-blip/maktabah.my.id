@@ -1,3 +1,9 @@
+## 2026-11-15 11:22:25 WIB — Pencarian teks: total dibatasi dan berjalan di worker
+
+- Commit fungsi `27eedfa` (dan `afa27ba` peringkat log admin) sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; respons API memuat field `capped` dari commit ini.
+- Penyebab: COUNT(*) persis untuk kata umum (الله ±7,9 juta halaman) di thread utama memakan waktu bermenit-menit dan menahan seluruh situs. Uji sebelum perbaikan: الله, قال الله, في من masing-masing >120 detik dan /api/health ikut tidak merespons sampai restart.
+- Uji online sesudah: kueri pengguna "اتباع غير المستفتي للفتوى" 0,56 detik (24 hasil); الله 0,29 detik (10.000+); قال الله 2,3 detik (10.000+); في من 12,1 detik (10.000+) dan /api/health tetap merespons 1,4 detik selama pencarian itu berjalan.
+
 ## 2026-11-15 08:47:43 WIB — Tanya AI: kitab yang disebut, kebijakan pengecualian, dan percobaan ulang istilah kitab
 
 - Commit fungsi `6ba9720`, `8aaaec8`, `e47b067`, `aa2b39a`, dan `1715b3c` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perilaku endpoint sesuai `1715b3c` (tahap "Mencoba lagi dengan rujukan dari istilah kitab" muncul).
