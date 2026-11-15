@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 07:27:32 +07:00",
+  "title": "Tanya AI: percobaan ulang Arab, halaman lanjutan, dan saring tokoh",
+  "baseCommit": "ce709244088775dcd9f039bb4a4d98c2a494de3c",
+  "checks": "216 tes server lulus (3 tes baru: halaman lanjutan, percobaan kedua berhasil, dua alasan tercatat bila keduanya ditolak); oxlint dan git diff --check bersih; DB lokal: siapa guru imam syafii kini menyertakan المختصر الوجيز hlm. 17 (أخذ الإمام الشافعي عن أهل الحجاز… الإمام مالك) dan tanpa arsip PISS-KTB",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-retrieval.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:23:53 +07:00",
+      "stagedSha256": "ce470a9791a9687dbb87c20a5a21c48bebe06a16f98763136085f0b8be01b656",
+      "diffSha256": "1810d354bbbaf74760febad5e89157c98f82f103c4856dc245fa899badf4f787",
+      "symbols": [
+        "AI_CANDIDATE_LIMIT",
+        "AI_RETRIEVAL_TIMEOUT",
+        "AI_PASSAGE_LENGTH",
+        "clean",
+        "ignored",
+        "searchTerms",
+        "fault",
+        "searchTimeout",
+        "searchUnavailable",
+        "ASPECTS",
+        "PEOPLE",
+        "namedPeople",
+        "BIOGRAPHY",
+        "aspectWords",
+        "pageQuality",
+        "letters",
+        "broken",
+        "lines",
+        "leaders",
+        "numbered",
+        "toc",
+        "positions",
+        "hits",
+        "pagePassage",
+        "plain",
+        "count",
+        "n",
+        "lineStart",
+        "space",
+        "retrieveAiCandidates",
+        "terms",
+        "constraint",
+        "aspects",
+        "quoted",
+        "schemas",
+        "statements",
+        "biography",
+        "people",
+        "densityWords",
+        "anchors",
+        "anchorPattern",
+        "search",
+        "found",
+        "row",
+        "text",
+        "excerpt",
+        "following",
+        "followingText",
+        "start",
+        "base",
+        "passes",
+        "requireAnchor",
+        "seen",
+        "ranked",
+        "id",
+        "books",
+        "rows",
+        "selectAiReferences",
+        "excluded",
+        "pages",
+        "retrieveAiReferences",
+        "retrieveAiCandidatesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "cancel",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 94,
+            "count": 0
+          },
+          "after": {
+            "line": 95,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 99,
+            "count": 0
+          },
+          "after": {
+            "line": 101,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 101,
+            "count": 1
+          },
+          "after": {
+            "line": 103,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 104,
+            "count": 1
+          },
+          "after": {
+            "line": 106,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 109,
+            "count": 0
+          },
+          "after": {
+            "line": 112,
+            "count": 2
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 113,
+            "count": 0
+          },
+          "after": {
+            "line": 118,
+            "count": 11
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 115,
+            "count": 0
+          },
+          "after": {
+            "line": 131,
+            "count": 1
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 121,
+            "count": 0
+          },
+          "after": {
+            "line": 138,
+            "count": 2
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        },
+        {
+          "before": {
+            "line": 123,
+            "count": 3
+          },
+          "after": {
+            "line": 141,
+            "count": 3
+          },
+          "section": "export function retrieveAiCandidates(db, question, additional = false, catalogue"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:25:24 +07:00",
+      "stagedSha256": "f24f39cd74ca41911ae106a49f9bc1f735d52329d76b007ddff2e7635cad18fd",
+      "diffSha256": "7264001d0be6fa304dbf2fd494497cc3cef5d930c344906af9744cfacd299b6a",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "ANSWER_SYSTEM",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "reject",
+        "prepare",
+        "task",
+        "attempt",
+        "catalog",
+        "context",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "verdict",
+        "renumber",
+        "usedRefs",
+        "failed",
+        "arabic",
+        "same"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 69,
+            "count": 0
+          },
+          "after": {
+            "line": 70,
+            "count": 1
+          },
+          "section": "export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc"
+        },
+        {
+          "before": {
+            "line": 174,
+            "count": 0
+          },
+          "after": {
+            "line": 176,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 181,
+            "count": 1
+          },
+          "after": {
+            "line": 183,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 186,
+            "count": 0
+          },
+          "after": {
+            "line": 189,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 188,
+            "count": 3
+          },
+          "after": {
+            "line": 191,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 192,
+            "count": 1
+          },
+          "after": {
+            "line": 193,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 197,
+            "count": 2
+          },
+          "after": {
+            "line": 197,
+            "count": 0
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 200,
+            "count": 20
+          },
+          "after": {
+            "line": 199,
+            "count": 42
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 221,
+            "count": 3
+          },
+          "after": {
+            "line": 242,
+            "count": 3
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 226,
+            "count": 1
+          },
+          "after": {
+            "line": 247,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:26:44 +07:00",
+      "stagedSha256": "0dbf27478754ff4010f6caa7b8ebe4cbcb6b0717048d039c80b971441a72d2d2",
+      "diffSha256": "4fccaa73ac2eadbde0d8d901388763d0c667f37af5ff404e2a03048df862f09a",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "at",
+        "sources",
+        "meta"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 406,
+            "count": 1
+          },
+          "after": {
+            "line": 406,
+            "count": 41
+          },
+          "section": "test('biography questions about a named imam prefer his full-name entry over nam"
+        }
+      ]
+    }
+  ]
+}

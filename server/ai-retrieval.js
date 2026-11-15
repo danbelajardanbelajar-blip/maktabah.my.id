@@ -92,37 +92,55 @@ export function retrieveAiCandidates(db, question, additional = false, catalogue
   const statements = Object.fromEntries(schemas.map(schema => [schema, {
     rank: db.prepare(`SELECT rowid,bm25(pages_fts) AS score FROM ${schema}.pages_fts WHERE pages_fts MATCH ? ORDER BY bm25(pages_fts) LIMIT ${AI_CANDIDATE_LIMIT}`),
     detail: db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.rowid=?`),
+    next: db.prepare(`SELECT b.bkid,b.bk AS title,p.id AS pageId,p.part AS juz,p.page,p.nass FROM ${schema}.pages p JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE p.book_id=? AND p.id>? ORDER BY p.id LIMIT 1`),
   }]));
   const biography = !catalogue && [question, focusQuestion].some(t => BIOGRAPHY.test.test(String(t || '')));
   const people = biography ? namedPeople(question, focusQuestion) : [];
   const densityWords = [...terms, ...aspects, ...people.flatMap(p => p.words)];
   const anchors = people.map(p => p.words[0]);
+  const anchorPattern = anchors.length ? new RegExp(anchors.map(a => a.replace(/[أإآا]/g, '[أإآا]')).join('|'), 'u') : null;
   // Excerpts are passages of the stored page text (no FTS snippet), so verifiedReferences can match them exactly.
-  const search = match => {
+  const search = (match, { requireAnchor = false } = {}) => {
     const found = [];
     for (const schema of schemas) {
-      const { rank, detail } = statements[schema];
+      const { rank, detail, next } = statements[schema];
       for (const { rowid, score } of rank.all(match)) {
         const row = detail.get(rowid);
         if (!row) continue;
         const text = sourceText(row.nass), quality = pageQuality(text);
         if (!quality.usable) continue;
+        // About a named imam, a page without his full name is usually a namesake's or another imam's entry.
+        if (requireAnchor && !anchorPattern.test(clean(text))) continue;
         const excerpt = pagePassage(text, densityWords, AI_PASSAGE_LENGTH, anchors);
         if (!matchesQuestionTopic(excerpt, focusQuestion)) continue;
         const { nass: _nass, ...page } = row;
         found.push({ ...page, excerpt, score: score * quality.factor });
+        // A section heading at the very end of a page ("شيوخه:") continues on the next page: add its start right after.
+        const plain = clean(text), last = Math.max(-1, ...aspects.map(word => plain.lastIndexOf(word)));
+        if (last < 0 || plain.length - last > 40) continue;
+        const following = next.get(row.bkid, row.pageId);
+        if (!following) continue;
+        const followingText = sourceText(following.nass);
+        if (!pageQuality(followingText).usable) continue;
+        const start = pagePassage(followingText, [], AI_PASSAGE_LENGTH);
+        if (!matchesQuestionTopic(start, focusQuestion)) continue;
+        const { nass: _next, ...followingPage } = following;
+        found.push({ ...followingPage, excerpt: start, score: score * quality.factor, continuation: true });
       }
     }
+    // Stable sort keeps a continuation page directly after the page it continues.
     return found.sort((a, b) => a.score - b.score);
   };
   const base = join => '(' + quoted(terms).join(join) + ')' + (constraint ? ' AND ' + constraint : '');
   const passes = [];
   // Biography of a named imam: full name + nisba near a biography word, ahead of the generic passes.
   if (people.length) passes.push(search('(' + people.map(p => p.match).join(' OR ') + ') AND (' + quoted(aspects).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : '')));
+  // Once the imam's own entries are found, generic passes keep only pages that name him in full.
+  const requireAnchor = passes.length > 0 && passes[0].length > 0;
   // NEAR keeps the aspect word next to the topic (حكم صلاة الجماعة), not anywhere on a long page.
-  if (aspects.length) passes.push(search('(' + aspects.map(word => `NEAR(${quoted([...terms, word]).join(' ')}, 10)`).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : '')));
-  let pages = search(base(' AND '));
-  if (!pages.length && terms.length > 1) pages = search(base(' OR '));
+  if (aspects.length) passes.push(search('(' + aspects.map(word => `NEAR(${quoted([...terms, word]).join(' ')}, 10)`).join(' OR ') + ')' + (constraint ? ' AND ' + constraint : ''), { requireAnchor }));
+  let pages = search(base(' AND '), { requireAnchor });
+  if (!pages.length && terms.length > 1) pages = search(base(' OR '), { requireAnchor });
   passes.push(pages);
   const seen = new Set();
   const ranked = passes.flat().filter(r => { const id = `${r.bkid}:${r.pageId}`; if (seen.has(id)) return false; seen.add(id); return true; });

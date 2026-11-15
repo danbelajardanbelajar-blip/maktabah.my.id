@@ -403,7 +403,47 @@ test('biography questions about a named imam prefer his full-name entry over nam
  for(const q of ['من هو الشافعي','siapa guru imam syafii?']){
   const refs=retrieveAiReferences(f.db,q,false,false,q);assert.equal(refs[0].pageId,30,q);assert.ok(refs[0].excerpt.startsWith('الإمام الشافعي: هو محمد بن إدريس')||refs[0].excerpt.includes('هو محمد بن إدريس الشافعي، ولد بغزة'),q);
  }
- const ar=retrieveAiReferences(f.db,'من هو الشافعي');assert.ok(ar.some(r=>r.pageId===20),'namesakes stay as later candidates');
+ const ar=retrieveAiReferences(f.db,'من هو الشافعي');assert.ok(!ar.some(r=>r.pageId===20),'namesakes without the full name are dropped once his own entry is found');
+ f.db.prepare('DELETE FROM pages WHERE id=30').run();f.db.exec("INSERT INTO pages_fts(pages_fts) VALUES('rebuild')");
+ assert.ok(retrieveAiReferences(f.db,'من هو الشافعي').some(r=>r.pageId===20),'without a full-name entry, pages naming the nisba remain candidates');
+});
+
+test('a section heading at the end of a page brings the start of the next page right after it',t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO pages VALUES(40,1,1,40,?)').run('الإمام الشافعي: هو محمد بن إدريس الشافعي، ولد بغزة سنة خمسين ومائة ونشأ بمكة.\n* شيوخه:');
+ f.db.prepare('INSERT INTO pages VALUES(41,1,1,41,?)').run('أخذ الإمام الشافعي عن مسلم بن خالد الزنجي ورحل إلى الإمام مالك ولزمه.');
+ f.db.prepare('INSERT INTO pages VALUES(42,1,1,42,?)').run('باب آخر لا علاقة له بالمسألة.');
+ const refs=retrieveAiReferences(f.db,'siapa guru imam syafii?',false,false,'siapa guru imam syafii?');
+ const at=refs.findIndex(r=>r.pageId===40);assert.ok(at>=0);assert.equal(refs[at+1]?.pageId,41);assert.ok(refs[at+1].excerpt.startsWith('أخذ الإمام الشافعي عن مسلم بن خالد'));
+ assert.ok(!refs.some(r=>r.pageId===42));
+});
+
+test('a rejected non-Arabic answer is retried once from the Arabic-keyword sources and answered in the question language',async t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO pages VALUES(60,1,1,60,?)').run('Ada orang yang bertanya tentang membeli saham dan jawabannya belum jelas di sini.');
+ f.db.prepare('INSERT INTO pages VALUES(61,1,1,61,?)').run('حكم تداول الأسهم: يجوز تبادل الأسهم بيعا وشراء إذا كان نشاط الشركة مباحا.');
+ let answered=0,reviewed=0;const sources=[];
+ const call=await serve(t,f,async(u,o)=>{const request=JSON.parse(o.body);if(!request.generationConfig.responseSchema)return response('الأسهم');answered++;return response(grounded('Jual beli saham boleh [1].'));},
+  {reviewReply:async(u,o)=>{reviewed++;sources.push(JSON.parse(JSON.parse(o.body).contents[0].parts[0].text).sources.map(s=>s.context));return response(JSON.stringify(reviewed===1?{relevant:false,supported:false,complete:false,reason:'Sumber Indonesia tidak menjawab.'}:{relevant:true,supported:true,complete:true,reason:'Kutipan Arab mendukung.'}));}});
+ const result=await call('/api/ask',{q:'hukum membeli saham',stream:true});
+ assert.equal(answered,2);assert.equal(reviewed,2);assert.equal(result.data.mode,'grounded');
+ assert.deepEqual(result.data.references.map(r=>r.pageId),[61]);assert.ok(result.data.answer.startsWith('**Penjelasan AI**\n\nJual beli saham boleh [1].'));
+ assert.ok(result.events.some(e=>e.type==='stage'&&e.message.includes('Mencoba lagi dengan rujukan kitab berbahasa Arab')));
+ assert.ok(!sources[1].some(text=>text.includes('membeli saham')),'the retry sends Arabic-keyword sources only');
+});
+
+test('when the Arabic retry is also rejected, the admin log keeps both reasons',async t=>{
+ const f=fixture(t);
+ f.db.prepare('INSERT INTO pages VALUES(60,1,1,60,?)').run('Ada orang yang bertanya tentang membeli saham dan jawabannya belum jelas di sini.');
+ f.db.prepare('INSERT INTO pages VALUES(61,1,1,61,?)').run('حكم تداول الأسهم: يجوز تبادل الأسهم بيعا وشراء إذا كان نشاط الشركة مباحا.');
+ let reviewed=0;
+ const call=await serve(t,f,async(u,o)=>JSON.parse(o.body).generationConfig.responseSchema?response(grounded('Jual beli saham boleh [1].')):response('الأسهم'),
+  {reviewReply:async()=>response(JSON.stringify({relevant:false,supported:false,complete:false,reason:`Alasan ${++reviewed}`}))});
+ const result=await call('/api/ask',{q:'hukum membeli saham'});
+ assert.equal(reviewed,2);assert.equal(result.data.mode,'no_context');assert.deepEqual(result.data.references,[]);
+ const meta=JSON.parse(f.db.prepare('SELECT meta_json FROM ask_logs ORDER BY rowid DESC LIMIT 1').get().meta_json);
+ assert.ok(meta.rejection.reason.startsWith('Percobaan 2 (rujukan Arab): Reviewer menolak'));assert.ok(meta.rejection.reason.includes('Alasan 2'));assert.ok(meta.rejection.reason.includes('Percobaan 1: Reviewer menolak'));assert.ok(meta.rejection.reason.includes('Alasan 1'));
+ assert.deepEqual(meta.rejection.references.map(r=>r.pageId),[61]);
 });
 
 test('a reviewer rejection is stored for admins with its reason and checked sources',async t=>{

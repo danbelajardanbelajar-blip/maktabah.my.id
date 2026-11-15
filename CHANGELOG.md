@@ -1166,3 +1166,34 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-01-45-6f8abc.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 07:01:44 +07:00 | `docs/deployment-log.md` | — | 1–5 | module/file | modified |
+
+## [2026-11-15 07:27:32 +07:00] — Tanya AI: percobaan ulang Arab, halaman lanjutan, dan saring tokoh
+
+Waktu pencatatan: **2026-11-15 07:27:32 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `ce70924`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 216 tes server lulus (3 tes baru: halaman lanjutan, percobaan kedua berhasil, dua alasan tercatat bila keduanya ditolak); oxlint dan git diff --check bersih; DB lokal: siapa guru imam syafii kini menyertakan المختصر الوجيز hlm. 17 (أخذ الإمام الشافعي عن أهل الحجاز… الإمام مالك) dan tanpa arsip PISS-KTB
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-27-32-848341.json](docs/change-audit/2026-11-15-07-27-32-848341.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 95–95 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 101–101 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | 101–101 | 103–103 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | 104–104 | 106–106 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 112–113 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 118–128 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 131–131 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | — | 138–139 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:23:53 +07:00 | `server/ai-retrieval.js` | 123–125 | 141–143 | export function retrieveAiCandidates(db, question, additional = false, catalogue | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | — | 70–70 | export async function generateGemini({ keys, model }, prompt, { fetchImpl = fetc | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | — | 176–176 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 181–181 | 183–183 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | — | 189–189 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 188–190 | 191–191 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 192–192 | 193–193 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 197–198 | — | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 200–219 | 199–240 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 221–223 | 242–244 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:25:24 +07:00 | `server/ask-ai.js` | 226–226 | 247–247 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-15 07:26:44 +07:00 | `server/ask-ai.test.js` | 406–406 | 406–446 | test('biography questions about a named imam prefer his full-name entry over nam | modified |
