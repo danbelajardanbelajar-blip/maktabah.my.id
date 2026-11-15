@@ -1,3 +1,9 @@
+## 2026-11-15 08:47:43 WIB — Tanya AI: kitab yang disebut, kebijakan pengecualian, dan percobaan ulang istilah kitab
+
+- Commit fungsi `6ba9720`, `8aaaec8`, `e47b067`, `aa2b39a`, dan `1715b3c` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perilaku endpoint sesuai `1715b3c` (tahap "Mencoba lagi dengan rujukan dari istilah kitab" muncul).
+- Kebijakan pengecualian v4: ابن تيمية، ابن باز، ابن عثيمين، الألباني beserta variannya; nama di catatan kaki tidak memblokir kitab; محمد بن عبد الوهاب dihapus karena juga nama perawi di sanad صحيح مسلم dan Sunan.
+- Uji online HTTPS: "apa isi kitab إحياء علوم الدين" grounded 6,8 detik dari hlm. 3 (empat rubu'). "menurut kitab تعليم المتعلم apa saja penyebab faqir" grounded 5,4 detik dari hlm. 63 (sebelumnya kitab terblokir karena catatan kaki). "ما حكم قضاء صلاة الميت" grounded 8,5 detik lewat percobaan ulang istilah kitab (نور الإيضاح hlm. 73, المجموع hlm. 394). "ما حكم صلاة بلا إمام" grounded 4,5 detik tanpa percobaan ulang, tetapi rujukannya (salat khauf dan niat imam/makmum) hanya sebagian sesuai.
+
 ## 2026-11-15 07:01:44 WIB — Tanya AI: rujukan kutipan berkelompok
 
 - Commit `0ff85d7` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perilaku endpoint sesuai commit ini.

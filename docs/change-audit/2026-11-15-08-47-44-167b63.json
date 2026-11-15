@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 08:47:44 +07:00",
+  "title": "Catat uji online kitab yang disebut dan istilah kitab",
+  "baseCommit": "1715b3c407d2c31208ae4aacbb5d7753ea0edd0b",
+  "checks": "HTTPS: isi kitab Ihya grounded 6,8 s; تعليم المتعلم penyebab faqir grounded 5,4 s; قضاء صلاة الميت grounded 8,5 s via percobaan ulang istilah kitab; صلاة بلا إمام grounded 4,5 s",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:47:43 +07:00",
+      "stagedSha256": "20fcd34bee2aed98627f6c55bae775790a84ce4db3b3ad0ff577fc1588a680d6",
+      "diffSha256": "d4eade870f608b0e144921c4163d3fa4d817870d38c3405454faa654ed8d143e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 6
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

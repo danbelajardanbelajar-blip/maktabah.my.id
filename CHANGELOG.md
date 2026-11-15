@@ -1315,3 +1315,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-45-09-3b7dc8.
 | 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | 243–243 | 262–262 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 08:41:19 +07:00 | `server/ask-ai.js` | 249–249 | 268–268 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 08:44:25 +07:00 | `server/ask-ai.test.js` | — | 453–475 | test('when every matching page belongs to an excluded book, the reply names the | modified |
+
+## [2026-11-15 08:47:44 +07:00] — Catat uji online kitab yang disebut dan istilah kitab
+
+Waktu pencatatan: **2026-11-15 08:47:44 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1715b3c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: HTTPS: isi kitab Ihya grounded 6,8 s; تعليم المتعلم penyebab faqir grounded 5,4 s; قضاء صلاة الميت grounded 8,5 s via percobaan ulang istilah kitab; صلاة بلا إمام grounded 4,5 s
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-47-44-167b63.json](docs/change-audit/2026-11-15-08-47-44-167b63.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 08:47:43 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |
