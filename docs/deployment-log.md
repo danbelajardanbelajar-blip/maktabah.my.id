@@ -1,3 +1,10 @@
+## 2026-11-15 07:00:17 WIB — Tanya AI: kutipan per kalimat, arah teks, dan nomor rujukan
+
+- Commit `1b5e648` dan `4fee5da` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-Dqs6Krnx.js` sama dengan build `1b5e648`, dan perilaku endpoint sesuai `4fee5da`.
+- Uji online `1b5e648`: kutipan sudah utuh per kalimat, satu paragraf, Arab memakai «». Masih ditemukan kutipan diawali «: أما…» dan rujukan [1.10]. [1] di penjelasan; diperbaiki di `4fee5da`.
+- Uji online `4fee5da`: حكم صلاة الجماعة grounded 5,3 detik, kutipan diawali huruf dan rujukan [1] rapi. "hukum membeli saham" grounded 3,5 detik (3 rujukan). من هو الشافعي grounded 3,5 detik.
+- Masih ditemukan rujukan berkelompok [1.3, 1.4, 4.2] yang tidak dinormalisasi dan tidak ikut penomoran ulang; diperbaiki pada commit berikutnya.
+
 ## 2026-11-15 04:43:50 WIB — Tanya AI: biografi imam lewat nama lengkap
 
 - Commit fungsi `40eb699` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; perubahan hanya di server sehingga aset frontend tetap `index.dev-CdbXY2HS.js`, dan perilaku endpoint berubah sesuai commit ini.

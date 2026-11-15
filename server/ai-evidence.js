@@ -72,7 +72,7 @@ export function verifyAnswer(text,refs,catalog){
   return {source:q.source,text:actual};
  });
  // The model sometimes cites a quote ID ([1.10]) in prose; readers only know source numbers.
- data={...data,answer:data.answer.replace(/\[(\d+)\.\d+\]/g,'[$1]').replace(/(\[\d+\])([.,;:]?)(?:\s*\1)+/g,'$1$2')};
+ data={...data,answer:data.answer.replace(/\[\s*(\d+(?:\.\d+)?(?:\s*[,،;]\s*\d+(?:\.\d+)?)*)\s*\]/g,(_,list)=>[...new Set(list.split(/\s*[,،;]\s*/).map(id=>id.split('.')[0]))].map(n=>`[${n}]`).join('')).replace(/(\[\d+\])([.,;:]?)(?:\s*\1)+/g,'$1$2')};
  const sources=[...new Set(quotes.map(q=>q.source))];
  if(!/\[\d+\]/.test(data.answer)&&sources.length===1&&refs.filter(r=>r.pageId!=null).length===1)data={...data,answer:data.answer.trim()+` [${sources[0]}]`};
  const citations=[...data.answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));

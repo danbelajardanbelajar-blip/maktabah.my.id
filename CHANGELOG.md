@@ -1140,3 +1140,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-06-57-13-314ce4.
 | 2026-11-15 06:56:29 +07:00 | `server/ai-evidence.js` | 31–31 | 31–32 | export function quoteUnits(text,{min=60,max=600}={}){ | modified |
 | 2026-11-15 06:56:29 +07:00 | `server/ai-evidence.js` | — | 74–75 | export function verifyAnswer(text,refs,catalog){ | modified |
 | 2026-11-15 06:55:41 +07:00 | `server/ai-evidence.test.js` | — | 61–71 | test('quotes are whole sentences across wrapped lines and display as one paragra | modified |
+
+## [2026-11-15 07:00:18 +07:00] — Tanya AI: rujukan kutipan berkelompok
+
+Waktu pencatatan: **2026-11-15 07:00:18 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4fee5da`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 213 tes server lulus (tes baru: [1.1, 2.1] menjadi [1][2] sebelum penomoran ulang); oxlint bersih; uji online 4fee5da: tiga pertanyaan grounded, tersisa rujukan berkelompok
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-07-00-18-bc2a82.json](docs/change-audit/2026-11-15-07-00-18-bc2a82.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 07:00:17 +07:00 | `docs/deployment-log.md` | — | 1–7 | module/file | modified |
+| 2026-11-15 06:59:24 +07:00 | `server/ai-evidence.js` | 75–75 | 75–75 | export function verifyAnswer(text,refs,catalog){ | modified |
+| 2026-11-15 06:59:31 +07:00 | `server/ai-evidence.test.js` | — | 72–82 | test('quote units start at a letter and quote IDs in prose become source numbers | modified |

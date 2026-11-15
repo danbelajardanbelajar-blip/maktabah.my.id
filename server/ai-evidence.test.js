@@ -69,3 +69,14 @@ test('quote units start at a letter and quote IDs in prose become source numbers
  assert.equal(result.answer,'Ulama berbeda pendapat [1].');
  }finally{db.close();}
 });
+
+test('grouped quote IDs in prose become separate source citations that survive renumbering',()=>{
+ const db=new Database(':memory:');try{
+ db.exec("CREATE TABLE books_meta(bkid INTEGER,bk TEXT);CREATE TABLE pages(id INTEGER,book_id INTEGER,part INTEGER,page INTEGER,nass TEXT);INSERT INTO books_meta VALUES(1,'Book');");
+ const a='Saham perusahaan yang usahanya mubah boleh diperjualbelikan menurut para ulama.',b='Pembelian saham dengan kredit berbunga hukumnya haram karena termasuk riba.';
+ db.prepare('INSERT INTO pages VALUES(1,1,1,1,?)').run(a);db.prepare('INSERT INTO pages VALUES(2,1,1,2,?)').run(b);
+ const refs=verifiedReferences(db,[{bkid:1,pageId:1,excerpt:a},{bkid:1,pageId:2,excerpt:b}]);
+ const result=verifyAnswer({answer:'Boleh [1.1, 2.1] tetapi kredit haram [2.1، 2.1].',quotes:[{source:1,quoteId:'1.1'},{source:2,quoteId:'2.1'}]},refs,quoteCatalog(refs));
+ assert.equal(result.answer,'Boleh [1][2] tetapi kredit haram [2].');
+ }finally{db.close();}
+});

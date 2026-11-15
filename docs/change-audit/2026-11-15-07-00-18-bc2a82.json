@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 07:00:18 +07:00",
+  "title": "Tanya AI: rujukan kutipan berkelompok",
+  "baseCommit": "4fee5da10079b2f1aaf1da012b01c81f89228527",
+  "checks": "213 tes server lulus (tes baru: [1.1, 2.1] menjadi [1][2] sebelum penomoran ulang); oxlint bersih; uji online 4fee5da: tiga pertanyaan grounded, tersisa rujukan berkelompok",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 07:00:17 +07:00",
+      "stagedSha256": "d07d91d0ef38f102fc4aaa45b3fbe69db2933cc02d0923e651fc2e2f13a88ba8",
+      "diffSha256": "29cfaa7aafbdc2162b9e103daaef62892bf301b11df6f9530d34e355c65af3fc",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 7
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-evidence.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 06:59:24 +07:00",
+      "stagedSha256": "52104b21e4a9a31267fab4c1cc77479b4bb56cab336cf2681e48b2e234742222",
+      "diffSha256": "6d44aecc3dd8c89d7add7c1685b8b9222cb24c13e213dd74b6468d7ca366de64",
+      "symbols": [
+        "sourcePages",
+        "invalid",
+        "answerSchema",
+        "verifiedReferences",
+        "book",
+        "row",
+        "pieces",
+        "excerpt",
+        "matched",
+        "reference",
+        "quoteUnits",
+        "flat",
+        "sentences",
+        "units",
+        "quoteCatalog",
+        "catalog",
+        "original",
+        "actual",
+        "verifyAnswer",
+        "quotes",
+        "chosen",
+        "sources",
+        "citations",
+        "displayQuote",
+        "evidenceAnswer",
+        "validCachedAnswer",
+        "refs",
+        "verified"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 75,
+            "count": 1
+          },
+          "after": {
+            "line": 75,
+            "count": 1
+          },
+          "section": "export function verifyAnswer(text,refs,catalog){"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-evidence.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 06:59:31 +07:00",
+      "stagedSha256": "428345491a2ad6805f61edbb6029d5aca3c1410632baaec85bd5755d5bdef597",
+      "diffSha256": "0d023c556ed0e145b6de2cd553a9241cd91bd5d83b2da3a502a22f6d8769fe40",
+      "symbols": [
+        "db",
+        "refs",
+        "evidence",
+        "catalog",
+        "payload",
+        "result",
+        "snippets",
+        "id",
+        "ar",
+        "answer",
+        "a"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 71,
+            "count": 0
+          },
+          "after": {
+            "line": 72,
+            "count": 11
+          },
+          "section": "test('quote units start at a letter and quote IDs in prose become source numbers"
+        }
+      ]
+    }
+  ]
+}
