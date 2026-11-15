@@ -1347,3 +1347,33 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-09-47-03-f0da0d.
 | 2026-11-15 09:45:31 +07:00 | `src/components/Admin.tsx` | 1145–1145 | 1145–1145 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-15 09:45:30 +07:00 | `src/components/AdminLogSummary.tsx` | 2–3 | 2–14 | export interface LogTopItem {value:string;count:number;} | modified |
 | 2026-11-15 09:45:30 +07:00 | `src/components/AdminLogSummary.tsx` | 6–8 | 17–19 | export function AdminLogSummary({top,total,onChoose,disabled}:{top:Record<string | modified |
+
+## [2026-11-15 10:58:16 +07:00] — Pencarian teks: total dibatasi dan berjalan di worker
+
+Waktu pencatatan: **2026-11-15 10:58:16 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `afa27ba`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 228 tes server lulus (4 tes baru text-search: urutan frasa persis lalu AND, batas hitung 10.000, dua perpustakaan, worker dengan batas waktu); tsc dan build lulus; DB lokal: الله 32 ms (sebelumnya hitungan 7,9 juta halaman), قال الله 139 ms, kueri pengguna 111 ms; online sebelum perbaikan: الله/قال الله/في من >120 detik dan menahan seluruh server
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-10-58-16-3c311f.json](docs/change-audit/2026-11-15-10-58-16-3c311f.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Clg0O7TL.js` | 1–17 | — | module/file | deleted |
+| 2026-11-15 10:58:11 +07:00 | `dist/assets/index.dev-DKI0Reem.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-15 10:58:11 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | — | 30–30 | import { searchRowa } from './rowa-search.js'; | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | 901–901 | 902–902 | app.delete('/api/admin/book-submission/:id', requireAdmin, (req, res) => { | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | 907–909 | 908–910 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | 915–986 | 916–916 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | 988–1090 | 918–927 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | — | 929–929 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 10:55:49 +07:00 | `server/index.js` | 1096–1096 | 934–934 | app.get('/api/search', (req, res) => { | modified |
+| 2026-11-15 10:55:25 +07:00 | `server/text-search-worker.js` | — | 1–13 | module/file | added |
+| 2026-11-15 10:55:33 +07:00 | `server/text-search.js` | — | 1–84 | SEARCH_COUNT_CAP, searchPages, schemas, offset, filters, books, fts, from | added |
+| 2026-11-15 10:56:34 +07:00 | `server/text-search.test.js` | — | 1–62 | library, db, create, put, match, all, started, result | added |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | — | 50–51 | function App() { | modified |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 282–282 | 284–284 | function App() { | modified |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 285–285 | 287–287 | function App() { | modified |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 304–304 | 306–306 | function App() { | modified |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | — | 314–314 | function App() { | modified |
+| 2026-11-15 10:56:08 +07:00 | `src/App.tsx` | 752–752 | 755–755 | function App() { | modified |

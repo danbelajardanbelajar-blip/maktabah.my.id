@@ -27,6 +27,7 @@ import {registerAdminLogs} from './admin-logs.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
+import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -898,202 +899,39 @@ app.delete('/api/admin/book-submission/:id', requireAdmin, (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-app.get('/api/search', (req, res) => {
+app.get('/api/search', async (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
     const rawQuery = req.query.q || '';
     const query = rawQuery.trim();
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
-    const offset = (page - 1) * limit;
+    // Bounded paging: results beyond the counted cap are not reachable anyway.
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const page = Math.min(Math.ceil(SEARCH_COUNT_CAP / limit) + 1, Math.max(1, parseInt(req.query.page) || 1));
 
     let cat_ids = [];
     if (req.query.cat_id) {
       cat_ids = req.query.cat_id.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
     }
-    const targetBookId = req.query.book_id ? parseInt(req.query.book_id) : null;
+    const targetBookId = Number.isSafeInteger(parseInt(req.query.book_id)) ? parseInt(req.query.book_id) : null;
 
-    const { exactPhrase, andMatch, cleanQuery } = buildFtsMatch(query);
-
-    let total = 0;
-    let results = [];
-
-    // ============================================================
-    // PATH A: Single DB (hasTambahan = false)
-    // Gunakan query IDENTIK dengan versi original — terbukti bekerja.
-    // JANGAN gunakan schema prefix (main.pages_fts) karena snippet()
-    // dan beberapa versi SQLite tidak mendukungnya di MATCH clause.
-    // ============================================================
-    if (!hasTambahan) {
-      const getQuery = (isCount, isExact) => {
-        const selectFields = isCount
-          ? 'COUNT(*) as total'
-          : `p.id as page_id, p.book_id, p.part, p.page, b.bk as book_name, snippet(pages_fts, -1, '<b>', '</b>', '...', 15) as snippet, ${isExact ? 1 : 0} as is_exact`;
-        let sql = `
-          SELECT ${selectFields}
-          FROM pages_fts f
-          JOIN pages p ON f.rowid = p.rowid
-          JOIN books_meta b ON p.book_id = b.bkid
-          WHERE pages_fts MATCH ?
-        `;
-        if (cat_ids.length > 0) {
-          const placeholders = cat_ids.map(() => '?').join(',');
-          sql += ` AND b.cat IN (${placeholders})`;
-        }
-        if (targetBookId) {
-          sql += ` AND p.book_id = ${targetBookId}`;
-        }
-        if (!isCount) {
-          sql += ` LIMIT ? OFFSET ?`;
-        }
-        return sql;
-      };
-
-      if (andMatch !== '') {
-        const countExactStmt = db.prepare(getQuery(true, true));
-        const totalExact = cat_ids.length > 0 ? countExactStmt.get(exactPhrase, ...cat_ids).total : countExactStmt.get(exactPhrase).total;
-
-        const countAndStmt = db.prepare(getQuery(true, false));
-        const totalAnd = cat_ids.length > 0 ? countAndStmt.get(andMatch, ...cat_ids).total : countAndStmt.get(andMatch).total;
-
-        total = totalExact + totalAnd;
-
-        if (offset < totalExact) {
-          const fetchExactStmt = db.prepare(getQuery(false, true));
-          const params = cat_ids.length > 0 ? [exactPhrase, ...cat_ids, limit, offset] : [exactPhrase, limit, offset];
-          results = fetchExactStmt.all(...params);
-
-          if (results.length < limit && totalAnd > 0) {
-            const remLimit = limit - results.length;
-            const fetchAndStmt = db.prepare(getQuery(false, false));
-            const params2 = cat_ids.length > 0 ? [andMatch, ...cat_ids, remLimit, 0] : [andMatch, remLimit, 0];
-            results = results.concat(fetchAndStmt.all(...params2));
-          }
-        } else {
-          const andOffset = offset - totalExact;
-          const fetchAndStmt = db.prepare(getQuery(false, false));
-          const params = cat_ids.length > 0 ? [andMatch, ...cat_ids, limit, andOffset] : [andMatch, limit, andOffset];
-          results = fetchAndStmt.all(...params);
-        }
-      } else {
-        const countStmt = db.prepare(getQuery(true, true));
-        total = cat_ids.length > 0 ? countStmt.get(exactPhrase, ...cat_ids).total : countStmt.get(exactPhrase).total;
-
-        const fetchStmt = db.prepare(getQuery(false, true));
-        const params = cat_ids.length > 0 ? [exactPhrase, ...cat_ids, limit, offset] : [exactPhrase, limit, offset];
-        results = fetchStmt.all(...params);
-      }
-
-    } else {
-      // ============================================================
-      // PATH B: Multi-DB (hasTambahan = true)
-      // Query ke main.pages_fts DAN tambahan.pages_fts secara terpisah.
-      // ============================================================
-      const buildFtsQuery = (dbPrefix, isCount, isExact) => {
-        // Untuk 'main': tanpa prefix (backward compatible)
-        // Untuk 'tambahan': dengan prefix schema
-        const ftsTable = dbPrefix === 'main' ? 'pages_fts' : `${dbPrefix}.pages_fts`;
-        const pagesTable = dbPrefix === 'main' ? 'pages' : `${dbPrefix}.pages`;
-        const selectFields = isCount
-          ? 'COUNT(*) as total'
-          : `p.id as page_id, p.book_id, p.part, p.page, b.bk as book_name, snippet(${ftsTable}, -1, '<b>', '</b>', '...', 15) as snippet, ${isExact ? 1 : 0} as is_exact`;
-        let sql = `
-          SELECT ${selectFields}
-          FROM ${ftsTable} f
-          JOIN ${pagesTable} p ON f.rowid = p.rowid
-          JOIN (SELECT bkid, bk, cat FROM main.books_meta UNION ALL SELECT bkid, bk, cat FROM tambahan.books_meta) b ON p.book_id = b.bkid
-          WHERE ${ftsTable} MATCH ?
-        `;
-        if (cat_ids.length > 0) {
-          const placeholders = cat_ids.map(() => '?').join(',');
-          sql += ` AND b.cat IN (${placeholders})`;
-        }
-        if (!isCount) sql += ` LIMIT ? OFFSET ?`;
-        return sql;
-      };
-
-      const execSearch = (dbPrefix, ftsQuery, isCount, isExact, limitVal, offsetVal) => {
-        try {
-          const sql = buildFtsQuery(dbPrefix, isCount, isExact);
-          const stmt = db.prepare(sql);
-          if (isCount) {
-            const row = cat_ids.length > 0 ? stmt.get(ftsQuery, ...cat_ids) : stmt.get(ftsQuery);
-            return row ? row.total : 0;
-          } else {
-            const params = cat_ids.length > 0 ? [ftsQuery, ...cat_ids, limitVal, offsetVal] : [ftsQuery, limitVal, offsetVal];
-            return stmt.all(...params);
-          }
-        } catch(e) {
-          console.error(`[execSearch] Error di ${dbPrefix}.pages_fts:`, e.message);
-          return isCount ? 0 : [];
-        }
-      };
-
-      const prefixes = ['main', 'tambahan'];
-
-      if (andMatch !== '') {
-        let totalExact = 0;
-        let totalAnd = 0;
-        for (const pfx of prefixes) {
-          totalExact += execSearch(pfx, exactPhrase, true, true);
-          totalAnd += execSearch(pfx, andMatch, true, false);
-        }
-        total = totalExact + totalAnd;
-
-        if (offset < totalExact) {
-          let remaining = limit;
-          let off = offset;
-          for (const pfx of prefixes) {
-            const r = execSearch(pfx, exactPhrase, false, true, remaining, off);
-            results = results.concat(r);
-            remaining -= r.length;
-            off = Math.max(0, off - execSearch(pfx, exactPhrase, true, true));
-            if (remaining <= 0) break;
-          }
-          if (results.length < limit && totalAnd > 0) {
-            const remLimit = limit - results.length;
-            for (const pfx of prefixes) {
-              const r = execSearch(pfx, andMatch, false, false, remLimit, 0);
-              results = results.concat(r);
-              if (results.length >= limit) break;
-            }
-          }
-        } else {
-          const andOffset = offset - totalExact;
-          let remaining = limit;
-          let off = andOffset;
-          for (const pfx of prefixes) {
-            const r = execSearch(pfx, andMatch, false, false, remaining, off);
-            results = results.concat(r);
-            remaining -= r.length;
-            off = Math.max(0, off - execSearch(pfx, andMatch, true, false));
-            if (remaining <= 0) break;
-          }
-        }
-      } else {
-        for (const pfx of prefixes) total += execSearch(pfx, exactPhrase, true, true);
-        let remaining = limit;
-        let off = offset;
-        for (const pfx of prefixes) {
-          const pfxTotal = execSearch(pfx, exactPhrase, true, true);
-          if (off < pfxTotal) {
-            const r = execSearch(pfx, exactPhrase, false, true, remaining, off);
-            results = results.concat(r);
-            remaining -= r.length;
-            off = 0;
-          } else {
-            off -= pfxTotal;
-          }
-          if (remaining <= 0) break;
-        }
-      }
+    const { exactPhrase, andMatch } = buildFtsMatch(query);
+    if (!exactPhrase) return res.json({ results: [], total: 0, capped: false, error: null });
+    // Totals are capped and the search runs in a read-only worker with a time limit (see text-search.js):
+    // exact counts of common words used to block every visitor for minutes.
+    let found;
+    try {
+      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, additional: hasTambahan });
+    } catch (error) {
+      if (error.status) return res.status(error.status).json({ results: [], total: 0, code: error.code, error: error.message });
+      throw error;
     }
+    const { results, total, capped } = found;
 
     if (!req.isAdminActivity && page===1 && query.length>=3) {
       try {stateDb.prepare('INSERT INTO search_logs(query,ip,user_agent,result_count,mode) VALUES(?,?,?,?,?)').run(query,req.ip,req.headers['user-agent'],total,'text');}catch{}
     }
-    res.json({ results, total, error: null });
+    res.json({ results, total, capped, error: null });
   } catch (error) {
     try {
         fs.appendFileSync(logPath, new Date().toISOString() + ' /api/search route error: ' + (error ? error.stack || error : 'null') + '\n');

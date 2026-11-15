@@ -47,6 +47,8 @@ function App() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [totalResults, setTotalResults] = useState(0);
+  // Text search counts at most 10,000 matches; a capped total is shown as "10.000+".
+  const [totalCapped, setTotalCapped] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -279,10 +281,10 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      let res; let fetchedResults: any[] = []; let fetchedTotal = 0;
+      let res; let fetchedResults: any[] = []; let fetchedTotal = 0; let fetchedCapped = false;
       if (mode === 'text') {
         res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
-        fetchedResults = res.results || []; fetchedTotal = res.total || 0;
+        fetchedResults = res.results || []; fetchedTotal = res.total || 0; fetchedCapped = res.capped === true;
       } else if (mode === 'title') {
         res = await webAPI.searchTitles(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
         fetchedResults = res.data || []; fetchedTotal = res.total || 0;
@@ -301,7 +303,7 @@ function App() {
         fetchedTotal = (scholariumRes.total || (scholariumRes.data?.length || 0)) + (archiveRes.response?.numFound || 0);
       }
       if (requestId !== searchRequest.current) return;
-      setResults(fetchedResults); setTotalResults(fetchedTotal); loadedSearch.current = key;
+      setResults(fetchedResults); setTotalResults(fetchedTotal); setTotalCapped(fetchedCapped); loadedSearch.current = key;
       setCurrentPage(page);
       setHasSearched(true);
     } catch (err: any) {
@@ -309,6 +311,7 @@ function App() {
       setError(err.message);
       setResults([]);
       setTotalResults(0);
+      setTotalCapped(false);
     }
     if (requestId === searchRequest.current) { pendingSearch.current = ''; setLoading(false); }
   };
@@ -749,7 +752,7 @@ function App() {
 
             {activeTab !== 'home' && totalResults > 0 && (
               <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-[var(--reader-bg)] p-4 rounded-xl shadow-sm border border-black/5 gap-2">
-                <span className="font-semibold text-sm md:text-base text-[var(--app-text)]">Total Hasil: <span className="font-bold text-[var(--app-primary)]">{totalResults.toLocaleString()}</span></span>
+                <span className="font-semibold text-sm md:text-base text-[var(--app-text)]">Total Hasil: <span className="font-bold text-[var(--app-primary)]">{totalResults.toLocaleString()}{totalCapped ? '+' : ''}</span></span>
                 <span className="text-sm md:text-base text-[var(--app-text)] opacity-80">Halaman {currentPage} dari {totalPages}</span>
               </div>
             )}
