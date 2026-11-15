@@ -19,7 +19,7 @@ test('rankings, filters and pagination cover all records beyond the previous 500
  for(let i=0;i<620;i++)put.run(i<510?' Puasa ':'lainnya',i<400?'1.1.1.1':'2.2.2.2',i%2?1:0);
  const first=readAdminLogs(db,'search',{limit:'20'});
  assert.equal(first.stats.total,620);assert.equal(first.total,620);assert.equal(first.data.length,20);
- assert.deepEqual(first.top.query[0],{value:'puasa',count:510});assert.deepEqual(first.top.ip[0],{value:'1.1.1.1',count:400});assert.deepEqual(first.top.question,[]);
+ assert.deepEqual(first.top.query[0],{value:'puasa',count:510});assert.deepEqual(first.top.ip[0],{value:'1.1.1.1',count:400});assert.equal(first.top.question,undefined);
  const filtered=readAdminLogs(db,'search',{dimension:'query',value:'puasa',outcome:'zero',page:'2',limit:'20'});
  assert.equal(filtered.total,255);assert.equal(filtered.page,2);assert.equal(filtered.data.length,20);assert.equal(filtered.stats.total,620);
  assert.equal(readAdminLogs(db,'search',{page:'999'}).page,31);
@@ -36,7 +36,10 @@ test('questions, pages and per-feature targets are aggregated without trusting i
  assert.deepEqual(readAdminLogs(db,'visit').top.page[0],{value:'/book/7',count:2});
  assert.equal(readAdminLogs(db,'hadith').top.page.length,2);
  assert.equal(readAdminLogs(db,'authors').top.page[0].value,'Penulis #7');
- for(const type of ['search','ask','visit','download','quran','rowa','hadith','authors'])assert.equal(Object.keys(readAdminLogs(db,type).top).length,4);
+ // Each log shows only the groups it records: no "top questions" in search logs, no "top searches" in Tanya AI logs.
+ const groups={search:['query','ip'],ask:['question','page','ip'],visit:['page','ip'],download:['page','ip'],quran:['page','ip'],rowa:['page','ip'],hadith:['query','page','ip'],authors:['query','page','ip']};
+ for(const [type,expected] of Object.entries(groups))assert.deepEqual(Object.keys(readAdminLogs(db,type).top),expected,type);
+ assert.throws(()=>readAdminLogs(db,'search',{dimension:'question',value:'x'}),/Kelompok ringkasan tidak valid/);
 });
 
 test('text search treats wildcard characters literally and date boundaries follow WIB',t=>{

@@ -1327,3 +1327,23 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-47-44-167b63.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 08:47:43 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |
+
+## [2026-11-15 09:47:03 +07:00] — Admin: peringkat log sesuai jenis log
+
+Waktu pencatatan: **2026-11-15 09:47:03 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `afbc220`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 224 tes server lulus (tes admin-logs: kelompok per jenis log, filter kelompok yang tidak ada ditolak); tsc dan oxlint bersih; build frontend sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-09-47-03-f0da0d.json](docs/change-audit/2026-11-15-09-47-03-f0da0d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 09:46:52 +07:00 | `dist/assets/index.dev-Clg0O7TL.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Dqs6Krnx.js` | 1–17 | — | module/file | deleted |
+| 2026-11-15 09:46:52 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-15 09:45:05 +07:00 | `server/admin-logs.js` | 11–11 | 11–18 | function definitions(db,type) { | modified |
+| 2026-11-15 09:45:13 +07:00 | `server/admin-logs.test.js` | 22–22 | 22–22 | test('rankings, filters and pagination cover all records beyond the previous 500 | modified |
+| 2026-11-15 09:45:13 +07:00 | `server/admin-logs.test.js` | 39–39 | 39–42 | test('questions, pages and per-feature targets are aggregated without trusting i | modified |
+| 2026-11-15 09:45:31 +07:00 | `src/components/Admin.tsx` | 1145–1145 | 1145–1145 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-15 09:45:30 +07:00 | `src/components/AdminLogSummary.tsx` | 2–3 | 2–14 | export interface LogTopItem {value:string;count:number;} | modified |
+| 2026-11-15 09:45:30 +07:00 | `src/components/AdminLogSummary.tsx` | 6–8 | 17–19 | export function AdminLogSummary({top,total,onChoose,disabled}:{top:Record<string | modified |

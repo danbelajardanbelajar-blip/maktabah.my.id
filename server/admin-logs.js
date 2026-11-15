@@ -8,7 +8,14 @@ function definitions(db,type) {
   const page=type==='visit'?column('path',columns):type==='download'?column('book_title',columns):type==='quran'?"'Surah #' || COALESCE(surah_id,'')":type==='rowa'?"COALESCE(rowa_name,'Perawi') || ' (ID: ' || COALESCE(rowa_id,'') || ')'":['hadith','authors'].includes(type)?
     "CASE WHEN target_id IS NOT NULL AND action IN ('read_book','book_detail','profile') THEN CASE WHEN action='profile' THEN 'Penulis #' ELSE 'Kitab #' END || target_id || CASE WHEN json_valid(context) AND json_extract(CASE WHEN json_valid(context) THEN context ELSE '{}' END,'$.page_id') IS NOT NULL THEN ' · halaman #' || json_extract(CASE WHEN json_valid(context) THEN context ELSE '{}' END,'$.page_id') ELSE '' END ELSE '' END":
     type==='ask'&&columns.has('context_json')?"CASE WHEN json_valid(context_json) AND json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.bookId') IS NOT NULL THEN 'Kitab #' || json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.bookId') || ' · halaman #' || COALESCE(json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.pageId'),'') ELSE '' END":"''";
-  return {table,columns,dimensions:{query:`LOWER(TRIM(${query}))`,question:`LOWER(TRIM(${question}))`,ip:`TRIM(${ip})`,page:`TRIM(${page})`}};
+  // Only groups this log actually records: searches in search logs, questions in Tanya AI logs, pages/books
+  // where a page column exists. A group without a source column would always be empty.
+  const dimensions={};
+  if(columns.has('query'))dimensions.query=`LOWER(TRIM(${query}))`;
+  if(columns.has('question'))dimensions.question=`LOWER(TRIM(${question}))`;
+  if(page!=="''")dimensions.page=`TRIM(${page})`;
+  if(columns.has('ip'))dimensions.ip=`TRIM(${ip})`;
+  return {table,columns,dimensions};
 }
 function filtersFor(def,raw={}) {
   const value=(key,max=250)=>{const value=raw[key]??'';if(typeof value!=='string'||value.length>max)throw fail('Filter log tidak valid.');return value.trim();};

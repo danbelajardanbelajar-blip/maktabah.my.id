@@ -1142,7 +1142,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       </div>
 
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
-      <AdminLogSummary top={top} total={matchedTotal} disabled={loading||deleting} onChoose={choose} />
+      <AdminLogSummary type={type} top={top} total={matchedTotal} disabled={loading||deleting} onChoose={choose} />
       <div className="p-4 border-b bg-gray-50 space-y-3">
         <p className="text-xs text-gray-500">Filter berlaku pada seluruh riwayat. Waktu dan tanggal dalam WIB. Aktivitas admin terautentikasi tidak dicatat sebagai aktivitas pengunjung.</p>
         <div className="flex flex-wrap gap-2">
