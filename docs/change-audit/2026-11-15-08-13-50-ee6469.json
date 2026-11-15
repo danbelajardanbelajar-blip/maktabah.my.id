@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-15 08:13:50 +07:00",
+  "title": "Tanya AI: tambah الألباني dan varian nama pengecualian",
+  "baseCommit": "8aaaec85578b2d2147b50b5e269ea63ad846a443",
+  "checks": "222 tes server lulus (tes varian diperluas: بن/ابن تيمية/تيميه, لابن/وابن, محمد ابن عبدالوهاب, عبد العزيز بن باز, ابن عثيمين, الألباني/الألبانى/للألباني; tidak cocok untuk الباني, عبد الوهاب الشعراني, ابن بازل); oxlint bersih; pemeriksaan DB lokal: sampel 40 kitab hadits, الألباني menambah 1 blokir (رياض الصالحين ط- أخرى, tahqiq al-Albani); ditemukan salah deteksi lama: perawi محمد بن عبد الوهاب memblokir صحيح مسلم dan Sunan",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:11:26 +07:00",
+      "stagedSha256": "02472ec3d1937d481daeedf414b1fc4a45d90f9890aa5f3b99683a82d5c70d7d",
+      "diffSha256": "bab4e3ecb3920656788a7d78f9ec563431c8929c6828cb34ee5780cd29cee770",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 3
+          },
+          "after": {
+            "line": 4,
+            "count": 12
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 8,
+            "count": 1
+          },
+          "after": {
+            "line": 17,
+            "count": 1
+          },
+          "section": "export const normalizePolicyText = text => sourceText(text).normalize('NFKC')"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:09:34 +07:00",
+      "stagedSha256": "8c881ed9a0dc60c917221c6d572a56c05c43e426171c6a1e7899fef27dfbc658",
+      "diffSha256": "346edd2917766cd14853b53f60b676606b856f4745905e244413b249b82e8fb0",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 19,
+            "count": 3
+          },
+          "after": {
+            "line": 19,
+            "count": 9
+          },
+          "section": "function fixture(t, filename=':memory:') {"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-15 08:09:35 +07:00",
+      "stagedSha256": "562973b817de16bf5c279bbfdf9101a5aafdd063038c6407d40628c7eac2a0a3",
+      "diffSha256": "b4345624fdb388bb6307cc2e40ebefb72ae980b26223fac2addb25ec828cc36d",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    }
+  ]
+}

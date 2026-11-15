@@ -16,9 +16,15 @@ function fixture(t, filename=':memory:') {
   t.after(()=>db.close());return db;
 }
 
-test('all four names match despite harakat, tatweel, HTML entities, line breaks and alif variants',()=>{
-  for(const text of ['قال بن باز','قال ابن باز','عُثَيْمِين','العثيمين','محمدُ بنُ عبدِ الْوَهّابِ','محمد بن عبدالوهاب','إِبْن تَيْمِيَّة','ابـن\nتيمية','<p>ابن&nbsp;تيمية</p>','ابن &#1578;يمية'])assert.equal(containsExcludedAiName(text),true,text);
-  for(const text of ['محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة'])assert.equal(containsExcludedAiName(text),false,text);
+test('all five names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
+  for(const text of [
+    'ابن تيمية','بن تيمية','قال شيخ الإسلام بن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابـن\nتيمية','<p>ابن&nbsp;تيمية</p>','ابن &#1578;يمية','ابنتيمية',
+    'محمد بن عبد الوهاب','محمدُ بنُ عبدِ الْوَهّابِ','محمد بن عبدالوهاب','محمد ابن عبد الوهاب','لمحمد بن عبد الوهاب','الشيخ محمد بن عبد الوهاب رحمه الله',
+    'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:',
+    'عُثَيْمِين','العثيمين','ابن عثيمين','محمد بن صالح العثيمين','لابن عثيمين',
+    'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ',
+  ])assert.equal(containsExcludedAiName(text),true,text);
+  for(const text of ['محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });
 
 test('a mention on any other page excludes every reference and catalogue entry of that book only',async t=>{

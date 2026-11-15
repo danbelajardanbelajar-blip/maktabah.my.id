@@ -1258,3 +1258,18 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-04-43-b858a5.
 | 2026-11-15 08:02:56 +07:00 | `server/ask-ai.js` | 193–194 | 195–199 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
 | 2026-11-15 08:03:58 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
 | 2026-11-15 08:03:58 +07:00 | `server/ask-ai.test.js` | — | 443–452 | test('an Indonesian question naming an Arabic book still gets Arabic keywords an | modified |
+
+## [2026-11-15 08:13:50 +07:00] — Tanya AI: tambah الألباني dan varian nama pengecualian
+
+Waktu pencatatan: **2026-11-15 08:13:50 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `8aaaec8`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 222 tes server lulus (tes varian diperluas: بن/ابن تيمية/تيميه, لابن/وابن, محمد ابن عبدالوهاب, عبد العزيز بن باز, ابن عثيمين, الألباني/الألبانى/للألباني; tidak cocok untuk الباني, عبد الوهاب الشعراني, ابن بازل); oxlint bersih; pemeriksaan DB lokal: sampel 40 kitab hadits, الألباني menambah 1 blokir (رياض الصالحين ط- أخرى, tahqiq al-Albani); ditemukan salah deteksi lama: perawi محمد بن عبد الوهاب memblokir صحيح مسلم dan Sunan
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-08-13-50-ee6469.json](docs/change-audit/2026-11-15-08-13-50-ee6469.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-15 08:11:26 +07:00 | `server/ai-book-policy.js` | 4–6 | 4–15 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-15 08:11:26 +07:00 | `server/ai-book-policy.js` | 8–8 | 17–17 | export const normalizePolicyText = text => sourceText(text).normalize('NFKC') | modified |
+| 2026-11-15 08:09:34 +07:00 | `server/ai-book-policy.test.js` | 19–21 | 19–27 | function fixture(t, filename=':memory:') { | modified |
+| 2026-11-15 08:09:35 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |

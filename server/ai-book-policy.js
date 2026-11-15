@@ -1,11 +1,20 @@
 import {Worker} from 'node:worker_threads';
 import {sourceText} from './ai-source.js';
 
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v2';
-export const excludedAiNames = ['بن باز','عثيمين','محمد بن عبد الوهاب','ابن تيمية'];
-const patterns = excludedAiNames.map(name=>new RegExp(name.split(' ').join('\\s*'),'u'));
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v3';
+export const excludedAiNames = ['ابن تيمية','محمد بن عبد الوهاب','ابن باز','ابن عثيمين','الألباني'];
+// Patterns run on normalized text: no marks/tatweel, أإآٱ→ا, ة→ه, ى→ي, punctuation→space.
+// A word may carry the proclitics و ف ب ل ك (لابن تيمية، وابن باز، للألباني); ابن may be written بن.
+const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
+const patterns = [
+  `${START}ا?بن\\s*تيميه${END}`,                    // ابن تيمية، بن تيمية، ابن تيميه، لابن تيمية
+  `${START}محمد\\s*ا?بن\\s*عبد\\s*ال?وهاب${END}`,     // محمد بن عبد الوهاب، محمد ابن عبدالوهاب
+  `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
+  'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين
+  `${START}ا?لالباني${END}`,                         // الألباني، للألباني، والألباني (not الباني "the builder")
+].map(source=>new RegExp(source,'u'));
 export const normalizePolicyText = text => sourceText(text).normalize('NFKC')
-  .replace(/[\p{M}\p{Cf}\u0640]/gu,'').replace(/[أإآٱ]/g,'ا')
+  .replace(/[\p{M}\p{Cf}ـ]/gu,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')
   .replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
 // An editor's footnotes (below the '______' rule) are not the book's own text: a hadith grading that cites
 // one of the names must not exclude the whole book. The quoted excerpt itself is still checked in full.
