@@ -14,6 +14,18 @@ export function auditMeta(payload={}) {
       references:(Array.isArray(payload.rejection.references)?payload.rejection.references:[]).slice(0,8).map(r=>({bkid:r?.bkid??null,pageId:r?.pageId??null,title:typeof r?.title==='string'?r.title:'',juz:r?.juz??null,page:r?.page??null,excerpt:typeof r?.excerpt==='string'?r.excerpt.slice(0,1500):''}))}}:{}),
   };
 }
+// Anonymous per-browser identity shared by Tanya AI history and visitor messages; only the hash is stored.
+export function browserSession(req,res,create=false) {
+  if(req[SESSION])return req[SESSION];
+  const raw=String(req.headers.cookie||'').split(';').map(c=>c.trim()).find(c=>c.startsWith(COOKIE+'='))?.slice(COOKIE.length+1);
+  let token=raw && /^[a-f0-9]{64}$/.test(raw)?raw:null;
+  if(!token && create) {
+    token=crypto.randomBytes(32).toString('hex');
+    res.append('Set-Cookie',`${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000${req.secure?'; Secure':''}`);
+  }
+  if(!token)return null;
+  req[SESSION]=crypto.createHash('sha256').update(token).digest('hex');return req[SESSION];
+}
 export function registerAiHistory(app,{getStateDb}) {
   const db=getStateDb();
   if(db?.prepare("SELECT 1 FROM sqlite_master WHERE name='ask_logs'").get()) {
@@ -22,17 +34,7 @@ export function registerAiHistory(app,{getStateDb}) {
     if(!db.prepare('PRAGMA table_info(ask_logs)').all().some(c=>c.name==='meta_json'))db.exec('ALTER TABLE ask_logs ADD COLUMN meta_json TEXT');
     db.exec('CREATE INDEX IF NOT EXISTS ask_logs_session ON ask_logs(session_id)');
   }
-  const session=(req,res,create=false)=>{
-    if(req[SESSION])return req[SESSION];
-    const raw=String(req.headers.cookie||'').split(';').map(c=>c.trim()).find(c=>c.startsWith(COOKIE+'='))?.slice(COOKIE.length+1);
-    let token=raw && /^[a-f0-9]{64}$/.test(raw)?raw:null;
-    if(!token && create) {
-      token=crypto.randomBytes(32).toString('hex');
-      res.append('Set-Cookie',`${COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000${req.secure?'; Secure':''}`);
-    }
-    if(!token)return null;
-    req[SESSION]=crypto.createHash('sha256').update(token).digest('hex');return req[SESSION];
-  };
+  const session=browserSession;
   const record=(req,res,question,response,context={},payload)=>{
     if(req.isAdminActivity)return;
     try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json,meta_json) VALUES(?,?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context),payload?JSON.stringify(auditMeta(payload)):null);} catch { /* History cannot discard a successful answer. */ }

@@ -9,6 +9,7 @@ import { AiSettings } from './AiSettings';
 import { useModalFocus } from '../lib/use-modal-focus';
 import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin-navigation';
 import { AdminNavigation } from './AdminNavigation';
+import { AdminMessages } from './AdminMessages';
 import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
 import { AskLogDetail } from './AskLogDetail';
@@ -1391,6 +1392,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {view === 'edit_page' && selectedBook && selectedPage && (
             <EditPageView token={token} onLogout={onLogout} book={selectedBook} pageRow={selectedPage} onSaved={() => { setView('pages'); setSelectedPage(null); }} />
           )}
+          {view === 'messages' && <AdminMessages token={token} onLogout={onLogout} onUnreadChange={fetchStats} />}
           {view === 'feedback' && <FeedbackView token={token} onLogout={onLogout} />}
           {view === 'requests' && <RequestsView token={token} onLogout={onLogout} />}
                     {view === 'submissions' && <SubmissionsView token={token} onLogout={onLogout} />}

@@ -24,6 +24,7 @@ import {createLibraryActivity,registerLibraryActivity} from './library-activity.
 import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
 import {registerAdminLogs} from './admin-logs.js';
+import {registerMessages} from './messages.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
@@ -588,7 +589,8 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             log_rowa: stateDb.prepare("SELECT COUNT(*) as c FROM rowa_logs").get().c,
             log_hadith: stateDb.prepare("SELECT COUNT(*) as c FROM hadith_logs").get().c,
             log_authors: stateDb.prepare("SELECT COUNT(*) as c FROM authors_logs").get().c,
-            log_ask: stateDb.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c
+            log_ask: stateDb.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c,
+            messages: visitorMessages.adminUnread()
         };
         res.json({ success: true, data: stats });
     } catch(err) {
@@ -597,6 +599,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
 });
 
 registerAdminLogs(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
+const visitorMessages=registerMessages(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
 
 app.get('/api/admin/categories', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });

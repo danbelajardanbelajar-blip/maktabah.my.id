@@ -1465,3 +1465,39 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-13-01-33-7c70ff.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-15 13:01:33 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |
+
+## [2026-11-15 19:22:52 +07:00] — Fitur Pesan: chat pengunjung-admin melayang dengan notifikasi realtime
+
+Waktu pencatatan: **2026-11-15 19:22:52 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c015e8f`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js: 239 lulus (8 tes pesan server + 3 tes klien baru); npx tsc --noEmit -p . lulus; oxlint file baru 0 peringatan; npm run build sukses; uji browser lokal (DB uji kecil): kirim pesan ponsel 375px, balasan admin memunculkan badge realtime via SSE, tombol sembunyi saat gulir turun & muncul saat gulir naik, tersembunyi saat kitab dibuka, panel admin menerima pesan realtime dan membalas, tata letak desktop 1280px tidak bertumpuk
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-22-52-d5e562.json](docs/change-audit/2026-11-15-19-22-52-d5e562.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BWQ9QzD0.css` | 1–2 | — | module/file | deleted |
+| 2026-11-15 19:19:58 +07:00 | `dist/assets/index-CPQduW1l.css` | — | 1–2 | module/file | added |
+| 2026-11-15 19:19:58 +07:00 | `dist/assets/index.dev-BSHgaGOK.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Cd4wLIyH.js` | 1–17 | — | module/file | deleted |
+| 2026-11-15 19:19:58 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-15 19:10:05 +07:00 | `server/ai-history.js` | — | 17–28 | export function auditMeta(payload={}) { | modified |
+| 2026-11-15 19:10:05 +07:00 | `server/ai-history.js` | 25–35 | 37–37 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-15 19:11:37 +07:00 | `server/index.js` | — | 27–27 | import {registerAdminLogs} from './admin-logs.js'; | modified |
+| 2026-11-15 19:11:37 +07:00 | `server/index.js` | 591–591 | 592–593 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-15 19:11:37 +07:00 | `server/index.js` | — | 602–602 | registerAdminLogs(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(tr | modified |
+| 2026-11-15 19:15:43 +07:00 | `server/messages-client.test.js` | — | 1–23 | m, current | added |
+| 2026-11-15 19:11:29 +07:00 | `server/messages.js` | — | 1–244 | MESSAGE_LIMITS, STREAM_LIMITS, now, iso, cleanMessageText, createMessageStore, db, current | added |
+| 2026-11-15 19:12:11 +07:00 | `server/messages.test.js` | — | 1–117 | fixture, db, app, requireAdmin, messages, server, base, send | added |
+| 2026-11-15 19:14:03 +07:00 | `src/App.tsx` | — | 28–28 | import { Collection } from './components/Collection'; | modified |
+| 2026-11-15 19:14:03 +07:00 | `src/App.tsx` | — | 1068–1070 | function App() { | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/components/Admin.tsx` | — | 12–12 | import { AdminNavigation } from './AdminNavigation'; | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/components/Admin.tsx` | — | 1395–1395 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-15 19:19:32 +07:00 | `src/components/AdminMessages.tsx` | — | 1–195 | threadName, AdminMessages, listRef, selectedRef, handle, message, loadList, res | added |
+| 2026-11-15 19:19:31 +07:00 | `src/components/MessageWidget.tsx` | — | 1–232 | isAdminBrowser, MessageWidget, listRef, inputRef, lastId, viewing, apply, markRead | added |
+| 2026-11-15 19:14:11 +07:00 | `src/index.css` | — | 47–52 | b { | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 1–1 | 1–1 | adminParent, adminTitle, adminGroup, adminLocation, p, raw, id, v | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 7–7 | 7–7 | const parents: Record<AdminView, AdminView> = { | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 14–14 | 14–14 | const titles: Record<AdminView,string> = { | modified |
+| 2026-11-15 19:14:20 +07:00 | `src/lib/admin-navigation.ts` | 22–22 | 22–22 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+| 2026-11-15 19:13:54 +07:00 | `src/lib/messages.ts` | — | 1–90 | MESSAGE_MAX, request, res, auth, messagesAPI, adminMessagesAPI, mergeMessages, byId | added |

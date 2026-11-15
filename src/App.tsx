@@ -25,6 +25,7 @@ import { readingPositions } from './lib/reading-position';
 import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
 import { Collection } from './components/Collection';
+import { MessageWidget } from './components/MessageWidget';
 import { BackButton } from './components/BackButton';
 import { loadSelectedFonts } from './lib/fonts';
 import Settings, { THEMES } from './components/Settings';
@@ -1063,6 +1064,9 @@ function App() {
 
         </>
       )}
+
+      {/* Floating visitor messages: hidden while a book is open and inside the admin panel. */}
+      <MessageWidget suppressed={Boolean(readingConfig) || activeTab === 'admin'} />
 
       {/* Reader Modal */}
       {readingConfig && (
