@@ -60,3 +60,29 @@ test('file-backed searches run in a read-only worker with the same results and a
   assert.deepEqual(await searchPagesOffThread(db,options),searchPages(db,options));
   await assert.rejects(searchPagesOffThread(db,options,{timeout:1}),e=>e.code==='SEARCH_TIMEOUT'&&e.status===504);
 });
+
+test('excludedBookIds filters out excluded books in standard search while advanced search includes them',t=>{
+  const db=library(t);
+  db.prepare('INSERT INTO books_meta VALUES(1,?,5)').run('الأم');
+  db.prepare('INSERT INTO books_meta VALUES(2,?,5)').run('كتاب الألباني');
+  db.prepare('INSERT INTO pages VALUES(1,1,1,1,?)').run('حكم الصلاة');
+  db.prepare('INSERT INTO pages VALUES(2,2,1,1,?)').run('حكم الصلاة أيضا');
+
+  const match={exactPhrase:'"حكم الصلاة"',limit:50};
+
+  // Standard search with excludedBookIds: [2]
+  const standard=searchPages(db,{...match,excludedBookIds:[2]});
+  assert.equal(standard.total,1);
+  assert.deepEqual(standard.results.map(r=>r.book_id),[1]);
+  assert.deepEqual(standard.results.map(r=>r.book_name),['الأم']);
+
+  // Advanced search with empty excludedBookIds: []
+  const advanced=searchPages(db,{...match,excludedBookIds:[]});
+  assert.equal(advanced.total,2);
+  assert.deepEqual(advanced.results.map(r=>r.book_id),[1,2]);
+
+  // Specific bookId search bypasses exclusion
+  const singleBook=searchPages(db,{...match,bookId:2,excludedBookIds:[2]});
+  assert.equal(singleBook.total,1);
+  assert.deepEqual(singleBook.results.map(r=>r.book_id),[2]);
+});

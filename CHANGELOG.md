@@ -1558,3 +1558,33 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-15-19-38-28-ce2541.
 | 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 224–224 | 243–243 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
 | 2026-11-15 19:36:00 +07:00 | `src/components/MessageWidget.tsx` | 226–226 | 245–245 | export function MessageWidget({ suppressed }: { suppressed: boolean }) { | modified |
 | 2026-11-15 19:34:45 +07:00 | `src/lib/use-admin-inbox.ts` | — | 1–121 | threadName, useAdminInbox, selectedRef, handle, message, loadList, res, openThread | added |
+
+## [2026-11-17 00:12:50 +07:00] — feat(search): senyap kecualikan kitab 4 nama ulama dari pencarian teks dan judul kecuali pencarian lanjut
+
+Waktu pencatatan: **2026-11-17 00:12:50 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `35711ed`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 244/244 server unit tests lulus, oxlint 0 error, build tsc dan vite lulus
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-12-50-579b8d.json](docs/change-audit/2026-11-17-00-12-50-579b8d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 00:12:01 +07:00 | `dist/assets/index.dev-CYsU2H5k.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-17 00:12:01 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-17 00:10:26 +07:00 | `server/index.js` | — | 32–32 | import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js'; | modified |
+| 2026-11-17 00:10:26 +07:00 | `server/index.js` | — | 338–347 | try { | modified |
+| 2026-11-17 00:10:26 +07:00 | `server/index.js` | — | 931–932 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-17 00:10:26 +07:00 | `server/index.js` | 927–927 | 940–940 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-17 00:10:26 +07:00 | `server/index.js` | — | 1356–1368 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-17 00:10:09 +07:00 | `server/search-policy.js` | — | 1–190 | ensureSearchPolicySchema, ensureTempExcludedTable, ins, getExcludedBookIds, rows, invalidateSearchPolicyCache, syncMetadataExclusions, schemas | added |
+| 2026-11-17 00:12:20 +07:00 | `server/search-policy.test.js` | — | 1–127 | setupFixture, db, stateDb, excluded, scanned, rows, updated, found | added |
+| 2026-11-17 00:05:04 +07:00 | `server/text-search.js` | 11–11 | 11–11 | export const SEARCH_COUNT_CAP = 10000; | modified |
+| 2026-11-17 00:05:04 +07:00 | `server/text-search.js` | — | 21–24 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-17 00:01:29 +07:00 | `server/text-search.test.js` | — | 63–88 | test('file-backed searches run in a read-only worker with the same results and a | modified |
+| 2026-11-17 00:09:38 +07:00 | `src/App.tsx` | — | 286–286 | function App() { | modified |
+| 2026-11-17 00:09:38 +07:00 | `src/App.tsx` | 287–287 | 288–288 | function App() { | modified |
+| 2026-11-17 00:09:38 +07:00 | `src/App.tsx` | 290–290 | 291–291 | function App() { | modified |
+| 2026-11-17 00:09:19 +07:00 | `src/api.ts` | 212–212 | 212–212 | export const webAPI = { | modified |
+| 2026-11-17 00:09:19 +07:00 | `src/api.ts` | — | 215–215 | export const webAPI = { | modified |
+| 2026-11-17 00:09:19 +07:00 | `src/api.ts` | 218–218 | 219–219 | export const webAPI = { | modified |
+| 2026-11-17 00:09:19 +07:00 | `src/api.ts` | — | 222–222 | export const webAPI = { | modified |

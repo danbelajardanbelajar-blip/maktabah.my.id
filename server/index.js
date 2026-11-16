@@ -29,6 +29,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js';
+import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, scanFtsCandidateBooks } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -334,6 +335,16 @@ try {
 
         // Migrate book_submissions to add file_type
         try { stateDb.exec(`ALTER TABLE book_submissions ADD COLUMN file_type TEXT;`); } catch(e) {}
+
+        try {
+          ensureSearchPolicySchema(stateDb);
+          syncMetadataExclusions(db, stateDb, { hasTambahan });
+          setImmediate(() => {
+            try { scanFtsCandidateBooks(db, stateDb, { hasTambahan }); } catch(e) {
+              console.error("Gagal scan FTS content policy:", e.message);
+            }
+          });
+        } catch(e) { console.error("Gagal inisialisasi search policy:", e.message); }
         
     } catch(e) { console.error("Gagal membuat tabel log:", e.message); }
   } else {
@@ -917,6 +928,8 @@ app.get('/api/search', async (req, res) => {
       cat_ids = req.query.cat_id.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
     }
     const targetBookId = Number.isSafeInteger(parseInt(req.query.book_id)) ? parseInt(req.query.book_id) : null;
+    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
+    const excludedBookIds = (isAdvanced || targetBookId) ? [] : Array.from(getExcludedBookIds(stateDb));
 
     const { exactPhrase, andMatch } = buildFtsMatch(query);
     if (!exactPhrase) return res.json({ results: [], total: 0, capped: false, error: null });
@@ -924,7 +937,7 @@ app.get('/api/search', async (req, res) => {
     // exact counts of common words used to block every visitor for minutes.
     let found;
     try {
-      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, additional: hasTambahan });
+      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, additional: hasTambahan, excludedBookIds });
     } catch (error) {
       if (error.status) return res.status(error.status).json({ results: [], total: 0, code: error.code, error: error.message });
       throw error;
@@ -1339,6 +1352,19 @@ app.get('/api/search_titles', (req, res) => {
       const placeholders = cat_ids.map(() => '?').join(',');
       whereClause += ` AND b.cat IN (${placeholders})`;
       params.push(...cat_ids);
+    }
+    if (targetBookId) {
+      whereClause += ` AND b.bkid = ?`;
+      params.push(targetBookId);
+    }
+
+    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
+    if (!isAdvanced && !targetBookId) {
+      const excludedBookIds = Array.from(getExcludedBookIds(stateDb));
+      if (excludedBookIds.length > 0) {
+        whereClause += ` AND b.bkid NOT IN (SELECT value FROM json_each(?))`;
+        params.push(JSON.stringify(excludedBookIds));
+      }
     }
 
     // Gunakan UNION ALL: search di main + tambahan

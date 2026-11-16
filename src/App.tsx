@@ -283,11 +283,12 @@ function App() {
     setError('');
     try {
       let res; let fetchedResults: any[] = []; let fetchedTotal = 0; let fetchedCapped = false;
+      const isAdvanced = targetTab === 'advanced_search';
       if (mode === 'text') {
-        res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
+        res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined, isAdvanced);
         fetchedResults = res.results || []; fetchedTotal = res.total || 0; fetchedCapped = res.capped === true;
       } else if (mode === 'title') {
-        res = await webAPI.searchTitles(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined);
+        res = await webAPI.searchTitles(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined, isAdvanced);
         fetchedResults = res.data || []; fetchedTotal = res.total || 0;
       } else if (mode === 'pdf') {
         const [scholariumRes, archiveRes] = await Promise.all([

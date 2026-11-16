@@ -8,7 +8,7 @@ export const SEARCH_COUNT_CAP = 10000;
  * @param options   {exactPhrase, andMatch, page, limit, catIds, bookId, additional}
  * @returns         {results, total, capped}
  */
-export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, additional = false }) {
+export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, additional = false, excludedBookIds = [] }) {
   const schemas = (additional ? ['main', 'tambahan'] : ['main'])
     .filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
   const offset = (page - 1) * limit;
@@ -18,6 +18,10 @@ export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 
     ? { join: `LEFT JOIN main.books_meta bm ON bm.bkid=p.book_id LEFT JOIN tambahan.books_meta bt ON bt.bkid=p.book_id`, name: 'COALESCE(bm.bk,bt.bk)', cat: 'COALESCE(bm.cat,bt.cat)', exists: 'COALESCE(bm.bkid,bt.bkid) IS NOT NULL' }
     : { join: `JOIN ${schema}.books_meta b ON b.bkid=p.book_id`, name: 'b.bk', cat: 'b.cat', exists: '' };
   if (bookId) { filters.push('p.book_id=?'); filterParams.push(bookId); }
+  if (excludedBookIds && excludedBookIds.length && !bookId) {
+    filters.push('p.book_id NOT IN (SELECT value FROM json_each(?))');
+    filterParams.push(typeof excludedBookIds === 'string' ? excludedBookIds : JSON.stringify(excludedBookIds));
+  }
   // main stays unqualified: older SQLite builds reject snippet() on a schema-qualified FTS table.
   const fts = schema => schema === 'main' ? 'pages_fts' : `${schema}.pages_fts`;
   const from = schema => {
