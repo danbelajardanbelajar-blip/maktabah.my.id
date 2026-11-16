@@ -21,7 +21,7 @@ import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
-import {invalidateAiBookPolicy} from './ai-book-policy.js';
+import {invalidateAiBookPolicy, containsExcludedAiName} from './ai-book-policy.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
 import {registerAdminLogs} from './admin-logs.js';
 import {registerMessages} from './messages.js';
@@ -929,6 +929,9 @@ app.get('/api/search', async (req, res) => {
     }
     const targetBookId = Number.isSafeInteger(parseInt(req.query.book_id)) ? parseInt(req.query.book_id) : null;
     const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
+    if (!isAdvanced && !targetBookId && containsExcludedAiName(query)) {
+      return res.json({ results: [], total: 0, capped: false, error: null });
+    }
     const excludedBookIds = (isAdvanced || targetBookId) ? [] : Array.from(getExcludedBookIds(stateDb));
 
     const { exactPhrase, andMatch } = buildFtsMatch(query);
@@ -1342,6 +1345,11 @@ app.get('/api/search_titles', (req, res) => {
 
     if (!query) {
        return res.json({ data: [], total: 0, page, limit });
+    }
+
+    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
+    if (!isAdvanced && !targetBookId && containsExcludedAiName(query)) {
+      return res.json({ data: [], total: 0, page, limit });
     }
 
     let whereClause = "WHERE b.bk LIKE ?";

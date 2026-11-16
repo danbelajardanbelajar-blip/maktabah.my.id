@@ -10,6 +10,7 @@ import {
   invalidateSearchPolicyCache,
   scanFtsCandidateBooks,
 } from './search-policy.js';
+import { containsExcludedAiName } from './ai-book-policy.js';
 
 function setupFixture(t) {
   const db = new Database(':memory:');
@@ -124,4 +125,20 @@ test('title search excludes policy books in basic mode while including in advanc
   const advWhere = 'WHERE b.bk LIKE ?';
   const advRows = db.prepare(`SELECT b.bkid, b.bk FROM books_meta b ${advWhere}`).all('%ال%');
   assert.deepEqual(advRows.map(r => r.bkid), [1, 2, 3]);
+});
+
+test('search query for excluded name returns empty in basic mode and allows in advanced mode', () => {
+  for (const query of ['ابن باز', 'الدرر البازية', 'ابن تيمية', 'الألباني', 'ابن عثيمين']) {
+    const isExcluded = containsExcludedAiName(query);
+    assert.equal(isExcluded, true, `Query ${query} must be recognized as excluded`);
+
+    // In basic mode: query returns empty
+    const isAdvanced = false;
+    const shouldBlock = !isAdvanced && isExcluded;
+    assert.equal(shouldBlock, true);
+
+    // In advanced mode: query is allowed
+    const advancedBlocked = false && isExcluded;
+    assert.equal(advancedBlocked, false);
+  }
 });

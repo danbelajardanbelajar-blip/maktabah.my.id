@@ -1603,3 +1603,21 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-18-30-1c1310.
 | 2026-11-17 00:16:25 +07:00 | `server/ai-book-policy.js` | 13–13 | 13–13 | const patterns = [ | modified |
 | 2026-11-17 00:16:38 +07:00 | `server/ai-book-policy.test.js` | 21–21 | 21–21 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
 | 2026-11-17 00:16:38 +07:00 | `server/ai-book-policy.test.js` | 24–24 | 24–24 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+
+## [2026-11-17 00:32:49 +07:00] — feat(search): senyap cegah query teks dan judul mengandung 4 ulama dalam pencarian biasa dan perluas pola al-baziyyah
+
+Waktu pencatatan: **2026-11-17 00:32:49 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `948c9e8`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 246/246 tests lulus, oxlint 0 error
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-32-49-c6ef50.json](docs/change-audit/2026-11-17-00-32-49-c6ef50.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 00:30:19 +07:00 | `server/ai-book-policy.js` | — | 12–12 | const patterns = [ | modified |
+| 2026-11-17 00:31:14 +07:00 | `server/ai-book-policy.test.js` | 22–22 | 22–22 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-17 00:31:03 +07:00 | `server/index.js` | 24–24 | 24–24 | import {createLibraryActivity,registerLibraryActivity} from './library-activity. | modified |
+| 2026-11-17 00:31:03 +07:00 | `server/index.js` | — | 932–934 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-17 00:31:03 +07:00 | `server/index.js` | — | 1350–1354 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-17 00:31:47 +07:00 | `server/search-policy.test.js` | — | 13–13 | import { | modified |
+| 2026-11-17 00:31:47 +07:00 | `server/search-policy.test.js` | — | 129–144 | test('title search excludes policy books in basic mode while including in advanc | modified |

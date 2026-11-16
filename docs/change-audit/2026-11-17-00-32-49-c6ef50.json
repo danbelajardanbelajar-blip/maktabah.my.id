@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 00:32:49 +07:00",
+  "title": "feat(search): senyap cegah query teks dan judul mengandung 4 ulama dalam pencarian biasa dan perluas pola al-baziyyah",
+  "baseCommit": "948c9e8b173407b88a70906ef4355114ceb944ab",
+  "checks": "246/246 tests lulus, oxlint 0 error",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:30:19 +07:00",
+      "stagedSha256": "1f397c33c5c0a0a09ff601a033b8f59921fd65f39178d97551fae61d09eeaca0",
+      "diffSha256": "df48efa0661199ecf44c443b8189dfaead60e7a6d05bd42b6bef28518532611d",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 11,
+            "count": 0
+          },
+          "after": {
+            "line": 12,
+            "count": 1
+          },
+          "section": "const patterns = ["
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:31:14 +07:00",
+      "stagedSha256": "0a87c58c1070b0263963c24ab91703f9978adb3278ddd45cd3d4fc8d970511ac",
+      "diffSha256": "94d5cbbd001d0614ddd07bb1768ef74ce809e9958b8e2103d83833be0a09ff02",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 22,
+            "count": 1
+          },
+          "after": {
+            "line": 22,
+            "count": 1
+          },
+          "section": "test('all four names match despite harakat, tatweel, HTML entities, line breaks,"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:31:03 +07:00",
+      "stagedSha256": "76f5a1cc1bdd5f481203a651ab797e7da3ff37e3fe369157fd7bc7d311de0720",
+      "diffSha256": "81365d54cedd7f11f190315a7872a92f28bd40e22c8a850ccff72de3048783d0",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "rawQuery",
+        "targetBookId",
+        "isAdvanced",
+        "excludedBookIds",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 24,
+            "count": 1
+          },
+          "after": {
+            "line": 24,
+            "count": 1
+          },
+          "section": "import {createLibraryActivity,registerLibraryActivity} from './library-activity."
+        },
+        {
+          "before": {
+            "line": 931,
+            "count": 0
+          },
+          "after": {
+            "line": 932,
+            "count": 3
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1346,
+            "count": 0
+          },
+          "after": {
+            "line": 1350,
+            "count": 5
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:31:47 +07:00",
+      "stagedSha256": "e41c14514f5e105da6eaefa55b5c9236d1d1a92f4b517d59484425199691c761",
+      "diffSha256": "352cd3c618e55cc0e1529512405816fa93b0936135ed8cce707ed97ac503fbf2",
+      "symbols": [
+        "setupFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "scanned",
+        "rows",
+        "updated",
+        "found",
+        "excludedIds",
+        "basicWhere",
+        "basicRows",
+        "advWhere",
+        "advRows",
+        "isExcluded",
+        "isAdvanced",
+        "shouldBlock",
+        "advancedBlocked"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 12,
+            "count": 0
+          },
+          "after": {
+            "line": 13,
+            "count": 1
+          },
+          "section": "import {"
+        },
+        {
+          "before": {
+            "line": 127,
+            "count": 0
+          },
+          "after": {
+            "line": 129,
+            "count": 16
+          },
+          "section": "test('title search excludes policy books in basic mode while including in advanc"
+        }
+      ]
+    }
+  ]
+}
