@@ -1366,7 +1366,6 @@ app.get('/api/search_titles', (req, res) => {
       params.push(targetBookId);
     }
 
-    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
     if (!isAdvanced && !targetBookId) {
       const excludedBookIds = Array.from(getExcludedBookIds(stateDb));
       if (excludedBookIds.length > 0) {

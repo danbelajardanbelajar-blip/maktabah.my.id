@@ -1621,3 +1621,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-32-49-c6ef50.
 | 2026-11-17 00:31:03 +07:00 | `server/index.js` | — | 1350–1354 | app.get('/api/search_titles', (req, res) => { | modified |
 | 2026-11-17 00:31:47 +07:00 | `server/search-policy.test.js` | — | 13–13 | import { | modified |
 | 2026-11-17 00:31:47 +07:00 | `server/search-policy.test.js` | — | 129–144 | test('title search excludes policy books in basic mode while including in advanc | modified |
+
+## [2026-11-17 00:35:28 +07:00] — fix(search): remove duplicate isAdvanced declaration in search_titles
+
+Waktu pencatatan: **2026-11-17 00:35:28 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `3cd00ca`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node -c server/index.js syntax valid, 19 tests passed
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-35-28-26f109.json](docs/change-audit/2026-11-17-00-35-28-26f109.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 00:34:45 +07:00 | `server/index.js` | 1369–1369 | — | app.get('/api/search_titles', (req, res) => { | modified |
