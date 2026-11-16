@@ -1588,3 +1588,18 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-12-50-579b8d.
 | 2026-11-17 00:09:19 +07:00 | `src/api.ts` | — | 215–215 | export const webAPI = { | modified |
 | 2026-11-17 00:09:19 +07:00 | `src/api.ts` | 218–218 | 219–219 | export const webAPI = { | modified |
 | 2026-11-17 00:09:19 +07:00 | `src/api.ts` | — | 222–222 | export const webAPI = { | modified |
+
+## [2026-11-17 00:18:30 +07:00] — feat(policy): broaden taymiyyah and albaniyyah pattern matching
+
+Waktu pencatatan: **2026-11-17 00:18:30 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `88209ee`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 245/245 tests lulus, oxlint 0 error
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-18-30-1c1310.json](docs/change-audit/2026-11-17-00-18-30-1c1310.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 00:16:25 +07:00 | `server/ai-book-policy.js` | 10–10 | 10–10 | const patterns = [ | modified |
+| 2026-11-17 00:16:25 +07:00 | `server/ai-book-policy.js` | 13–13 | 13–13 | const patterns = [ | modified |
+| 2026-11-17 00:16:38 +07:00 | `server/ai-book-policy.test.js` | 21–21 | 21–21 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-17 00:16:38 +07:00 | `server/ai-book-policy.test.js` | 24–24 | 24–24 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |

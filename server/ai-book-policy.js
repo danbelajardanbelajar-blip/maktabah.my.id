@@ -7,10 +7,10 @@ export const excludedAiNames = ['ابن تيمية','ابن باز','ابن عث
 // A word may carry the proclitics و ف ب ل ك (لابن تيمية، وابن باز، للألباني); ابن may be written بن.
 const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
 const patterns = [
-  `${START}ا?بن\\s*تيميه${END}`,                    // ابن تيمية، بن تيمية، ابن تيميه، لابن تيمية
+  'تيميه',                                          // ابن تيمية، بن تيمية، ابن تيميه، دورةبن تيمية
   `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
   'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين
-  `${START}ا?لالباني${END}`,                         // الألباني، للألباني، والألباني (not الباني "the builder")
+  `${START}ا?لالباني(?:ه)?${END}`,                   // الألباني، للألباني، والألباني، الألبانية (not الباني "the builder")
 ].map(source=>new RegExp(source,'u'));
 export const normalizePolicyText = text => sourceText(text).normalize('NFKC')
   .replace(/[\p{M}\p{Cf}ـ]/gu,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 00:18:30 +07:00",
+  "title": "feat(policy): broaden taymiyyah and albaniyyah pattern matching",
+  "baseCommit": "88209ee1d9a4a3dbbec3487d5d9f02e70541f6c4",
+  "checks": "245/245 tests lulus, oxlint 0 error",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:16:25 +07:00",
+      "stagedSha256": "b26856646d2822689ca9fa6e464f7de001f13a677074dbc6a219cbf66e15e806",
+      "diffSha256": "b8dd645886450ef2d42a23460caffbe0421dd6637bc4c4ef7863ecf60cab6428",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "const patterns = ["
+        },
+        {
+          "before": {
+            "line": 13,
+            "count": 1
+          },
+          "after": {
+            "line": 13,
+            "count": 1
+          },
+          "section": "const patterns = ["
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 00:16:38 +07:00",
+      "stagedSha256": "3d25afc02f9b176fa828da74e689f68998a11d2601d9368e802b015a3671d972",
+      "diffSha256": "d839fb5d564710e5e32d19cef9bb46e73b01d31c479cc1125ea7dc311b62968c",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 1
+          },
+          "section": "test('all four names match despite harakat, tatweel, HTML entities, line breaks,"
+        },
+        {
+          "before": {
+            "line": 24,
+            "count": 1
+          },
+          "after": {
+            "line": 24,
+            "count": 1
+          },
+          "section": "test('all four names match despite harakat, tatweel, HTML entities, line breaks,"
+        }
+      ]
+    }
+  ]
+}
