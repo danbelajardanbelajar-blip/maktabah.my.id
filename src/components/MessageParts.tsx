@@ -88,7 +88,32 @@ export function MessageBody({ message, mine, token }: { message: ChatMessage; mi
   </>;
 }
 
-export type PendingAttachment = {file: File; kind: 'image'|'file'; preview: string};
+// Admin switches for the open conversation only: may this visitor send files and/or pictures?
+export function ThreadPermissions({ thread, saving, onChange, compact = false }: {
+  thread: {allow_files?: number; allow_images?: number} | null;
+  saving: boolean;
+  onChange: (value: {allowFiles: boolean; allowImages: boolean}) => void;
+  compact?: boolean;
+}) {
+  if (!thread) return null;
+  const allowFiles = Boolean(thread.allow_files), allowImages = Boolean(thread.allow_images);
+  const box = 'w-4 h-4 accent-[var(--app-primary)]';
+  return (
+    <fieldset disabled={saving} className={`flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-black/[0.03] px-3 py-1.5 ${compact ? 'text-xs' : 'text-sm'}`}>
+      <legend className="sr-only">Izin lampiran untuk pengunjung ini</legend>
+      <span className="font-semibold opacity-80">Izinkan pengunjung ini:</span>
+      <label className="inline-flex items-center gap-1.5 cursor-pointer">
+        <input type="checkbox" className={box} checked={allowFiles} onChange={e => onChange({allowFiles:e.target.checked, allowImages})} /> kirim file
+      </label>
+      <label className="inline-flex items-center gap-1.5 cursor-pointer">
+        <input type="checkbox" className={box} checked={allowImages} onChange={e => onChange({allowFiles, allowImages:e.target.checked})} /> kirim gambar
+      </label>
+      {saving && <span className="opacity-60" role="status">Menyimpan…</span>}
+    </fieldset>
+  );
+}
+
+export type PendingAttachment ={file: File; kind: 'image'|'file'; preview: string};
 
 const pastedName = (file: File) => {
   const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');

@@ -1,49 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
-import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, adminMessagesAPI, formatBytes, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
-import type { MessageSettings } from '../lib/messages';
+import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
 import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
-import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
-
-// What visitors may attach. Admin replies can always carry attachments.
-function AttachmentPermissions({ token, onAuthError }: { token: string; onAuthError: () => void }) {
-  const [settings, setSettings] = useState<MessageSettings | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState('');
-  // The parent may pass a new callback on every render; loading must depend on the token only.
-  const authError = useRef(onAuthError);
-  authError.current = onAuthError;
-  useEffect(() => {
-    let active = true;
-    adminMessagesAPI.settings(token).then(s => { if (active) setSettings(s); })
-      .catch(e => { if (e instanceof Error && e.message === '401') authError.current(); else if (active) setStatus('Pengaturan lampiran gagal dimuat.'); });
-    return () => { active = false; };
-  }, [token]);
-  const toggle = async (key: 'allowFiles' | 'allowImages', value: boolean) => {
-    if (!settings) return;
-    const previous = settings;
-    setSettings({...settings, [key]:value}); setSaving(true); setStatus('');
-    try { setSettings(await adminMessagesAPI.saveSettings(token, {allowFiles:previous.allowFiles, allowImages:previous.allowImages, [key]:value})); setStatus('Tersimpan'); }
-    catch (e) { setSettings(previous); if (e instanceof Error && e.message === '401') onAuthError(); else setStatus(e instanceof Error ? e.message : 'Gagal menyimpan.'); }
-    finally { setSaving(false); }
-  };
-  const s = settings || DEFAULT_MESSAGE_SETTINGS;
-  return (
-    <fieldset className="px-4 py-3 border-b flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" disabled={!settings || saving}>
-      <legend className="sr-only">Izin lampiran pengunjung</legend>
-      <span className="font-semibold text-gray-700">Lampiran dari pengunjung:</span>
-      <label className="inline-flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" checked={s.allowFiles} onChange={e => void toggle('allowFiles', e.target.checked)} className="w-4 h-4 accent-[var(--app-primary)]" />
-        Izinkan kirim file <span className="text-xs text-gray-500">(PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP · maks. {formatBytes(s.maxFileBytes)})</span>
-      </label>
-      <label className="inline-flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" checked={s.allowImages} onChange={e => void toggle('allowImages', e.target.checked)} className="w-4 h-4 accent-[var(--app-primary)]" />
-        Izinkan kirim gambar <span className="text-xs text-gray-500">(JPG, PNG, GIF, WEBP · maks. {formatBytes(s.maxImageBytes)})</span>
-      </label>
-      {status && <span role="status" className={`text-xs ${status === 'Tersimpan' ? 'text-emerald-700' : 'text-red-700'}`}>{status}</span>}
-    </fieldset>
-  );
-}
+import { AttachmentButtons, MessageBody, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
 
 // Full admin inbox page for visitor messages (the floating button offers a compact version).
 export function AdminMessages({ token, onLogout, onUnreadChange }: { token: string; onLogout: () => void; onUnreadChange: () => void }) {
@@ -75,7 +34,6 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
         )}
         <button type="button" onClick={() => void loadList()} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-semibold"><RefreshCw size={16} /> Muat ulang</button>
       </div>
-      <AttachmentPermissions token={token} onAuthError={onLogout} />
       {(error || attach.error) && <div role="alert" className="m-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex justify-between gap-3"><span>{attach.error || error}</span><button onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></div>}
 
       <div className="grid md:grid-cols-[minmax(240px,320px)_1fr] min-h-[60vh]">
@@ -135,6 +93,7 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
                 ))}
               </div>
               <form className="border-t p-3 space-y-2" onSubmit={e => { e.preventDefault(); void reply(); }} {...attach.dropProps}>
+                <ThreadPermissions thread={thread} saving={inbox.savingPermissions} onChange={value => void inbox.setPermissions(value)} />
                 <PendingAttachmentChip draft={attach} />
                 <div className="flex items-end gap-2">
                   <AttachmentButtons draft={attach} disabled={sending} />

@@ -120,26 +120,39 @@ test('streams deliver admin replies to the visitor and visitor messages to the a
   assert.match(await visitor.until(/Balasan admin/), /event: message\ndata: .*"sender":"admin"/);
   await f.send({body:'Terima kasih'}, first.cookie);
   assert.match(await adminStream.until(/Terima kasih/), /"threadId":\d+/);
+  // A permission change reaches this visitor's open panel and other admin tabs.
+  await f.admin(`/${id}/permissions`, {method:'PUT', body:JSON.stringify({allowFiles:true, allowImages:false})});
+  assert.match(await visitor.until(/event: settings/), /event: settings\ndata: \{"allowFiles":true,"allowImages":false/);
+  assert.match(await adminStream.until(/event: permissions/), /"allow_files":1,"allow_images":0/);
 });
 
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
 const pdf = Buffer.from('%PDF-1.4\n%test\n');
 
-test('attachments follow the admin switches, are typed by content and only reach their own conversation', async t => {
+test('attachments follow the per-conversation permission, are typed by content and only reach their own conversation', async t => {
   const f = await fixture(t);
   const image = {name:'tangkapan.png', data:'data:image/png;base64,' + PNG.toString('base64')};
   const blocked = await f.send({body:'', attachment:image});
   assert.equal(blocked.status, 403);assert.match(blocked.json.error, /gambar/);
   assert.equal(fs.readdirSync(f.attachmentDir).length, 0);
 
-  assert.equal((await fetch(f.base + '/api/admin/messages/settings')).status, 401);
-  assert.equal((await f.admin('/settings', {method:'PUT', body:JSON.stringify({allowFiles:'ya', allowImages:true})})).status, 400);
-  const saved = await (await f.admin('/settings', {method:'PUT', body:JSON.stringify({allowFiles:false, allowImages:true})})).json();
-  assert.equal(saved.allowImages, true);assert.equal(saved.allowFiles, false);
-  assert.equal((await (await f.admin('/settings')).json()).allowImages, true);
-  assert.equal((await (await fetch(f.base + '/api/messages')).json()).settings.allowImages, true);
+  const start = await f.send({body:'Boleh kirim tangkapan layar?'});
+  const other = await f.send({body:'Saya pengunjung lain'});
+  const ids = Object.fromEntries((await (await f.admin('')).json()).data.map(row => [row.last_body, row.id]));
+  const threadId = ids['Boleh kirim tangkapan layar?'];
+  const permit = (id, value) => f.admin(`/${id}/permissions`, {method:'PUT', body:JSON.stringify(value)});
+  assert.equal((await fetch(f.base + `/api/admin/messages/${threadId}/permissions`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:'{}'})).status, 401);
+  assert.equal((await permit(threadId, {allowFiles:'ya', allowImages:true})).status, 400);
+  assert.equal((await permit(999, {allowFiles:false, allowImages:true})).status, 404);
+  assert.deepEqual(await (await permit(threadId, {allowFiles:false, allowImages:true})).json(), {success:true, allow_files:0, allow_images:1});
+  const settingsOf = async cookie => (await (await fetch(f.base + '/api/messages', {headers:{cookie}})).json()).settings;
+  assert.equal((await settingsOf(start.cookie)).allowImages, true);
+  assert.equal((await settingsOf(other.cookie)).allowImages, false, 'the permission belongs to one conversation only');
+  assert.equal((await f.send({body:'', attachment:image}, other.cookie)).status, 403);
+  const detail = await (await f.admin('/' + threadId)).json();
+  assert.equal(detail.thread.allow_images, 1);assert.equal(detail.thread.allow_files, 0);
 
-  const sent = await f.send({body:'', attachment:image});
+  const sent = await f.send({body:'', attachment:image}, start.cookie);
   assert.equal(sent.status, 201);
   assert.deepEqual(sent.json.message.attachment, {kind:'image', name:'tangkapan.png', mime:'image/png', size:PNG.length, url:`/api/messages/attachments/${sent.json.message.id}`});
   assert.equal(sent.json.message.attachment_file, undefined, 'the stored file name stays on the server');
@@ -156,15 +169,17 @@ test('attachments follow the admin switches, are typed by content and only reach
   assert.deepEqual(Buffer.from(await own.arrayBuffer()), PNG);
   assert.match((await fetch(url + '?download=1', {headers:{cookie:sent.cookie}})).headers.get('content-disposition'), /^attachment/);
   assert.equal((await fetch(url)).status, 404, 'anonymous browsers cannot open it');
-  const stranger = await f.send({body:'Halo'});
-  assert.equal((await fetch(url, {headers:{cookie:stranger.cookie}})).status, 404, 'another visitor cannot open it');
+  assert.equal((await fetch(url, {headers:{cookie:other.cookie}})).status, 404, 'another visitor cannot open it');
   assert.equal((await fetch(url, {headers:{Authorization:'Bearer admintoken'}})).status, 200, 'the admin can open it');
 
-  const list = await (await f.admin('?q=tangkapan')).json();
-  assert.equal(list.total, 1);assert.equal(list.data[0].last_body, '📷 tangkapan.png');
+  const list = await (await f.admin('?q=tangkapan.png')).json();
+  assert.equal(list.total, 1);assert.equal(list.data[0].last_body, '📷 tangkapan.png');assert.equal(list.data[0].allow_images, 1);
+
+  // Withdrawing the permission stops further pictures from this visitor.
+  await permit(threadId, {allowFiles:false, allowImages:false});
+  assert.equal((await f.send({body:'', attachment:image}, start.cookie)).status, 403);
 
   // Admin replies may carry any supported file even while visitors may not send files.
-  const threadId = list.data[0].id;
   const reply = await (await f.admin('/' + threadId, {method:'POST', body:JSON.stringify({body:'', attachment:{name:'جدول الدروس.pdf', data:pdf.toString('base64')}})})).json();
   assert.equal(reply.message.attachment.kind, 'file');
   const download = await fetch(f.base + reply.message.attachment.url, {headers:{cookie:sent.cookie}});

@@ -1,7 +1,7 @@
 // Client side of visitor ↔ admin messages: REST calls, merging live updates, and the new-message alert.
 export type ChatAttachment = {kind:'image'|'file'; name:string; mime:string; size:number; url:string};
 export type ChatMessage = {id:number; sender:'visitor'|'admin'; body:string; created_at:string; attachment?:ChatAttachment|null};
-export type MessageThreadRow = {id:number; name:string; ip?:string; user_agent?:string; admin_unread:number; visitor_unread:number; created_at:string; updated_at:string; last_body?:string|null; last_sender?:'visitor'|'admin'|null; message_count?:number};
+export type MessageThreadRow = {id:number; name:string; ip?:string; user_agent?:string; admin_unread:number; visitor_unread:number; allow_files?:number; allow_images?:number; created_at:string; updated_at:string; last_body?:string|null; last_sender?:'visitor'|'admin'|null; message_count?:number};
 export type MessageSettings = {allowFiles:boolean; allowImages:boolean; maxImageBytes:number; maxFileBytes:number};
 export type AttachmentUpload = {name:string; data:string};
 export const MESSAGE_MAX = 2000;
@@ -68,8 +68,7 @@ export const adminMessagesAPI = {
   thread:(token:string, id:number) => request(`/admin/messages/${id}`, {headers:auth(token)}) as Promise<{thread:MessageThreadRow; messages:ChatMessage[]; unread:number}>,
   reply:(token:string, id:number, body:string, attachment?:AttachmentUpload|null) => request(`/admin/messages/${id}`, {method:'POST', headers:auth(token), body:JSON.stringify({body, ...(attachment ? {attachment} : {})})}) as Promise<{message:ChatMessage}>,
   remove:(token:string, id:number) => request(`/admin/messages/${id}`, {method:'DELETE', headers:auth(token)}),
-  settings:(token:string) => request('/admin/messages/settings', {headers:auth(token)}) as Promise<MessageSettings>,
-  saveSettings:(token:string, settings:{allowFiles:boolean; allowImages:boolean}) => request('/admin/messages/settings', {method:'PUT', headers:auth(token), body:JSON.stringify(settings)}) as Promise<MessageSettings>,
+  permissions:(token:string, id:number, value:{allowFiles:boolean; allowImages:boolean}) => request(`/admin/messages/${id}/permissions`, {method:'PUT', headers:auth(token), body:JSON.stringify(value)}) as Promise<{allow_files:number; allow_images:number}>,
   // Attachments need the admin token, which an <img src> cannot send, so admins load them as blobs.
   attachment:async (token:string, url:string, download = false) => {
     const res = await fetch(download ? `${url}?download=1` : url, {headers:auth(token)});

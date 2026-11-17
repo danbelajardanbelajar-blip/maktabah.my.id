@@ -13,9 +13,11 @@ Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l
 ## Lampiran file dan gambar
 
 - Pengunjung bisa melampirkan satu file per pesan melalui tombol 🖼️ (gambar) atau 📎 (file), dengan **Ctrl+V** (gambar dari clipboard), atau dengan menyeret file ke formulir. Jika clipboard juga berisi teks, yang ditempel adalah teksnya.
-- **Izin admin:** di Admin → Masukan → Pesan Pengunjung ada centang *Izinkan kirim file* dan *Izinkan kirim gambar*. Keduanya **nonaktif secara bawaan**.
-  - Pengaturan disimpan di tabel `visitor_message_settings`.
-  - Perubahan dikirim langsung ke pengunjung yang sedang terhubung (event SSE `settings`), dan dimuat ulang setiap kali panel pesan dibuka.
+- **Izin per percakapan:** saat admin membuka satu percakapan, di atas kotak balasan (halaman admin maupun tombol pesan mengambang) ada centang *Izinkan pengunjung ini: kirim file / kirim gambar*.
+  - Izin hanya berlaku untuk pengunjung pada percakapan itu, bukan untuk semua pengunjung.
+  - Percakapan baru dimulai **tanpa izin**, jadi pengunjung baru bisa melampirkan file setelah admin mengizinkannya pada percakapannya.
+  - Izin disimpan di kolom `allow_files` dan `allow_images` pada tabel `visitor_message_threads`.
+  - Perubahan langsung sampai ke panel pengunjung tersebut (event SSE `settings`) dan ke tab admin lain (event `permissions`).
   - Balasan admin selalu boleh membawa lampiran.
 - **Format:**
   - Gambar: JPG, PNG, GIF, WEBP, maksimal 8 MB.
@@ -33,5 +35,5 @@ Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l
 
 ## API admin
 
-- `GET /api/admin/messages/settings` → `{allowFiles, allowImages, maxImageBytes, maxFileBytes}`
-- `PUT /api/admin/messages/settings` dengan body `{allowFiles:boolean, allowImages:boolean}`
+- `PUT /api/admin/messages/:id/permissions` dengan body `{allowFiles:boolean, allowImages:boolean}` → `{success, allow_files, allow_images}`
+- `GET /api/messages` mengembalikan `settings` milik percakapan peramban tersebut: `{allowFiles, allowImages, maxImageBytes, maxFileBytes}`.

@@ -87,6 +87,14 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
       void latest.current.loadList();
     });
     const refresh = () => { void latest.current.loadList(); latest.current.onUnreadChange?.(); };
+    // Another admin tab changed a conversation's attachment permission.
+    source.addEventListener('permissions', event => {
+      let p: {threadId?: number; allow_files?: number; allow_images?: number};
+      try { p = JSON.parse((event as MessageEvent).data); } catch { return; }
+      const patch = {allow_files:p.allow_files, allow_images:p.allow_images};
+      setThread(current => current && current.id === p.threadId ? {...current, ...patch} : current);
+      setThreads(list => list.map(t => t.id === p.threadId ? {...t, ...patch} : t));
+    });
     source.addEventListener('read', refresh);
     source.addEventListener('deleted', refresh);
     const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void latest.current.loadList(); }, 30000);
@@ -108,6 +116,20 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
     } catch (e) { handle(e); return false; } finally { setSending(false); }
   }, [selected, sending, token, loadList, handle]);
 
+  // Attachment permission for the open conversation only; the visitor's panel updates live.
+  const [savingPermissions, setSavingPermissions] = useState(false);
+  const setPermissions = useCallback(async (value: {allowFiles: boolean; allowImages: boolean}) => {
+    if (!selected) return;
+    const id = selected;
+    setSavingPermissions(true); setError('');
+    try {
+      const res = await adminMessagesAPI.permissions(token, id, value);
+      const patch = {allow_files:res.allow_files, allow_images:res.allow_images};
+      setThread(current => current && current.id === id ? {...current, ...patch} : current);
+      setThreads(list => list.map(t => t.id === id ? {...t, ...patch} : t));
+    } catch (e) { handle(e); } finally { setSavingPermissions(false); }
+  }, [selected, token, handle]);
+
   const remove = useCallback(async () => {
     if (!selected || !window.confirm('Hapus seluruh percakapan ini? Pesan di peramban pengunjung juga akan hilang. Tindakan ini tidak dapat dibatalkan.')) return;
     try {
@@ -117,5 +139,5 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
   }, [selected, token, closeThread, loadList, onUnreadChange, handle]);
 
   return {threads, total, unread, page, setPage, pages, search, setSearch, selected, thread, messages, loading, sending, error, setError,
-    loadList, openThread, closeThread, reply, remove};
+    loadList, openThread, closeThread, reply, remove, setPermissions, savingPermissions};
 }

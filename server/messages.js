@@ -40,12 +40,15 @@ export function createMessageStore(getStateDb) {
         id INTEGER PRIMARY KEY AUTOINCREMENT, thread_id INTEGER NOT NULL, sender TEXT NOT NULL CHECK(sender IN ('visitor','admin')),
         body TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT (${iso}));
       CREATE INDEX IF NOT EXISTS visitor_messages_thread ON visitor_messages(thread_id,id);
-      CREATE INDEX IF NOT EXISTS visitor_message_threads_updated ON visitor_message_threads(updated_at);
-      CREATE TABLE IF NOT EXISTS visitor_message_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`);
+      CREATE INDEX IF NOT EXISTS visitor_message_threads_updated ON visitor_message_threads(updated_at);`);
       // Attachments arrived after the first release; existing databases gain the columns in place.
       const columns = new Set(current.prepare('PRAGMA table_info(visitor_messages)').all().map(c => c.name));
       for (const [name, type] of [['attachment_kind','TEXT'],['attachment_name','TEXT'],['attachment_mime','TEXT'],['attachment_size','INTEGER'],['attachment_file','TEXT']])
         if (!columns.has(name)) current.exec(`ALTER TABLE visitor_messages ADD COLUMN ${name} ${type}`);
+      // Permission to attach is granted per conversation by the admin; new conversations start without it.
+      const threadColumns = new Set(current.prepare('PRAGMA table_info(visitor_message_threads)').all().map(c => c.name));
+      for (const name of ['allow_files', 'allow_images'])
+        if (!threadColumns.has(name)) current.exec(`ALTER TABLE visitor_message_threads ADD COLUMN ${name} INTEGER NOT NULL DEFAULT 0`);
       initialized = current;
     }
     return current;
@@ -69,13 +72,9 @@ export function createMessageStore(getStateDb) {
     db, threadBySession, thread, messages, add,
     attachment(messageId) { return db().prepare('SELECT m.id,m.attachment_kind,m.attachment_name,m.attachment_mime,m.attachment_file,t.session_id FROM visitor_messages m JOIN visitor_message_threads t ON t.id=m.thread_id WHERE m.id=? AND m.attachment_file IS NOT NULL').get(messageId); },
     attachmentFiles(threadId) { return db().prepare('SELECT attachment_file FROM visitor_messages WHERE thread_id=? AND attachment_file IS NOT NULL').all(threadId).map(r => r.attachment_file); },
-    settings() {
-      const rows = Object.fromEntries(db().prepare('SELECT key,value FROM visitor_message_settings').all().map(r => [r.key, r.value]));
-      return {allowFiles:rows.allow_files === '1', allowImages:rows.allow_images === '1'};
-    },
-    saveSettings({allowFiles, allowImages}) {
-      const d = db(), put = d.prepare('INSERT INTO visitor_message_settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value');
-      d.transaction(() => { put.run('allow_files', allowFiles ? '1' : '0'); put.run('allow_images', allowImages ? '1' : '0'); })();
+    setPermissions(threadId, {allowFiles, allowImages}) {
+      db().prepare('UPDATE visitor_message_threads SET allow_files=?, allow_images=? WHERE id=?').run(allowFiles ? 1 : 0, allowImages ? 1 : 0, threadId);
+      return thread(threadId);
     },
     createThread(sessionId, {name = '', ip = '', userAgent = ''}) {
       const created = now();
@@ -94,7 +93,7 @@ export function createMessageStore(getStateDb) {
       const like = `%${q.replace(/[\\%_]/g, c => '\\' + c)}%`, args = q ? [like, like, like] : [];
       const total = db().prepare(`SELECT count(*) AS n FROM visitor_message_threads t ${where}`).get(...args).n;
       const pages = Math.max(1, Math.ceil(total / limit)), current = Math.min(Math.max(1, page), pages);
-      const data = db().prepare(`SELECT t.id,t.name,t.ip,t.user_agent,t.admin_unread,t.visitor_unread,t.created_at,t.updated_at,
+      const data = db().prepare(`SELECT t.id,t.name,t.ip,t.user_agent,t.admin_unread,t.visitor_unread,t.allow_files,t.allow_images,t.created_at,t.updated_at,
         (SELECT CASE WHEN m.body='' AND m.attachment_name IS NOT NULL THEN (CASE WHEN m.attachment_kind='image' THEN '📷 ' ELSE '📎 ' END)||m.attachment_name ELSE m.body END FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_body,
         (SELECT sender FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_sender,
         (SELECT count(*) FROM visitor_messages m WHERE m.thread_id=t.id) AS message_count
@@ -144,7 +143,6 @@ function createHub() {
     },
     subscribeAdmin(req, res) { open(req, res, admins); },
     toVisitor(id, event, data) { for (const res of visitors.get(id) || []) write(res, event, data); },
-    toAllVisitors(event, data) { for (const set of visitors.values()) for (const res of set) write(res, event, data); },
     toAdmins(event, data) { for (const res of admins) write(res, event, data); },
   };
 }
@@ -155,7 +153,8 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
   const fail = (res, error) => res.status(503).json({error:error?.message?.startsWith('Penyimpanan') ? error.message : 'Pesan belum dapat diproses. Silakan coba lagi.'});
   const threadId = value => /^\d+$/.test(String(value)) && Number.isSafeInteger(Number(value)) ? Number(value) : 0;
   const publicThread = row => row ? {id:row.id, name:row.name} : null;
-  const publicSettings = () => ({...store.settings(), maxImageBytes:ATTACHMENT_LIMITS.imageBytes, maxFileBytes:ATTACHMENT_LIMITS.fileBytes});
+  // What this conversation may attach; a browser without a conversation may attach nothing yet.
+  const permissions = row => ({allowFiles:Boolean(row?.allow_files), allowImages:Boolean(row?.allow_images), maxImageBytes:ATTACHMENT_LIMITS.imageBytes, maxFileBytes:ATTACHMENT_LIMITS.fileBytes});
   // Validates an optional attachment in memory; it is written to disk only once every other check passed.
   const takeAttachment = (input, allowed) => {
     if (input == null) return null;
@@ -170,10 +169,9 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     res.set('Cache-Control', 'no-store');
     const session = browserSession(req, res);
     try {
-      const settings = publicSettings();
       const row = session && store.threadBySession(session);
-      if (!row) return res.json({thread:null, messages:[], unread:0, settings});
-      res.json({thread:publicThread(row), messages:store.messages(row.id, threadId(req.query.after)), unread:row.visitor_unread, settings});
+      if (!row) return res.json({thread:null, messages:[], unread:0, settings:permissions(null)});
+      res.json({thread:publicThread(row), messages:store.messages(row.id, threadId(req.query.after)), unread:row.visitor_unread, settings:permissions(row)});
     } catch (error) { fail(res, error); }
   });
 
@@ -186,16 +184,16 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     const raw = typeof req.body?.body === 'string' ? req.body.body : '';
     const body = cleanMessageText(raw), name = cleanMessageText(req.body?.name).replace(/\s+/g, ' ').slice(0, MESSAGE_LIMITS.name);
     if (body.length > MESSAGE_LIMITS.body) return res.status(400).json({error:`Pesan maksimal ${MESSAGE_LIMITS.body.toLocaleString('id-ID')} karakter.`});
-    let attachment;
+    const session = browserSession(req, res, true), ip = String(req.ip || 'unknown').slice(0, 100);
+    let attachment, row;
     try {
-      const settings = store.settings();
-      attachment = takeAttachment(req.body?.attachment, {image:settings.allowImages, file:settings.allowFiles});
+      row = store.threadBySession(session);
+      const allowed = permissions(row);
+      attachment = takeAttachment(req.body?.attachment, {image:allowed.allowImages, file:allowed.allowFiles});
     } catch (error) { return rejectAttachment(res, error); }
     if (!body && !attachment) return res.status(400).json({error:'Pesan tidak boleh kosong.'});
-    const session = browserSession(req, res, true), ip = String(req.ip || 'unknown').slice(0, 100);
     let saved = null;
     try {
-      let row = store.threadBySession(session);
       if (!row && !limiter.allow(`new:${ip}`, MESSAGE_LIMITS.newThreadsPerIpHour, 3600000)) return res.status(429).json({error:'Terlalu banyak percakapan baru dari jaringan ini. Coba lagi nanti.'});
       if (row) {
         const last = store.lastVisitorMessage(row.id);
@@ -256,22 +254,6 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     } catch (error) { fail(res, error); }
   });
 
-  // Registered before /api/admin/messages/:id so "settings" is not read as a conversation id.
-  app.get('/api/admin/messages/settings', requireAdmin, (req, res) => {
-    res.set('Cache-Control', 'no-store');
-    try { res.json(publicSettings()); } catch (error) { fail(res, error); }
-  });
-  app.put('/api/admin/messages/settings', requireAdmin, (req, res) => {
-    const {allowFiles, allowImages} = req.body || {};
-    if (typeof allowFiles !== 'boolean' || typeof allowImages !== 'boolean') return res.status(400).json({error:'Pengaturan tidak valid.'});
-    try {
-      store.saveSettings({allowFiles, allowImages});
-      const settings = publicSettings();
-      hub.toAllVisitors('settings', settings);
-      res.json(settings);
-    } catch (error) { fail(res, error); }
-  });
-
   app.get('/api/admin/messages', requireAdmin, (req, res) => {
     res.set('Cache-Control', 'no-store');
     try {
@@ -313,6 +295,20 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
       hub.toAdmins('message', {threadId:row.id, name:row.name, message, unread:store.adminUnread()});
       res.status(201).json({success:true, message});
     } catch (error) { fail(res, error); } finally { if (saved) files.remove([saved.file]); }
+  });
+
+  // Lets this one visitor send files and/or pictures; the change reaches their open panel right away.
+  app.put('/api/admin/messages/:id/permissions', requireAdmin, (req, res) => {
+    const {allowFiles, allowImages} = req.body || {};
+    if (typeof allowFiles !== 'boolean' || typeof allowImages !== 'boolean') return res.status(400).json({error:'Izin lampiran tidak valid.'});
+    try {
+      const row = store.thread(threadId(req.params.id));
+      if (!row) return res.status(404).json({error:'Percakapan tidak ditemukan.'});
+      const updated = store.setPermissions(row.id, {allowFiles, allowImages});
+      hub.toVisitor(row.session_id, 'settings', permissions(updated));
+      hub.toAdmins('permissions', {threadId:row.id, allow_files:updated.allow_files, allow_images:updated.allow_images});
+      res.json({success:true, allow_files:updated.allow_files, allow_images:updated.allow_images});
+    } catch (error) { fail(res, error); }
   });
 
   app.delete('/api/admin/messages/:id', requireAdmin, (req, res) => {

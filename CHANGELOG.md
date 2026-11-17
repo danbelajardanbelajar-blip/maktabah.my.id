@@ -1766,3 +1766,53 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-33-17-abe42b.
 | 2026-11-17 08:25:36 +07:00 | `src/lib/use-admin-inbox.ts` | 98–98 | 98–98 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 08:25:36 +07:00 | `src/lib/use-admin-inbox.ts` | 100–100 | 100–100 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 08:25:36 +07:00 | `src/lib/use-admin-inbox.ts` | 104–104 | 104–104 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+
+## [2026-11-17 08:42:21 +07:00] — Pesan: izin lampiran per percakapan (centang di dalam percakapan), bukan pengaturan global
+
+Waktu pencatatan: **2026-11-17 08:42:21 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `6122435`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: node --test server/*.test.js 255/255 (messages.test.js: izin per percakapan 401/400/404, percakapan lain tetap tanpa izin, pencabutan izin menolak gambar, event SSE settings ke pengunjung dan permissions ke admin); node --check server/messages.js; npx tsc -b; npm run build; oxlint file terkait (1 peringatan fast-refresh, tanpa error); git diff --cached --check. Browser lokal port 3091: pengunjung tanpa tombol lampiran; izin gambar dari admin muncul langsung di panel pengunjung tanpa reload; pengunjung lain tetap tanpa izin; centang 'Izinkan pengunjung ini: kirim file / kirim gambar' tampil di dalam percakapan pada inbox mini dan halaman admin, tersimpan per percakapan; bar pengaturan global sudah tidak ada. Data uji, token uji, dan tabel visitor_message_settings lokal dihapus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-42-21-50bcbe.json](docs/change-audit/2026-11-17-08-42-21-50bcbe.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 08:40:00 +07:00 | `dist/assets/index-C8qXYjkK.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-Dfc9lM06.css` | 1–2 | — | module/file | deleted |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CfoemnRu.js` | 1–17 | — | module/file | deleted |
+| 2026-11-17 08:40:00 +07:00 | `dist/assets/index.dev-MN8Gn6-l.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-17 08:40:00 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-17 08:39:32 +07:00 | `docs/messages.md` | 16–18 | 16–20 | Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l | modified |
+| 2026-11-17 08:39:32 +07:00 | `docs/messages.md` | 36–37 | 38–39 | Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 43–44 | 43–43 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | — | 48–51 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 72–78 | 75–77 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 97–97 | 96–96 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 147–147 | — | function createHub() { | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 158–158 | 156–157 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 173–173 | — | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 175–176 | 173–174 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 189–189 | 187–188 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 191–192 | 190–192 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 195–195 | — | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 198–198 | — | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | 259–274 | — | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:37:47 +07:00 | `server/messages.js` | — | 300–313 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | — | 123–126 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | 128–128 | 132–132 | const pdf = Buffer.from('%PDF-1.4\n%test\n'); | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | 135–142 | 139–155 | test('attachments follow the admin switches, are typed by content and only reach | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | 159–160 | 172–172 | test('attachments follow the admin switches, are typed by content and only reach | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | 163–164 | 175–180 | test('attachments follow the admin switches, are typed by content and only reach | modified |
+| 2026-11-17 08:38:49 +07:00 | `server/messages.test.js` | 167–167 | — | test('attachments follow the admin switches, are typed by content and only reach | modified |
+| 2026-11-17 08:38:23 +07:00 | `src/components/AdminInboxMini.tsx` | 6–6 | 6–6 | import type { useAdminInbox } from '../lib/use-admin-inbox'; | modified |
+| 2026-11-17 08:38:23 +07:00 | `src/components/AdminInboxMini.tsx` | — | 70–70 | export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok | modified |
+| 2026-11-17 08:38:22 +07:00 | `src/components/AdminMessages.tsx` | 3–4 | 3–3 | import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshC | modified |
+| 2026-11-17 08:38:22 +07:00 | `src/components/AdminMessages.tsx` | 6–46 | 5–5 | import { threadName, useAdminInbox } from '../lib/use-admin-inbox'; | modified |
+| 2026-11-17 08:38:22 +07:00 | `src/components/AdminMessages.tsx` | 78–78 | — | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-17 08:38:22 +07:00 | `src/components/AdminMessages.tsx` | — | 96–96 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-17 08:38:09 +07:00 | `src/components/MessageParts.tsx` | 91–91 | 91–116 | export function MessageBody({ message, mine, token }: { message: ChatMessage; mi | modified |
+| 2026-11-17 08:38:01 +07:00 | `src/lib/messages.ts` | 4–4 | 4–4 | export type ChatMessage = {id:number; sender:'visitor'\|'admin'; body:string; cre | modified |
+| 2026-11-17 08:38:01 +07:00 | `src/lib/messages.ts` | 71–72 | 71–71 | export const adminMessagesAPI = { | modified |
+| 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | — | 90–97 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | — | 119–132 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | 120–120 | 142–142 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |

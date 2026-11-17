@@ -3,7 +3,7 @@ import { ArrowLeft, Send, ExternalLink, Trash2 } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime } from '../lib/messages';
 import { threadName } from '../lib/use-admin-inbox';
 import type { useAdminInbox } from '../lib/use-admin-inbox';
-import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
+import { AttachmentButtons, MessageBody, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
 
 type Inbox = ReturnType<typeof useAdminInbox>;
 
@@ -67,6 +67,7 @@ export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok
       </div>
       <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void reply(); }} {...attach.dropProps}>
         {shownError && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 flex justify-between gap-2"><span>{shownError}</span><button type="button" onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></p>}
+        <ThreadPermissions thread={thread} saving={inbox.savingPermissions} onChange={value => void inbox.setPermissions(value)} compact />
         <PendingAttachmentChip draft={attach} />
         <div className="flex items-end gap-1.5">
           <AttachmentButtons draft={attach} disabled={sending} />
