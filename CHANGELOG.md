@@ -1912,3 +1912,32 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-11-28-01-909dc7.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-17 11:28:00 +07:00 | `docs/deployment-log.md` | — | 193–201 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
+
+## [2026-11-17 22:48:03 +07:00] — feat(admin): import Word (.docx) menjadi kitab baru
+
+Waktu pencatatan: **2026-11-17 22:48:03 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c4e989d`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 265/265 lulus (7 tes baru docx-import); tsc bersih; oxlint bersih untuk file berubah; npm run build sukses (index.dev-C81r78rS.js); uji browser server asli + salinan DB seed di viewport 375px: pratinjau 5 halaman/4 judul/1 catatan kaki, import ID 15399, /api/book, /api/toc, pencarian teks dan catatan kaki terverifikasi
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-22-48-03-4d4d1a.json](docs/change-audit/2026-11-17-22-48-03-4d4d1a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BVMZo2yL.css` | 1–2 | — | module/file | deleted |
+| 2026-11-17 22:42:59 +07:00 | `dist/assets/index-R2USTLa4.css` | — | 1–2 | module/file | added |
+| 2026-11-17 22:42:59 +07:00 | `dist/assets/index.dev-C81r78rS.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Cxjj-1Ka.js` | 1–22 | — | module/file | deleted |
+| 2026-11-17 22:42:59 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-17 22:47:53 +07:00 | `docs/word-import.md` | — | 1–53 | module/file | added |
+| 2026-11-17 22:39:28 +07:00 | `server/book-transfer.js` | — | 4–4 | import { buildCategorySqlCase } from './known-categories.js'; | modified |
+| 2026-11-17 22:39:28 +07:00 | `server/book-transfer.js` | — | 236–249 | export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA | modified |
+| 2026-11-17 22:39:28 +07:00 | `server/book-transfer.js` | 237–237 | 252–252 | export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA | modified |
+| 2026-11-17 22:39:28 +07:00 | `server/book-transfer.js` | 244–254 | 259–312 | export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA | modified |
+| 2026-11-17 22:42:35 +07:00 | `server/docx-import.js` | — | 1–248 | WORD_LIMITS, SPLIT_MODES, fail, readZip, count, out, method, nameLength | added |
+| 2026-11-17 22:40:25 +07:00 | `server/docx-import.test.js` | — | 1–169 | require, sampleDocx, doc, zip, locals, raw, local, entry | added |
+| 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | — | 7–7 | import { LargeTransfer } from './LargeTransfer'; | modified |
+| 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 21–21 | 22–22 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
+| 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 138–139 | 139–140 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
+| 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 143–145 | 144–147 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
+| 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 160–160 | 162–162 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
+| 2026-11-17 22:41:21 +07:00 | `src/components/WordImport.tsx` | — | 1–171 | MAX_BYTES, arabic, readAsDataUrl, reader, WordImport, inputRef, setBusy, post | added |

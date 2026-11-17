@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { buildCategorySqlCase } from './known-categories.js';
+import { WORD_LIMITS, decodeUpload, wordToBook } from './docx-import.js';
 
 export const MAX_TRANSFER_BYTES = 50 * 1024 * 1024;
 const MAX_BOOKS = 100;
@@ -232,26 +233,83 @@ export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA
       res.attachment(`maktabah-${isCategory(data) ? 'kategori' : 'kitab'}-${new Date().toISOString().slice(0, 10)}.json`).json(data);
     } catch (error) { res.status(400).json({ error: error.message }); }
   });
+  // Backs the database up, then imports a validated package. Shared by the JSON and Word imports.
+  const backupAndImport = async (db, payload, state) => {
+    const directory = path.join(path.dirname(path.resolve(getDbPath())), 'book-import-backups');
+    fs.mkdirSync(directory, { recursive: true });
+    const required = fs.statSync(getDbPath()).size + Buffer.byteLength(JSON.stringify(payload)) * 4 + MAX_TRANSFER_BYTES;
+    const disk = fs.statfsSync(directory);
+    if (disk.bavail * disk.bsize < required) throw new Error('Ruang disk tidak cukup untuk cadangan dan import.');
+    state.backup = `before-import-${Date.now()}.db`;
+    await db.backup(path.join(directory, state.backup));
+    const result = importBooks(db, payload, id => hasAdditional() && !!db.prepare('SELECT 1 FROM tambahan.books_meta WHERE bkid=?').get(id));
+    clearCache();
+    return result;
+  };
+
   app.post('/api/admin/books/import', requireAdmin, async (req, res) => {
     if (runtime.importing) return res.status(409).json({ error: 'Import lain sedang berjalan. Tunggu hingga selesai.' });
-    let backup = null;
+    const state = { backup: null };
     try {
       const db = getDb();
       if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
       if (Buffer.byteLength(JSON.stringify(req.body)) > MAX_TRANSFER_BYTES) return res.status(413).json({ error: 'Batas file import adalah 50 MB.' });
       validateBookPackage(req.body);
       runtime.importing = true;
-      const directory = path.join(path.dirname(path.resolve(getDbPath())), 'book-import-backups');
-      fs.mkdirSync(directory, { recursive: true });
-      const required = fs.statSync(getDbPath()).size + Buffer.byteLength(JSON.stringify(req.body)) * 4 + MAX_TRANSFER_BYTES;
-      const disk = fs.statfsSync(directory);
-      if (disk.bavail * disk.bsize < required) throw new Error('Ruang disk tidak cukup untuk cadangan dan import.');
-      backup = `before-import-${Date.now()}.db`;
-      await db.backup(path.join(directory, backup));
-      const result = importBooks(db, req.body, id => hasAdditional() && !!db.prepare('SELECT 1 FROM tambahan.books_meta WHERE bkid=?').get(id));
-      clearCache();
-      res.json({ success: true, ...result, backup });
-    } catch (error) { res.status(400).json({ error: error.message, backup }); }
+      const result = await backupAndImport(db, req.body, state);
+      res.json({ success: true, ...result, backup: state.backup });
+    } catch (error) { res.status(400).json({ error: error.message, backup: state.backup }); }
+    finally { runtime.importing = false; }
+  });
+
+  // Word (.docx) → new book. Preview first (nothing is stored), then import with the admin's metadata.
+  const wordOptions = body => ({ split: body?.split || 'heading', fileName: String(body?.fileName || '').slice(0, 200) });
+  const wordError = (res, error, backup = null) => res.status(error.status || 400).json({ error: error.message, ...(backup ? { backup } : {}) });
+
+  app.post('/api/admin/books/word/preview', requireAdmin, (req, res) => {
+    try {
+      const book = wordToBook(decodeUpload(req.body?.data), wordOptions(req.body));
+      res.json({
+        guessedTitle: book.guessedTitle, pages: book.pages.length, titles: book.titles.length, footnotes: book.footnotes, warnings: book.warnings,
+        characters: book.pages.reduce((n, p) => n + p.nass.length, 0),
+        toc: book.titles.slice(0, 300).map(t => ({ page: t.id, lvl: t.lvl, tit: t.tit })),
+        sample: book.pages.slice(0, 3).map(p => ({ page: p.page, text: p.nass.slice(0, 1500) })),
+      });
+    } catch (error) { wordError(res, error); }
+  });
+
+  app.post('/api/admin/books/word/import', requireAdmin, async (req, res) => {
+    if (runtime.importing) return res.status(409).json({ error: 'Import lain sedang berjalan. Tunggu hingga selesai.' });
+    const state = { backup: null };
+    try {
+      const db = getDb();
+      if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
+      const title = String(req.body?.title || '').replace(/\s+/g, ' ').trim().slice(0, WORD_LIMITS.title);
+      const authorName = String(req.body?.author || '').replace(/\s+/g, ' ').trim().slice(0, WORD_LIMITS.author);
+      if (!title) return res.status(400).json({ error: 'Judul kitab wajib diisi.' });
+      const categoryId = Number(req.body?.categoryId);
+      const category = Number.isSafeInteger(categoryId) ? db.prepare(`SELECT id,name,catord,lvl FROM ${categoryCatalogueSql(hasAdditional())} WHERE id=?`).get(categoryId) : null;
+      if (!category) return res.status(400).json({ error: 'Pilih kategori kitab.' });
+      const book = wordToBook(decodeUpload(req.body?.data), wordOptions(req.body));
+      runtime.importing = true;
+      const bkid = (db.prepare(`SELECT max(bkid) AS n FROM ${bookCatalogueSql(hasAdditional())}`).get().n || 0) + 1;
+      // An author with the same name is reused; otherwise a new author record is created.
+      const author = authorName
+        ? db.prepare('SELECT authid,auth,inf,HigriD,AD FROM main.authors WHERE auth=? ORDER BY authid LIMIT 1').get(authorName)
+          || { authid: (db.prepare('SELECT max(authid) AS n FROM main.authors').get().n || 0) + 1, auth: authorName, inf: null, HigriD: null, AD: null }
+        : null;
+      const payload = { format: 'maktabah-books', version: 1, exported_at: new Date().toISOString(), books: [{
+        book: { bkid, bk: title, cat: category.id, authno: author?.authid ?? null, inf: null, betaka: null },
+        category: { id: category.id, name: category.name, catord: category.catord ?? null, lvl: category.lvl ?? null },
+        author,
+        pages: book.pages.map(p => ({ ...p, book_id: bkid, seal: null })),
+        titles: book.titles.map(t => ({ ...t, book_id: bkid })),
+      }] };
+      validateBookPackage(payload);
+      const result = await backupAndImport(db, payload, state);
+      if (!result.imported) throw new Error('Kitab tidak tersimpan. Silakan coba lagi.');
+      res.json({ success: true, bkid, title, pages: book.pages.length, titles: book.titles.length, backup: state.backup });
+    } catch (error) { wordError(res, error, state.backup); }
     finally { runtime.importing = false; }
   });
 }
