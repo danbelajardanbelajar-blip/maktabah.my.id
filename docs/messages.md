@@ -33,6 +33,28 @@ Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l
   - Header respons: `X-Content-Type-Options: nosniff`, CSP `sandbox`, `Cross-Origin-Resource-Policy: same-origin`.
   - Admin memuat lampiran dengan token Bearer (sebagai blob), karena sesi admin belum tentu memiliki cookie admin.
 
+## Tanda terkirim dan dibaca
+
+Di bawah setiap pesan milik sendiri ada tanda di samping jam:
+- **✓ (Terkirim):** pesan sudah tersimpan di server.
+- **✓✓ biru muda (Dibaca):** pihak lain sudah membaca pesan itu.
+
+**Kapan pesan dianggap dibaca:**
+- Pesan pengunjung dianggap dibaca saat admin membuka percakapan atau membalasnya.
+- Balasan admin dianggap dibaca saat pengunjung membuka panel pesan saat ada balasan baru.
+
+**Penyimpanan:** `visitor_message_threads.admin_read_id` dan `visitor_read_id` menyimpan id pesan tertinggi yang sudah dilihat masing-masing pihak. Nilainya hanya bertambah.
+
+**Database lama:** kolom ini ditambahkan otomatis dan diisi dari penghitung belum-dibaca, jadi pesan yang belum dibaca tetap tampil ✓.
+
+**Pembaruan langsung lewat event SSE `seen`:**
+- Ke pengunjung: `{readUpTo}`.
+- Ke admin: `{threadId, visitor_read_id}`.
+
+**Data yang dikembalikan API:**
+- `GET /api/messages` mengembalikan `readUpTo` (sampai id berapa admin sudah membaca).
+- Data percakapan admin memuat `admin_read_id` dan `visitor_read_id`.
+
 ## API admin
 
 - `PUT /api/admin/messages/:id/permissions` dengan body `{allowFiles:boolean, allowImages:boolean}` → `{success, allow_files, allow_images}`

@@ -49,6 +49,19 @@ export function createMessageStore(getStateDb) {
       const threadColumns = new Set(current.prepare('PRAGMA table_info(visitor_message_threads)').all().map(c => c.name));
       for (const name of ['allow_files', 'allow_images'])
         if (!threadColumns.has(name)) current.exec(`ALTER TABLE visitor_message_threads ADD COLUMN ${name} INTEGER NOT NULL DEFAULT 0`);
+      // Read receipts: the highest message id each side has seen. Older conversations are filled in from
+      // the unread counters, so messages already read show as read and unread ones as only sent.
+      for (const [column, unread, other] of [['admin_read_id', 'admin_unread', 'visitor'], ['visitor_read_id', 'visitor_unread', 'admin']]) {
+        if (threadColumns.has(column)) continue;
+        current.exec(`ALTER TABLE visitor_message_threads ADD COLUMN ${column} INTEGER NOT NULL DEFAULT 0`);
+        const set = current.prepare(`UPDATE visitor_message_threads SET ${column}=? WHERE id=?`);
+        const seen = current.prepare('SELECT id FROM visitor_messages WHERE thread_id=? AND sender=? ORDER BY id DESC LIMIT 1 OFFSET ?');
+        const newest = current.prepare('SELECT max(id) AS id FROM visitor_messages WHERE thread_id=?');
+        current.transaction(() => {
+          for (const t of current.prepare(`SELECT id, ${unread} AS unread FROM visitor_message_threads`).all())
+            set.run((t.unread > 0 ? seen.get(t.id, other, t.unread)?.id : newest.get(t.id)?.id) || 0, t.id);
+        })();
+      }
       initialized = current;
     }
     return current;
@@ -86,14 +99,19 @@ export function createMessageStore(getStateDb) {
       return db().prepare("SELECT count(*) AS n FROM visitor_messages WHERE thread_id=? AND sender='visitor' AND id>coalesce((SELECT max(id) FROM visitor_messages WHERE thread_id=? AND sender='admin'),0)").get(threadId, threadId).n;
     },
     lastVisitorMessage(threadId) { return db().prepare("SELECT body,created_at FROM visitor_messages WHERE thread_id=? AND sender='visitor' ORDER BY id DESC LIMIT 1").get(threadId); },
-    markRead(threadId, reader) { db().prepare(`UPDATE visitor_message_threads SET ${reader === 'admin' ? 'admin_unread' : 'visitor_unread'}=0 WHERE id=?`).run(threadId); },
+    // Clears the unread counter and moves the read receipt up to the newest message; returns the receipt.
+    markRead(threadId, reader) {
+      const side = reader === 'admin' ? 'admin' : 'visitor';
+      db().prepare(`UPDATE visitor_message_threads SET ${side}_unread=0, ${side}_read_id=max(${side}_read_id, coalesce((SELECT max(id) FROM visitor_messages WHERE thread_id=?),0)) WHERE id=?`).run(threadId, threadId);
+      return thread(threadId)?.[`${side}_read_id`] || 0;
+    },
     adminUnread() { return db().prepare('SELECT coalesce(sum(admin_unread),0) AS n FROM visitor_message_threads').get().n; },
     list({page = 1, limit = 20, q = ''} = {}) {
       const where = q ? "WHERE t.name LIKE ? ESCAPE '\\' OR EXISTS (SELECT 1 FROM visitor_messages m WHERE m.thread_id=t.id AND (m.body LIKE ? ESCAPE '\\' OR m.attachment_name LIKE ? ESCAPE '\\'))" : '';
       const like = `%${q.replace(/[\\%_]/g, c => '\\' + c)}%`, args = q ? [like, like, like] : [];
       const total = db().prepare(`SELECT count(*) AS n FROM visitor_message_threads t ${where}`).get(...args).n;
       const pages = Math.max(1, Math.ceil(total / limit)), current = Math.min(Math.max(1, page), pages);
-      const data = db().prepare(`SELECT t.id,t.name,t.ip,t.user_agent,t.admin_unread,t.visitor_unread,t.allow_files,t.allow_images,t.created_at,t.updated_at,
+      const data = db().prepare(`SELECT t.id,t.name,t.ip,t.user_agent,t.admin_unread,t.visitor_unread,t.allow_files,t.allow_images,t.admin_read_id,t.visitor_read_id,t.created_at,t.updated_at,
         (SELECT CASE WHEN m.body='' AND m.attachment_name IS NOT NULL THEN (CASE WHEN m.attachment_kind='image' THEN '📷 ' ELSE '📎 ' END)||m.attachment_name ELSE m.body END FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_body,
         (SELECT sender FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_sender,
         (SELECT count(*) FROM visitor_messages m WHERE m.thread_id=t.id) AS message_count
@@ -170,8 +188,9 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     const session = browserSession(req, res);
     try {
       const row = session && store.threadBySession(session);
-      if (!row) return res.json({thread:null, messages:[], unread:0, settings:permissions(null)});
-      res.json({thread:publicThread(row), messages:store.messages(row.id, threadId(req.query.after)), unread:row.visitor_unread, settings:permissions(row)});
+      if (!row) return res.json({thread:null, messages:[], unread:0, readUpTo:0, settings:permissions(null)});
+      // readUpTo: the admin has read the visitor's messages with an id up to this one.
+      res.json({thread:publicThread(row), messages:store.messages(row.id, threadId(req.query.after)), unread:row.visitor_unread, readUpTo:row.admin_read_id || 0, settings:permissions(row)});
     } catch (error) { fail(res, error); }
   });
 
@@ -219,7 +238,11 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     const session = browserSession(req, res);
     try {
       const row = session && store.threadBySession(session);
-      if (row) { store.markRead(row.id, 'visitor'); hub.toVisitor(session, 'read', {unread:0}); }
+      if (row) {
+        const readId = store.markRead(row.id, 'visitor');
+        hub.toVisitor(session, 'read', {unread:0});
+        if (readId !== row.visitor_read_id) hub.toAdmins('seen', {threadId:row.id, visitor_read_id:readId});
+      }
       res.json({success:true, unread:0});
     } catch (error) { fail(res, error); }
   });
@@ -267,10 +290,11 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
     try {
       const row = store.thread(threadId(req.params.id));
       if (!row) return res.status(404).json({error:'Percakapan tidak ditemukan.'});
-      store.markRead(row.id, 'admin');
+      const readId = store.markRead(row.id, 'admin');
       const unread = store.adminUnread();
       hub.toAdmins('read', {threadId:row.id, unread});
-      res.json({thread:{...row, admin_unread:0, session_id:undefined}, messages:store.messages(row.id, threadId(req.query.after), 500), unread});
+      if (readId !== row.admin_read_id) hub.toVisitor(row.session_id, 'seen', {readUpTo:readId});
+      res.json({thread:{...row, admin_unread:0, admin_read_id:readId, session_id:undefined}, messages:store.messages(row.id, threadId(req.query.after), 500), unread});
     } catch (error) { fail(res, error); }
   });
 
@@ -289,9 +313,11 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
       saved = storeAttachment(attachment);
       const message = store.add(row, 'admin', body, saved);
       saved = null;
-      store.markRead(row.id, 'admin');
+      // Replying means the admin has read everything before the reply.
+      const readId = store.markRead(row.id, 'admin');
       const visitorUnread = store.thread(row.id).visitor_unread;
       hub.toVisitor(row.session_id, 'message', {message, unread:visitorUnread});
+      if (readId !== row.admin_read_id) hub.toVisitor(row.session_id, 'seen', {readUpTo:readId});
       hub.toAdmins('message', {threadId:row.id, name:row.name, message, unread:store.adminUnread()});
       res.status(201).json({success:true, message});
     } catch (error) { fail(res, error); } finally { if (saved) files.remove([saved.file]); }

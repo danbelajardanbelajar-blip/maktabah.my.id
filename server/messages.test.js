@@ -50,7 +50,7 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   const other = await f.send({body:'Pesan browser lain'});assert.notEqual(other.cookie, first.cookie);
   const read = async cookie => (await fetch(f.base + '/api/messages', {headers:cookie ? {cookie} : {}})).json();
   assert.deepEqual((await read(first.cookie)).messages.map(m => m.body), ['<img src=x onerror=alert(1)> Assalamu alaikum']);
-  assert.deepEqual(await read(), {thread:null, messages:[], unread:0, settings:NO_ATTACHMENTS});
+  assert.deepEqual(await read(), {thread:null, messages:[], unread:0, readUpTo:0, settings:NO_ATTACHMENTS});
   assert.ok(!JSON.stringify(f.db.prepare('SELECT session_id FROM visitor_message_threads').all()).includes(first.cookie.split('=')[1]), 'only the hash is stored');
 
   assert.equal((await f.admin('')).status, 200);assert.equal((await fetch(f.base + '/api/admin/messages')).status, 401);
@@ -69,7 +69,7 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   assert.equal((await f.admin('/999', {method:'POST', body:JSON.stringify({body:'x'})})).status, 404);
   assert.equal((await f.admin('/' + thread.id, {method:'POST', body:JSON.stringify({body:'  '})})).status, 400);
   assert.equal((await f.admin('/' + thread.id, {method:'DELETE'})).status, 200);
-  assert.deepEqual(await read(first.cookie), {thread:null, messages:[], unread:0, settings:NO_ATTACHMENTS});
+  assert.deepEqual(await read(first.cookie), {thread:null, messages:[], unread:0, readUpTo:0, settings:NO_ATTACHMENTS});
   assert.equal(f.db.prepare('SELECT count(*) AS n FROM visitor_messages').get().n, 1);
 });
 
@@ -124,6 +124,45 @@ test('streams deliver admin replies to the visitor and visitor messages to the a
   await f.admin(`/${id}/permissions`, {method:'PUT', body:JSON.stringify({allowFiles:true, allowImages:false})});
   assert.match(await visitor.until(/event: settings/), /event: settings\ndata: \{"allowFiles":true,"allowImages":false/);
   assert.match(await adminStream.until(/event: permissions/), /"allow_files":1,"allow_images":0/);
+  // Read receipts: replying marks the visitor's message read (✓✓ for the visitor), and the visitor
+  // reading the reply turns the admin's ✓ into ✓✓.
+  assert.match(await visitor.until(/event: seen/), /event: seen\ndata: \{"readUpTo":2\}/);
+  await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
+  assert.match(await adminStream.until(/event: seen/), new RegExp(`event: seen\\ndata: \\{"threadId":${id},"visitor_read_id":3\\}`));
+});
+
+test('read receipts move forward per side and are exposed to the right party only', async t => {
+  const f = await fixture(t);
+  const first = await f.send({body:'Satu'});
+  const state = async () => (await fetch(f.base + '/api/messages', {headers:{cookie:first.cookie}})).json();
+  assert.equal((await state()).readUpTo, 0, 'sent, not yet read by the admin');
+  const id = (await (await f.admin('')).json()).data[0].id;
+  const detail = await (await f.admin('/' + id)).json();
+  assert.equal(detail.thread.admin_read_id, 1);assert.equal(detail.thread.visitor_read_id, 0);
+  assert.equal((await state()).readUpTo, 1, 'the admin opened the conversation');
+  await f.send({body:'Dua'}, first.cookie);
+  assert.equal((await state()).readUpTo, 1, 'a newer message is only sent');
+  await f.admin('/' + id, {method:'POST', body:JSON.stringify({body:'Balasan'})});
+  assert.equal((await state()).readUpTo, 3, 'replying reads everything before it');
+  assert.equal((await (await f.admin('/' + id)).json()).thread.visitor_read_id, 0, 'the visitor has not opened the reply yet');
+  await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
+  const row = (await (await f.admin('')).json()).data[0];
+  assert.equal(row.visitor_read_id, 3);assert.equal(row.admin_read_id, 3);
+  assert.equal((await state()).thread.admin_read_id, undefined, 'the visitor sees only readUpTo');
+});
+
+test('existing conversations get read receipts from their unread counters', async t => {
+  const db = new Database(':memory:');t.after(() => db.close());
+  db.exec(`CREATE TABLE visitor_message_threads (id INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT NOT NULL UNIQUE, name TEXT NOT NULL DEFAULT '', ip TEXT, user_agent TEXT,
+      visitor_unread INTEGER NOT NULL DEFAULT 0, admin_unread INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '');
+    CREATE TABLE visitor_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, thread_id INTEGER NOT NULL, sender TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT '');
+    INSERT INTO visitor_message_threads(session_id, visitor_unread, admin_unread) VALUES('a', 0, 2), ('b', 1, 0);
+    INSERT INTO visitor_messages(thread_id, sender, body) VALUES(1,'visitor','v1'),(1,'admin','a1'),(1,'visitor','v2'),(1,'visitor','v3'),(2,'visitor','x'),(2,'admin','y');`);
+  const {store} = registerMessages(express(), {getStateDb:() => db, requireAdmin:(q, r, n) => n()});
+  const a = store.thread(1), b = store.thread(2);
+  assert.equal(a.admin_read_id, 1, 'two unread visitor messages: the admin read up to v1');
+  assert.equal(a.visitor_read_id, 4, 'nothing unread for the visitor');
+  assert.equal(b.admin_read_id, 6);assert.ok(b.visitor_read_id < 6, 'the admin reply is still unread');
 });
 
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');

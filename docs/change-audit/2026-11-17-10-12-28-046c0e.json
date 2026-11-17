@@ -1,0 +1,1386 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 10:12:28 +07:00",
+  "title": "feat(messages): tanda terkirim (✓) dan dibaca (✓✓) per pesan",
+  "baseCommit": "207a8e73a725882a33614c36c7b4e05632dc4f00",
+  "checks": "node --test server/*.test.js 257/257 lulus; tsc --noEmit bersih; oxlint tanpa error baru; npm run build sukses (index.dev-Ctn--hM9.js); uji browser lokal: ✓/✓✓ di panel pengunjung berubah langsung saat admin membuka percakapan, inbox admin menampilkan Dibaca/Terkirim sesuai",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BVMZo2yL.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-17 10:10:13 +07:00",
+      "stagedSha256": "071e6c62c19c1ba28b331da5877ab7f5b5bc7c7f19916c3544a204fb16dfcf9c",
+      "diffSha256": "ded112b3f4949a80dfde9b613e56de785ebd2296042d0bce81655750d10f1ba3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-C8qXYjkK.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "0be75c5e8645df335a6bcf0c61cb1728ba2ce513e34fd1709aab9ef23a2d4363",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-Ctn--hM9.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-17 10:10:13 +07:00",
+      "stagedSha256": "1f97de052eaf340c2836626de6cfd13324481779d3094d76ba056a8a3c6380e1",
+      "diffSha256": "3235bbdff6c1430e898f47228b84e632745a3859ec5ea5414691c7ebeb07d3b0",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "et",
+        "nt",
+        "rt",
+        "ft",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "z",
+        "B",
+        "V",
+        "ie",
+        "ae",
+        "oe",
+        "U",
+        "le",
+        "de",
+        "fe",
+        "pe",
+        "Ae",
+        "Ne",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "Xe",
+        "Ze",
+        "at",
+        "ot",
+        "st",
+        "ct",
+        "lt",
+        "ut",
+        "pt",
+        "ht",
+        "yt",
+        "bt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "Ot",
+        "At",
+        "jt",
+        "Mt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "Lt",
+        "zt",
+        "Bt",
+        "Vt",
+        "Ut",
+        "Wt",
+        "Kt",
+        "Jt",
+        "Xt",
+        "Zt",
+        "an",
+        "on",
+        "sn",
+        "cn",
+        "ln",
+        "Dn",
+        "On",
+        "Hn",
+        "Un",
+        "Gn",
+        "Kn",
+        "Jn",
+        "Yn",
+        "Qn",
+        "er",
+        "ar",
+        "or",
+        "sr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "pr",
+        "mr",
+        "hr",
+        "gr",
+        "_r",
+        "vr",
+        "wr",
+        "Tr",
+        "kr",
+        "zr",
+        "Wr",
+        "Gr",
+        "Kr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "ci",
+        "vi",
+        "yi",
+        "bi",
+        "xi",
+        "Si",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Qi",
+        "ia",
+        "aa",
+        "oa",
+        "la",
+        "ua",
+        "da",
+        "ga",
+        "_a",
+        "va",
+        "ba",
+        "xa",
+        "wa",
+        "Ta",
+        "Ea",
+        "Da",
+        "u",
+        "f",
+        "h",
+        "ja",
+        "Ma",
+        "Na",
+        "Pa",
+        "Fa",
+        "Ia",
+        "Ra",
+        "za",
+        "Ba",
+        "Va",
+        "Wa",
+        "Ga",
+        "Ka",
+        "Ya",
+        "Xa",
+        "Za",
+        "Qa",
+        "to",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "Fs",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "el",
+        "tl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "vt",
+        "Rt",
+        "Ht",
+        "qt",
+        "Yt",
+        "Qt",
+        "rn",
+        "un",
+        "hn",
+        "_",
+        "_n",
+        "yn",
+        "bn",
+        "xn",
+        "wn",
+        "An",
+        "Nn",
+        "In",
+        "Rn",
+        "zn",
+        "Vn",
+        "Xn",
+        "tr",
+        "nr",
+        "rr",
+        "ir",
+        "yr",
+        "br",
+        "Sr",
+        "Er",
+        "Dr",
+        "Or",
+        "Ar",
+        "jr",
+        "Mr",
+        "Nr",
+        "Pr",
+        "Fr",
+        "Ir",
+        "Lr",
+        "Br",
+        "Vr",
+        "Hr",
+        "Ur",
+        "Ei",
+        "Fi",
+        "Li",
+        "Ji",
+        "Yi",
+        "Zi",
+        "ea",
+        "ra",
+        "fa"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 17
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-MN8Gn6-l.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "2fd88092bcb67d9951bc889c30bf58030fad068fd284044afc94e9db39cd8bac",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 17
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:10:13 +07:00",
+      "stagedSha256": "6be2c363138e3f85a29fbb1787bef584596758c79bc121f8b02705faf500276a",
+      "diffSha256": "4c4704ee3a3a68ecbdc3267e0cb85e5080212930a5eaf523b874b7c9799c68ce",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/messages.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:12:15 +07:00",
+      "stagedSha256": "a80052ddf7c24695a0f1bb925487fd249518697ad6d6e1df3ce27fb7eb0afe2c",
+      "diffSha256": "cd306833c936834deca8500b20491043012cb9cc891fd4abd0a653b837443894",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 35,
+            "count": 0
+          },
+          "after": {
+            "line": 36,
+            "count": 22
+          },
+          "section": "Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l"
+        }
+      ]
+    },
+    {
+      "file": "server/messages.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:03:57 +07:00",
+      "stagedSha256": "ea55bc383d08e452a98a180214b486a7c80f39d8058a3f29c43bcef4dc7ffea2",
+      "diffSha256": "72fd54fa17dc630a2c4bb51aaa5557597aeaf45050d71ac1a63b664d3989dbe1",
+      "symbols": [
+        "MESSAGE_LIMITS",
+        "STREAM_LIMITS",
+        "now",
+        "iso",
+        "cleanMessageText",
+        "publicMessage",
+        "createMessageStore",
+        "db",
+        "current",
+        "columns",
+        "threadColumns",
+        "set",
+        "seen",
+        "newest",
+        "threadBySession",
+        "thread",
+        "COLUMNS",
+        "messages",
+        "add",
+        "d",
+        "id",
+        "created",
+        "side",
+        "where",
+        "like",
+        "total",
+        "pages",
+        "data",
+        "createRateLimiter",
+        "hits",
+        "t",
+        "createHub",
+        "visitors",
+        "write",
+        "open",
+        "ping",
+        "registerMessages",
+        "store",
+        "fail",
+        "threadId",
+        "publicThread",
+        "permissions",
+        "takeAttachment",
+        "parsed",
+        "storeAttachment",
+        "rejectAttachment",
+        "session",
+        "row",
+        "raw",
+        "body",
+        "allowed",
+        "last",
+        "message",
+        "readId",
+        "full",
+        "inline",
+        "limit",
+        "unread",
+        "visitorUnread",
+        "updated",
+        "attached"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 51,
+            "count": 0
+          },
+          "after": {
+            "line": 52,
+            "count": 13
+          },
+          "section": "export function createMessageStore(getStateDb) {"
+        },
+        {
+          "before": {
+            "line": 89,
+            "count": 1
+          },
+          "after": {
+            "line": 102,
+            "count": 6
+          },
+          "section": "export function createMessageStore(getStateDb) {"
+        },
+        {
+          "before": {
+            "line": 96,
+            "count": 1
+          },
+          "after": {
+            "line": 114,
+            "count": 1
+          },
+          "section": "export function createMessageStore(getStateDb) {"
+        },
+        {
+          "before": {
+            "line": 173,
+            "count": 2
+          },
+          "after": {
+            "line": 191,
+            "count": 3
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        },
+        {
+          "before": {
+            "line": 222,
+            "count": 1
+          },
+          "after": {
+            "line": 241,
+            "count": 5
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        },
+        {
+          "before": {
+            "line": 270,
+            "count": 1
+          },
+          "after": {
+            "line": 293,
+            "count": 1
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        },
+        {
+          "before": {
+            "line": 273,
+            "count": 1
+          },
+          "after": {
+            "line": 296,
+            "count": 2
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        },
+        {
+          "before": {
+            "line": 292,
+            "count": 1
+          },
+          "after": {
+            "line": 316,
+            "count": 2
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        },
+        {
+          "before": {
+            "line": 294,
+            "count": 0
+          },
+          "after": {
+            "line": 320,
+            "count": 1
+          },
+          "section": "export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () =>"
+        }
+      ]
+    },
+    {
+      "file": "server/messages.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:07:15 +07:00",
+      "stagedSha256": "de1af8f03cdaf8ec6b4b86196ecd16792fe2ebd0daaec27b81b3d74de13f335f",
+      "diffSha256": "1e31a4675ec69afa791c4548a08df158302ca0d1b4f5b90477057575637c8898",
+      "symbols": [
+        "NO_ATTACHMENTS",
+        "fixture",
+        "db",
+        "app",
+        "requireAdmin",
+        "attachmentDir",
+        "messages",
+        "server",
+        "base",
+        "send",
+        "res",
+        "admin",
+        "limiter",
+        "f",
+        "first",
+        "other",
+        "read",
+        "list",
+        "thread",
+        "detail",
+        "after",
+        "bot",
+        "cookie",
+        "limited",
+        "waiting",
+        "busy",
+        "open",
+        "controller",
+        "reader",
+        "visitor",
+        "adminStream",
+        "id",
+        "state",
+        "row",
+        "a",
+        "PNG",
+        "pdf",
+        "image",
+        "blocked",
+        "start",
+        "ids",
+        "threadId",
+        "permit",
+        "settingsOf",
+        "sent",
+        "url",
+        "own",
+        "reply",
+        "download"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 53,
+            "count": 1
+          },
+          "after": {
+            "line": 53,
+            "count": 1
+          },
+          "section": "test('a visitor conversation with an admin reply stays isolated per browser and"
+        },
+        {
+          "before": {
+            "line": 72,
+            "count": 1
+          },
+          "after": {
+            "line": 72,
+            "count": 1
+          },
+          "section": "test('a visitor conversation with an admin reply stays isolated per browser and"
+        },
+        {
+          "before": {
+            "line": 126,
+            "count": 0
+          },
+          "after": {
+            "line": 127,
+            "count": 39
+          },
+          "section": "test('streams deliver admin replies to the visitor and visitor messages to the a"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AdminInboxMini.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:04:56 +07:00",
+      "stagedSha256": "6f11ae4d94149486456d1059dc984b260e02410cdff79b4720cabcae69ab2c86",
+      "diffSha256": "e7270aa8faeadfabffa78ea51519c0bf029fbde6821e8781910cb83628bdb65e",
+      "symbols": [
+        "AdminInboxMini",
+        "attach",
+        "listRef",
+        "inputRef",
+        "reply",
+        "shownError"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 1
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import type { useAdminInbox } from '../lib/use-admin-inbox';"
+        },
+        {
+          "before": {
+            "line": 63,
+            "count": 1
+          },
+          "after": {
+            "line": 63,
+            "count": 1
+          },
+          "section": "export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AdminMessages.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:04:56 +07:00",
+      "stagedSha256": "58aed8b9ca50a40cdc1c60dec7c3f7a9b00cd329f9d20a03d4000ca8a3db30ff",
+      "diffSha256": "9ce1bff574af55db7259ec1130338e86a04035f136cecccff1474ce00de1ce3e",
+      "symbols": [
+        "AdminMessages",
+        "inbox",
+        "attach",
+        "listRef",
+        "reply",
+        "unreadTotal"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 5,
+            "count": 1
+          },
+          "after": {
+            "line": 5,
+            "count": 1
+          },
+          "section": "import { threadName, useAdminInbox } from '../lib/use-admin-inbox';"
+        },
+        {
+          "before": {
+            "line": 90,
+            "count": 1
+          },
+          "after": {
+            "line": 90,
+            "count": 1
+          },
+          "section": "export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri"
+        }
+      ]
+    },
+    {
+      "file": "src/components/MessageParts.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:04:37 +07:00",
+      "stagedSha256": "8e21d0608bfee75a81b8e759c41866e5bd388a6e3d1781f9877b70e7bff80dba",
+      "diffSha256": "835eb0f43bb661c40cf3885e791754347db259eb6ee1dee4f3c36be371c539f7",
+      "symbols": [
+        "MessageText",
+        "useAttachmentUrl",
+        "wanted",
+        "downloadWithToken",
+        "url",
+        "a",
+        "FileCard",
+        "className",
+        "inner",
+        "ImageAttachment",
+        "MessageBody",
+        "attachment",
+        "ReadTicks",
+        "Icon",
+        "MessageMeta",
+        "ThreadPermissions",
+        "allowFiles",
+        "box",
+        "pastedName",
+        "ext",
+        "d",
+        "stamp",
+        "useAttachmentDraft",
+        "previewRef",
+        "release",
+        "pick",
+        "named",
+        "check",
+        "preview",
+        "clear",
+        "onPaste",
+        "file",
+        "dropProps",
+        "canImage",
+        "AttachmentButtons",
+        "imageRef",
+        "button",
+        "take",
+        "PendingAttachmentChip",
+        "pending"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 1
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import type { ClipboardEvent, DragEvent } from 'react';"
+        },
+        {
+          "before": {
+            "line": 5,
+            "count": 1
+          },
+          "after": {
+            "line": 5,
+            "count": 1
+          },
+          "section": "import { linkifyText } from '../lib/linkify';"
+        },
+        {
+          "before": {
+            "line": 90,
+            "count": 0
+          },
+          "after": {
+            "line": 91,
+            "count": 20
+          },
+          "section": "export function MessageBody({ message, mine, token }: { message: ChatMessage; mi"
+        }
+      ]
+    },
+    {
+      "file": "src/components/MessageWidget.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:09:31 +07:00",
+      "stagedSha256": "c8868620a7e5816cb56da39ab35aa8aac5cb965714ba4d56c402f010f502e300",
+      "diffSha256": "adae01a1989bfd37d65916fd75796d673c6e123ddf06a6622eec3ed693ff511d",
+      "symbols": [
+        "readAdminToken",
+        "MessageWidget",
+        "suppressed",
+        "seen",
+        "attach",
+        "listRef",
+        "inputRef",
+        "lastId",
+        "viewing",
+        "adminToken",
+        "adminMode",
+        "inbox",
+        "apply",
+        "markRead",
+        "source",
+        "message",
+        "badge",
+        "onVisible",
+        "onScroll",
+        "next",
+        "unlock",
+        "onKey",
+        "enableNotifications",
+        "send",
+        "body",
+        "result",
+        "openAdminMessages",
+        "buttonHidden"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 1
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import {"
+        },
+        {
+          "before": {
+            "line": 12,
+            "count": 1
+          },
+          "after": {
+            "line": 12,
+            "count": 1
+          },
+          "section": "import { AdminInboxMini } from './AdminInboxMini';"
+        },
+        {
+          "before": {
+            "line": 25,
+            "count": 0
+          },
+          "after": {
+            "line": 26,
+            "count": 3
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 62,
+            "count": 1
+          },
+          "after": {
+            "line": 65,
+            "count": 1
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 65,
+            "count": 1
+          },
+          "after": {
+            "line": 68,
+            "count": 1
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 78,
+            "count": 1
+          },
+          "after": {
+            "line": 81,
+            "count": 5
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 98,
+            "count": 1
+          },
+          "after": {
+            "line": 105,
+            "count": 1
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 100,
+            "count": 1
+          },
+          "after": {
+            "line": 107,
+            "count": 1
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 165,
+            "count": 2
+          },
+          "after": {
+            "line": 172,
+            "count": 2
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        },
+        {
+          "before": {
+            "line": 223,
+            "count": 1
+          },
+          "after": {
+            "line": 230,
+            "count": 1
+          },
+          "section": "export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/messages.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:04:14 +07:00",
+      "stagedSha256": "6e3432f9658ef94a8cd5f1e10ef471e6ae649d737bb042e8ddfbfd07a43d1f13",
+      "diffSha256": "8494d3a16a992f6d5ec44b8a7e75b3ce6021c52a39e498a60ba725bcfd2993ad",
+      "symbols": [
+        "MESSAGE_MAX",
+        "IMAGE_ACCEPT",
+        "FILE_EXTENSIONS",
+        "FILE_ACCEPT",
+        "attachmentKind",
+        "ext",
+        "formatBytes",
+        "checkAttachment",
+        "kind",
+        "max",
+        "readAttachment",
+        "reader",
+        "messagePreview",
+        "request",
+        "res",
+        "auth",
+        "messagesAPI",
+        "adminMessagesAPI",
+        "mergeMessages",
+        "byId",
+        "messageTime",
+        "date",
+        "today",
+        "unlockMessageSound",
+        "Ctor",
+        "playMessageSound",
+        "start",
+        "osc",
+        "notificationsSupported",
+        "notificationPermission",
+        "requestNotifications",
+        "showMessageNotification",
+        "n",
+        "setAppBadge",
+        "nav",
+        "nextScrollHidden"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 1
+          },
+          "after": {
+            "line": 4,
+            "count": 1
+          },
+          "section": "export type ChatMessage = {id:number; sender:'visitor'|'admin'; body:string; cre"
+        },
+        {
+          "before": {
+            "line": 62,
+            "count": 1
+          },
+          "after": {
+            "line": 62,
+            "count": 1
+          },
+          "section": "export const messagesAPI = {"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/use-admin-inbox.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:04:55 +07:00",
+      "stagedSha256": "f3ceec32e6de8b6647415f2a59034efd5a3da01ed12c7e082b01780adc909939",
+      "diffSha256": "6fa454891f652eac822acf510255eb4560a81882c47857a38fa8df2a505ba591",
+      "symbols": [
+        "threadName",
+        "useAdminInbox",
+        "selectedRef",
+        "handle",
+        "message",
+        "loadList",
+        "res",
+        "openThread",
+        "closeThread",
+        "latest",
+        "source",
+        "onScreen",
+        "open",
+        "refresh",
+        "patch",
+        "id",
+        "timer",
+        "unlock",
+        "reply",
+        "body",
+        "setPermissions",
+        "remove"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 97,
+            "count": 0
+          },
+          "after": {
+            "line": 98,
+            "count": 10
+          },
+          "section": "export function useAdminInbox({ token, enabled = true, isViewing = () => true, o"
+        }
+      ]
+    }
+  ]
+}

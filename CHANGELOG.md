@@ -1816,3 +1816,52 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-42-21-50bcbe.
 | 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | — | 90–97 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | — | 119–132 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 08:38:01 +07:00 | `src/lib/use-admin-inbox.ts` | 120–120 | 142–142 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+
+## [2026-11-17 10:12:28 +07:00] — feat(messages): tanda terkirim (✓) dan dibaca (✓✓) per pesan
+
+Waktu pencatatan: **2026-11-17 10:12:28 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `207a8e7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 257/257 lulus; tsc --noEmit bersih; oxlint tanpa error baru; npm run build sukses (index.dev-Ctn--hM9.js); uji browser lokal: ✓/✓✓ di panel pengunjung berubah langsung saat admin membuka percakapan, inbox admin menampilkan Dibaca/Terkirim sesuai
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-12-28-046c0e.json](docs/change-audit/2026-11-17-10-12-28-046c0e.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 10:10:13 +07:00 | `dist/assets/index-BVMZo2yL.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-C8qXYjkK.css` | 1–2 | — | module/file | deleted |
+| 2026-11-17 10:10:13 +07:00 | `dist/assets/index.dev-Ctn--hM9.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-MN8Gn6-l.js` | 1–17 | — | module/file | deleted |
+| 2026-11-17 10:10:13 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-17 10:12:15 +07:00 | `docs/messages.md` | — | 36–57 | Teks pesan tetap disimpan dan ditampilkan sebagai teks biasa, bukan HTML. `src/l | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | — | 52–64 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 89–89 | 102–107 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 96–96 | 114–114 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 173–174 | 191–193 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 222–222 | 241–245 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 270–270 | 293–293 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 273–273 | 296–297 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | 292–292 | 316–317 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:03:57 +07:00 | `server/messages.js` | — | 320–320 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-17 10:07:15 +07:00 | `server/messages.test.js` | 53–53 | 53–53 | test('a visitor conversation with an admin reply stays isolated per browser and | modified |
+| 2026-11-17 10:07:15 +07:00 | `server/messages.test.js` | 72–72 | 72–72 | test('a visitor conversation with an admin reply stays isolated per browser and | modified |
+| 2026-11-17 10:07:15 +07:00 | `server/messages.test.js` | — | 127–165 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-17 10:04:56 +07:00 | `src/components/AdminInboxMini.tsx` | 6–6 | 6–6 | import type { useAdminInbox } from '../lib/use-admin-inbox'; | modified |
+| 2026-11-17 10:04:56 +07:00 | `src/components/AdminInboxMini.tsx` | 63–63 | 63–63 | export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok | modified |
+| 2026-11-17 10:04:56 +07:00 | `src/components/AdminMessages.tsx` | 5–5 | 5–5 | import { threadName, useAdminInbox } from '../lib/use-admin-inbox'; | modified |
+| 2026-11-17 10:04:56 +07:00 | `src/components/AdminMessages.tsx` | 90–90 | 90–90 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-17 10:04:37 +07:00 | `src/components/MessageParts.tsx` | 3–3 | 3–3 | import type { ClipboardEvent, DragEvent } from 'react'; | modified |
+| 2026-11-17 10:04:37 +07:00 | `src/components/MessageParts.tsx` | 5–5 | 5–5 | import { linkifyText } from '../lib/linkify'; | modified |
+| 2026-11-17 10:04:37 +07:00 | `src/components/MessageParts.tsx` | — | 91–110 | export function MessageBody({ message, mine, token }: { message: ChatMessage; mi | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 6–6 | 6–6 | import { | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 12–12 | 12–12 | import { AdminInboxMini } from './AdminInboxMini'; | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | — | 26–28 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 62–62 | 65–65 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 65–65 | 68–68 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 78–78 | 81–85 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 98–98 | 105–105 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 100–100 | 107–107 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 165–166 | 172–173 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:09:31 +07:00 | `src/components/MessageWidget.tsx` | 223–223 | 230–230 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-17 10:04:14 +07:00 | `src/lib/messages.ts` | 4–4 | 4–4 | export type ChatMessage = {id:number; sender:'visitor'\|'admin'; body:string; cre | modified |
+| 2026-11-17 10:04:14 +07:00 | `src/lib/messages.ts` | 62–62 | 62–62 | export const messagesAPI = { | modified |
+| 2026-11-17 10:04:55 +07:00 | `src/lib/use-admin-inbox.ts` | — | 98–107 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |

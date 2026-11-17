@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ClipboardEvent, DragEvent } from 'react';
-import { Download, FileText, ImagePlus, Paperclip, X } from 'lucide-react';
+import { Check, CheckCheck, Download, FileText, ImagePlus, Paperclip, X } from 'lucide-react';
 import { linkifyText } from '../lib/linkify';
-import { FILE_ACCEPT, IMAGE_ACCEPT, adminMessagesAPI, checkAttachment, formatBytes } from '../lib/messages';
+import { FILE_ACCEPT, IMAGE_ACCEPT, adminMessagesAPI, checkAttachment, formatBytes, messageTime } from '../lib/messages';
 import type { ChatAttachment, ChatMessage, MessageSettings } from '../lib/messages';
 
 // Shared pieces of the visitor ↔ admin chat: message text with clickable links, attachments, and the
@@ -86,6 +86,26 @@ export function MessageBody({ message, mine, token }: { message: ChatMessage; mi
     </div>}
     <MessageText text={message.body} mine={mine} />
   </>;
+}
+
+// Sender-side receipt next to the time: ✓ stored on the server, ✓✓ (highlighted) read by the other side.
+export function ReadTicks({ read }: { read: boolean }) {
+  const Icon = read ? CheckCheck : Check, label = read ? 'Dibaca' : 'Terkirim';
+  return (
+    <span role="img" aria-label={label} title={label} className={`inline-flex shrink-0 ${read ? 'text-sky-300' : 'opacity-80'}`}>
+      <Icon size={14} strokeWidth={2.5} aria-hidden="true" />
+    </span>
+  );
+}
+
+// Time under a bubble, plus the receipt on one's own messages.
+export function MessageMeta({ message, mine, read, full = false, className = '' }: { message: ChatMessage; mine: boolean; read?: boolean; full?: boolean; className?: string }) {
+  return (
+    <div className={`flex items-center justify-end gap-1 text-[10px] mt-1 ${className}`}>
+      <time dateTime={message.created_at}>{messageTime(message.created_at, full)}</time>
+      {mine && read !== undefined && <ReadTicks read={read} />}
+    </div>
+  );
 }
 
 // Admin switches for the open conversation only: may this visitor send files and/or pictures?

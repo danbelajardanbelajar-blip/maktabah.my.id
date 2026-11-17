@@ -3,13 +3,13 @@ import { MessageCircle, X, Send, Bell, BellOff } from 'lucide-react';
 import { navigationHash } from '../lib/navigation';
 import { pushLocation } from '../lib/back-navigation';
 import {
-  DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, mergeMessages, messagePreview, messageTime, messagesAPI, nextScrollHidden, notificationPermission, playMessageSound,
+  DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, mergeMessages, messagePreview, messagesAPI, nextScrollHidden, notificationPermission, playMessageSound,
   readAttachment, requestNotifications, setAppBadge, showMessageNotification, unlockMessageSound,
 } from '../lib/messages';
 import type { ChatMessage, MessageSettings } from '../lib/messages';
 import { useAdminInbox } from '../lib/use-admin-inbox';
 import { AdminInboxMini } from './AdminInboxMini';
-import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
+import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
 
 const readAdminToken = () => { try { return localStorage.getItem('adminToken') || ''; } catch { return ''; } };
 
@@ -23,6 +23,9 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [hasThread, setHasThread] = useState(false);
   const [unread, setUnread] = useState(0);
+  // The admin has read this visitor's messages up to this id (✓✓); newer ones show ✓ (sent).
+  const [readUpTo, setReadUpTo] = useState(0);
+  const seen = useCallback((id?: number) => { if (typeof id === 'number') setReadUpTo(current => Math.max(current, id)); }, []);
   const [draft, setDraft] = useState('');
   const [name, setName] = useState('');
   const [website, setWebsite] = useState('');
@@ -59,10 +62,10 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     messagesAPI.load().then(data => {
       if (!active) return;
       setHasThread(Boolean(data.thread)); if (data.thread?.name) setName(data.thread.name);
-      apply(data.messages); setUnread(data.unread); if (data.settings) setSettings(data.settings);
+      apply(data.messages); setUnread(data.unread); seen(data.readUpTo); if (data.settings) setSettings(data.settings);
     }).catch(() => { /* The button still works; sending will report problems. */ });
     return () => { active = false; };
-  }, [apply]);
+  }, [apply, seen]);
 
   const markRead = useCallback(() => {
     setUnread(0);
@@ -75,7 +78,11 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     if (!hasThread || adminMode) return;
     const source = new EventSource('/api/messages/stream');
     source.addEventListener('open', () => {
-      messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (!viewing.current) setUnread(data.unread); if (data.settings) setSettings(data.settings); }).catch(() => {});
+      messagesAPI.load(lastId.current).then(data => { apply(data.messages); seen(data.readUpTo); if (!viewing.current) setUnread(data.unread); if (data.settings) setSettings(data.settings); }).catch(() => {});
+    });
+    // The admin opened (or replied in) this conversation.
+    source.addEventListener('seen', event => {
+      try { seen(JSON.parse((event as MessageEvent).data).readUpTo); } catch { /* Ignore malformed events. */ }
     });
     // The admin changed which attachments visitors may send.
     source.addEventListener('settings', event => {
@@ -95,9 +102,9 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
         showMessageNotification('Balasan baru dari admin', messagePreview(message), () => setOpen(true));
     });
     source.addEventListener('read', () => setUnread(0));
-    source.addEventListener('reset', () => { setMessages([]); lastId.current = 0; setHasThread(false); setUnread(0); });
+    source.addEventListener('reset', () => { setMessages([]); lastId.current = 0; setHasThread(false); setUnread(0); setReadUpTo(0); });
     return () => source.close();
-  }, [hasThread, adminMode, apply, markRead]);
+  }, [hasThread, adminMode, apply, markRead, seen]);
 
   const badge = adminMode ? inbox.unread : unread;
   useEffect(() => { setAppBadge(badge); }, [badge]);
@@ -162,8 +169,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   // conversation have no live stream yet).
   useEffect(() => {
     if (!open || adminMode) return;
-    messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (data.settings) setSettings(data.settings); }).catch(() => {});
-  }, [open, adminMode, apply]);
+    messagesAPI.load(lastId.current).then(data => { apply(data.messages); seen(data.readUpTo); if (data.settings) setSettings(data.settings); }).catch(() => {});
+  }, [open, adminMode, apply, seen]);
 
   const send = async () => {
     const body = draft.trim(), file = attach.pending?.file;
@@ -220,7 +227,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
                 <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'visitor' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
                   {m.sender === 'admin' && <div className="text-[11px] font-bold text-[var(--app-primary)] mb-0.5">Admin</div>}
                   <MessageBody message={m} mine={m.sender === 'visitor'} />
-                  <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'visitor' ? 'text-white/75' : 'opacity-60'}`}>{messageTime(m.created_at)}</time>
+                  <MessageMeta message={m} mine={m.sender === 'visitor'} read={m.id <= readUpTo} className={m.sender === 'visitor' ? 'text-white/75' : 'opacity-60'} />
                 </div>
               </div>
             ))}

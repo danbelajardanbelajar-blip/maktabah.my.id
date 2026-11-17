@@ -1,7 +1,7 @@
 // Client side of visitor ↔ admin messages: REST calls, merging live updates, and the new-message alert.
 export type ChatAttachment = {kind:'image'|'file'; name:string; mime:string; size:number; url:string};
 export type ChatMessage = {id:number; sender:'visitor'|'admin'; body:string; created_at:string; attachment?:ChatAttachment|null};
-export type MessageThreadRow = {id:number; name:string; ip?:string; user_agent?:string; admin_unread:number; visitor_unread:number; allow_files?:number; allow_images?:number; created_at:string; updated_at:string; last_body?:string|null; last_sender?:'visitor'|'admin'|null; message_count?:number};
+export type MessageThreadRow = {id:number; name:string; ip?:string; user_agent?:string; admin_unread:number; visitor_unread:number; allow_files?:number; allow_images?:number; admin_read_id?:number; visitor_read_id?:number; created_at:string; updated_at:string; last_body?:string|null; last_sender?:'visitor'|'admin'|null; message_count?:number};
 export type MessageSettings = {allowFiles:boolean; allowImages:boolean; maxImageBytes:number; maxFileBytes:number};
 export type AttachmentUpload = {name:string; data:string};
 export const MESSAGE_MAX = 2000;
@@ -59,7 +59,7 @@ async function request(path:string, init:RequestInit = {}) {
 const auth = (token:string) => ({Authorization:`Bearer ${token}`});
 
 export const messagesAPI = {
-  load:(after = 0) => request(`/messages${after ? `?after=${after}` : ''}`) as Promise<{thread:{id:number; name:string}|null; messages:ChatMessage[]; unread:number; settings?:MessageSettings}>,
+  load:(after = 0) => request(`/messages${after ? `?after=${after}` : ''}`) as Promise<{thread:{id:number; name:string}|null; messages:ChatMessage[]; unread:number; readUpTo?:number; settings?:MessageSettings}>,
   send:(body:string, name:string, website:string, attachment?:AttachmentUpload|null) => request('/messages', {method:'POST', body:JSON.stringify({body, name, website, ...(attachment ? {attachment} : {})})}) as Promise<{success:boolean; message:ChatMessage|null; thread?:{id:number; name:string}}>,
   markRead:() => request('/messages/read', {method:'POST'}),
 };

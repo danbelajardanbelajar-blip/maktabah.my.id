@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
 import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
-import { AttachmentButtons, MessageBody, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
+import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
 
 // Full admin inbox page for visitor messages (the floating button offers a compact version).
 export function AdminMessages({ token, onLogout, onUnreadChange }: { token: string; onLogout: () => void; onUnreadChange: () => void }) {
@@ -87,7 +87,7 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
                   <div key={m.id} className={`flex ${m.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'admin' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-white border rounded-bl-md'}`}>
                       <MessageBody message={m} mine={m.sender === 'admin'} token={token} />
-                      <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'admin' ? 'text-white/75' : 'text-gray-500'}`}>{messageTime(m.created_at, true)}</time>
+                      <MessageMeta message={m} mine={m.sender === 'admin'} read={m.id <= (thread?.visitor_read_id || 0)} full className={m.sender === 'admin' ? 'text-white/75' : 'text-gray-500'} />
                     </div>
                   </div>
                 ))}

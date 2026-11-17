@@ -95,6 +95,16 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
       setThread(current => current && current.id === p.threadId ? {...current, ...patch} : current);
       setThreads(list => list.map(t => t.id === p.threadId ? {...t, ...patch} : t));
     });
+    // The visitor read the admin's replies: their ✓ turns into ✓✓.
+    source.addEventListener('seen', event => {
+      let p: {threadId?: number; visitor_read_id?: number};
+      try { p = JSON.parse((event as MessageEvent).data); } catch { return; }
+      const id = p.visitor_read_id;
+      if (typeof id !== 'number') return;
+      const patch = (t: MessageThreadRow) => t.id === p.threadId ? {...t, visitor_read_id:Math.max(t.visitor_read_id || 0, id)} : t;
+      setThread(current => current && patch(current));
+      setThreads(list => list.map(patch));
+    });
     source.addEventListener('read', refresh);
     source.addEventListener('deleted', refresh);
     const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void latest.current.loadList(); }, 30000);

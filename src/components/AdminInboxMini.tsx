@@ -3,7 +3,7 @@ import { ArrowLeft, Send, ExternalLink, Trash2 } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime } from '../lib/messages';
 import { threadName } from '../lib/use-admin-inbox';
 import type { useAdminInbox } from '../lib/use-admin-inbox';
-import { AttachmentButtons, MessageBody, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
+import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
 
 type Inbox = ReturnType<typeof useAdminInbox>;
 
@@ -60,7 +60,7 @@ export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok
           <div key={m.id} className={`flex ${m.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'admin' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
               <MessageBody message={m} mine={m.sender === 'admin'} token={token} />
-              <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'admin' ? 'text-white/75' : 'opacity-60'}`}>{messageTime(m.created_at)}</time>
+              <MessageMeta message={m} mine={m.sender === 'admin'} read={m.id <= (thread?.visitor_read_id || 0)} className={m.sender === 'admin' ? 'text-white/75' : 'opacity-60'} />
             </div>
           </div>
         ))}
