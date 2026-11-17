@@ -190,3 +190,12 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
 - `PUT /api/admin/messages/1/permissions` tanpa autentikasi menghasilkan 401.
 - `GET /api/messages/attachments/999999999` menghasilkan 404 (bukan 503). Artinya query database pesan berjalan setelah migrasi kolom.
 - Tidak membuat percakapan uji di produksi, agar inbox admin tidak terisi data uji. Alur ✓/✓✓ diuji di lokal dan dengan tes server.
+
+## 2026-11-17 11:28:00 WIB — Pesan: stream admin dengan token (tanda dibaca seketika)
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- Commit aplikasi: `ad769fc`. Pull dan restart `maktabah.service` dijalankan pengguna di VPS. SSH dari mesin pengembang masih ditolak, jadi HEAD server dibuktikan lewat aset.
+- HTML online menunjuk `index.dev-Cxjj-1Ka.js` dan `index-BVMZo2yL.css`. Hash SHA-256 keduanya cocok dengan build lokal.
+- `GET /api/admin/messages/stream` dengan token salah menghasilkan 401. `GET /api/messages` mengembalikan `readUpTo` dan izin per percakapan. Endpoint lampiran menghasilkan 404 (query database berjalan).
+- Tidak membuat percakapan uji di produksi. Kecepatan ✓ → ✓✓ diuji di lokal tanpa cookie admin (16 ms).

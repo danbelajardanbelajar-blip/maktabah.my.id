@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 11:28:01 +07:00",
+  "title": "docs: catat verifikasi online stream admin dengan token",
+  "baseCommit": "ad769fc709ad63b477a78fe5a2679770bdd0661d",
+  "checks": "Bundle online cocok hash dengan build lokal; stream admin token salah 401; API pesan normal",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 11:28:00 +07:00",
+      "stagedSha256": "75a931d7106e4a7f1fb99fdaf04785d6ede79fe684154253db7e4bd21d566687",
+      "diffSha256": "bbdbedf44aece333ef5bc73cf1e65b6b114e39589334d5116dff84b01124a37a",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 192,
+            "count": 0
+          },
+          "after": {
+            "line": 193,
+            "count": 9
+          },
+          "section": "Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server."
+        }
+      ]
+    }
+  ]
+}

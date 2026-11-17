@@ -1900,3 +1900,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-52-41-f161be.
 | 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 46–48 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | 64–65 | 68–69 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | 68–68 | 72–75 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+
+## [2026-11-17 11:28:01 +07:00] — docs: catat verifikasi online stream admin dengan token
+
+Waktu pencatatan: **2026-11-17 11:28:01 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `ad769fc`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Bundle online cocok hash dengan build lokal; stream admin token salah 401; API pesan normal
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-11-28-01-909dc7.json](docs/change-audit/2026-11-17-11-28-01-909dc7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 11:28:00 +07:00 | `docs/deployment-log.md` | — | 193–201 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
