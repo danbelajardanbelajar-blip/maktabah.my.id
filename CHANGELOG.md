@@ -1633,3 +1633,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-00-35-28-26f109.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-17 00:34:45 +07:00 | `server/index.js` | 1369–1369 | — | app.get('/api/search_titles', (req, res) => { | modified |
+
+## [2026-11-17 08:08:27 +07:00] — Kata 'hukum' tunggal tidak lagi mengalihkan pencarian ke Tanya AI
+
+Waktu pencatatan: **2026-11-17 08:08:27 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `f96a8bf`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js: 247 lulus, 0 gagal; npm run build (tsc -b + vite build) lulus; git diff --check bersih
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-08-27-5f3992.json](docs/change-audit/2026-11-17-08-08-27-5f3992.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 08:07:31 +07:00 | `dist/assets/index.dev-DQ3QdHMm.js` | — | 1–17 | t, n, m, v, which, y, b, C | added |
+| 2026-11-17 08:07:31 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-17 08:06:53 +07:00 | `server/ai-query-detector.test.js` | 29–29 | 29–29 | test('detectAiQuery detects Indonesian question words and legal/fiqh intent', () | modified |
+| 2026-11-17 08:06:53 +07:00 | `server/ai-query-detector.test.js` | 80–80 | 80–80 | test('detectAiQuery still redirects short and long searches with explicit questi | modified |
+| 2026-11-17 08:06:53 +07:00 | `server/ai-query-detector.test.js` | — | 94–105 | test('detectAiQuery still redirects short and long searches with explicit questi | modified |
+| 2026-11-17 08:06:52 +07:00 | `src/lib/ai-query-detector.ts` | 16–17 | 16–18 | const QUESTION_WORDS_INDONESIAN_ENGLISH = new Set([ | modified |

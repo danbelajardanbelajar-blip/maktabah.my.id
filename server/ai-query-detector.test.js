@@ -26,7 +26,7 @@ test('detectAiQuery detects Indonesian question words and legal/fiqh intent', ()
     { q: 'siapa penulis kitab fathul qorib', word: 'siapa' },
     { q: 'mengapa niat shalat harus di awal', word: 'mengapa' },
     { q: 'bolehkah jamak shalat karena hujan', word: 'bolehkah' },
-    { q: 'hukum merokok menurut ulama', word: 'hukum' },
+    { q: 'hukum merokok menurut ulama', word: 'menurut ulama' },
     { q: 'jelaskan tata cara mandi wajib', word: 'jelaskan' },
     { q: 'tolong carikan dalil tentang sabar', word: 'tolong' },
     { q: 'dalil puasa ramadhan di al-quran', word: 'dalil' },
@@ -77,7 +77,7 @@ test('detectAiQuery keeps five-word connector searches and longer searches in no
 });
 
 test('detectAiQuery still redirects short and long searches with explicit question triggers', () => {
-  for (const query of ['apa', 'hukum', 'dalil', 'hadits', 'jelaskan', 'هل', 'what']) {
+  for (const query of ['apa', 'hukumnya', 'dalil', 'hadits', 'jelaskan', 'هل', 'what']) {
     assert.equal(detectAiQuery(query).shouldRedirect, true, query);
     assert.equal(detectAiQuery(query).reason, 'question_word', query);
   }
@@ -89,6 +89,18 @@ test('detectAiQuery still redirects short and long searches with explicit questi
   const result = detectAiQuery('bagaimana panduan shalat gerhana matahari sesuai sunnah nabi');
   assert.equal(result.shouldRedirect, true);
   assert.equal(result.reason, 'question_word');
+});
+
+test('detectAiQuery keeps the bare word hukum in normal search', () => {
+  for (const query of ['hukum', 'Hukum', 'hukum waris', 'hukum shalat jamak', 'kitab hukum nikah']) {
+    const result = detectAiQuery(query);
+    assert.equal(result.shouldRedirect, false, query);
+    assert.equal(result.reason, 'none', query);
+  }
+  // A question mark, another trigger word, or a question phrase still sends it to the AI.
+  for (const query of ['hukum waris?', 'apa hukum riba', 'bagaimana hukum musik', 'hukum seputar haid', 'hukum shalat menurut ulama', 'hukumnya qunut']) {
+    assert.equal(detectAiQuery(query).shouldRedirect, true, query);
+  }
 });
 
 test('detectAiQuery does NOT redirect normal book titles and short classical search keywords', () => {

@@ -13,8 +13,9 @@ const QUESTION_WORDS_INDONESIAN_ENGLISH = new Set([
   'apa', 'apakah', 'siapa', 'siapakah', 'bagaimana', 'bagaimanakah', 'gimana',
   'mengapa', 'kenapa', 'kapan', 'kapankah', 'dimana', 'dimanakah', 'kemana',
   'kemanakah', 'darimana', 'darimanakah', 'berapa', 'berapakah',
-  // Kata hukum / fikih & tindakan
-  'hukum', 'hukumnya', 'bolehkah', 'bisakah', 'dapatkah', 'haruskah', 'wajibkah',
+  // Kata hukum / fikih & tindakan. 'hukum' alone is a common search keyword
+  // (e.g. "hukum waris"), so it stays in normal search unless a phrase or other trigger matches.
+  'hukumnya','bolehkah', 'bisakah', 'dapatkah', 'haruskah', 'wajibkah',
   'adakah', 'benarkah', 'sahkah', 'sunnahkah', 'haramkah', 'makruhkah', 'batalkah',
   // Perintah / permintaan penjelasan
   'jelaskan', 'sebutkan', 'terangkan', 'uraikan', 'paparkan', 'tafsirkan',
