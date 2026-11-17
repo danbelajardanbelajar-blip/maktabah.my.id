@@ -1650,3 +1650,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-08-27-5f3992.
 | 2026-11-17 08:06:53 +07:00 | `server/ai-query-detector.test.js` | 80–80 | 80–80 | test('detectAiQuery still redirects short and long searches with explicit questi | modified |
 | 2026-11-17 08:06:53 +07:00 | `server/ai-query-detector.test.js` | — | 94–105 | test('detectAiQuery still redirects short and long searches with explicit questi | modified |
 | 2026-11-17 08:06:52 +07:00 | `src/lib/ai-query-detector.ts` | 16–17 | 16–18 | const QUESTION_WORDS_INDONESIAN_ENGLISH = new Set([ | modified |
+
+## [2026-11-17 08:12:30 +07:00] — Catat uji deployment kata 'hukum' tunggal
+
+Waktu pencatatan: **2026-11-17 08:12:30 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2c75c84`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Uji online: aset index.dev-DQ3QdHMm.js cocok hash build lokal 2c75c84; hukum/hukum waris ke pencarian teks; apa hukum riba/hukum waris? ke Tanya AI
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-08-12-30-a8debc.json](docs/change-audit/2026-11-17-08-12-30-a8debc.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 08:12:30 +07:00 | `docs/deployment-log.md` | — | 1–6 | module/file | modified |

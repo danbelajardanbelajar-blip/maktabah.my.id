@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 08:12:30 +07:00",
+  "title": "Catat uji deployment kata 'hukum' tunggal",
+  "baseCommit": "2c75c848db74dc023728209082ce9106dadc2650",
+  "checks": "Uji online: aset index.dev-DQ3QdHMm.js cocok hash build lokal 2c75c84; hukum/hukum waris ke pencarian teks; apa hukum riba/hukum waris? ke Tanya AI",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 08:12:30 +07:00",
+      "stagedSha256": "03aa1754144b5a94beaa9f815b9f12a3987e98cc13852f23888ea05412191453",
+      "diffSha256": "32b4a71d9d5c72b5a32dc455aad03c63714b1dc2a2751bb808c1bd9d28ff878e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 6
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

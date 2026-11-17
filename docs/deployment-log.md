@@ -1,3 +1,9 @@
+## 2026-11-17 08:12:22 WIB — Kata "hukum" tunggal tetap di pencarian biasa
+
+- Commit fungsi `2c75c84` sudah push GitHub. Pull VPS dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; HTML HTTPS menunjuk `index.dev-DQ3QdHMm.js` dan SHA-256 aset online sama dengan build lokal `2c75c84` (`05fcf4fc…eafe0d`).
+- Browser online lewat kotak "Cari di sini...": `hukum` → pencarian teks (3.811 hasil), `hukum waris` → pencarian teks (60 hasil); `apa hukum riba` dan `hukum waris?` tetap dialihkan ke Tanya AI dengan pemberitahuan "Tetap cari di katalog buku biasa".
+- Perubahan hanya frontend; tidak ada perubahan database atau restart yang diverifikasi dari sisi lokal.
+
 ## 2026-11-15 19:25:47 WIB — Fitur Pesan (pengunjung ↔ admin)
 
 - Commit fungsi `e606bf9` sudah push GitHub. Pull VPS dan restart dilakukan pengguna (SSH lokal ditolak). HEAD server tidak dibaca langsung; aset HTTPS `index.dev-BSHgaGOK.js` dan `index-CPQduW1l.css` sama dengan build `e606bf9`.
