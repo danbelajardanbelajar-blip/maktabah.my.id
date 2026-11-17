@@ -51,6 +51,8 @@ Di bawah setiap pesan milik sendiri ada tanda di samping jam:
 - Ke pengunjung: `{readUpTo}`.
 - Ke admin: `{threadId, visitor_read_id}`.
 
+**Koneksi live admin:** stream admin (`/api/admin/messages/stream`) dibuka dengan `fetch` + header `Authorization: Bearer` (`src/lib/auth-event-source.ts`), bukan `EventSource`, sehingga tidak bergantung pada cookie `maktabah_admin_session`. Tanpa cookie itu, inbox admin sebelumnya jatuh ke polling 30 detik dan tanda ✓✓ terlambat. Polling cadangan tetap ada dan sekarang juga memperbarui tanda di percakapan yang terbuka.
+
 **Data yang dikembalikan API:**
 - `GET /api/messages` mengembalikan `readUpTo` (sampai id berapa admin sudah membaca).
 - Data percakapan admin memuat `admin_read_id` dan `visitor_read_id`.

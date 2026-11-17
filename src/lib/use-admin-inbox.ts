@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MESSAGE_MAX, adminMessagesAPI, mergeMessages, messagePreview, playMessageSound, readAttachment, showMessageNotification, unlockMessageSound } from './messages';
 import type { ChatMessage, MessageThreadRow } from './messages';
+import { AuthEventSource } from './auth-event-source';
 
 export const threadName = (t: {name?: string; id: number}) => t.name || `Pengunjung #${t.id}`;
 
@@ -42,6 +43,9 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
     try {
       const res = await adminMessagesAPI.list(token, page, search);
       setThreads(res.data); setTotal(res.total); setPages(res.pages); setUnread(res.unread);
+      // The list carries read receipts too, so a refresh also updates ✓/✓✓ in the open conversation.
+      const open = res.data.find(t => t.id === selectedRef.current);
+      if (open) setThread(current => current && current.id === open.id ? {...current, visitor_read_id:Math.max(current.visitor_read_id || 0, open.visitor_read_id || 0)} : current);
       if (res.page !== page) setPage(res.page);
     } catch (e) { handle(e); }
   }, [enabled, token, page, search, handle]);
@@ -61,11 +65,14 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
   useEffect(() => { void loadList(); }, [loadList]);
 
   // The stream stays open across renders; it reads the latest callbacks through this ref.
-  const latest = useRef({loadList, openThread, onUnreadChange, isViewing, onNotificationClick});
-  latest.current = {loadList, openThread, onUnreadChange, isViewing, onNotificationClick};
+  const latest = useRef({loadList, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError});
+  latest.current = {loadList, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError};
   useEffect(() => {
     if (!enabled || !token) return;
-    const source = new EventSource('/api/admin/messages/stream');
+    // Authenticated with the token (not the admin cookie), so every admin session gets live updates.
+    const source = new AuthEventSource('/api/admin/messages/stream', token, () => latest.current.onAuthError());
+    // After a (re)connect, catch up on whatever happened while disconnected.
+    source.addEventListener('open', () => { void latest.current.loadList(); });
     source.addEventListener('message', event => {
       let payload: {threadId?: number; name?: string; message?: ChatMessage};
       try { payload = JSON.parse((event as MessageEvent).data); } catch { return; }

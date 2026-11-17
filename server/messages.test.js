@@ -129,6 +129,12 @@ test('streams deliver admin replies to the visitor and visitor messages to the a
   assert.match(await visitor.until(/event: seen/), /event: seen\ndata: \{"readUpTo":2\}/);
   await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
   assert.match(await adminStream.until(/event: seen/), new RegExp(`event: seen\\ndata: \\{"threadId":${id},"visitor_read_id":3\\}`));
+  // Admin sessions without the admin cookie connect with the Bearer token and get the same events.
+  const bearerStream = await open('/api/admin/messages/stream', {Authorization:'Bearer admintoken'});
+  await bearerStream.until(/retry: 5000/);
+  await f.send({body:'Lewat token'}, first.cookie);
+  assert.match(await bearerStream.until(/Lewat token/), /event: message/);
+  assert.equal((await fetch(f.base + '/api/admin/messages/stream', {headers:{Authorization:'Bearer salah'}})).status, 401);
 });
 
 test('read receipts move forward per side and are exposed to the right party only', async t => {

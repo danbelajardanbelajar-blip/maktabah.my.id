@@ -1877,3 +1877,26 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-42-05-396fc5.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-17 10:42:03 +07:00 | `docs/deployment-log.md` | — | 181–192 | Kredensial SSH tidak dicatat di file ini, repositori, atau perintah deployment y | modified |
+
+## [2026-11-17 10:52:41 +07:00] — fix(messages): tanda dibaca di admin langsung (stream admin pakai token)
+
+Waktu pencatatan: **2026-11-17 10:52:41 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `5093916`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 258/258 lulus; tsc bersih; oxlint bersih untuk file berubah; npm run build sukses (index.dev-Cxjj-1Ka.js); uji browser lokal tanpa cookie admin: ✓ -> ✓✓ di inbox admin 16 ms setelah pengunjung membaca, percakapan baru masuk daftar admin secara live
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-52-41-f161be.json](docs/change-audit/2026-11-17-10-52-41-f161be.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Ctn--hM9.js` | 1–17 | — | module/file | deleted |
+| 2026-11-17 10:51:33 +07:00 | `dist/assets/index.dev-Cxjj-1Ka.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-17 10:51:33 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-17 10:52:39 +07:00 | `docs/messages.md` | — | 54–55 | Di bawah setiap pesan milik sendiri ada tanda di samping jam: | modified |
+| 2026-11-17 10:50:15 +07:00 | `server/messages-client.test.js` | — | 5–5 | import {linkifyText,safeHref} from '../src/lib/linkify.ts'; | modified |
+| 2026-11-17 10:50:15 +07:00 | `server/messages-client.test.js` | — | 58–65 | test('visitor messages are an admin view under Masukan', () => { | modified |
+| 2026-11-17 10:49:01 +07:00 | `server/messages.test.js` | — | 132–137 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-17 10:48:24 +07:00 | `src/lib/auth-event-source.ts` | — | 1–71 | parseEventBlock, line, colon, field, AuthEventSource, controller, res, reader | added |
+| 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 4–4 | import type { ChatMessage, MessageThreadRow } from './messages'; | modified |
+| 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 46–48 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | 64–65 | 68–69 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-17 10:48:34 +07:00 | `src/lib/use-admin-inbox.ts` | 68–68 | 72–75 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |

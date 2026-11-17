@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DEFAULT_MESSAGE_SETTINGS,checkAttachment,formatBytes,mergeMessages,messagePreview,nextScrollHidden} from '../src/lib/messages.ts';
 import {linkifyText,safeHref} from '../src/lib/linkify.ts';
+import {parseEventBlock} from '../src/lib/auth-event-source.ts';
 import {adminGroup,adminLocation,adminParent,adminTitle} from '../src/lib/admin-navigation.ts';
 
 test('the floating message button hides on scroll down, returns on scroll up and near the top', () => {
@@ -53,4 +54,12 @@ test('attachment checks follow the admin switches, types and sizes; admins skip 
 test('visitor messages are an admin view under Masukan', () => {
   assert.equal(adminLocation('#/admin?view=messages').view, 'messages');
   assert.equal(adminGroup('messages'), 'Masukan');assert.equal(adminParent('messages'), 'categories');assert.equal(adminTitle('messages'), 'Pesan Pengunjung');
+});
+
+test('the token-authenticated admin stream parses server-sent event blocks like EventSource', () => {
+  assert.deepEqual(parseEventBlock('event: seen\ndata: {"threadId":3,"visitor_read_id":9}'), {event:'seen', data:'{"threadId":3,"visitor_read_id":9}'});
+  assert.deepEqual(parseEventBlock('data: a\ndata: b'), {event:'message', data:'a\nb'});
+  assert.equal(parseEventBlock(': ping'), null);
+  assert.equal(parseEventBlock('retry: 5000'), null);
+  assert.deepEqual(parseEventBlock('event: read\r\ndata:x\r'), {event:'read', data:'x'});
 });
