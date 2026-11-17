@@ -1,20 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Send, ExternalLink, Trash2 } from 'lucide-react';
-import { MESSAGE_MAX, messageTime } from '../lib/messages';
+import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime } from '../lib/messages';
 import { threadName } from '../lib/use-admin-inbox';
 import type { useAdminInbox } from '../lib/use-admin-inbox';
+import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
 
 type Inbox = ReturnType<typeof useAdminInbox>;
 
 // Compact admin inbox inside the floating message panel: read and reply without opening the admin page.
-export function AdminInboxMini({ inbox, onOpenFull }: { inbox: Inbox; onOpenFull: () => void }) {
+export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; token: string; onOpenFull: () => void }) {
   const {threads, selected, thread, messages, loading, sending, error, setError, openThread, closeThread, remove} = inbox;
   const [draft, setDraft] = useState('');
+  const attach = useAttachmentDraft(DEFAULT_MESSAGE_SETTINGS, true);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => { listRef.current?.scrollTo({top:listRef.current.scrollHeight}); }, [messages.length, selected, loading]);
   useEffect(() => { if (selected && !loading) inputRef.current?.focus({preventScroll:true}); }, [selected, loading]);
-  const reply = async () => { if (await inbox.reply(draft)) setDraft(''); };
+  const reply = async () => { if (await inbox.reply(draft, attach.pending?.file)) { setDraft(''); attach.clear(); } };
+  const shownError = attach.error || error;
 
   if (!selected) return (
     <div className="flex-1 flex flex-col min-h-0 bg-[var(--reader-bg)]">
@@ -56,20 +59,22 @@ export function AdminInboxMini({ inbox, onOpenFull }: { inbox: Inbox; onOpenFull
         {loading ? <p className="text-center text-sm opacity-60">Memuat…</p> : messages.map(m => (
           <div key={m.id} className={`flex ${m.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'admin' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
-              <p dir="auto" className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{m.body}</p>
+              <MessageBody message={m} mine={m.sender === 'admin'} token={token} />
               <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'admin' ? 'text-white/75' : 'opacity-60'}`}>{messageTime(m.created_at)}</time>
             </div>
           </div>
         ))}
       </div>
-      <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void reply(); }}>
-        {error && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 flex justify-between gap-2"><span>{error}</span><button type="button" onClick={() => setError('')} className="underline">Tutup</button></p>}
-        <div className="flex items-end gap-2">
-          <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} rows={1} maxLength={MESSAGE_MAX} dir="auto"
+      <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void reply(); }} {...attach.dropProps}>
+        {shownError && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 flex justify-between gap-2"><span>{shownError}</span><button type="button" onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></p>}
+        <PendingAttachmentChip draft={attach} />
+        <div className="flex items-end gap-1.5">
+          <AttachmentButtons draft={attach} disabled={sending} />
+          <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} onPaste={attach.onPaste} rows={1} maxLength={MESSAGE_MAX} dir="auto"
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void reply(); } }}
             placeholder="Tulis balasan…" aria-label="Tulis balasan"
-            className="flex-1 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
-          <button type="submit" disabled={sending || !draft.trim()} aria-label="Kirim balasan"
+            className="flex-1 min-w-0 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
+          <button type="submit" disabled={sending || (!draft.trim() && !attach.pending)} aria-label="Kirim balasan"
             className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-[var(--app-primary)] text-white disabled:opacity-50 hover:brightness-110 transition">
             <Send size={18} />
           </button>

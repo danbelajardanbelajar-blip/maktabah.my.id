@@ -610,7 +610,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
 });
 
 registerAdminLogs(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
-const visitorMessages=registerMessages(app,{getStateDb:()=>stateDb,requireAdmin,isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
+const visitorMessages=registerMessages(app,{getStateDb:()=>stateDb,requireAdmin,attachmentDir:path.join(__dirname,'..','uploads','messages'),isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession||transferRuntime.compactExport)});
 
 app.get('/api/admin/categories', requireAdmin, (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });

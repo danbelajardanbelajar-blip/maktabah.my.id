@@ -2,24 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
 import Database from 'better-sqlite3';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {registerMessages,cleanMessageText,createRateLimiter,MESSAGE_LIMITS} from './messages.js';
 import {adminActivityIdentity} from './admin-log-identity.js';
+
+const NO_ATTACHMENTS = {allowFiles:false, allowImages:false, maxImageBytes:8 * 1024 * 1024, maxFileBytes:10 * 1024 * 1024};
 
 async function fixture(t, {busy = false} = {}) {
   const db = new Database(':memory:');db.exec("CREATE TABLE admin_tokens(token TEXT PRIMARY KEY); INSERT INTO admin_tokens VALUES('admintoken')");
   let clock = Date.parse('2026-11-15T03:00:00Z');
   const app = express();app.set('trust proxy', true);app.use(express.json());app.use(adminActivityIdentity(() => db));
   const requireAdmin = (req, res, next) => req.headers.authorization === 'Bearer admintoken' ? next() : res.status(401).json({error:'Unauthorized'});
-  const messages = registerMessages(app, {getStateDb:() => db, requireAdmin, isBusy:() => busy, clock:() => clock});
+  const attachmentDir = fs.mkdtempSync(path.join(os.tmpdir(), 'maktabah-msg-test-'));
+  const messages = registerMessages(app, {getStateDb:() => db, requireAdmin, isBusy:() => busy, clock:() => clock, attachmentDir});
   const server = app.listen(0, '127.0.0.1');await new Promise(r => server.once('listening', r));
-  t.after(async () => {server.closeAllConnections();await new Promise(r => server.close(r));db.close();});
+  t.after(async () => {server.closeAllConnections();await new Promise(r => server.close(r));db.close();fs.rmSync(attachmentDir, {recursive:true, force:true});});
   const base = `http://127.0.0.1:${server.address().port}`;
   const send = async (body, cookie, extra = {}) => {
     const res = await fetch(base + '/api/messages', {method:'POST', headers:{'Content-Type':'application/json', ...(cookie ? {cookie} : {}), ...extra}, body:JSON.stringify(body)});
     return {status:res.status, json:await res.json(), cookie:res.headers.get('set-cookie')?.split(';')[0] || cookie};
   };
   const admin = (path, init = {}) => fetch(base + '/api/admin/messages' + path, {...init, headers:{Authorization:'Bearer admintoken', 'Content-Type':'application/json', ...(init.headers || {})}});
-  return {db, base, send, admin, messages, tick:ms => {clock += ms;}};
+  return {db, base, send, admin, messages, attachmentDir, tick:ms => {clock += ms;}};
 }
 
 test('message text keeps Arabic and line breaks but strips control and bidi-override characters', () => {
@@ -44,7 +50,7 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   const other = await f.send({body:'Pesan browser lain'});assert.notEqual(other.cookie, first.cookie);
   const read = async cookie => (await fetch(f.base + '/api/messages', {headers:cookie ? {cookie} : {}})).json();
   assert.deepEqual((await read(first.cookie)).messages.map(m => m.body), ['<img src=x onerror=alert(1)> Assalamu alaikum']);
-  assert.deepEqual(await read(), {thread:null, messages:[], unread:0});
+  assert.deepEqual(await read(), {thread:null, messages:[], unread:0, settings:NO_ATTACHMENTS});
   assert.ok(!JSON.stringify(f.db.prepare('SELECT session_id FROM visitor_message_threads').all()).includes(first.cookie.split('=')[1]), 'only the hash is stored');
 
   assert.equal((await f.admin('')).status, 200);assert.equal((await fetch(f.base + '/api/admin/messages')).status, 401);
@@ -63,7 +69,7 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   assert.equal((await f.admin('/999', {method:'POST', body:JSON.stringify({body:'x'})})).status, 404);
   assert.equal((await f.admin('/' + thread.id, {method:'POST', body:JSON.stringify({body:'  '})})).status, 400);
   assert.equal((await f.admin('/' + thread.id, {method:'DELETE'})).status, 200);
-  assert.deepEqual(await read(first.cookie), {thread:null, messages:[], unread:0});
+  assert.deepEqual(await read(first.cookie), {thread:null, messages:[], unread:0, settings:NO_ATTACHMENTS});
   assert.equal(f.db.prepare('SELECT count(*) AS n FROM visitor_messages').get().n, 1);
 });
 
@@ -114,4 +120,68 @@ test('streams deliver admin replies to the visitor and visitor messages to the a
   assert.match(await visitor.until(/Balasan admin/), /event: message\ndata: .*"sender":"admin"/);
   await f.send({body:'Terima kasih'}, first.cookie);
   assert.match(await adminStream.until(/Terima kasih/), /"threadId":\d+/);
+});
+
+const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+const pdf = Buffer.from('%PDF-1.4\n%test\n');
+
+test('attachments follow the admin switches, are typed by content and only reach their own conversation', async t => {
+  const f = await fixture(t);
+  const image = {name:'tangkapan.png', data:'data:image/png;base64,' + PNG.toString('base64')};
+  const blocked = await f.send({body:'', attachment:image});
+  assert.equal(blocked.status, 403);assert.match(blocked.json.error, /gambar/);
+  assert.equal(fs.readdirSync(f.attachmentDir).length, 0);
+
+  assert.equal((await fetch(f.base + '/api/admin/messages/settings')).status, 401);
+  assert.equal((await f.admin('/settings', {method:'PUT', body:JSON.stringify({allowFiles:'ya', allowImages:true})})).status, 400);
+  const saved = await (await f.admin('/settings', {method:'PUT', body:JSON.stringify({allowFiles:false, allowImages:true})})).json();
+  assert.equal(saved.allowImages, true);assert.equal(saved.allowFiles, false);
+  assert.equal((await (await f.admin('/settings')).json()).allowImages, true);
+  assert.equal((await (await fetch(f.base + '/api/messages')).json()).settings.allowImages, true);
+
+  const sent = await f.send({body:'', attachment:image});
+  assert.equal(sent.status, 201);
+  assert.deepEqual(sent.json.message.attachment, {kind:'image', name:'tangkapan.png', mime:'image/png', size:PNG.length, url:`/api/messages/attachments/${sent.json.message.id}`});
+  assert.equal(sent.json.message.attachment_file, undefined, 'the stored file name stays on the server');
+  assert.equal((await f.send({body:'Berkas', attachment:{name:'surat.pdf', data:pdf.toString('base64')}}, sent.cookie)).status, 403, 'files are still off');
+  // An HTML page renamed to .png, an SVG and an executable are refused whatever their name says.
+  for (const attachment of [{name:'x.png', data:Buffer.from('<html><script>alert(1)</script>').toString('base64')}, {name:'x.svg', data:Buffer.from('<svg onload=alert(1)>').toString('base64')}, {name:'x.exe', data:Buffer.from('MZ').toString('base64')}])
+    assert.equal((await f.send({body:'', attachment}, sent.cookie)).status, 400, attachment.name);
+
+  const url = f.base + sent.json.message.attachment.url;
+  const own = await fetch(url, {headers:{cookie:sent.cookie}});
+  assert.equal(own.status, 200);assert.equal(own.headers.get('content-type'), 'image/png');
+  assert.equal(own.headers.get('x-content-type-options'), 'nosniff');assert.match(own.headers.get('content-security-policy'), /sandbox/);
+  assert.match(own.headers.get('content-disposition'), /^inline; filename="tangkapan.png"/);
+  assert.deepEqual(Buffer.from(await own.arrayBuffer()), PNG);
+  assert.match((await fetch(url + '?download=1', {headers:{cookie:sent.cookie}})).headers.get('content-disposition'), /^attachment/);
+  assert.equal((await fetch(url)).status, 404, 'anonymous browsers cannot open it');
+  const stranger = await f.send({body:'Halo'});
+  assert.equal((await fetch(url, {headers:{cookie:stranger.cookie}})).status, 404, 'another visitor cannot open it');
+  assert.equal((await fetch(url, {headers:{Authorization:'Bearer admintoken'}})).status, 200, 'the admin can open it');
+
+  const list = await (await f.admin('?q=tangkapan')).json();
+  assert.equal(list.total, 1);assert.equal(list.data[0].last_body, '📷 tangkapan.png');
+
+  // Admin replies may carry any supported file even while visitors may not send files.
+  const threadId = list.data[0].id;
+  const reply = await (await f.admin('/' + threadId, {method:'POST', body:JSON.stringify({body:'', attachment:{name:'جدول الدروس.pdf', data:pdf.toString('base64')}})})).json();
+  assert.equal(reply.message.attachment.kind, 'file');
+  const download = await fetch(f.base + reply.message.attachment.url, {headers:{cookie:sent.cookie}});
+  assert.equal(download.headers.get('content-type'), 'application/pdf');
+  assert.match(download.headers.get('content-disposition'), /^attachment; filename="_+ _+\.pdf"; filename\*=UTF-8''%D8%AC/);
+  assert.equal(fs.readdirSync(f.attachmentDir).length, 2);
+
+  assert.equal((await f.admin('/' + threadId, {method:'DELETE'})).status, 200);
+  await new Promise(r => setTimeout(r, 100));
+  assert.equal(fs.readdirSync(f.attachmentDir).length, 0, 'deleting a conversation deletes its files');
+  assert.equal((await fetch(url, {headers:{Authorization:'Bearer admintoken'}})).status, 404);
+});
+
+test('an existing message table gains the attachment columns without losing messages', async t => {
+  const db = new Database(':memory:');t.after(() => db.close());
+  db.exec("CREATE TABLE visitor_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, thread_id INTEGER NOT NULL, sender TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL); INSERT INTO visitor_messages(thread_id,sender,body,created_at) VALUES(1,'visitor','lama','2026-11-15T00:00:00Z')");
+  const {store} = registerMessages(express(), {getStateDb:() => db, requireAdmin:(q, r, n) => n()});
+  assert.deepEqual(store.messages(1), [{id:1, sender:'visitor', body:'lama', created_at:'2026-11-15T00:00:00Z', attachment:null}]);
+  assert.ok(db.prepare('PRAGMA table_info(visitor_messages)').all().some(c => c.name === 'attachment_file'));
 });

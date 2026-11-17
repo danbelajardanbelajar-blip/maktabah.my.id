@@ -1,7 +1,52 @@
 // Client side of visitor ↔ admin messages: REST calls, merging live updates, and the new-message alert.
-export type ChatMessage = {id:number; sender:'visitor'|'admin'; body:string; created_at:string};
+export type ChatAttachment = {kind:'image'|'file'; name:string; mime:string; size:number; url:string};
+export type ChatMessage = {id:number; sender:'visitor'|'admin'; body:string; created_at:string; attachment?:ChatAttachment|null};
 export type MessageThreadRow = {id:number; name:string; ip?:string; user_agent?:string; admin_unread:number; visitor_unread:number; created_at:string; updated_at:string; last_body?:string|null; last_sender?:'visitor'|'admin'|null; message_count?:number};
+export type MessageSettings = {allowFiles:boolean; allowImages:boolean; maxImageBytes:number; maxFileBytes:number};
+export type AttachmentUpload = {name:string; data:string};
 export const MESSAGE_MAX = 2000;
+export const DEFAULT_MESSAGE_SETTINGS:MessageSettings = {allowFiles:false, allowImages:false, maxImageBytes:8 * 1024 * 1024, maxFileBytes:10 * 1024 * 1024};
+// Mirrors server/message-attachments.js; the server checks the bytes again and has the final say.
+export const IMAGE_ACCEPT = 'image/jpeg,image/png,image/gif,image/webp';
+export const FILE_EXTENSIONS = ['pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv','zip'];
+export const FILE_ACCEPT = FILE_EXTENSIONS.map(ext => `.${ext}`).join(',');
+
+export function attachmentKind(file:{name:string; type:string}):'image'|'file'|null {
+  if (IMAGE_ACCEPT.split(',').includes(file.type.toLowerCase())) return 'image';
+  const ext = file.name.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] || '';
+  if (['jpg','jpeg','png','gif','webp'].includes(ext)) return 'image';
+  return FILE_EXTENSIONS.includes(ext) ? 'file' : null;
+}
+export function formatBytes(bytes:number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
+}
+// Checks a picked or pasted file against the rules; returns the kind, or an error to show. Admins skip the switches.
+export function checkAttachment(file:{name:string; type:string; size:number}, settings:MessageSettings, admin = false):{kind:'image'|'file'}|{error:string} {
+  const kind = attachmentKind(file);
+  if (!kind) return {error:'Jenis file tidak didukung. Gunakan gambar (JPG, PNG, GIF, WEBP) atau PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP.'};
+  if (!admin && kind === 'image' && !settings.allowImages) return {error:'Admin belum mengizinkan pengiriman gambar.'};
+  if (!admin && kind === 'file' && !settings.allowFiles) return {error:'Admin belum mengizinkan pengiriman file.'};
+  const max = kind === 'image' ? settings.maxImageBytes : settings.maxFileBytes;
+  if (file.size > max) return {error:`Ukuran ${kind === 'image' ? 'gambar' : 'file'} maksimal ${formatBytes(max)}.`};
+  if (!file.size) return {error:'File kosong.'};
+  return {kind};
+}
+export function readAttachment(file:File):Promise<AttachmentUpload> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({name:file.name, data:String(reader.result)});
+    reader.onerror = () => reject(new Error('File tidak dapat dibaca.'));
+    reader.readAsDataURL(file);
+  });
+}
+// One line for notifications and previews when a message has no text.
+export function messagePreview(message:ChatMessage) {
+  if (message.body) return message.body;
+  if (!message.attachment) return '';
+  return `${message.attachment.kind === 'image' ? '📷' : '📎'} ${message.attachment.name}`;
+}
 
 async function request(path:string, init:RequestInit = {}) {
   const res = await fetch(`/api${path}`, {...init, headers:{...(init.body ? {'Content-Type':'application/json'} : {}), ...(init.headers || {})}});
@@ -14,15 +59,23 @@ async function request(path:string, init:RequestInit = {}) {
 const auth = (token:string) => ({Authorization:`Bearer ${token}`});
 
 export const messagesAPI = {
-  load:(after = 0) => request(`/messages${after ? `?after=${after}` : ''}`) as Promise<{thread:{id:number; name:string}|null; messages:ChatMessage[]; unread:number}>,
-  send:(body:string, name:string, website:string) => request('/messages', {method:'POST', body:JSON.stringify({body, name, website})}) as Promise<{success:boolean; message:ChatMessage|null; thread?:{id:number; name:string}}>,
+  load:(after = 0) => request(`/messages${after ? `?after=${after}` : ''}`) as Promise<{thread:{id:number; name:string}|null; messages:ChatMessage[]; unread:number; settings?:MessageSettings}>,
+  send:(body:string, name:string, website:string, attachment?:AttachmentUpload|null) => request('/messages', {method:'POST', body:JSON.stringify({body, name, website, ...(attachment ? {attachment} : {})})}) as Promise<{success:boolean; message:ChatMessage|null; thread?:{id:number; name:string}}>,
   markRead:() => request('/messages/read', {method:'POST'}),
 };
 export const adminMessagesAPI = {
   list:(token:string, page = 1, q = '') => request(`/admin/messages?${new URLSearchParams({page:String(page), q})}`, {headers:auth(token)}) as Promise<{data:MessageThreadRow[]; total:number; page:number; pages:number; unread:number}>,
   thread:(token:string, id:number) => request(`/admin/messages/${id}`, {headers:auth(token)}) as Promise<{thread:MessageThreadRow; messages:ChatMessage[]; unread:number}>,
-  reply:(token:string, id:number, body:string) => request(`/admin/messages/${id}`, {method:'POST', headers:auth(token), body:JSON.stringify({body})}) as Promise<{message:ChatMessage}>,
+  reply:(token:string, id:number, body:string, attachment?:AttachmentUpload|null) => request(`/admin/messages/${id}`, {method:'POST', headers:auth(token), body:JSON.stringify({body, ...(attachment ? {attachment} : {})})}) as Promise<{message:ChatMessage}>,
   remove:(token:string, id:number) => request(`/admin/messages/${id}`, {method:'DELETE', headers:auth(token)}),
+  settings:(token:string) => request('/admin/messages/settings', {headers:auth(token)}) as Promise<MessageSettings>,
+  saveSettings:(token:string, settings:{allowFiles:boolean; allowImages:boolean}) => request('/admin/messages/settings', {method:'PUT', headers:auth(token), body:JSON.stringify(settings)}) as Promise<MessageSettings>,
+  // Attachments need the admin token, which an <img src> cannot send, so admins load them as blobs.
+  attachment:async (token:string, url:string, download = false) => {
+    const res = await fetch(download ? `${url}?download=1` : url, {headers:auth(token)});
+    if (!res.ok) throw new Error('Lampiran tidak dapat dibuka.');
+    return res.blob();
+  },
 };
 
 // Live events can repeat what a reload already fetched; keep each message once, in id order.

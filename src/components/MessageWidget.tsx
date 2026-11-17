@@ -3,12 +3,13 @@ import { MessageCircle, X, Send, Bell, BellOff } from 'lucide-react';
 import { navigationHash } from '../lib/navigation';
 import { pushLocation } from '../lib/back-navigation';
 import {
-  MESSAGE_MAX, mergeMessages, messageTime, messagesAPI, nextScrollHidden, notificationPermission, playMessageSound,
-  requestNotifications, setAppBadge, showMessageNotification, unlockMessageSound,
+  DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, mergeMessages, messagePreview, messageTime, messagesAPI, nextScrollHidden, notificationPermission, playMessageSound,
+  readAttachment, requestNotifications, setAppBadge, showMessageNotification, unlockMessageSound,
 } from '../lib/messages';
-import type { ChatMessage } from '../lib/messages';
+import type { ChatMessage, MessageSettings } from '../lib/messages';
 import { useAdminInbox } from '../lib/use-admin-inbox';
 import { AdminInboxMini } from './AdminInboxMini';
+import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
 
 const readAdminToken = () => { try { return localStorage.getItem('adminToken') || ''; } catch { return ''; } };
 
@@ -28,6 +29,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [permission, setPermission] = useState(notificationPermission);
+  const [settings, setSettings] = useState<MessageSettings>(DEFAULT_MESSAGE_SETTINGS);
+  const attach = useAttachmentDraft(settings);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const lastId = useRef(0);
@@ -56,7 +59,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     messagesAPI.load().then(data => {
       if (!active) return;
       setHasThread(Boolean(data.thread)); if (data.thread?.name) setName(data.thread.name);
-      apply(data.messages); setUnread(data.unread);
+      apply(data.messages); setUnread(data.unread); if (data.settings) setSettings(data.settings);
     }).catch(() => { /* The button still works; sending will report problems. */ });
     return () => { active = false; };
   }, [apply]);
@@ -72,7 +75,11 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     if (!hasThread || adminMode) return;
     const source = new EventSource('/api/messages/stream');
     source.addEventListener('open', () => {
-      messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (!viewing.current) setUnread(data.unread); }).catch(() => {});
+      messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (!viewing.current) setUnread(data.unread); if (data.settings) setSettings(data.settings); }).catch(() => {});
+    });
+    // The admin changed which attachments visitors may send.
+    source.addEventListener('settings', event => {
+      try { setSettings(current => ({...current, ...JSON.parse((event as MessageEvent).data)})); } catch { /* Ignore malformed events. */ }
     });
     source.addEventListener('message', event => {
       let payload: {message?: ChatMessage; unread?: number};
@@ -85,7 +92,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
       setUnread(count => typeof payload.unread === 'number' ? payload.unread : count + 1);
       playMessageSound();
       if (document.visibilityState !== 'visible' || !viewing.current)
-        showMessageNotification('Balasan baru dari admin', message.body, () => setOpen(true));
+        showMessageNotification('Balasan baru dari admin', messagePreview(message), () => setOpen(true));
     });
     source.addEventListener('read', () => setUnread(0));
     source.addEventListener('reset', () => { setMessages([]); lastId.current = 0; setHasThread(false); setUnread(0); });
@@ -151,18 +158,25 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
 
   const enableNotifications = async () => { unlockMessageSound(); setPermission(await requestNotifications()); };
 
+  // Opening the panel refreshes which attachments the admin currently allows (visitors without a
+  // conversation have no live stream yet).
+  useEffect(() => {
+    if (!open || adminMode) return;
+    messagesAPI.load(lastId.current).then(data => { apply(data.messages); if (data.settings) setSettings(data.settings); }).catch(() => {});
+  }, [open, adminMode, apply]);
+
   const send = async () => {
-    const body = draft.trim();
-    if (!body || sending) return;
+    const body = draft.trim(), file = attach.pending?.file;
+    if ((!body && !file) || sending) return;
     if (body.length > MESSAGE_MAX) { setError(`Pesan maksimal ${MESSAGE_MAX.toLocaleString('id-ID')} karakter.`); return; }
     unlockMessageSound();
     // Ask once, in context, right when the visitor starts waiting for a reply.
     if (permission === 'default') void requestNotifications().then(setPermission);
-    setSending(true); setError('');
+    setSending(true); setError(''); attach.setError('');
     try {
-      const result = await messagesAPI.send(body, name.trim(), website);
+      const result = await messagesAPI.send(body, name.trim(), website, file ? await readAttachment(file) : null);
       if (result.message) apply([result.message]);
-      setDraft(''); setHasThread(true);
+      setDraft(''); attach.clear(); setHasThread(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Pesan gagal dikirim.');
     } finally { setSending(false); inputRef.current?.focus({preventScroll:true}); }
@@ -193,7 +207,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
             <button type="button" onClick={() => setOpen(false)} aria-label="Tutup pesan" className="p-2 rounded-full hover:bg-white/15"><X size={20} /></button>
           </header>
 
-          {adminMode ? <AdminInboxMini inbox={inbox} onOpenFull={openAdminMessages} /> : <>
+          {adminMode ? <AdminInboxMini inbox={inbox} token={adminToken} onOpenFull={openAdminMessages} /> : <>
           <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-2 bg-[var(--reader-bg)]" aria-live="polite">
             {messages.length === 0 ? (
               <div className="m-2 rounded-xl border bg-[var(--reader-paper)] p-4 text-sm leading-relaxed">
@@ -205,27 +219,29 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
               <div key={m.id} className={`flex ${m.sender === 'visitor' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'visitor' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
                   {m.sender === 'admin' && <div className="text-[11px] font-bold text-[var(--app-primary)] mb-0.5">Admin</div>}
-                  <p dir="auto" className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{m.body}</p>
+                  <MessageBody message={m} mine={m.sender === 'visitor'} />
                   <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'visitor' ? 'text-white/75' : 'opacity-60'}`}>{messageTime(m.created_at)}</time>
                 </div>
               </div>
             ))}
           </div>
 
-          <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void send(); }}>
+          <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void send(); }} {...attach.dropProps}>
             {/* Honeypot for bots: hidden from people and assistive technology. */}
             <input type="text" name="website" value={website} onChange={e => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
             {!hasThread && (
               <input type="text" value={name} onChange={e => setName(e.target.value)} maxLength={80} placeholder="Nama (opsional)" aria-label="Nama (opsional)"
                 className="w-full rounded-lg border border-black/15 bg-[var(--reader-bg)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
             )}
-            {error && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
-            <div className="flex items-end gap-2">
-              <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} rows={1} maxLength={MESSAGE_MAX} dir="auto"
+            {(error || attach.error) && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">{attach.error || error}</p>}
+            <PendingAttachmentChip draft={attach} />
+            <div className="flex items-end gap-1.5">
+              <AttachmentButtons draft={attach} disabled={sending} />
+              <textarea ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} onPaste={attach.onPaste} rows={1} maxLength={MESSAGE_MAX} dir="auto"
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }}
                 placeholder="Tulis pesan…" aria-label="Tulis pesan"
-                className="flex-1 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
-              <button type="submit" disabled={sending || !draft.trim()} aria-label="Kirim pesan"
+                className="flex-1 min-w-0 resize-none field-sizing-content max-h-32 min-h-[42px] rounded-xl border border-black/15 bg-[var(--reader-bg)] px-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-[var(--app-primary)]" />
+              <button type="submit" disabled={sending || (!draft.trim() && !attach.pending)} aria-label="Kirim pesan"
                 className="shrink-0 grid place-items-center w-11 h-11 rounded-full bg-[var(--app-primary)] text-white disabled:opacity-50 hover:brightness-110 transition">
                 <Send size={18} />
               </button>

@@ -1,7 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
-import { MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
+import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, adminMessagesAPI, formatBytes, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
+import type { MessageSettings } from '../lib/messages';
 import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
+import { AttachmentButtons, MessageBody, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
+
+// What visitors may attach. Admin replies can always carry attachments.
+function AttachmentPermissions({ token, onAuthError }: { token: string; onAuthError: () => void }) {
+  const [settings, setSettings] = useState<MessageSettings | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState('');
+  // The parent may pass a new callback on every render; loading must depend on the token only.
+  const authError = useRef(onAuthError);
+  authError.current = onAuthError;
+  useEffect(() => {
+    let active = true;
+    adminMessagesAPI.settings(token).then(s => { if (active) setSettings(s); })
+      .catch(e => { if (e instanceof Error && e.message === '401') authError.current(); else if (active) setStatus('Pengaturan lampiran gagal dimuat.'); });
+    return () => { active = false; };
+  }, [token]);
+  const toggle = async (key: 'allowFiles' | 'allowImages', value: boolean) => {
+    if (!settings) return;
+    const previous = settings;
+    setSettings({...settings, [key]:value}); setSaving(true); setStatus('');
+    try { setSettings(await adminMessagesAPI.saveSettings(token, {allowFiles:previous.allowFiles, allowImages:previous.allowImages, [key]:value})); setStatus('Tersimpan'); }
+    catch (e) { setSettings(previous); if (e instanceof Error && e.message === '401') onAuthError(); else setStatus(e instanceof Error ? e.message : 'Gagal menyimpan.'); }
+    finally { setSaving(false); }
+  };
+  const s = settings || DEFAULT_MESSAGE_SETTINGS;
+  return (
+    <fieldset className="px-4 py-3 border-b flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" disabled={!settings || saving}>
+      <legend className="sr-only">Izin lampiran pengunjung</legend>
+      <span className="font-semibold text-gray-700">Lampiran dari pengunjung:</span>
+      <label className="inline-flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" checked={s.allowFiles} onChange={e => void toggle('allowFiles', e.target.checked)} className="w-4 h-4 accent-[var(--app-primary)]" />
+        Izinkan kirim file <span className="text-xs text-gray-500">(PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP · maks. {formatBytes(s.maxFileBytes)})</span>
+      </label>
+      <label className="inline-flex items-center gap-2 cursor-pointer">
+        <input type="checkbox" checked={s.allowImages} onChange={e => void toggle('allowImages', e.target.checked)} className="w-4 h-4 accent-[var(--app-primary)]" />
+        Izinkan kirim gambar <span className="text-xs text-gray-500">(JPG, PNG, GIF, WEBP · maks. {formatBytes(s.maxImageBytes)})</span>
+      </label>
+      {status && <span role="status" className={`text-xs ${status === 'Tersimpan' ? 'text-emerald-700' : 'text-red-700'}`}>{status}</span>}
+    </fieldset>
+  );
+}
 
 // Full admin inbox page for visitor messages (the floating button offers a compact version).
 export function AdminMessages({ token, onLogout, onUnreadChange }: { token: string; onLogout: () => void; onUnreadChange: () => void }) {
@@ -10,11 +52,12 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');
   const [permission, setPermission] = useState(notificationPermission);
+  const attach = useAttachmentDraft(DEFAULT_MESSAGE_SETTINGS, true);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { listRef.current?.scrollTo({top:listRef.current.scrollHeight}); }, [messages.length, selected, loading]);
 
-  const reply = async () => { if (await inbox.reply(draft)) setDraft(''); };
+  const reply = async () => { if (await inbox.reply(draft, attach.pending?.file)) { setDraft(''); attach.clear(); } };
 
   const unreadTotal = threads.reduce((n, t) => n + (t.admin_unread || 0), 0);
 
@@ -32,7 +75,8 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
         )}
         <button type="button" onClick={() => void loadList()} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-semibold"><RefreshCw size={16} /> Muat ulang</button>
       </div>
-      {error && <div role="alert" className="m-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex justify-between gap-3"><span>{error}</span><button onClick={() => setError('')} className="underline">Tutup</button></div>}
+      <AttachmentPermissions token={token} onAuthError={onLogout} />
+      {(error || attach.error) && <div role="alert" className="m-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex justify-between gap-3"><span>{attach.error || error}</span><button onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></div>}
 
       <div className="grid md:grid-cols-[minmax(240px,320px)_1fr] min-h-[60vh]">
         <aside className={`${selected ? 'hidden md:flex' : 'flex'} flex-col border-r min-h-0`}>
@@ -84,17 +128,21 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
                 {loading ? <p className="text-center text-gray-500 text-sm">Memuat…</p> : messages.map(m => (
                   <div key={m.id} className={`flex ${m.sender === 'admin' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'admin' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-white border rounded-bl-md'}`}>
-                      <p dir="auto" className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{m.body}</p>
+                      <MessageBody message={m} mine={m.sender === 'admin'} token={token} />
                       <time dateTime={m.created_at} className={`block text-[10px] mt-1 text-right ${m.sender === 'admin' ? 'text-white/75' : 'text-gray-500'}`}>{messageTime(m.created_at, true)}</time>
                     </div>
                   </div>
                 ))}
               </div>
-              <form className="border-t p-3 flex items-end gap-2" onSubmit={e => { e.preventDefault(); void reply(); }}>
-                <textarea value={draft} onChange={e => setDraft(e.target.value)} rows={2} maxLength={MESSAGE_MAX} dir="auto" placeholder="Tulis balasan… (Ctrl+Enter untuk kirim)" aria-label="Tulis balasan"
-                  onKeyDown={e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); void reply(); } }}
-                  className="flex-1 resize-y min-h-[48px] max-h-48 rounded-xl border px-3 py-2 text-[15px]" />
-                <button type="submit" disabled={sending || !draft.trim()} className="inline-flex items-center gap-2 rounded-xl bg-[var(--app-primary)] text-white px-4 py-2.5 font-semibold disabled:opacity-50"><Send size={16} /> Kirim</button>
+              <form className="border-t p-3 space-y-2" onSubmit={e => { e.preventDefault(); void reply(); }} {...attach.dropProps}>
+                <PendingAttachmentChip draft={attach} />
+                <div className="flex items-end gap-2">
+                  <AttachmentButtons draft={attach} disabled={sending} />
+                  <textarea value={draft} onChange={e => setDraft(e.target.value)} onPaste={attach.onPaste} rows={2} maxLength={MESSAGE_MAX} dir="auto" placeholder="Tulis balasan… (Ctrl+Enter untuk kirim, Ctrl+V untuk menempel gambar)" aria-label="Tulis balasan"
+                    onKeyDown={e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); void reply(); } }}
+                    className="flex-1 min-w-0 resize-y min-h-[48px] max-h-48 rounded-xl border px-3 py-2 text-[15px]" />
+                  <button type="submit" disabled={sending || (!draft.trim() && !attach.pending)} className="inline-flex items-center gap-2 rounded-xl bg-[var(--app-primary)] text-white px-4 py-2.5 font-semibold disabled:opacity-50"><Send size={16} /> {sending ? 'Mengirim…' : 'Kirim'}</button>
+                </div>
               </form>
             </>
           )}

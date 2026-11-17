@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MESSAGE_MAX, adminMessagesAPI, mergeMessages, playMessageSound, showMessageNotification, unlockMessageSound } from './messages';
+import { MESSAGE_MAX, adminMessagesAPI, mergeMessages, messagePreview, playMessageSound, readAttachment, showMessageNotification, unlockMessageSound } from './messages';
 import type { ChatMessage, MessageThreadRow } from './messages';
 
 export const threadName = (t: {name?: string; id: number}) => t.name || `Pengunjung #${t.id}`;
@@ -80,7 +80,7 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
         playMessageSound();
         if (!onScreen || threadId !== selectedRef.current) {
           const open = latest.current.onNotificationClick || ((id: number) => void latest.current.openThread(id));
-          showMessageNotification(`Pesan baru dari ${threadName({name:payload.name, id:threadId})}`, message.body, () => open(threadId));
+          showMessageNotification(`Pesan baru dari ${threadName({name:payload.name, id:threadId})}`, messagePreview(message), () => open(threadId));
         }
         latest.current.onUnreadChange?.();
       }
@@ -95,13 +95,13 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
     return () => { source.close(); window.clearInterval(timer); window.removeEventListener('pointerdown', unlock); };
   }, [enabled, token]);
 
-  const reply = useCallback(async (text: string) => {
+  const reply = useCallback(async (text: string, file?: File | null) => {
     const body = text.trim();
-    if (!selected || !body || sending) return false;
+    if (!selected || (!body && !file) || sending) return false;
     if (body.length > MESSAGE_MAX) { setError(`Balasan maksimal ${MESSAGE_MAX.toLocaleString('id-ID')} karakter.`); return false; }
     setSending(true); setError('');
     try {
-      const res = await adminMessagesAPI.reply(token, selected, body);
+      const res = await adminMessagesAPI.reply(token, selected, body, file ? await readAttachment(file) : null);
       setMessages(current => mergeMessages(current, [res.message]));
       void loadList();
       return true;
