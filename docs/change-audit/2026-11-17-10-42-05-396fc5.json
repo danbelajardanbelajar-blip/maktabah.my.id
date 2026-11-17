@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-17 10:42:05 +07:00",
+  "title": "docs: catat verifikasi online izin lampiran per percakapan dan tanda baca",
+  "baseCommit": "211922522deafae1e6ec36a1bbfe909fc03218f6",
+  "checks": "Bundle online cocok hash dengan build lokal; /api/messages mengembalikan readUpTo dan settings per percakapan; endpoint izin tanpa auth 401",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-17 10:42:03 +07:00",
+      "stagedSha256": "bc29fca172e29b233835a7bf6544f9b77904ce9d51da7e5ad6c844cff4783320",
+      "diffSha256": "6548dc9845789df19d2b4877cb1ceb3c7935f448f60d175e737aa62fd499da15",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 180,
+            "count": 0
+          },
+          "after": {
+            "line": 181,
+            "count": 12
+          },
+          "section": "Kredensial SSH tidak dicatat di file ini, repositori, atau perintah deployment y"
+        }
+      ]
+    }
+  ]
+}

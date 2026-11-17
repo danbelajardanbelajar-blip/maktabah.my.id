@@ -178,3 +178,15 @@ Waktu ini adalah pencatatan verifikasi akhir, bukan waktu setiap command dijalan
 - Restart layanan lokal port 3080 pada giliran sebelumnya ditolak pemeriksaan persetujuan otomatis (`blocked by policy`). Tidak dilakukan percobaan untuk melewati penolakan itu; penerapan pada layanan lokal yang sedang berjalan belum diklaim selesai.
 
 Kredensial SSH tidak dicatat di file ini, repositori, atau perintah deployment yang disimpan.
+
+## 2026-11-17 10:41:44 WIB — Pesan: izin lampiran per percakapan dan tanda terkirim/dibaca
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- Commit aplikasi: `211922522deafae1e6ec36a1bbfe909fc03218f6` (memuat juga `207a8e7`, izin lampiran per percakapan).
+- Pull dan restart `maktabah.service` dijalankan pengguna di VPS. SSH dari mesin pengembang masih ditolak (kunci publik belum terpasang), jadi HEAD server tidak dibaca langsung. Bukti versi diambil dari aset dan respons API berikut.
+- HTML online menunjuk `index.dev-Ctn--hM9.js` dan `index-BVMZo2yL.css`. Hash SHA-256 keduanya cocok dengan build lokal (`1f97de05…80e1`, `071e6c62…cf9c`).
+- `GET /api/messages` tanpa percakapan mengembalikan `readUpTo:0` dan `settings` dengan `allowFiles:false` dan `allowImages:false`. Ini menunjukkan kode server commit ini sudah berjalan.
+- `PUT /api/admin/messages/1/permissions` tanpa autentikasi menghasilkan 401.
+- `GET /api/messages/attachments/999999999` menghasilkan 404 (bukan 503). Artinya query database pesan berjalan setelah migrasi kolom.
+- Tidak membuat percakapan uji di produksi, agar inbox admin tidak terisi data uji. Alur ✓/✓✓ diuji di lokal dan dengan tes server.

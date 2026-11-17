@@ -1865,3 +1865,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-12-28-046c0e.
 | 2026-11-17 10:04:14 +07:00 | `src/lib/messages.ts` | 4–4 | 4–4 | export type ChatMessage = {id:number; sender:'visitor'\|'admin'; body:string; cre | modified |
 | 2026-11-17 10:04:14 +07:00 | `src/lib/messages.ts` | 62–62 | 62–62 | export const messagesAPI = { | modified |
 | 2026-11-17 10:04:55 +07:00 | `src/lib/use-admin-inbox.ts` | — | 98–107 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+
+## [2026-11-17 10:42:05 +07:00] — docs: catat verifikasi online izin lampiran per percakapan dan tanda baca
+
+Waktu pencatatan: **2026-11-17 10:42:05 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2119225`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Bundle online cocok hash dengan build lokal; /api/messages mengembalikan readUpTo dan settings per percakapan; endpoint izin tanpa auth 401
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-10-42-05-396fc5.json](docs/change-audit/2026-11-17-10-42-05-396fc5.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-17 10:42:03 +07:00 | `docs/deployment-log.md` | — | 181–192 | Kredensial SSH tidak dicatat di file ini, repositori, atau perintah deployment y | modified |
