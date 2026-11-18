@@ -1067,6 +1067,108 @@ const SubmissionsView = ({ token, onLogout }: { token: string, onLogout: () => v
 
 
 // ==================== LOGS VIEW ====================
+
+const getAskLogStatus = (row: any) => {
+  let meta: any = null;
+  if (row.meta_json) {
+    try {
+      meta = typeof row.meta_json === 'string' ? JSON.parse(row.meta_json) : row.meta_json;
+    } catch {
+      meta = null;
+    }
+  }
+
+  // 1. Surrender / could not answer (explicit mode no_context or rejection exists)
+  if (meta?.mode === 'no_context' || meta?.rejection) {
+    const stage = meta?.rejection?.stage;
+    const stageLabel = stage === 'retrieval' ? 'Rujukan tidak ditemukan'
+      : stage === 'verification' ? 'Kutipan tidak cocok'
+      : stage === 'topic' ? 'Di luar topik'
+      : stage === 'review' ? 'Gagal verifikasi'
+      : meta?.rejection?.reason ? 'Tidak terverifikasi'
+      : undefined;
+    return {
+      type: 'surrender',
+      label: 'Menyerah / Tidak Terjawab',
+      sublabel: stageLabel,
+      badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
+      icon: <XCircle size={13} className="shrink-0 text-rose-600" />,
+      rowBorder: 'border-l-4 border-l-rose-400',
+    };
+  }
+
+  // 2. Answered grounded (from book references)
+  if (meta?.mode === 'grounded' || meta?.reviewed) {
+    const refCount = Array.isArray(meta?.references) ? meta.references.length : 0;
+    return {
+      type: 'answered',
+      label: 'Terjawab',
+      sublabel: refCount > 0 ? (refCount + ' rujukan kitab') : 'Terverifikasi rujukan',
+      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      icon: <CheckCircle2 size={13} className="shrink-0 text-emerald-600" />,
+      rowBorder: 'border-l-4 border-l-emerald-400',
+    };
+  }
+
+  // 3. Answered catalogue
+  if (meta?.mode === 'catalogue') {
+    return {
+      type: 'catalogue',
+      label: 'Terjawab (Katalog)',
+      sublabel: 'Daftar kitab',
+      badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
+      icon: <CheckCircle2 size={13} className="shrink-0 text-blue-600" />,
+      rowBorder: 'border-l-4 border-l-blue-400',
+    };
+  }
+
+  // 4. Conversation
+  if (meta?.mode === 'conversation') {
+    return {
+      type: 'conversation',
+      label: 'Percakapan Umum',
+      sublabel: 'Sapaan / dialog',
+      badgeClass: 'bg-gray-100 text-gray-700 border-gray-200',
+      icon: <MessageSquare size={13} className="shrink-0 text-gray-500" />,
+      rowBorder: 'border-l-4 border-l-gray-300',
+    };
+  }
+
+  // 5. Fallback for legacy logs without meta_json
+  const resp = (row.response || '').trim();
+  const surrenderPhrases = [
+    'belum dapat memastikan',
+    'belum menemukan teks',
+    'belum dapat memverifikasi',
+    'tidak menemukan teks',
+    'لم أتمكن من التحقق',
+    'لم أجد نصا',
+    'tidak dapat menjawab',
+    'tidak menemukan rujukan'
+  ];
+  const isSurrender = surrenderPhrases.some(p => resp.toLowerCase().includes(p.toLowerCase())) || resp.length === 0;
+
+  if (isSurrender) {
+    return {
+      type: 'surrender',
+      label: 'Menyerah / Tidak Terjawab',
+      sublabel: 'Tanpa rujukan valid',
+      badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
+      icon: <XCircle size={13} className="shrink-0 text-rose-600" />,
+      rowBorder: 'border-l-4 border-l-rose-400',
+    };
+  }
+
+  return {
+    type: 'answered',
+    label: 'Terjawab',
+    sublabel: undefined,
+    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    icon: <CheckCircle2 size={13} className="shrink-0 text-emerald-600" />,
+    rowBorder: 'border-l-4 border-l-emerald-400',
+  };
+};
+
 const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: () => void, type: string, title: string }) => {
   const [data,setData]=useState<any[]>([]),[selected,setSelected]=useState<any[]>([]);
   const [currentPage,setCurrentPage]=useState(1),[limit,setLimit]=useState(20);
@@ -1161,6 +1263,20 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
           <button onClick={reset} className="border rounded-lg px-3 py-2 text-sm bg-white">Reset filter</button>
         </div>
         {group.dimension&&<p className="text-xs break-words">Filter ringkasan ({({query:'Pencarian',question:'Pertanyaan',ip:'IP',page:'Halaman / sumber'} as Record<string,string>)[group.dimension]}): <strong dir="auto">{group.value}</strong> <button className="underline ml-2" onClick={()=>{setGroup({dimension:'',value:''});setCurrentPage(1);}}>Hapus filter ringkasan</button></p>}
+        {type === 'ask' && (
+          <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap pt-1 border-t border-gray-200">
+            <span className="font-medium text-gray-500">Keterangan status Tanya AI:</span>
+            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
+              <CheckCircle2 size={12} className="text-emerald-600" /> Terjawab (berdasarkan rujukan kitab)
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] text-rose-800 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-medium">
+              <XCircle size={12} className="text-rose-600" /> Menyerah / Tidak Terjawab (tanpa rujukan valid)
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full font-medium">
+              <MessageSquare size={12} className="text-gray-500" /> Percakapan Umum
+            </span>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-gray-500">{matchedTotal.toLocaleString('id-ID')} aktivitas sesuai filter.</p>
           <button disabled={!readyPreview||!hasFilter||!matchedTotal} onClick={()=>void remove(true)} className="text-xs border border-red-200 text-red-700 rounded-lg px-3 py-2 disabled:opacity-40">Hapus seluruh hasil filter ({matchedTotal})</button>
         </div>
@@ -1180,8 +1296,10 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
           <tbody className="divide-y">
             {loading ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">Memuat...</td></tr> : 
               data.length === 0 ? <tr><td colSpan={6} className="p-8 text-center text-gray-400">{hasFilter ? 'Tidak ada aktivitas sesuai filter.' : 'Belum ada log'}</td></tr> :
-              paginated.map(d => (
-                <tr key={d.id} className={type === 'ask' ? 'hover:bg-blue-50 cursor-pointer' : 'hover:bg-gray-50'}
+              paginated.map(d => {
+                const askStatus = type === 'ask' ? getAskLogStatus(d) : null;
+                return (
+                <tr key={d.id} className={type === 'ask' ? ('hover:bg-blue-50/60 cursor-pointer ' + (askStatus?.rowBorder || '')) : 'hover:bg-gray-50'}
                   onClick={type === 'ask' ? () => setDetail(d) : undefined}
                   onKeyDown={type === 'ask' ? (e) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setDetail(d); } } : undefined}
                   tabIndex={type === 'ask' ? 0 : undefined} title={type === 'ask' ? 'Klik untuk melihat pertanyaan dan jawaban lengkap' : undefined}>
@@ -1218,11 +1336,22 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                     {type === 'quran' && <span>Surah ID: {d.surah_id}</span>}
                     {type === 'rowa' && <span>{d.rowa_name} (ID: {d.rowa_id})</span>}
                     {(type === 'hadith' || type === 'authors') && <LibraryLogData row={d} />}
-                    {type === 'ask' && (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-blue-600 line-clamp-2 break-words" dir="auto">Q: {d.question}</span>
-                        <span className="text-gray-500 text-xs truncate max-w-md" dir="auto">A: {d.response}</span>
-                        <span className="text-[11px] text-blue-500 font-medium">Lihat detail jawaban →</span>
+                    {type === 'ask' && askStatus && (
+                      <div className="flex flex-col gap-1.5 py-0.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={'inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full border shadow-2xs ' + askStatus.badgeClass}>
+                            {askStatus.icon}
+                            <span>{askStatus.label}</span>
+                          </span>
+                          {askStatus.sublabel && (
+                            <span className="text-[11px] text-gray-500 font-normal">
+                              • {askStatus.sublabel}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-semibold text-blue-700 line-clamp-2 break-words text-sm" dir="auto">Q: {d.question}</span>
+                        <span className="text-gray-500 text-xs truncate max-w-md" dir="auto">A: {d.response || '(tidak ada jawaban tersimpan)'}</span>
+                        <span className="text-[11px] text-blue-600 font-medium hover:underline flex items-center gap-1">Lihat detail jawaban & rujukan →</span>
                       </div>
                     )}
                   </td>
@@ -1231,7 +1360,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                     {d.user_agent || '-'}
                   </td>
                 </tr>
-              ))
+              );})
             }
           </tbody>
         </table>

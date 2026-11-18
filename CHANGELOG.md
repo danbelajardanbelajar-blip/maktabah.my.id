@@ -2005,3 +2005,24 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-03-52-65f42a.
 | 2026-11-18 22:01:15 +07:00 | `src/components/Admin.tsx` | — | 23–23 | import { CategoryMergeModal } from './CategoryMergeModal'; | modified |
 | 2026-11-18 22:01:15 +07:00 | `src/components/Admin.tsx` | — | 1361–1361 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
 | 2026-11-18 22:02:28 +07:00 | `src/components/AdminDailyChart.tsx` | — | 1–303 | LOG_META, AdminDailyChart, maxTotal, isToday, heightPct, Icon, val, parts | added |
+
+## [2026-11-18 22:21:58 +07:00] — feat(admin): tanda status terjawab atau menyerah pada list log tanya AI
+
+Waktu pencatatan: **2026-11-18 22:21:58 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `41bf498`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: tsc -b lulus 0 error; oxlint 0 error; 55 unit tests lulus; build produksi index.dev-BlKRhWQo.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-21-58-a5150d.json](docs/change-audit/2026-11-18-22-21-58-a5150d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-18 22:21:38 +07:00 | `dist/assets/index-770Vpm03.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DVH1WChB.css` | 1–2 | — | module/file | deleted |
+| 2026-11-18 22:21:38 +07:00 | `dist/assets/index.dev-BlKRhWQo.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BxDvxzwY.js` | 1–22 | — | module/file | deleted |
+| 2026-11-18 22:21:38 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | — | 1070–1171 | const SubmissionsView = ({ token, onLogout }: { token: string, onLogout: () => v | modified |
+| 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | — | 1266–1279 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1183–1184 | 1299–1302 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1221–1225 | 1339–1354 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1234–1234 | 1363–1363 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
