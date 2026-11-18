@@ -603,6 +603,49 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             log_ask: stateDb.prepare("SELECT COUNT(*) as c FROM ask_logs").get().c,
             messages: visitorMessages.adminUnread()
         };
+        const logTables = {
+            search: 'search_logs',
+            ask: 'ask_logs',
+            visit: 'visit_logs',
+            download: 'download_logs',
+            quran: 'quran_logs',
+            hadith: 'hadith_logs',
+            rowa: 'rowa_logs',
+            authors: 'authors_logs'
+        };
+        const today = { total: 0 };
+        const todayStartSql = "created_at >= datetime('now', '+7 hours', 'start of day', '-7 hours')";
+        for (const [key, table] of Object.entries(logTables)) {
+            try {
+                const count = stateDb.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE ${todayStartSql}`).get()?.c || 0;
+                today[key] = count;
+                today.total += count;
+            } catch {
+                today[key] = 0;
+            }
+        }
+        const days = [];
+        for (let i = 6; i >= 0; i--) {
+            try { days.push(stateDb.prepare(`SELECT date('now', '+7 hours', '-${i} days') as d`).get().d); } catch {}
+        }
+        const dailyMap = {};
+        for (const d of days) {
+            dailyMap[d] = { date: d, total: 0, search: 0, ask: 0, visit: 0, download: 0, quran: 0, hadith: 0, rowa: 0, authors: 0 };
+        }
+        const sevenDaysStartSql = "datetime('now', '+7 hours', 'start of day', '-6 days', '-7 hours')";
+        for (const [key, table] of Object.entries(logTables)) {
+            try {
+                const rows = stateDb.prepare(`SELECT date(created_at, '+7 hours') as d, COUNT(*) as c FROM ${table} WHERE created_at >= ${sevenDaysStartSql} GROUP BY d`).all();
+                for (const row of rows) {
+                    if (dailyMap[row.d]) {
+                        dailyMap[row.d][key] = row.c;
+                        dailyMap[row.d].total += row.c;
+                    }
+                }
+            } catch {}
+        }
+        stats.today = today;
+        stats.daily = days.map(d => dailyMap[d]);
         res.json({ success: true, data: stats });
     } catch(err) {
         res.status(500).json({ error: err.message });

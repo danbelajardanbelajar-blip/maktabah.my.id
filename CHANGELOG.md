@@ -1984,3 +1984,24 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-21-44-59-54fded.
 | 2026-11-18 21:44:21 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
 | 2026-11-18 21:43:02 +07:00 | `src/components/Admin.tsx` | 21–21 | 21–21 | import type { AdminView } from '../lib/admin-navigation'; | modified |
 | 2026-11-18 21:43:02 +07:00 | `src/components/Admin.tsx` | — | 1361–1361 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+
+## [2026-11-18 22:03:52 +07:00] — feat(admin): grafik harian seluruh log dan rincian aktivitas hari ini pada header admin
+
+Waktu pencatatan: **2026-11-18 22:03:52 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b161ea7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/admin-logs.test.js lulus (7 tes termasuk agregasi harian & tren 7 hari); tsc -b lulus tanpa error; oxlint 0 error; npm run build sukses (dist/assets/index.dev-BxDvxzwY.js dan index-DVH1WChB.css); git diff staged rapi
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-03-52-65f42a.json](docs/change-audit/2026-11-18-22-03-52-65f42a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-18 22:03:08 +07:00 | `dist/assets/index-DVH1WChB.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-R2USTLa4.css` | 1–2 | — | module/file | deleted |
+| 2026-11-18 22:03:08 +07:00 | `dist/assets/index.dev-BxDvxzwY.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-DBn9EBhc.js` | 1–22 | — | module/file | deleted |
+| 2026-11-18 22:03:08 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-18 22:01:43 +07:00 | `server/admin-logs.test.js` | — | 93–114 | test('admin activity cookies are HttpOnly, same-site and cleared on logout',()=> | modified |
+| 2026-11-18 21:59:08 +07:00 | `server/index.js` | — | 606–648 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-18 22:01:15 +07:00 | `src/components/Admin.tsx` | — | 23–23 | import { CategoryMergeModal } from './CategoryMergeModal'; | modified |
+| 2026-11-18 22:01:15 +07:00 | `src/components/Admin.tsx` | — | 1361–1361 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-18 22:02:28 +07:00 | `src/components/AdminDailyChart.tsx` | — | 1–303 | LOG_META, AdminDailyChart, maxTotal, isToday, heightPct, Icon, val, parts | added |

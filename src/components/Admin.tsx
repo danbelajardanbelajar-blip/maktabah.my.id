@@ -20,6 +20,7 @@ import { navigationHash, parseNavigation, routePage } from '../lib/navigation';
 import type { AdminView } from '../lib/admin-navigation';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, Globe, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload, Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2, GitMerge, Layers, Star, ThumbsUp, Clock, XCircle, Hash, Folder } from 'lucide-react';
 import { CategoryMergeModal } from './CategoryMergeModal';
+import { AdminDailyChart } from './AdminDailyChart';
 
 // ==================== TYPES ====================
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
@@ -1357,6 +1358,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
             ))}
           </nav>
         </div>
+        <AdminDailyChart stats={stats} />
         <div className="flex items-center gap-3">
           <a href="/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--app-primary)] p-1.5 rounded-lg hover:bg-emerald-50 transition-colors" title="Lihat Web" aria-label="Lihat Web (buka di tab baru)"><Globe size={18} /></a>
           <button onClick={onLogout} className="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Logout"><LogOut size={18} /></button>

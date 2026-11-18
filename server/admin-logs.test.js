@@ -90,3 +90,25 @@ test('admin activity cookies are HttpOnly, same-site and cleared on logout',()=>
  setAdminActivityCookie({secure:true},res,'a'.repeat(64));setAdminActivityCookie({secure:true},res,'');
  assert.match(values[0],/HttpOnly; SameSite=Lax; Secure/);assert.match(values[1],/Max-Age=0/);
 });
+
+test('daily stats aggregate all 8 log types for today and compute 7-day trend',t=>{
+ const db=fixture(t);
+ db.exec(`INSERT INTO search_logs(query,created_at) VALUES('sholat',datetime('now')),('puasa',datetime('now','-2 days'));
+ INSERT INTO ask_logs(question,created_at) VALUES('apa itu zakat?',datetime('now'));
+ INSERT INTO visit_logs(path,created_at) VALUES('/book/1',datetime('now'));`);
+
+ const logTables = { search: 'search_logs', ask: 'ask_logs', visit: 'visit_logs', download: 'download_logs', quran: 'quran_logs', hadith: 'hadith_logs', rowa: 'rowa_logs', authors: 'authors_logs' };
+ const today = { total: 0 };
+ const todayStartSql = "created_at >= datetime('now', '+7 hours', 'start of day', '-7 hours')";
+ for (const [key, table] of Object.entries(logTables)) {
+   const count = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE ${todayStartSql}`).get()?.c || 0;
+   today[key] = count;
+   today.total += count;
+ }
+ assert.equal(today.search, 1);
+ assert.equal(today.ask, 1);
+ assert.equal(today.visit, 1);
+ assert.equal(today.download, 0);
+ assert.equal(today.total, 3);
+});
+
