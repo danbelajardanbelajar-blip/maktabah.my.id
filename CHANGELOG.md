@@ -2026,3 +2026,33 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-21-58-a5150d.
 | 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1183–1184 | 1299–1302 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1221–1225 | 1339–1354 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-18 22:20:25 +07:00 | `src/components/Admin.tsx` | 1234–1234 | 1363–1363 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+
+## [2026-11-18 22:44:11 +07:00] — feat(admin): card jumlah sukses jawab dan gagal jawab serta filter status di log tanya AI
+
+Waktu pencatatan: **2026-11-18 22:44:11 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `250bd92`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: tsc -b lulus 0 error; oxlint 0 error; 56 unit tests lulus; build produksi index.dev-2FCPuIGP.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-44-11-389d45.json](docs/change-audit/2026-11-18-22-44-11-389d45.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-770Vpm03.css` | 1–2 | — | module/file | deleted |
+| 2026-11-18 22:43:58 +07:00 | `dist/assets/index-BhI0iUzC.css` | — | 1–2 | module/file | added |
+| 2026-11-18 22:43:58 +07:00 | `dist/assets/index.dev-2FCPuIGP.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-18 22:43:58 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-18 22:41:18 +07:00 | `server/admin-logs.js` | 18–18 | 18–28 | function definitions(db,type) { | modified |
+| 2026-11-18 22:41:18 +07:00 | `server/admin-logs.js` | 22–22 | 32–32 | function filtersFor(def,raw={}) { | modified |
+| 2026-11-18 22:41:18 +07:00 | `server/admin-logs.js` | — | 48–51 | function filtersFor(def,raw={}) { | modified |
+| 2026-11-18 22:41:18 +07:00 | `server/admin-logs.js` | — | 70–81 | export function readAdminLogs(db,type,raw={}) { | modified |
+| 2026-11-18 22:41:18 +07:00 | `server/admin-logs.js` | 63–63 | 89–89 | export function readAdminLogs(db,type,raw={}) { | modified |
+| 2026-11-18 22:41:42 +07:00 | `server/admin-logs.test.js` | — | 115–134 | test('daily stats aggregate all 8 log types for today and compute 7-day trend',t | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | — | 1178–1178 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1180–1180 | 1181–1181 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1183–1184 | 1184–1185 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1215–1215 | 1216–1216 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1229–1229 | 1230–1230 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1232–1232 | 1233–1233 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | — | 1235–1287 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | — | 1314–1316 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1268–1277 | 1325–1343 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |

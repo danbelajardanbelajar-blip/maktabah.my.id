@@ -1175,13 +1175,14 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
   const [loading,setLoading]=useState(true),[deleting,setDeleting]=useState(false),[detail,setDetail]=useState<any>(null),[error,setError]=useState('');
   const [refresh,setRefresh]=useState(0),[logFilter,setLogFilter]=useState(''),[search,setSearch]=useState('');
   const [actionFilter,setActionFilter]=useState(''),[outcome,setOutcome]=useState(''),[from,setFrom]=useState(''),[to,setTo]=useState('');
+  const [statusFilter,setStatusFilter]=useState('');
   const [group,setGroup]=useState({dimension:'',value:''});
   const [top,setTop]=useState<Record<string,{value:string;count:number}[]>>({});
-  const [capabilities,setCapabilities]=useState({action:false,outcome:false});
+  const [capabilities,setCapabilities]=useState({action:false,outcome:false,status:false});
   const [matchedTotal,setMatchedTotal]=useState(0);
   const [preview,setPreview]=useState<{key:string;filters:Record<string,string>;snapshotId:number;total:number}|null>(null);
-  const [stats,setStats]=useState({total:0,today:0,weekly:0,monthly:0,unique_ips:0});
-  const filters={q:search,action:actionFilter,outcome,from,to,...group};
+  const [stats,setStats]=useState<any>({total:0,today:0,weekly:0,monthly:0,unique_ips:0,answered:0,failed:0});
+  const filters={q:search,action:actionFilter,outcome,status:statusFilter,from,to,...group};
   const filterKey=JSON.stringify([type,filters]);
   const readyPreview=!loading&&!deleting&&preview?.key===filterKey&&logFilter.trim()===search;
   const hasFilter=Object.values(filters).some(Boolean);
@@ -1212,7 +1213,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
     finally{setDeleting(false);}
   };
   const choose=(dimension:string,value:string)=>{setGroup({dimension,value});setCurrentPage(1);};
-  const reset=()=>{setLogFilter('');setSearch('');setActionFilter('');setOutcome('');setFrom('');setTo('');setGroup({dimension:'',value:''});setCurrentPage(1);};
+  const reset=()=>{setLogFilter('');setSearch('');setActionFilter('');setOutcome('');setStatusFilter('');setFrom('');setTo('');setGroup({dimension:'',value:''});setCurrentPage(1);};
   const paginated=data;
   return (
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
@@ -1226,11 +1227,64 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       </div>
       
       {/* Infografis Statistik Log */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
+      <div className={`grid gap-3 md:gap-4 p-4 border-b bg-white ${type === 'ask' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-4'}`}>
         <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-gray-50/70 border-gray-200">
           <div className="p-2.5 md:p-3 bg-gray-200 text-gray-700 rounded-lg"><Layers size={22} /></div>
-          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Total Keseluruhan</div><div className="text-xl md:text-2xl font-bold text-gray-800">{stats.total.toLocaleString('id-ID')}</div></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Total Pertanyaan</div><div className="text-xl md:text-2xl font-bold text-gray-800">{stats.total.toLocaleString('id-ID')}</div></div>
         </div>
+
+        {type === 'ask' && (
+          <>
+            <div 
+              role="button" 
+              tabIndex={0} 
+              onClick={() => { setStatusFilter(statusFilter === 'answered' ? '' : 'answered'); setCurrentPage(1); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setStatusFilter(statusFilter === 'answered' ? '' : 'answered'); setCurrentPage(1); } }}
+              title="Klik untuk memfilter log hanya yang sukses terjawab"
+              className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs cursor-pointer transition-all ${statusFilter === 'answered' ? 'bg-emerald-100/90 border-emerald-500 ring-2 ring-emerald-400' : 'bg-emerald-50/60 border-emerald-200 hover:bg-emerald-100/50'}`}>
+              <div className="p-2.5 md:p-3 bg-emerald-100 text-emerald-700 rounded-lg"><CheckCircle2 size={22} /></div>
+              <div className="min-w-0">
+                <div className="text-xs md:text-sm text-emerald-800 font-bold flex items-center gap-1.5 flex-wrap">
+                  <span>Sukses Terjawab</span>
+                  {stats.total > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-emerald-200/80 text-emerald-900">
+                      {Math.round(((stats.answered ?? 0) / stats.total) * 100)}%
+                    </span>
+                  )}
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-emerald-900">{(stats.answered ?? 0).toLocaleString('id-ID')}</div>
+                {stats.answered_today != null && stats.answered_today > 0 && (
+                  <div className="text-[11px] text-emerald-700 font-medium mt-0.5">+{stats.answered_today.toLocaleString('id-ID')} hari ini</div>
+                )}
+              </div>
+            </div>
+
+            <div 
+              role="button" 
+              tabIndex={0} 
+              onClick={() => { setStatusFilter(statusFilter === 'failed' ? '' : 'failed'); setCurrentPage(1); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setStatusFilter(statusFilter === 'failed' ? '' : 'failed'); setCurrentPage(1); } }}
+              title="Klik untuk memfilter log hanya yang gagal / menyerah"
+              className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs cursor-pointer transition-all ${statusFilter === 'failed' ? 'bg-rose-100/90 border-rose-500 ring-2 ring-rose-400' : 'bg-rose-50/60 border-rose-200 hover:bg-rose-100/50'}`}>
+              <div className="p-2.5 md:p-3 bg-rose-100 text-rose-700 rounded-lg"><XCircle size={22} /></div>
+              <div className="min-w-0">
+                <div className="text-xs md:text-sm text-rose-800 font-bold flex items-center gap-1.5 flex-wrap">
+                  <span>Gagal Jawab</span>
+                  {stats.total > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-rose-200/80 text-rose-900">
+                      {Math.round(((stats.failed ?? 0) / stats.total) * 100)}%
+                    </span>
+                  )}
+                </div>
+                <div className="text-xl md:text-2xl font-bold text-rose-900">{(stats.failed ?? 0).toLocaleString('id-ID')}</div>
+                {stats.failed_today != null && stats.failed_today > 0 && (
+                  <div className="text-[11px] text-rose-700 font-medium mt-0.5">+{stats.failed_today.toLocaleString('id-ID')} hari ini</div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
         <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
           <div className="p-2.5 md:p-3 bg-blue-100 text-blue-600 rounded-lg"><Activity size={22} /></div>
           <div><div className="text-xs md:text-sm text-gray-500 font-medium">Hari Ini (24 Jam)</div><div className="text-xl md:text-2xl font-bold text-blue-800">{stats.today.toLocaleString('id-ID')}</div></div>
@@ -1257,6 +1311,9 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
           {capabilities.outcome&&<select aria-label="Hasil pencarian" value={outcome} onChange={e=>{setOutcome(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
             <option value="">Semua hasil</option><option value="zero">Hasil nol</option><option value="positive">Ada hasil</option><option value="unknown">Jumlah hasil tidak dicatat</option>
           </select>}
+          {capabilities.status&&<select aria-label="Status jawaban" value={statusFilter} onChange={e=>{setStatusFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white font-medium">
+            <option value="">Semua status jawaban</option><option value="answered">✓ Sukses terjawab</option><option value="failed">✕ Gagal / menyerah</option>
+          </select>}
           <label className="text-xs">Dari (WIB)<input aria-label="Tanggal awal" type="date" value={from} onChange={e=>{setFrom(e.target.value);setCurrentPage(1);}} className="block border rounded-lg px-2 py-2 bg-white" /></label>
           <label className="text-xs">Sampai (WIB)<input aria-label="Tanggal akhir" type="date" value={to} onChange={e=>{setTo(e.target.value);setCurrentPage(1);}} className="block border rounded-lg px-2 py-2 bg-white" /></label>
           <button disabled={loading||deleting} onClick={()=>setRefresh(n=>n+1)} className="border rounded-lg px-3 py-2 text-sm bg-white disabled:opacity-50">Muat ulang</button>
@@ -1265,16 +1322,25 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
         {group.dimension&&<p className="text-xs break-words">Filter ringkasan ({({query:'Pencarian',question:'Pertanyaan',ip:'IP',page:'Halaman / sumber'} as Record<string,string>)[group.dimension]}): <strong dir="auto">{group.value}</strong> <button className="underline ml-2" onClick={()=>{setGroup({dimension:'',value:''});setCurrentPage(1);}}>Hapus filter ringkasan</button></p>}
         {type === 'ask' && (
           <div className="flex items-center gap-2 text-xs text-gray-600 flex-wrap pt-1 border-t border-gray-200">
-            <span className="font-medium text-gray-500">Keterangan status Tanya AI:</span>
-            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
-              <CheckCircle2 size={12} className="text-emerald-600" /> Terjawab (berdasarkan rujukan kitab)
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] text-rose-800 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-medium">
-              <XCircle size={12} className="text-rose-600" /> Menyerah / Tidak Terjawab (tanpa rujukan valid)
-            </span>
-            <span className="inline-flex items-center gap-1 text-[11px] text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full font-medium">
-              <MessageSquare size={12} className="text-gray-500" /> Percakapan Umum
-            </span>
+            <span className="font-medium text-gray-500">Filter cepat status:</span>
+            <button 
+              type="button"
+              onClick={() => { setStatusFilter(''); setCurrentPage(1); }}
+              className={`px-2.5 py-0.5 rounded-full font-semibold border text-xs transition-colors ${!statusFilter ? 'bg-gray-800 text-white border-gray-800' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300'}`}>
+              Semua ({stats.total.toLocaleString('id-ID')})
+            </button>
+            <button 
+              type="button"
+              onClick={() => { setStatusFilter(statusFilter === 'answered' ? '' : 'answered'); setCurrentPage(1); }}
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold border text-xs transition-colors ${statusFilter === 'answered' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border-emerald-300'}`}>
+              <CheckCircle2 size={12} className={statusFilter === 'answered' ? 'text-white' : 'text-emerald-600'} /> Sukses Terjawab ({(stats.answered ?? 0).toLocaleString('id-ID')})
+            </button>
+            <button 
+              type="button"
+              onClick={() => { setStatusFilter(statusFilter === 'failed' ? '' : 'failed'); setCurrentPage(1); }}
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold border text-xs transition-colors ${statusFilter === 'failed' ? 'bg-rose-700 text-white border-rose-700' : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border-rose-300'}`}>
+              <XCircle size={12} className={statusFilter === 'failed' ? 'text-white' : 'text-rose-600'} /> Gagal Jawab ({(stats.failed ?? 0).toLocaleString('id-ID')})
+            </button>
           </div>
         )}
         <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-gray-500">{matchedTotal.toLocaleString('id-ID')} aktivitas sesuai filter.</p>

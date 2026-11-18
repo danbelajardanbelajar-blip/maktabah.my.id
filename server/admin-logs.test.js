@@ -112,3 +112,23 @@ test('daily stats aggregate all 8 log types for today and compute 7-day trend',t
  assert.equal(today.total, 3);
 });
 
+test('tanya AI logs compute answered and failed stats and allow filtering by status',t=>{
+  const db=fixture(t);
+  db.exec('ALTER TABLE ask_logs ADD COLUMN meta_json TEXT');
+  db.exec(`INSERT INTO ask_logs(question,response,meta_json) VALUES
+    ('Q1','Jawaban 1','{"mode":"grounded"}'),
+    ('Q2','Saya belum dapat memastikan jawaban...','{"mode":"no_context","rejection":{"stage":"retrieval"}}'),
+    ('Q3','Halo','{"mode":"conversation"}');
+  `);
+  const res=readAdminLogs(db,'ask');
+  assert.equal(res.stats.total,3);
+  assert.equal(res.stats.answered,1);
+  assert.equal(res.stats.failed,1);
+  assert.equal(res.capabilities.status,true);
+  const filteredAnswered=readAdminLogs(db,'ask',{status:'answered'});
+  assert.equal(filteredAnswered.total,1);
+  assert.equal(filteredAnswered.data[0].question,'Q1');
+  const filteredFailed=readAdminLogs(db,'ask',{status:'failed'});
+  assert.equal(filteredFailed.total,1);
+  assert.equal(filteredFailed.data[0].question,'Q2');
+});
