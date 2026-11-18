@@ -1941,3 +1941,30 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-17-22-48-03-4d4d1a.
 | 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 143–145 | 144–147 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
 | 2026-11-17 22:41:32 +07:00 | `src/components/BookTransfer.tsx` | 160–160 | 162–162 | export function BookTransfer({ token, onLogout, onBack, onChanged, onStorage }: | modified |
 | 2026-11-17 22:41:21 +07:00 | `src/components/WordImport.tsx` | — | 1–171 | MAX_BYTES, arabic, readAsDataUrl, reader, WordImport, inputRef, setBusy, post | added |
+
+## [2026-11-18 07:37:00 +07:00] — feat(ai): riwayat tanya AI global pada dashboard dan riwayat pribadi pada halaman tanya AI
+
+Waktu pencatatan: **2026-11-18 07:37:00 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `f1497fc`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 265 tes server lulus (termasuk tes scope=global dan isolasi per-session di ai-history.test.js); tsc -b lulus tanpa error; oxlint 0 error; npm run build sukses menghasilkan dist/assets/index.dev-CGIBHMKI.js; git diff staged bersih
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-07-37-00-5b553b.json](docs/change-audit/2026-11-18-07-37-00-5b553b.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-18 07:35:49 +07:00 | `dist/assets/index.dev-CGIBHMKI.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-18 07:35:49 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-18 07:32:22 +07:00 | `server/ai-history.js` | 42–42 | 42–42 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-18 07:32:22 +07:00 | `server/ai-history.js` | 44–45 | 44–46 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-18 07:32:22 +07:00 | `server/ai-history.js` | 47–47 | 48–50 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-18 07:32:22 +07:00 | `server/ai-history.js` | 49–49 | 52–61 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-18 07:32:22 +07:00 | `server/ai-history.js` | 52–52 | 64–66 | export function registerAiHistory(app,{getStateDb}) { | modified |
+| 2026-11-18 07:32:45 +07:00 | `server/ai-history.test.js` | 7–7 | 7–7 | import {registerAiHistory} from './ai-history.js'; | modified |
+| 2026-11-18 07:32:45 +07:00 | `server/ai-history.test.js` | 11–11 | 11–11 | test('two browsers on the same IP have isolated history; legacy rows remain admi | modified |
+| 2026-11-18 07:32:45 +07:00 | `server/ai-history.test.js` | 17–20 | 17–31 | test('two browsers on the same IP have isolated history; legacy rows remain admi | modified |
+| 2026-11-18 07:33:46 +07:00 | `src/App.tsx` | 259–259 | 259–259 | function App() { | modified |
+| 2026-11-18 07:33:46 +07:00 | `src/App.tsx` | 646–646 | 646–646 | function App() { | modified |
+| 2026-11-18 07:33:46 +07:00 | `src/App.tsx` | 656–656 | 656–656 | function App() { | modified |
+| 2026-11-18 07:33:29 +07:00 | `src/api.ts` | 277–278 | 277–281 | export const webAPI = { | modified |
+| 2026-11-18 07:34:19 +07:00 | `src/components/AskAI.tsx` | 215–215 | 215–215 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+| 2026-11-18 07:34:19 +07:00 | `src/components/AskAI.tsx` | 231–231 | 231–231 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |

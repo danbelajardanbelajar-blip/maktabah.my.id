@@ -256,7 +256,7 @@ function App() {
     if (!homeHistoryVisible) return;
     let current = true;
     webAPI.getRecentSearches().then(res => { if (current && res.data) setRecentSearches(res.data); }).catch(() => {});
-    webAPI.getRecentQuestions().then(res => { if (current && res.data) setRecentAiQuestions(res.data); }).catch(() => {});
+    webAPI.getRecentQuestions('global').then(res => { if (current && res.data) setRecentAiQuestions(res.data); }).catch(() => {});
     return () => { current = false; };
   }, [homeHistoryVisible]);
 
@@ -643,7 +643,7 @@ function App() {
                   </div>
 
                   <div className="p-5 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Bot size={18} className="shrink-0" /> Riwayat Tanya AI Anda</h3>
+                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Bot size={18} className="shrink-0" /> Riwayat Tanya AI (Global)</h3>
                     {recentAiQuestions.length > 0 ? (
                       <div className="flex flex-col gap-2">
                         {recentAiQuestions.slice(0, 5).map((item, idx) => (
@@ -653,7 +653,7 @@ function App() {
                           </button>
                         ))}
                       </div>
-                    ) : <p className="text-sm text-gray-400 italic">Belum ada riwayat Tanya AI di browser ini.</p>}
+                    ) : <p className="text-sm text-gray-400 italic">Belum ada riwayat Tanya AI.</p>}
                   </div>
                   </div>
 

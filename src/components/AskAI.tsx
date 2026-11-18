@@ -212,7 +212,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
           <div className="flex gap-3">
             <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-transparent"></div>
             <div className="max-w-[85%] md:max-w-[75%]">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 ml-1">Pertanyaan Terakhir:</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 ml-1">Pertanyaan Terakhir Anda:</p>
               {recentQuestions.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {recentQuestions.map((rq, idx) => (
@@ -228,7 +228,7 @@ export default function AskAI({ openBook, initialQuestion = '', questionVersion 
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 italic ml-1">Belum ada pertanyaan sebelumnya.</p>
+                <p className="text-sm text-gray-400 italic ml-1">Belum ada riwayat pertanyaan Anda di browser ini.</p>
               )}
             </div>
           </div>

@@ -39,16 +39,30 @@ export function registerAiHistory(app,{getStateDb}) {
     if(req.isAdminActivity)return;
     try {getStateDb()?.prepare('INSERT INTO ask_logs(question,response,ip,user_agent,session_id,context_json,meta_json) VALUES(?,?,?,?,?,?,?)').run(question,response,req.ip,req.headers['user-agent']||'',session(req,res,true),JSON.stringify(context),payload?JSON.stringify(auditMeta(payload)):null);} catch { /* History cannot discard a successful answer. */ }
   };
-  app.get('/api/recent-questions',(req,res)=>{
+  const handleRecentQuestions=(req,res)=>{
     res.set('Cache-Control','no-store');
-    const id=session(req,res);
-    if(!id)return res.json({data:[]});
+    const isGlobal=req.query.scope==='global' || req.path.endsWith('/global-recent-questions');
+    const id=!isGlobal?session(req,res):null;
+    if(!isGlobal && !id)return res.json({data:[]});
     try {
-      const rows=getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE session_id=? AND length(trim(question))>=2 ORDER BY rowid DESC LIMIT 200').all(id)||[];
+      const rows=isGlobal
+        ? (getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE length(trim(question))>=2 ORDER BY rowid DESC LIMIT 200').all()||[])
+        : (getStateDb()?.prepare('SELECT question,context_json FROM ask_logs WHERE session_id=? AND length(trim(question))>=2 ORDER BY rowid DESC LIMIT 200').all(id)||[]);
       const limit=Math.min(20,Math.max(1,parseInt(req.query.limit)||10)),seen=new Set(),data=[];
-      for(const row of rows){let context={};try{context=JSON.parse(row.context_json||'{}');}catch{}const key=JSON.stringify([row.question.trim().toLowerCase(),context]);if(!seen.has(key)){seen.add(key);data.push({query:row.question,...context});if(data.length>=limit)break;}}
+      for(const row of rows){
+        let context={};
+        try{context=JSON.parse(row.context_json||'{}');}catch{}
+        const key=isGlobal ? row.question.trim().toLowerCase() : JSON.stringify([row.question.trim().toLowerCase(),context]);
+        if(!seen.has(key)){
+          seen.add(key);
+          data.push({query:row.question,...context});
+          if(data.length>=limit)break;
+        }
+      }
       res.json({data});
     } catch {res.status(503).json({data:[],error:'Riwayat belum dapat dimuat. Silakan coba lagi.'});}
-  });
+  };
+  app.get('/api/recent-questions',handleRecentQuestions);
+  app.get('/api/global-recent-questions',handleRecentQuestions);
   return {session,record};
 }

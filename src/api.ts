@@ -274,8 +274,11 @@ export const webAPI = {
   getRecentSearches: async () => {
     return fetchAPI(`/recent-searches`);
   },
-  getRecentQuestions: async () => {
-    return fetchAPI(`/recent-questions`);
+  getRecentQuestions: async (scope?: 'personal' | 'global') => {
+    return fetchAPI(scope === 'global' ? `/recent-questions?scope=global` : `/recent-questions`);
+  },
+  getGlobalRecentQuestions: async () => {
+    return fetchAPI(`/recent-questions?scope=global`);
   },
 
   // ===== TAFSIR (Multi-DB) =====
