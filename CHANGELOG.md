@@ -1968,3 +1968,19 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-07-37-00-5b553b.
 | 2026-11-18 07:33:29 +07:00 | `src/api.ts` | 277–278 | 277–281 | export const webAPI = { | modified |
 | 2026-11-18 07:34:19 +07:00 | `src/components/AskAI.tsx` | 215–215 | 215–215 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
 | 2026-11-18 07:34:19 +07:00 | `src/components/AskAI.tsx` | 231–231 | 231–231 | export default function AskAI({ openBook, initialQuestion = '', questionVersion | modified |
+
+## [2026-11-18 21:44:59 +07:00] — feat(admin): tambah icon view web di sebelah kiri tombol logout pada header admin
+
+Waktu pencatatan: **2026-11-18 21:44:59 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `9af038b`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: tsc -b lulus tanpa error; oxlint 0 error; npm run build produksi sukses menghasilkan dist/assets/index.dev-DBn9EBhc.js; 4 tes navigasi/identitas admin lulus; git diff staged terverifikasi rapi
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-21-44-59-54fded.json](docs/change-audit/2026-11-18-21-44-59-54fded.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CGIBHMKI.js` | 1–22 | — | module/file | deleted |
+| 2026-11-18 21:44:21 +07:00 | `dist/assets/index.dev-DBn9EBhc.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-18 21:44:21 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-18 21:43:02 +07:00 | `src/components/Admin.tsx` | 21–21 | 21–21 | import type { AdminView } from '../lib/admin-navigation'; | modified |
+| 2026-11-18 21:43:02 +07:00 | `src/components/Admin.tsx` | — | 1361–1361 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
