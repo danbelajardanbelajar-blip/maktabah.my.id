@@ -2056,3 +2056,19 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-18-22-44-11-389d45.
 | 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | — | 1235–1287 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | — | 1314–1316 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
 | 2026-11-18 22:42:59 +07:00 | `src/components/Admin.tsx` | 1268–1277 | 1325–1343 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+
+## [2026-11-19 20:44:46 +07:00] — feat(authors): gabung paket penulis lama + label sumber build
+
+Waktu pencatatan: **2026-11-19 20:44:46 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `d069a67`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 268/268 lulus (tes baru merge-author-packages); oxlint bersih; paket Golden digabung: inspectAuthorPackage OK, integrity ok, install ke store sementara + authorList: 3.109 penulis, 2.912 punya kitab, 16.135 relasi, 0 relasi lama hilang
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-19-20-44-46-b660d4.json](docs/change-audit/2026-11-19-20-44-46-b660d4.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-19 20:44:45 +07:00 | `docs/authors.md` | — | 67–97 | Argumen database tambahan boleh `-`. Hash manifest adalah gabungan hash dua MDB | modified |
+| 2026-11-19 20:42:52 +07:00 | `scripts/build-author-db.js` | 6–7 | 6–7 | import {authorSchema,normalizeIdentity,matchAuthorIdentity,AUTHOR_FORMAT,AUTHOR_ | modified |
+| 2026-11-19 20:42:52 +07:00 | `scripts/build-author-db.js` | 51–51 | 51–51 | try { | modified |
+| 2026-11-19 20:42:51 +07:00 | `scripts/merge-author-packages.js` | — | 1–46 | prevSource, byKey, linked, hasWork, putAuthor, mapped, key, id | added |
+| 2026-11-19 20:43:50 +07:00 | `server/merge-author-packages.test.js` | — | 1–41 | script, makePackage, db, dir, works, output, result, links | added |

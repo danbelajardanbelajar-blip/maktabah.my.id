@@ -64,6 +64,37 @@ node scripts/build-author-db.js `
 
 Argumen database tambahan boleh `-`. Hash manifest adalah gabungan hash dua MDB sumber, bukan checksum paket hasil tinjauan. File `.db` tidak masuk Git.
 
+**Argumen ke-6 (opsional): label sumber.** Label ini ditulis di manifest, misalnya `'Maktabah Syamilah Golden'`. Bawaannya `MAKTABAH_CAKZEN_2026`.
+
+**Folder sumber.** Skrip mencari `Buka Lewat Sini/Files/{Special,main}.mdb` di bawah folder sumber. Untuk instalasi yang berkas `Files`-nya langsung di folder utama (seperti `E:\Maktabah Syamilah Golden`):
+1. Buat folder kosong.
+2. Di dalamnya, buat junction bernama `Buka Lewat Sini` yang menunjuk ke folder instalasi itu, dengan `New-Item -ItemType Junction`.
+3. Pakai folder kosong itu sebagai argumen pertama.
+
+### Menggabungkan dengan paket lama
+
+Sumber yang lebih baru bisa kehilangan penulis yang ada di sumber lama. Contohnya, Golden tidak memuat al-Kautsari dan al-Ghumari yang sebelumnya tampil di situs.
+
+`scripts/merge-author-packages.js` mempertahankan relasi paket lama hanya untuk kitab yang sama sekali tidak ditautkan paket baru, jadi data baru selalu menang.
+
+Penulis lama dipakai ulang jika namanya (setelah normalisasi) sudah ada di paket baru. Jika belum ada, penulis itu ditambahkan dengan ID yang masih kosong.
+
+```powershell
+node scripts/merge-author-packages.js 'D:/db/paket-baru.db' 'D:/db/paket-lama.db' 'D:/db/paket-gabungan.db'
+```
+
+**Hasil 2026-11-19** (Golden + paket 2026-11-13), di `D:/db/maktabah-penulis-2026-11-19-golden-gabungan.db`:
+
+| | Paket 2026-11-13 | Golden + gabungan |
+|---|---|---|
+| Penulis | 966 | 3.109 (2.603 biografi) |
+| Kitab bertaut penulis | 5.610 | 16.135 |
+| Penulis yang punya kitab | 696 | 2.912 |
+
+Rinciannya:
+- Tidak ada relasi lama yang hilang. 47 relasi hanya berganti ejaan nama (harakat).
+- 162 relasi dipertahankan dari paket lama, beserta 5 penulisnya.
+
 ## Verifikasi dan deployment
 
 ```powershell

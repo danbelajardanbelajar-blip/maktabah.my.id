@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-19 20:44:46 +07:00",
+  "title": "feat(authors): gabung paket penulis lama + label sumber build",
+  "baseCommit": "d069a67de433f609bcd9c95ff1dfe72339579d22",
+  "checks": "node --test server/*.test.js 268/268 lulus (tes baru merge-author-packages); oxlint bersih; paket Golden digabung: inspectAuthorPackage OK, integrity ok, install ke store sementara + authorList: 3.109 penulis, 2.912 punya kitab, 16.135 relasi, 0 relasi lama hilang",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/authors.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-19 20:44:45 +07:00",
+      "stagedSha256": "76b09eea1a195c7d43043935595cd4c36c2dae1bb26e61d32fd960d51c946202",
+      "diffSha256": "6a79a4a1bb9d552d96b71003f3c9e4817ccf1c73eea0d00e1857ad0ec04c37ff",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 66,
+            "count": 0
+          },
+          "after": {
+            "line": 67,
+            "count": 31
+          },
+          "section": "Argumen database tambahan boleh `-`. Hash manifest adalah gabungan hash dua MDB"
+        }
+      ]
+    },
+    {
+      "file": "scripts/build-author-db.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-19 20:42:52 +07:00",
+      "stagedSha256": "8d3753334c180178fdc7d47f87335f45a0047023758f504d07d9f380ad397a87",
+      "diffSha256": "5ca041ba3b225a1476cfd838da652fdc60710f642cbfee7eb620dcb4e2f6f689",
+      "symbols": [
+        "files",
+        "sha",
+        "hashes",
+        "libraries",
+        "run",
+        "records",
+        "authors",
+        "byName",
+        "k",
+        "books",
+        "db",
+        "hasAuthors",
+        "localAuthors",
+        "localNames",
+        "key",
+        "prev",
+        "work",
+        "candidates",
+        "matched",
+        "sourceById",
+        "a",
+        "proposed",
+        "disputed",
+        "putAuthor"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 2
+          },
+          "after": {
+            "line": 6,
+            "count": 2
+          },
+          "section": "import {authorSchema,normalizeIdentity,matchAuthorIdentity,AUTHOR_FORMAT,AUTHOR_"
+        },
+        {
+          "before": {
+            "line": 51,
+            "count": 1
+          },
+          "after": {
+            "line": 51,
+            "count": 1
+          },
+          "section": "try {"
+        }
+      ]
+    },
+    {
+      "file": "scripts/merge-author-packages.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-19 20:42:51 +07:00",
+      "stagedSha256": "0b55f04b79ef184a80cf4b58a8cd142abd65cb279506153251f8b9ca4e54d9ac",
+      "diffSha256": "1e433eefd4f483853c170d260c76115cfeabc653c1d0bd54336ecb67b467d25a",
+      "symbols": [
+        "prevSource",
+        "byKey",
+        "linked",
+        "hasWork",
+        "putAuthor",
+        "mapped",
+        "key",
+        "id",
+        "authors"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 46
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/merge-author-packages.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-19 20:43:50 +07:00",
+      "stagedSha256": "04dc09b7c700eb0cdf44677b097fecd27fc9509d3deafb1b17a9944036d7398a",
+      "diffSha256": "3d1d9719ae777ae075a8f08080dfeb83ce8f37a59d3fc7799a4dc26ac121a2d0",
+      "symbols": [
+        "script",
+        "makePackage",
+        "db",
+        "dir",
+        "works",
+        "output",
+        "result",
+        "links"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 41
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

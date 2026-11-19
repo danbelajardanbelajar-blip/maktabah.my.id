@@ -3,8 +3,8 @@ import {spawnSync} from 'node:child_process';import {fileURLToPath} from 'node:u
 import Database from 'better-sqlite3';
 import {authorSchema,normalizeIdentity,matchAuthorIdentity,AUTHOR_FORMAT,AUTHOR_VERSION,authorStats} from '../server/author-package.js';
 
-const [sourceDir,jars,libraryPath,additionalPath,output]=process.argv.slice(2);
-if(!output)throw Error('Usage: node scripts/build-author-db.js source-folder jars main.db additional.db-or-- output.db');
+const [sourceDir,jars,libraryPath,additionalPath,output,sourceLabel='MAKTABAH_CAKZEN_2026']=process.argv.slice(2);
+if(!output)throw Error('Usage: node scripts/build-author-db.js source-folder jars main.db additional.db-or-- output.db [source-label]');
 if(fs.existsSync(output))throw Error('Output sudah ada; gunakan nama baru.');
 const files=['Special.mdb','main.mdb'].map(n=>path.join(sourceDir,'Buka Lewat Sini','Files',n));
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
@@ -48,7 +48,7 @@ try {
     for(const a of authors)putAuthor.run(a.authid,a.auth,a.inf||'',a.HigriD||'',`Special.mdb / Auth / authid=${a.authid}`,normalizeIdentity(a.auth));
     for(const b of books.values())putWork.run(b.book_id,b.title,b.metadata_author,b.source_ref,b.title_key);
     for(const a of assignments)if(!ambiguous.has(a.book_id)&&!disputed.has(a.book_id))putLink.run(a.book_id,a.author_id,a.basis,a.evidence);
-    dst.prepare('INSERT INTO manifest VALUES(?,?,?,?,?,?,?)').run(AUTHOR_FORMAT,AUTHOR_VERSION,new Date().toISOString(),'MAKTABAH_CAKZEN_2026: Special.mdb/Auth + main.mdb/0bok; relasi metadata pustaka lokal',crypto.createHash('sha256').update(hashes.join(':')).digest('hex'),authors.length,books.size);
+    dst.prepare('INSERT INTO manifest VALUES(?,?,?,?,?,?,?)').run(AUTHOR_FORMAT,AUTHOR_VERSION,new Date().toISOString(),`${sourceLabel}: Special.mdb/Auth + main.mdb/0bok; relasi metadata pustaka lokal`,crypto.createHash('sha256').update(hashes.join(':')).digest('hex'),authors.length,books.size);
   })();
   if(files.some((p,i)=>sha(p)!==hashes[i]))throw Error('File sumber berubah selama export.');
   if(dst.pragma('integrity_check',{simple:true})!=='ok')throw Error('Integritas paket gagal.');
