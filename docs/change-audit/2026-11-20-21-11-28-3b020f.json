@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 21:11:28 +07:00",
+  "title": "Blokir frasa شيخ الإسلام ابن تيمية (kebijakan v8)",
+  "baseCommit": "713f4a67ef224404348c44ef786a5928d4ecb8eb",
+  "checks": "node --test server/*.test.js 272/272 lulus (tes baru: frasa شيخ الإسلام/الاسلام ابن تيمية beserta varian diblokir; ابن تيمية, الشيخ ابن تيمية, الإمام ابن تيمية tetap lolos); node --check OK; cek hanya-baca D:/db/maktabah.db: 5564, 6812, 346 diblokir, 225 dan 2620 lolos",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-book-policy.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:11:27 +07:00",
+      "stagedSha256": "c19ba2a223fc5fd8dbed5e8ed8027b650d78eab07c9a4408ec2d245990358b3e",
+      "diffSha256": "e8ec4b130de4893a5051863076f6cffd76fe00e84a1ef1935516f5808f0a7053",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 1
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 13,
+            "count": 0
+          },
+          "after": {
+            "line": 14,
+            "count": 1
+          },
+          "section": "Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m"
+        },
+        {
+          "before": {
+            "line": 26,
+            "count": 0
+          },
+          "after": {
+            "line": 28,
+            "count": 4
+          },
+          "section": "Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:08:18 +07:00",
+      "stagedSha256": "a0a6096f07ab816b7d3036ce2f1ff9bb2e506cbd0983bf6d6d9bf6ba1f08f8eb",
+      "diffSha256": "7b561a2ed398b588d899db768e5adbac3bda2d8b1da9b009c0c80d7d496fc97f",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "scanBooksOffThread",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 1
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 10,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 3
+          },
+          "section": "export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v7';"
+        },
+        {
+          "before": {
+            "line": 17,
+            "count": 0
+          },
+          "after": {
+            "line": 20,
+            "count": 1
+          },
+          "section": "const patterns = ["
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:10:40 +07:00",
+      "stagedSha256": "280479c869eff8d132afb2b4577e480978fbab8df89e2a890e51ba42c71d3504",
+      "diffSha256": "b6103d239450f0e2ac06602cd24d69c8f0d73c765ec80828ffd045d02cb25d6f",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 19,
+            "count": 1
+          },
+          "after": {
+            "line": 19,
+            "count": 1
+          },
+          "section": "function fixture(t, filename=':memory:') {"
+        },
+        {
+          "before": {
+            "line": 24,
+            "count": 0
+          },
+          "after": {
+            "line": 25,
+            "count": 1
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        },
+        {
+          "before": {
+            "line": 26,
+            "count": 2
+          },
+          "after": {
+            "line": 27,
+            "count": 3
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:09:16 +07:00",
+      "stagedSha256": "80b79b1e903aaaa9abedcba4859e4dea01cafa1e901cbb45228d970c513f0b89",
+      "diffSha256": "4693e1b8772dccb48f0cf4c5471154992078130df87d24e99f884f4e5a1ae4d5",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:08:24 +07:00",
+      "stagedSha256": "869bb958914fc12f6ae89f638cbf6be1bfeed4676401099e029eed0bd9ffef2b",
+      "diffSha256": "a3399900856c811a93d99ec2f2c5734cd38ceb019f0bd175df8a7689ab5c4af4",
+      "symbols": [
+        "ensureSearchPolicySchema",
+        "POLICY_UPSERT",
+        "metadataReason",
+        "reconcileSearchPolicyBatch",
+        "schemas",
+        "stale",
+        "rows",
+        "reasons",
+        "unresolved",
+        "put",
+        "ensureTempExcludedTable",
+        "ins",
+        "getExcludedBookIds",
+        "invalidateSearchPolicyCache",
+        "syncMetadataExclusions",
+        "now",
+        "books",
+        "authors",
+        "scanUncheckedBooks",
+        "evaluated",
+        "candidates",
+        "SEARCH_POLICY_FTS_TERMS",
+        "scanFtsCandidateBooks",
+        "candidateIds",
+        "fts",
+        "pages"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 185,
+            "count": 1
+          },
+          "after": {
+            "line": 185,
+            "count": 1
+          },
+          "section": "export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:08:46 +07:00",
+      "stagedSha256": "93c1042f13ce26cf6044345b7efe94135866e36aa3f519fe735dca27ef63a3bd",
+      "diffSha256": "252085c0f0a1b6d2ec27e4d01c1cd99acb3d47f1fa1fb9493822adfab0320df7",
+      "symbols": [
+        "setupFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "scanned",
+        "rows",
+        "updated",
+        "found",
+        "excludedIds",
+        "basicWhere",
+        "basicRows",
+        "advWhere",
+        "advRows",
+        "isExcluded",
+        "isAdvanced",
+        "shouldBlock",
+        "advancedBlocked",
+        "put",
+        "dir"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 150,
+            "count": 2
+          },
+          "after": {
+            "line": 150,
+            "count": 3
+          },
+          "section": "test('search query for excluded name returns empty in basic mode and allows in a"
+        },
+        {
+          "before": {
+            "line": 193,
+            "count": 1
+          },
+          "after": {
+            "line": 194,
+            "count": 1
+          },
+          "section": "test('re-check of a file-backed library scans pages in the worker and releases f"
+        }
+      ]
+    }
+  ]
+}

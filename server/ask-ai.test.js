@@ -337,7 +337,7 @@ test('HTTP requests enforce whole-book policy through the real file-backed worke
  const f=fixture(t,{file:true});f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن باز');
  let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
  const [question,status]=await Promise.all([call('/api/ask',{q:'صلاة الجماعة'}),call('/api/ai/status')]);
- assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v7');
+ assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v8');
  const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
  assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
 });

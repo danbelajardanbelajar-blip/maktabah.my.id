@@ -182,7 +182,7 @@ export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5
   return candidates.length;
 }
 
-export const SEARCH_POLICY_FTS_TERMS = ['"ابن باز"', '"ابن عثيمين"', '"عثيمين"', '"الألباني"'];
+export const SEARCH_POLICY_FTS_TERMS = ['"ابن باز"', '"ابن عثيمين"', '"عثيمين"', '"الألباني"', '"شيخ الإسلام ابن تيمية"', '"شيخ الاسلام ابن تيمية"'];
 
 /**
  * Rapidly discover books containing excluded names in content via FTS index.

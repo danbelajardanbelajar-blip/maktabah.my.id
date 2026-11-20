@@ -1,6 +1,6 @@
 # Pengecualian seluruh kitab (Tanya AI dan pencarian)
 
-Versi kebijakan: `whole-book-exclusions-v7` (`AI_BOOK_POLICY_VERSION` di `server/ai-book-policy.js`).
+Versi kebijakan: `whole-book-exclusions-v8` (`AI_BOOK_POLICY_VERSION` di `server/ai-book-policy.js`).
 
 ## Nama yang diblokir
 
@@ -11,6 +11,7 @@ Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m
 | `ابن باز` | `بن باز`, `عبد العزيز بن باز`, `وابن باز`, `لابن باز`, `ابنباز`. Tidak termasuk `البازي` dan `البازية` (mis. *الدرر البازية*). |
 | `ابن عثيمين` | semua kata yang memuat `عثيمين` (mis. `العثيمين`) |
 | `الألباني` | `للألباني`, `والألباني`, `بالألباني`; tidak termasuk `الباني` ("pembangun") dan `الألبانية` / `الالبانيه` |
+| `شيخ الإسلام ابن تيمية` | hanya frasa utuh: `شيخ الإسلام ابن تيمية`, `شيخ الاسلام ابن تيمية`, `شيخ الإسلام بن تيمية`, `ابن تيميه`, awalan و ف ب ل ك pada `شيخ` (mis. `لشيخ الإسلام ابن تيمية`). `ابن تيمية` saja, `الشيخ ابن تيمية`, atau `الإمام ابن تيمية` tidak diblokir. |
 
 Pencocokan dilakukan setelah teks dinormalkan:
 - harakat, tatweel, dan penanda format tak terlihat dihapus;
@@ -24,6 +25,10 @@ Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks
 - `ابن تيمية` dan semua variannya dikeluarkan dari daftar pada v5 (2026-11-20) atas permintaan pemilik.
 - Pola `البازي` / `البازية` dipersempit menjadi `البازية` saja pada v6 (2026-11-20). Kata "البازي" dalam bahasa Arab klasik berarti burung elang ("تقضي البازي"), sehingga ikut memblokir kitab seperti *مجموع الفتاوى* (5564) dan *منهاج السنة النبوية* (225) walau keduanya tidak menyebut Ibnu Baz.
 - Pada v7 (2026-11-20), atas permintaan pemilik, kata sifat `البازية` / `البازيه` dan `الألبانية` / `الالبانيه` (beserta awalan و ف ب ل ك) tidak lagi diblokir.
+- Pada v8 (2026-11-20), atas permintaan pemilik, frasa utuh `شيخ الإسلام ابن تيمية` / `شيخ الاسلام ابن تيمية` diblokir lagi. Nama `ابن تيمية` tanpa gelar itu tetap tidak diblokir.
+  - Menurut FTS pada salinan lokal, frasa ini muncul di sekitar 7.700 kitab (7.248 dengan hamzah, 492 tanpa hamzah).
+  - Contoh yang kembali diblokir: *مجموع الفتاوى* (5564), *الفتاوى الكبرى* (6812), dan *المستدرك على مجموع الفتاوى* (346).
+  - *منهاج السنة النبوية* (225) tetap lolos.
 - `محمد بن عبد الوهاب` dikeluarkan sebelumnya (`aa2b39a`), karena nama itu juga dipakai perawi hadis dalam sanad Muslim dan kitab-kitab Sunan.
 - `الألباني` ditambahkan pada `e47b067`.
 

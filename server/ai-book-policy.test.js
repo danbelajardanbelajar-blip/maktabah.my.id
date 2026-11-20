@@ -16,15 +16,17 @@ function fixture(t, filename=':memory:') {
   t.after(()=>db.close());return db;
 }
 
-test('all three names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
+test('all excluded names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
   for(const text of [
     'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:',
     'إبن باز','لابن باز','إِبْن بَاز','ابـن\nباز','<p>ابن&nbsp;باز</p>','ابن &#1576;از','ابنباز',
     'عُثَيْمِين','العثيمين','ابن عثيمين','محمد بن صالح العثيمين','لابن عثيمين',
     'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ',
+    'شيخ الإسلام ابن تيمية','شيخ الاسلام ابن تيمية','قال شيخ الإسلام ابن تيمية رحمه الله','شَيْخُ الإِسْلَامِ ابْنُ تَيْمِيَّةَ','شيخ الإسلام بن تيمية','شيخ الإسلام ابن تيميه','لشيخ الإسلام ابن تيمية','وشيخ الإسلام ابن تيمية','شيخ  الإسلام\nابن تيمية','(شيخ الإسلام ابن تيمية)',
   ])assert.equal(containsExcludedAiName(text),true,text);
-  // ابن تيمية was removed from the list in v5 at the owner's request: none of his name variants excludes a book.
-  for(const text of ['ابن تيمية','بن تيمية','قال شيخ الإسلام ابن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابنتيمية','الفتاوى الكبرى لابن تيمية','دورةبن تيمية'])assert.equal(containsExcludedAiName(text),false,text);
+  // ابن تيمية was removed from the list in v5 at the owner's request; since v8 only the full phrase
+  // شيخ الإسلام ابن تيمية excludes a book, so the name alone or with other titles stays allowed.
+  for(const text of ['ابن تيمية','بن تيمية','الإسلام ابن تيمية','شيخ ابن تيمية','الشيخ ابن تيمية','شيخ الإسلام','شيخ الإسلام ابن القيم','الإمام ابن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابنتيمية','الفتاوى الكبرى لابن تيمية','دورةبن تيمية'])assert.equal(containsExcludedAiName(text),false,text);
   // محمد بن عبد الوهاب is no longer excluded: it is also the name of hadith narrators in the isnads of Muslim and the Sunan.
   for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','الدرر البازية','الفتاوى البازية','البازية','البازيه','والبازية','للبازية','التخريجات الألبانية','الألبانية','الالبانيه','للألبانية','تقضي البازي وتقضض','البازي','صيد البازي','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });

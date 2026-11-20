@@ -147,8 +147,9 @@ test('search query for excluded name returns empty in basic mode and allows in a
   }
 });
 
-test('ابن تيمية is no longer a blocked search query', () => {
-  for (const query of ['ابن تيمية', 'شيخ الإسلام ابن تيمية', 'الفتاوى الكبرى لابن تيمية', 'تيمية']) {
+test('ابن تيمية is no longer a blocked search query, but the phrase شيخ الإسلام ابن تيمية is', () => {
+  for (const query of ['شيخ الإسلام ابن تيمية', 'شيخ الاسلام ابن تيمية']) assert.equal(containsExcludedAiName(query), true, query);
+  for (const query of ['ابن تيمية', 'الفتاوى الكبرى لابن تيمية', 'تيمية']) {
     assert.equal(containsExcludedAiName(query), false, query);
   }
 });
@@ -190,7 +191,7 @@ test('re-check of a file-backed library scans pages in the worker and releases f
     CREATE TABLE pages (id INTEGER, book_id INTEGER, part INTEGER, page INTEGER, nass TEXT, PRIMARY KEY (book_id, id));`);
   db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(225, 'منهاج السنة النبوية');
   db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(7, 'كتاب في التخريج');
-  db.prepare('INSERT INTO pages VALUES (1, 225, 1, 1, ?)').run('قال شيخ الإسلام ابن تيمية');
+  db.prepare('INSERT INTO pages VALUES (1, 225, 1, 1, ?)').run('قال ابن تيمية رحمه الله');
   db.prepare('INSERT INTO pages VALUES (2, 225, 1, 2, ?)').run('كما يقولون تقضي البازي وتقضض');
   db.prepare('INSERT INTO pages VALUES (1, 7, 1, 1, ?)').run('وصححه الألباني في الصحيحة');
   ensureSearchPolicySchema(stateDb);

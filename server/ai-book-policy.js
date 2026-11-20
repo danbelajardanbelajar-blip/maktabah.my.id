@@ -3,11 +3,13 @@ import {sourceText} from './ai-source.js';
 
 // Changing the names or patterns: bump the version. It renews the AI answer cache namespace and makes
 // search-policy.js re-check every book it stored as excluded under an older version.
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v7';
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v8';
 // ابن تيمية was removed from the list in v5 at the owner's request: his name and books are no longer excluded.
 // v6 narrowed البازي/البازية to البازية, because البازي (the falcon) excluded books that never name Ibn Baz.
 // v7, at the owner's request, stopped excluding the adjectives البازية/البازيه and الألبانية/الالبانيه.
-export const excludedAiNames = ['ابن باز','ابن عثيمين','الألباني'];
+// v8, at the owner's request, excludes the full title phrase شيخ الإسلام ابن تيمية (with or without hamza);
+// ابن تيمية on its own stays allowed.
+export const excludedAiNames = ['ابن باز','ابن عثيمين','الألباني','شيخ الإسلام ابن تيمية'];
 // Patterns run on normalized text: no marks/tatweel, أإآٱ→ا, ة→ه, ى→ي, punctuation→space.
 // A word may carry the proclitics و ف ب ل ك (لابن باز، وابن باز، للألباني); ابن may be written بن.
 const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
@@ -15,6 +17,7 @@ const patterns = [
   `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
   'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين
   `${START}ا?لالباني${END}`,                         // الألباني، للألباني، والألباني (not الباني "the builder", not الألبانية)
+  `${START}شيخ\\s+الاسلام\\s+ا?بن\\s*تيميه${END}`,     // شيخ الإسلام ابن تيمية، شيخ الاسلام ابن تيمية، لشيخ الإسلام بن تيمية
 ].map(source=>new RegExp(source,'u'));
 export const normalizePolicyText = text => sourceText(text).normalize('NFKC')
   .replace(/[\p{M}\p{Cf}ـ]/gu,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي')
