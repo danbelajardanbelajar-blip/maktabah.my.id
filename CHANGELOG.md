@@ -2314,3 +2314,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-33-19-9b306c.
 | 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | — | 119–119 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
 | 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 189–196 | 121–122 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
 | 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 198–201 | 124–177 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
+
+## [2026-11-20 21:41:11 +07:00] — Catat verifikasi online pemindaian penuh search policy
+
+Waktu pencatatan: **2026-11-20 21:41:11 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `afc99d0`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: policy-status v8 berjalan 1.625/36.159; endpoint responsif selama pemindaian
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-41-11-719f25.json](docs/change-audit/2026-11-20-21-41-11-719f25.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 21:41:10 +07:00 | `docs/deployment-log.md` | — | 223–243 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |

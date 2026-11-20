@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 21:41:11 +07:00",
+  "title": "Catat verifikasi online pemindaian penuh search policy",
+  "baseCommit": "afc99d0436468110f2a44b1083c955e9b386d6fb",
+  "checks": "policy-status v8 berjalan 1.625/36.159; endpoint responsif selama pemindaian",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:41:10 +07:00",
+      "stagedSha256": "822bffbee430d4baa25e9a6140d390fcec482ce78caee69ac070072362460d95",
+      "diffSha256": "c8c94d5d7a65eab930645ad15c6f02ec0c5043fd8227c35322d7a8840438bf62",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 222,
+            "count": 0
+          },
+          "after": {
+            "line": 223,
+            "count": 21
+          },
+          "section": "Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server."
+        }
+      ]
+    }
+  ]
+}

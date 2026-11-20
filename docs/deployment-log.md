@@ -220,3 +220,24 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
   - Tetap 0 hasil: ابن باز, الألباني, العثيمين.
 - Pencarian judul menampilkan 5564 مجموع الفتاوى, 225 منهاج السنة النبوية, 6812 الفتاوى الكبرى لابن تيمية, dan 96874 الدرر البازية. Pencarian judul memakai daftar kitab terblokir yang sama, jadi pemeriksaan ulang di latar belakang sudah membuka kitab-kitab tersebut.
 - Tanya AI tidak diuji dengan pertanyaan nyata, agar tidak memanggil provider. Versi kebijakan dan namespace cache dibuktikan lewat endpoint status.
+
+## 2026-11-20 21:41:10 WIB — Pemindaian penuh search policy (afc99d0) dan kebijakan v8
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- Commit aplikasi: `afc99d0` (termasuk v8 `b73e039`). Pull dan restart `maktabah.service` dijalankan pengguna. Perubahan hanya di backend; aset frontend tidak berubah.
+- `/api/ai/status` dan `/api/search/policy-status` sama-sama menunjukkan `whole-book-exclusions-v8`. Endpoint progres hanya ada di commit baru, jadi ini bukti backend sudah diperbarui.
+- **Pemindaian penuh mulai 2026-11-20 21:37:05 WIB.**
+  - Saat dicek: 1.625 dari 36.159 kitab sudah diperiksa, 511 di antaranya terblokir (sekitar 31%).
+  - Kecepatan sekitar 6 kitab/detik, jadi perkiraan selesai sekitar pukul 23.15 WIB.
+  - Belum selesai saat dicatat.
+- **Pencarian:** ابن باز dan شيخ الإسلام ابن تيمية menghasilkan 0. ابن تيمية dan الصلاة menghasilkan ≥10.000.
+- **Waktu respons selama pemindaian** (dua kali percobaan per endpoint):
+
+  | Endpoint | Waktu |
+  |---|---|
+  | Beranda | 50–64 ms |
+  | `/api/ai/status` | ~52 ms |
+  | Pencarian judul | ~90 ms |
+  | `/api/book/225` | 393–487 ms |
+  | Pencarian teks "الصيام" | 3,2 dtk (pertama, cache dingin), lalu 175 ms |
