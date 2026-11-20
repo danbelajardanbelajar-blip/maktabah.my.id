@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 21:05:04 +07:00",
+  "title": "Catat verifikasi online kebijakan blokir v7",
+  "baseCommit": "0846a919215d1c3efe5f7028c214531afc19acbe",
+  "checks": "api/ai/status v7; pencarian teks dan judul online sesuai daftar blokir baru",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:05:04 +07:00",
+      "stagedSha256": "d2cb59d8c303091852542f741a8dac9a719b5936e1831c7518c72fae48e2156e",
+      "diffSha256": "ac9c0946f520b28e0d931d50a7d387758efa147c91092bc78af34567d3e3289e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 210,
+            "count": 0
+          },
+          "after": {
+            "line": 211,
+            "count": 12
+          },
+          "section": "Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server."
+        }
+      ]
+    }
+  ]
+}

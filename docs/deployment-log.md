@@ -208,3 +208,15 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
 - HTML online menunjuk `index.dev-CSAmZmvI.js` dan `index-BhI0iUzC.css`. Hash SHA-256 keduanya cocok dengan build lokal. Bundle berisi label baru "Hari Ini (sejak 00:00 WIB)".
 - `GET /api/admin/stats` dan `GET /api/admin/logs/ask` tanpa autentikasi menghasilkan 401.
 - Angka statistik hari ini tidak bisa dibaca dari luar tanpa login admin. Saya tidak login ke admin produksi. Perilaku query diuji lewat tes server (log 1 detik sebelum 00:00 WIB tidak dihitung hari ini).
+
+## 2026-11-20 21:05:04 WIB — Kebijakan blokir v7 (Ibnu Taimiyah, البازي, البازية, الألبانية dibuka)
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- Commit aplikasi: `0846a91` (termasuk `3273833` dan `b6426dc`). Pull dan restart `maktabah.service` dijalankan pengguna di VPS.
+- `GET /api/ai/status` mengembalikan `sourcePolicyVersion: "whole-book-exclusions-v7"`. Ini membuktikan backend baru sudah berjalan.
+- Pencarian teks diuji lewat browser. Curl di Windows merusak teks Arab, sehingga hasilnya 0 palsu.
+  - Kini mengembalikan hasil: الصلاة, ابن تيمية, شيخ الإسلام ابن تيمية (masing-masing ≥10.000, capped), الدرر البازية (51), التخريجات الألبانية (1), تقضي البازي (292).
+  - Tetap 0 hasil: ابن باز, الألباني, العثيمين.
+- Pencarian judul menampilkan 5564 مجموع الفتاوى, 225 منهاج السنة النبوية, 6812 الفتاوى الكبرى لابن تيمية, dan 96874 الدرر البازية. Pencarian judul memakai daftar kitab terblokir yang sama, jadi pemeriksaan ulang di latar belakang sudah membuka kitab-kitab tersebut.
+- Tanya AI tidak diuji dengan pertanyaan nyata, agar tidak memanggil provider. Versi kebijakan dan namespace cache dibuktikan lewat endpoint status.

@@ -2233,3 +2233,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-01-44-21f2cf.
 | 2026-11-20 21:01:17 +07:00 | `server/ai-book-policy.test.js` | 29–29 | 29–29 | test('all three names match despite harakat, tatweel, HTML entities, line breaks | modified |
 | 2026-11-20 21:01:17 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
 | 2026-11-20 21:01:17 +07:00 | `server/search-policy.test.js` | 135–135 | 135–135 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
+
+## [2026-11-20 21:05:04 +07:00] — Catat verifikasi online kebijakan blokir v7
+
+Waktu pencatatan: **2026-11-20 21:05:04 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0846a91`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: api/ai/status v7; pencarian teks dan judul online sesuai daftar blokir baru
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-05-04-969d1c.json](docs/change-audit/2026-11-20-21-05-04-969d1c.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 21:05:04 +07:00 | `docs/deployment-log.md` | — | 211–222 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
