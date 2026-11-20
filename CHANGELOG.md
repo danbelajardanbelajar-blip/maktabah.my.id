@@ -2171,3 +2171,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-09-30-38-e4404d.
 | 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 110–110 | 111–111 | test('title search excludes policy books in basic mode while including in advanc | modified |
 | 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 131–131 | 132–132 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
 | 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | — | 146–179 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
+
+## [2026-11-20 09:34:57 +07:00] — Persempit pola Ibnu Baz ke البازية (kebijakan v6) dan pindahkan pemeriksaan ulang ke worker
+
+Waktu pencatatan: **2026-11-20 09:34:57 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `3273833`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 272/272 lulus (tes baru: البازي/elang tidak diblokir; pemeriksaan ulang database file lewat worker); node --check OK; oxlint tanpa error baru; uji hanya-baca D:/db/maktabah.db: kitab 225, 346, 5564 terbuka dalam 5,0 dtk dengan event loop tetap berjalan (46 tick 100 ms)
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-09-34-57-3a51f8.json](docs/change-audit/2026-11-20-09-34-57-3a51f8.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | 3–3 | 3–3 | module/file | modified |
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | 11–11 | 11–11 | Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m | modified |
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | — | 25–25 | Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks | modified |
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | 28–29 | — | Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks | modified |
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | 52–52 | 51–51 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 09:34:44 +07:00 | `docs/ai-book-policy.md` | 55–55 | 54–54 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ai-book-policy.js` | 6–6 | 6–6 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ai-book-policy.js` | — | 8–8 | export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v5'; | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ai-book-policy.js` | 14–14 | 15–16 | const patterns = [ | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ai-book-policy.js` | — | 86–92 | function workerScan(sources, ids, signal) { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ai-book-policy.test.js` | 29–29 | 29–29 | test('all three names match despite harakat, tatweel, HTML entities, line breaks | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/index.js` | 342–344 | 342–346 | try { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/index.js` | 346–347 | 348–348 | try { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/index.js` | — | 350–354 | try { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 1–1 | 1–1 | ensureSearchPolicySchema, POLICY_UPSERT, metadataReason, reconcileSearchPolicyBatch, schemas, stale, rows, reasons | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 27–27 | 27–27 | const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 38–42 | — | function excludedReason(db, schemas, bkid) { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 47–47 | 42–42 | function excludedReason(db, schemas, bkid) { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 50–50 | 45–46 | function excludedReason(db, schemas, bkid) { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 52–52 | 48–48 | function excludedReason(db, schemas, bkid) { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 61–61 | 57–61 | export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, l | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.js` | 63–63 | 63–63 | export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, l | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | — | 4–6 | import Database from 'better-sqlite3'; | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 153–153 | 156–156 | test('ابن تيمية is no longer a blocked search query', () => { | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 168–170 | 171–173 | test('books excluded under an older policy version are re-checked and released w | modified |
+| 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 178–178 | 181–200 | test('books excluded under an older policy version are re-checked and released w | modified |

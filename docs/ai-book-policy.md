@@ -1,6 +1,6 @@
 # Pengecualian seluruh kitab (Tanya AI dan pencarian)
 
-Versi kebijakan: `whole-book-exclusions-v5` (`AI_BOOK_POLICY_VERSION` di `server/ai-book-policy.js`).
+Versi kebijakan: `whole-book-exclusions-v6` (`AI_BOOK_POLICY_VERSION` di `server/ai-book-policy.js`).
 
 ## Nama yang diblokir
 
@@ -8,7 +8,7 @@ Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m
 
 | Nama | Varian yang ikut cocok |
 |---|---|
-| `ابن باز` | `بن باز`, `عبد العزيز بن باز`, `وابن باز`, `لابن باز`, `ابنباز`, serta `البازي` / `البازية` (mis. *الدرر البازية*, *الفتاوى البازية*) |
+| `ابن باز` | `بن باز`, `عبد العزيز بن باز`, `وابن باز`, `لابن باز`, `ابنباز`, serta `البازية` (mis. *الدرر البازية*, *الفتاوى البازية*). Kata `البازي` tidak ikut cocok. |
 | `ابن عثيمين` | semua kata yang memuat `عثيمين` (mis. `العثيمين`) |
 | `الألباني` | `للألباني`, `والألباني`, `الألبانية`; tidak termasuk `الباني` ("pembangun") |
 
@@ -22,10 +22,9 @@ Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks
 
 **Riwayat daftar:**
 - `ابن تيمية` dan semua variannya dikeluarkan dari daftar pada v5 (2026-11-20) atas permintaan pemilik.
+- Pola `البازي` / `البازية` dipersempit menjadi `البازية` saja pada v6 (2026-11-20). Kata "البازي" dalam bahasa Arab klasik berarti burung elang ("تقضي البازي"), sehingga ikut memblokir kitab seperti *مجموع الفتاوى* (5564) dan *منهاج السنة النبوية* (225) walau keduanya tidak menyebut Ibnu Baz.
 - `محمد بن عبد الوهاب` dikeluarkan sebelumnya (`aa2b39a`), karena nama itu juga dipakai perawi hadis dalam sanad Muslim dan kitab-kitab Sunan.
 - `الألباني` ditambahkan pada `e47b067`.
-
-**Batas yang diketahui:** pola `البازي` juga cocok dengan kata "البازي" yang berarti burung elang dalam bahasa Arab klasik. Akibatnya kitab seperti *مجموع الفتاوى* (5564) dan *منهاج السنة النبوية* (225) tetap dikecualikan walau tidak menyebut Ibnu Baz.
 
 ## Cakupan
 
@@ -49,10 +48,10 @@ Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya
   - Saat start, judul dan penulis disinkronkan.
   - Kitab yang memuat istilah terblokir menurut FTS dipindai isinya.
 - **Saat versi kebijakan berubah** (`reconcileSearchPolicyBatch`):
-  - Server memeriksa ulang setiap kitab yang tercatat terblokir oleh versi lama, tiga kitab per giliran event loop, supaya server tetap responsif.
+  - Server memeriksa ulang setiap kitab yang tercatat terblokir oleh versi lama, dua kitab per giliran. Isi halaman dipindai di worker hanya-baca (batas 20 detik), sehingga server tetap responsif. *مجموع الفتاوى* (16.874 halaman) butuh sekitar 6 detik.
   - Kitab yang tidak lagi cocok dibuka kembali.
   - Setelah selesai, baris "bersih" dari versi lama dihapus agar nama yang baru ditambahkan ikut dievaluasi oleh pemindaian FTS.
-  - Kitab tidak pernah dibuka sebelum pemeriksaannya selesai.
+  - Kitab tidak pernah dibuka sebelum pemeriksaannya selesai. Batch yang gagal (mis. kedua worker sedang dipakai Tanya AI) dicoba lagi semenit kemudian, maksimal 10 kali.
 
 ## Pemeriksaan dan invalidasi (Tanya AI)
 

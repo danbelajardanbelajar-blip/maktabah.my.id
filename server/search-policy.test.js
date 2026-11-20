@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import Database from 'better-sqlite3';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   ensureSearchPolicySchema,
   syncMetadataExclusions,
@@ -150,7 +153,7 @@ test('ابن تيمية is no longer a blocked search query', () => {
   }
 });
 
-test('books excluded under an older policy version are re-checked and released when they no longer match', t => {
+test('books excluded under an older policy version are re-checked and released when they no longer match', async t => {
   const { db, stateDb } = setupFixture(t);
   db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?), (3, ?)').run('ابن تيمية', 'الشافعي', 'ابن باز');
   db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 2), (3, ?, 1, 2), (4, ?, 1, 3), (5, ?, 1, 2)')
@@ -165,9 +168,9 @@ test('books excluded under an older policy version are re-checked and released w
   put.run(5, 0, null, 'whole-book-exclusions-v4');
   assert.deepEqual([...getExcludedBookIds(stateDb)].sort(), [1, 2, 3]);
 
-  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 1, 'one stale book left after the first batch');
-  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0);
-  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0, 'finished: clean rows of old versions are dropped');
+  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 1, 'one stale book left after the first batch');
+  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0);
+  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0, 'finished: clean rows of old versions are dropped');
   assert.deepEqual([...getExcludedBookIds(stateDb)], [3], 'only the book that still names an excluded scholar stays hidden');
   const rows = stateDb.prepare('SELECT bkid, excluded, reason, policy_version FROM search_book_policy ORDER BY bkid').all();
   assert.deepEqual(rows.map(r => [r.bkid, r.excluded, r.reason]), [[1, 0, null], [2, 0, null], [3, 1, 'content']]);
@@ -175,5 +178,24 @@ test('books excluded under an older policy version are re-checked and released w
   // New scans record the current version too, so nothing is re-checked again.
   syncMetadataExclusions(db, stateDb);
   assert.ok(getExcludedBookIds(stateDb).has(4), 'author ابن باز still excludes');
-  assert.equal(reconcileSearchPolicyBatch(db, stateDb), 0);
+  assert.equal(await reconcileSearchPolicyBatch(db, stateDb), 0);
+});
+
+test('re-check of a file-backed library scans pages in the worker and releases falcon/Taymiyyah-only books', async t => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'search-policy-'));
+  const db = new Database(path.join(dir, 'library.db')), stateDb = new Database(':memory:');
+  t.after(() => { db.close(); stateDb.close(); invalidateSearchPolicyCache(); fs.rmSync(dir, { recursive: true, force: true }); });
+  db.exec(`CREATE TABLE books_meta (bkid INTEGER PRIMARY KEY, bk TEXT, cat INTEGER, authno INTEGER);
+    CREATE TABLE authors (authid INTEGER PRIMARY KEY, auth TEXT);
+    CREATE TABLE pages (id INTEGER, book_id INTEGER, part INTEGER, page INTEGER, nass TEXT, PRIMARY KEY (book_id, id));`);
+  db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(225, 'منهاج السنة النبوية');
+  db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(7, 'كتاب في التخريج');
+  db.prepare('INSERT INTO pages VALUES (1, 225, 1, 1, ?)').run('قال شيخ الإسلام ابن تيمية');
+  db.prepare('INSERT INTO pages VALUES (2, 225, 1, 2, ?)').run('كما يقولون تقضي البازي وتقضض');
+  db.prepare('INSERT INTO pages VALUES (1, 7, 1, 1, ?)').run('وصححه الألباني في الصحيحة');
+  ensureSearchPolicySchema(stateDb);
+  const put = stateDb.prepare("INSERT INTO search_book_policy VALUES (?, 1, 'content', 0, 'whole-book-exclusions-v4')");
+  put.run(225); put.run(7);
+  assert.equal(await reconcileSearchPolicyBatch(db, stateDb), 0);
+  assert.deepEqual([...getExcludedBookIds(stateDb)], [7]);
 });

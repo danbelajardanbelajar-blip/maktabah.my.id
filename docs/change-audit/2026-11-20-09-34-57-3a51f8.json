@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 09:34:57 +07:00",
+  "title": "Persempit pola Ibnu Baz ke البازية (kebijakan v6) dan pindahkan pemeriksaan ulang ke worker",
+  "baseCommit": "327383311f25a805937cb2730959ab803e64f69f",
+  "checks": "node --test server/*.test.js 272/272 lulus (tes baru: البازي/elang tidak diblokir; pemeriksaan ulang database file lewat worker); node --check OK; oxlint tanpa error baru; uji hanya-baca D:/db/maktabah.db: kitab 225, 346, 5564 terbuka dalam 5,0 dtk dengan event loop tetap berjalan (46 tick 100 ms)",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-book-policy.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:44 +07:00",
+      "stagedSha256": "25a483c14d7bcdd643adf7aa0dd8ca4dc9f6e583ab7fd987ad6bf4366abfc1ce",
+      "diffSha256": "4cb259426af0a8e01a9046c4a9c34eb56e4bc436de2bce0a2929735b73ac12ba",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 1
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 1
+          },
+          "after": {
+            "line": 11,
+            "count": 1
+          },
+          "section": "Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m"
+        },
+        {
+          "before": {
+            "line": 24,
+            "count": 0
+          },
+          "after": {
+            "line": 25,
+            "count": 1
+          },
+          "section": "Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks"
+        },
+        {
+          "before": {
+            "line": 28,
+            "count": 2
+          },
+          "after": {
+            "line": 28,
+            "count": 0
+          },
+          "section": "Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks"
+        },
+        {
+          "before": {
+            "line": 52,
+            "count": 1
+          },
+          "after": {
+            "line": 51,
+            "count": 1
+          },
+          "section": "Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya"
+        },
+        {
+          "before": {
+            "line": 55,
+            "count": 1
+          },
+          "after": {
+            "line": 54,
+            "count": 1
+          },
+          "section": "Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "af3a562699bf886f422a383d4c72ff1b34236a75cf90183ccf8df6c5663f91aa",
+      "diffSha256": "372bc0ceb8a0f59a859b4721557b4f2f8d44ddf5f7e573eeaa6c641626ca320c",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "scanBooksOffThread",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 1
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 7,
+            "count": 0
+          },
+          "after": {
+            "line": 8,
+            "count": 1
+          },
+          "section": "export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v5';"
+        },
+        {
+          "before": {
+            "line": 14,
+            "count": 1
+          },
+          "after": {
+            "line": 15,
+            "count": 2
+          },
+          "section": "const patterns = ["
+        },
+        {
+          "before": {
+            "line": 83,
+            "count": 0
+          },
+          "after": {
+            "line": 86,
+            "count": 7
+          },
+          "section": "function workerScan(sources, ids, signal) {"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "b2ab4fb0cf762ee5d36e3fc6a2a6f9da8b2df08d9c480ad53f68dde1aba67a80",
+      "diffSha256": "962e512f151ce01c95098cb23fab6a276896104b01ebd185da1ada66d21eb276",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 29,
+            "count": 1
+          },
+          "after": {
+            "line": 29,
+            "count": 1
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "37d3afd41dc2fcb5af0ce3489c425d2bbeb6f4a19baa32c972d38d041c141859",
+      "diffSha256": "793554e02d0ea61c3d7dd1fe20670c0153f4050812cf96cf34eecda42c8676ed",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "7a266b495a1035de91b3b530db474301f4f3b30682b0c3a75f0426c4bca2dc6d",
+      "diffSha256": "61b3fd48906d17ce97db68ecaef7d30367459263b30326f3550577a376c0bd0b",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "maintainSearchPolicy",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "rawQuery",
+        "targetBookId",
+        "isAdvanced",
+        "excludedBookIds",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 342,
+            "count": 3
+          },
+          "after": {
+            "line": 342,
+            "count": 5
+          },
+          "section": "try {"
+        },
+        {
+          "before": {
+            "line": 346,
+            "count": 2
+          },
+          "after": {
+            "line": 348,
+            "count": 1
+          },
+          "section": "try {"
+        },
+        {
+          "before": {
+            "line": 348,
+            "count": 0
+          },
+          "after": {
+            "line": 350,
+            "count": 5
+          },
+          "section": "try {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "c6bc363cd32b8a36b3ca540b20dfcc1d2b81c5c07ecbffec1b0f6fd7e8f10f1b",
+      "diffSha256": "92f9ba7953df94237df5193f0a236ab11750057bc2df2acbec3cdd0b41f6fce3",
+      "symbols": [
+        "ensureSearchPolicySchema",
+        "POLICY_UPSERT",
+        "metadataReason",
+        "reconcileSearchPolicyBatch",
+        "schemas",
+        "stale",
+        "rows",
+        "reasons",
+        "unresolved",
+        "put",
+        "ensureTempExcludedTable",
+        "ins",
+        "getExcludedBookIds",
+        "invalidateSearchPolicyCache",
+        "syncMetadataExclusions",
+        "now",
+        "books",
+        "authors",
+        "scanUncheckedBooks",
+        "evaluated",
+        "candidates",
+        "SEARCH_POLICY_FTS_TERMS",
+        "scanFtsCandidateBooks",
+        "candidateIds",
+        "fts",
+        "pages"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 27,
+            "count": 1
+          },
+          "section": "const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded"
+        },
+        {
+          "before": {
+            "line": 38,
+            "count": 5
+          },
+          "after": {
+            "line": 37,
+            "count": 0
+          },
+          "section": "function excludedReason(db, schemas, bkid) {"
+        },
+        {
+          "before": {
+            "line": 47,
+            "count": 1
+          },
+          "after": {
+            "line": 42,
+            "count": 1
+          },
+          "section": "function excludedReason(db, schemas, bkid) {"
+        },
+        {
+          "before": {
+            "line": 50,
+            "count": 1
+          },
+          "after": {
+            "line": 45,
+            "count": 2
+          },
+          "section": "function excludedReason(db, schemas, bkid) {"
+        },
+        {
+          "before": {
+            "line": 52,
+            "count": 1
+          },
+          "after": {
+            "line": 48,
+            "count": 1
+          },
+          "section": "function excludedReason(db, schemas, bkid) {"
+        },
+        {
+          "before": {
+            "line": 61,
+            "count": 1
+          },
+          "after": {
+            "line": 57,
+            "count": 5
+          },
+          "section": "export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, l"
+        },
+        {
+          "before": {
+            "line": 63,
+            "count": 1
+          },
+          "after": {
+            "line": 63,
+            "count": 1
+          },
+          "section": "export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, l"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 09:34:33 +07:00",
+      "stagedSha256": "f7cae5fedf6d49bc70f041b40d763ee1e205133b0f91adc2cda916840596ea9c",
+      "diffSha256": "92d6e7a32069c4a73c66415fbb7bbccb34b917999867d55602af8d3f82a5f455",
+      "symbols": [
+        "setupFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "scanned",
+        "rows",
+        "updated",
+        "found",
+        "excludedIds",
+        "basicWhere",
+        "basicRows",
+        "advWhere",
+        "advRows",
+        "isExcluded",
+        "isAdvanced",
+        "shouldBlock",
+        "advancedBlocked",
+        "put",
+        "dir"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 0
+          },
+          "after": {
+            "line": 4,
+            "count": 3
+          },
+          "section": "import Database from 'better-sqlite3';"
+        },
+        {
+          "before": {
+            "line": 153,
+            "count": 1
+          },
+          "after": {
+            "line": 156,
+            "count": 1
+          },
+          "section": "test('ابن تيمية is no longer a blocked search query', () => {"
+        },
+        {
+          "before": {
+            "line": 168,
+            "count": 3
+          },
+          "after": {
+            "line": 171,
+            "count": 3
+          },
+          "section": "test('books excluded under an older policy version are re-checked and released w"
+        },
+        {
+          "before": {
+            "line": 178,
+            "count": 1
+          },
+          "after": {
+            "line": 181,
+            "count": 20
+          },
+          "section": "test('books excluded under an older policy version are re-checked and released w"
+        }
+      ]
+    }
+  ]
+}

@@ -339,13 +339,19 @@ try {
         try {
           ensureSearchPolicySchema(stateDb);
           syncMetadataExclusions(db, stateDb, { hasTambahan });
-          // Books excluded under an older policy version are re-checked a few at a time so the server stays
-          // responsive; the FTS candidate scan runs once that is finished.
-          const maintainSearchPolicy = () => {
+          // Books excluded under an older policy version are re-checked two at a time, page text in a worker, so the
+          // server stays responsive; the FTS candidate scan runs once that is finished.
+          // A failed batch (e.g. both scan workers busy with Tanya AI) is retried a minute later, up to 10 times.
+          let policyRetries = 0;
+          const maintainSearchPolicy = async () => {
             try {
-              if (reconcileSearchPolicyBatch(db, stateDb, { hasTambahan }) > 0) return void setImmediate(maintainSearchPolicy);
-              scanFtsCandidateBooks(db, stateDb, { hasTambahan });
+              if (await reconcileSearchPolicyBatch(db, stateDb, { hasTambahan }) > 0) return void setImmediate(maintainSearchPolicy);
             } catch(e) {
+              console.error("Gagal memeriksa ulang search policy:", e.message);
+              if (++policyRetries <= 10) setTimeout(maintainSearchPolicy, 60000).unref();
+              return;
+            }
+            try { scanFtsCandidateBooks(db, stateDb, { hasTambahan }); } catch(e) {
               console.error("Gagal scan FTS content policy:", e.message);
             }
           };

@@ -3,15 +3,17 @@ import {sourceText} from './ai-source.js';
 
 // Changing the names or patterns: bump the version. It renews the AI answer cache namespace and makes
 // search-policy.js re-check every book it stored as excluded under an older version.
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v5';
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v6';
 // ابن تيمية was removed from the list in v5 at the owner's request: his name and books are no longer excluded.
+// v6 narrowed البازي/البازية to البازية, because البازي (the falcon) excluded books that never name Ibn Baz.
 export const excludedAiNames = ['ابن باز','ابن عثيمين','الألباني'];
 // Patterns run on normalized text: no marks/tatweel, أإآٱ→ا, ة→ه, ى→ي, punctuation→space.
 // A word may carry the proclitics و ف ب ل ك (لابن باز، وابن باز، للألباني); ابن may be written بن.
 const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
 const patterns = [
   `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
-  `${START}ا?لبازي(?:ه)?${END}`,                     // البازي، البازية (الدرر البازية، الفتاوى البازية)
+  `${START}ا?لبازيه${END}`,                          // البازية only (الدرر البازية، الفتاوى البازية). Not البازي: in classical
+                                                     // Arabic it is the falcon (تقضي البازي), found e.g. in مجموع الفتاوى.
   'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين
   `${START}ا?لالباني(?:ه)?${END}`,                   // الألباني، للألباني، والألباني، الألبانية (not الباني "the builder")
 ].map(source=>new RegExp(source,'u'));
@@ -79,6 +81,13 @@ function workerScan(sources, ids, signal) {
       signal?.addEventListener('abort',cancel,{once:true});
     } catch { finish(unavailable()); }
   });
+}
+
+// Whole-book content scan for background upkeep (search policy): returns [id, blocked] pairs. File-backed
+// databases are scanned read-only in a worker with the same limits as Tanya AI; in-memory test databases in-process.
+export async function scanBooksOffThread(db, ids, additional=false) {
+  const {schemas,sources}=databaseState(db,additional);
+  return sources.some(source=>!source.file) ? scanAiBooks(db,ids,schemas) : workerScan(sources,ids);
 }
 
 export async function filterAllowedAiReferences(db, references, additional=false, {signal}={}) {

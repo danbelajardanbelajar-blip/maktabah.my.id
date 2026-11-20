@@ -26,7 +26,7 @@ test('all three names match despite harakat, tatweel, HTML entities, line breaks
   // ابن تيمية was removed from the list in v5 at the owner's request: none of his name variants excludes a book.
   for(const text of ['ابن تيمية','بن تيمية','قال شيخ الإسلام ابن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابنتيمية','الفتاوى الكبرى لابن تيمية','دورةبن تيمية'])assert.equal(containsExcludedAiName(text),false,text);
   // محمد بن عبد الوهاب is no longer excluded: it is also the name of hadith narrators in the isnads of Muslim and the Sunan.
-  for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
+  for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','تقضي البازي وتقضض','البازي','صيد البازي','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });
 
 test('a mention on any other page excludes every reference and catalogue entry of that book only',async t=>{

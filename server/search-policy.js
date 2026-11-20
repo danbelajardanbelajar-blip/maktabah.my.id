@@ -1,4 +1,4 @@
-import { containsExcludedAiName, policyBody, AI_BOOK_POLICY_VERSION } from './ai-book-policy.js';
+import { containsExcludedAiName, policyBody, AI_BOOK_POLICY_VERSION, scanBooksOffThread } from './ai-book-policy.js';
 
 let cachedExcludedIds = null;
 
@@ -24,7 +24,7 @@ export function ensureSearchPolicySchema(stateDb) {
 
 const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (?, ?, ?, ?, ?)';
 
-function excludedReason(db, schemas, bkid) {
+function metadataReason(db, schemas, bkid) {
   for (const schema of schemas) {
     let meta = null;
     try { meta = db.prepare(`SELECT bk, authno FROM ${schema}.books_meta WHERE bkid = ?`).get(bkid); } catch {}
@@ -35,21 +35,17 @@ function excludedReason(db, schemas, bkid) {
       if (author?.auth && containsExcludedAiName(author.auth)) return 'author';
     }
   }
-  for (const schema of schemas) {
-    for (const p of db.prepare(`SELECT nass FROM ${schema}.pages WHERE book_id = ?`).iterate(bkid)) {
-      if (containsExcludedAiName(policyBody(p.nass))) return 'content';
-    }
-  }
   return null;
 }
 
 /**
- * Re-checks up to `limit` books stored as excluded under an older policy version and returns how many such
+ * Re-checks up to `limit` books stored as excluded under an older policy version and resolves to how many such
  * books remain. Books that no longer match are released (excluded = 0). Once none remain, clean rows from older
  * versions are deleted so a newly added name is evaluated again by the regular scans.
- * Errors reading pages propagate, so a book is never released without a completed check.
+ * Page text is scanned off-thread (a book such as مجموع الفتاوى has ~17,000 pages and takes seconds), so the
+ * server keeps answering requests. A failed or timed-out scan rejects and releases nothing.
  */
-export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, limit = 3 } = {}) {
+export async function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, limit = 2 } = {}) {
   ensureSearchPolicySchema(stateDb);
   const schemas = hasTambahan ? ['main', 'tambahan'] : ['main'];
   const stale = "excluded = 1 AND COALESCE(policy_version, '') <> ?";
@@ -58,9 +54,13 @@ export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, l
     stateDb.prepare("DELETE FROM search_book_policy WHERE excluded = 0 AND COALESCE(policy_version, '') <> ?").run(AI_BOOK_POLICY_VERSION);
     return 0;
   }
-  const decisions = rows.map(r => [r.bkid, excludedReason(db, schemas, r.bkid)]);
+  const reasons = new Map(rows.map(r => [r.bkid, metadataReason(db, schemas, r.bkid)]));
+  const unresolved = rows.map(r => r.bkid).filter(id => !reasons.get(id));
+  if (unresolved.length) {
+    for (const [id, blocked] of await scanBooksOffThread(db, unresolved, hasTambahan)) reasons.set(id, blocked ? 'content' : null);
+  }
   const put = stateDb.prepare(POLICY_UPSERT), now = Date.now();
-  stateDb.transaction(() => { for (const [bkid, reason] of decisions) put.run(bkid, reason ? 1 : 0, reason, now, AI_BOOK_POLICY_VERSION); })();
+  stateDb.transaction(() => { for (const [bkid, reason] of reasons) put.run(bkid, reason ? 1 : 0, reason, now, AI_BOOK_POLICY_VERSION); })();
   cachedExcludedIds = null;
   return stateDb.prepare(`SELECT COUNT(*) n FROM search_book_policy WHERE ${stale}`).get(AI_BOOK_POLICY_VERSION).n;
 }
