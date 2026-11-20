@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 23:24:55 +07:00",
+  "title": "Verifikasi hasil akhir pemindaian search policy v8",
+  "baseCommit": "0c47faa1836f861140ab68dcefb6b047506bdab1",
+  "checks": "policy-status selesai (16.459 diperiksa, 6.529 terblokir); nama terblokir = 0; ditemukan 504 untuk ابن تيمية/ابن القيم pencarian biasa",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 23:24:55 +07:00",
+      "stagedSha256": "809af639c52a815338999d6ae70b3bc48c9948069fa46a84c18d8bb3a2bf39ee",
+      "diffSha256": "2d1f725363936342e9ab867e348269766aed8b9b27b85220eef29e828162967d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 263,
+            "count": 0
+          },
+          "after": {
+            "line": 264,
+            "count": 23
+          },
+          "section": "Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server."
+        }
+      ]
+    }
+  ]
+}

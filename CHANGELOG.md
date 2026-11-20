@@ -2393,3 +2393,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-22-08-48-510f04.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-20 22:08:47 +07:00 | `docs/deployment-log.md` | — | 244–263 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
+
+## [2026-11-20 23:24:55 +07:00] — Verifikasi hasil akhir pemindaian search policy v8
+
+Waktu pencatatan: **2026-11-20 23:24:55 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0c47faa`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: policy-status selesai (16.459 diperiksa, 6.529 terblokir); nama terblokir = 0; ditemukan 504 untuk ابن تيمية/ابن القيم pencarian biasa
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-23-24-55-13e828.json](docs/change-audit/2026-11-20-23-24-55-13e828.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 23:24:55 +07:00 | `docs/deployment-log.md` | — | 264–286 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |

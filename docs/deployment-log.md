@@ -261,3 +261,26 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
 
 - **Pemindaian search policy setelah restart:** melanjutkan, tidak mengulang dari awal. Sisa 16.459 dari 36.159 kitab, jadi sekitar 19.700 kitab sudah tersimpan sebelum restart.
 - **Batas pengujian:** semua angka di atas diukur saat pemindaian search policy masih berjalan.
+
+## 2026-11-20 23:24:49 WIB — Hasil akhir pemindaian penuh search policy (v8)
+
+Waktu ini adalah pencatatan pemeriksaan online, bukan waktu pemindaian. Data diambil dari `GET /api/search/policy-status` lewat browser.
+
+- **Status:** `running=false`, `failed=false`, versi `whole-book-exclusions-v8`, 36.159 kitab.
+- **Putaran terakhir** (melanjutkan setelah restart 34cacba):
+  - Mulai 22:07:50 WIB, selesai 22:22:43 WIB, sekitar 15 menit.
+  - Memeriksa 16.459 kitab dan menemukan 6.529 kitab terblokir.
+  - Jumlah terblokir dari putaran sebelum restart tidak ditampilkan endpoint ini.
+- **Pencarian biasa:**
+
+  | Kata kunci | Hasil |
+  |---|---|
+  | ابن باز | 0 (61 ms) |
+  | الألباني | 0 (33 ms) |
+  | شيخ الإسلام ابن تيمية | 0 (45 ms) |
+  | شيخ الاسلام ابن تيمية | 0 (49 ms) |
+  | الصلاة | 10.000 (capped), 0,6–1,7 dtk |
+  | "ابن تيمية" (frasa, berkutip) | 9.834, 2,6 dtk |
+  | تيمية | 10.000, 6,5 dtk |
+
+- **Masalah ditemukan:** pencarian biasa tanpa kutip untuk `ابن تيمية` dan `ابن القيم` dijawab **504 SEARCH_TIMEOUT** setelah 20 dtk (diulang dua kali). Dengan `advanced=1`, yang tidak memakai daftar blokir, `ابن تيمية` hanya butuh 127 ms. Jadi lambatnya berasal dari penyaringan kitab terblokir yang kini jauh lebih banyak, bukan dari indeks FTS. Belum diperbaiki.
