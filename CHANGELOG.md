@@ -2095,3 +2095,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-07-18-44-511375.
 | 2026-11-20 07:16:52 +07:00 | `server/index.js` | 26–26 | 26–26 | import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity | modified |
 | 2026-11-20 07:16:52 +07:00 | `server/index.js` | 617–617 | 617–617 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
 | 2026-11-20 07:16:52 +07:00 | `src/components/Admin.tsx` | 1290–1290 | 1290–1290 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+
+## [2026-11-20 07:22:57 +07:00] — Catat verifikasi online 75bc98d
+
+Waktu pencatatan: **2026-11-20 07:22:57 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `75bc98d`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Hash aset online cocok dengan build lokal; endpoint admin tanpa autentikasi 401
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-07-22-57-37cebe.json](docs/change-audit/2026-11-20-07-22-57-37cebe.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 07:22:57 +07:00 | `docs/deployment-log.md` | — | 202–210 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 07:22:57 +07:00",
+  "title": "Catat verifikasi online 75bc98d",
+  "baseCommit": "75bc98d4c8bae51409eba7ef2c0131bff8e751dd",
+  "checks": "Hash aset online cocok dengan build lokal; endpoint admin tanpa autentikasi 401",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/deployment-log.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 07:22:57 +07:00",
+      "stagedSha256": "075276dc5f23826147760c26e77dd1280416424b26b5cd4d27847a1f96f0cfb9",
+      "diffSha256": "507e6b26f774a779ca04ed7da83270bd7b9f20309263fc977d9edfde25e5ff59",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 201,
+            "count": 0
+          },
+          "after": {
+            "line": 202,
+            "count": 9
+          },
+          "section": "Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server."
+        }
+      ]
+    }
+  ]
+}

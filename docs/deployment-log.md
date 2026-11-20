@@ -199,3 +199,12 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
 - HTML online menunjuk `index.dev-Cxjj-1Ka.js` dan `index-BVMZo2yL.css`. Hash SHA-256 keduanya cocok dengan build lokal.
 - `GET /api/admin/messages/stream` dengan token salah menghasilkan 401. `GET /api/messages` mengembalikan `readUpTo` dan izin per percakapan. Endpoint lampiran menghasilkan 404 (query database berjalan).
 - Tidak membuat percakapan uji di produksi. Kecepatan ✓ → ✓✓ diuji di lokal tanpa cookie admin (16 ms).
+
+## 2026-11-20 07:22:05 WIB — Log admin: "hari ini" sejak 00:00 WIB
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- Commit aplikasi: `75bc98d`. Pull dan restart `maktabah.service` dijalankan pengguna di VPS. SSH dari mesin pengembang masih ditolak, jadi HEAD server dibuktikan lewat aset.
+- HTML online menunjuk `index.dev-CSAmZmvI.js` dan `index-BhI0iUzC.css`. Hash SHA-256 keduanya cocok dengan build lokal. Bundle berisi label baru "Hari Ini (sejak 00:00 WIB)".
+- `GET /api/admin/stats` dan `GET /api/admin/logs/ask` tanpa autentikasi menghasilkan 401.
+- Angka statistik hari ini tidak bisa dibaca dari luar tanpa login admin. Saya tidak login ke admin produksi. Perilaku query diuji lewat tes server (log 1 detik sebelum 00:00 WIB tidak dihitung hari ini).
