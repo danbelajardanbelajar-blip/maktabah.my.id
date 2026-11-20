@@ -1,4 +1,5 @@
-import { containsExcludedAiName, policyBody, AI_BOOK_POLICY_VERSION, scanBooksOffThread } from './ai-book-policy.js';
+import { Worker } from 'node:worker_threads';
+import { containsExcludedAiName, AI_BOOK_POLICY_VERSION, policySources } from './ai-book-policy.js';
 
 let cachedExcludedIds = null;
 
@@ -17,53 +18,13 @@ export function ensureSearchPolicySchema(stateDb) {
     );
     CREATE INDEX IF NOT EXISTS idx_search_policy_excluded ON search_book_policy(excluded);
   `);
-  // policy_version: the AI_BOOK_POLICY_VERSION a row was decided under. Rows from an older version are re-checked
-  // by reconcileSearchPolicyBatch, so a name removed from the list stops hiding books it used to hide.
+  // policy_version: the AI_BOOK_POLICY_VERSION a row was decided under. fingerprint: the book's pages when it was
+  // scanned (see search-policy-worker.js). A row with an older version or a different fingerprint is scanned again.
   try { stateDb.exec('ALTER TABLE search_book_policy ADD COLUMN policy_version TEXT'); } catch {}
+  try { stateDb.exec('ALTER TABLE search_book_policy ADD COLUMN fingerprint TEXT'); } catch {}
 }
 
 const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (?, ?, ?, ?, ?)';
-
-function metadataReason(db, schemas, bkid) {
-  for (const schema of schemas) {
-    let meta = null;
-    try { meta = db.prepare(`SELECT bk, authno FROM ${schema}.books_meta WHERE bkid = ?`).get(bkid); } catch {}
-    if (meta?.bk && containsExcludedAiName(meta.bk)) return 'title';
-    if (meta?.authno) {
-      let author = null;
-      try { author = db.prepare(`SELECT auth FROM ${schema}.authors WHERE authid = ?`).get(meta.authno); } catch {}
-      if (author?.auth && containsExcludedAiName(author.auth)) return 'author';
-    }
-  }
-  return null;
-}
-
-/**
- * Re-checks up to `limit` books stored as excluded under an older policy version and resolves to how many such
- * books remain. Books that no longer match are released (excluded = 0). Once none remain, clean rows from older
- * versions are deleted so a newly added name is evaluated again by the regular scans.
- * Page text is scanned off-thread (a book such as مجموع الفتاوى has ~17,000 pages and takes seconds), so the
- * server keeps answering requests. A failed or timed-out scan rejects and releases nothing.
- */
-export async function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, limit = 2 } = {}) {
-  ensureSearchPolicySchema(stateDb);
-  const schemas = hasTambahan ? ['main', 'tambahan'] : ['main'];
-  const stale = "excluded = 1 AND COALESCE(policy_version, '') <> ?";
-  const rows = stateDb.prepare(`SELECT bkid FROM search_book_policy WHERE ${stale} ORDER BY bkid LIMIT ?`).all(AI_BOOK_POLICY_VERSION, limit);
-  if (!rows.length) {
-    stateDb.prepare("DELETE FROM search_book_policy WHERE excluded = 0 AND COALESCE(policy_version, '') <> ?").run(AI_BOOK_POLICY_VERSION);
-    return 0;
-  }
-  const reasons = new Map(rows.map(r => [r.bkid, metadataReason(db, schemas, r.bkid)]));
-  const unresolved = rows.map(r => r.bkid).filter(id => !reasons.get(id));
-  if (unresolved.length) {
-    for (const [id, blocked] of await scanBooksOffThread(db, unresolved, hasTambahan)) reasons.set(id, blocked ? 'content' : null);
-  }
-  const put = stateDb.prepare(POLICY_UPSERT), now = Date.now();
-  stateDb.transaction(() => { for (const [bkid, reason] of reasons) put.run(bkid, reason ? 1 : 0, reason, now, AI_BOOK_POLICY_VERSION); })();
-  cachedExcludedIds = null;
-  return stateDb.prepare(`SELECT COUNT(*) n FROM search_book_policy WHERE ${stale}`).get(AI_BOOK_POLICY_VERSION).n;
-}
 
 /**
  * Creates and populates temporary table on database connection for high-performance subqueries.
@@ -131,106 +92,68 @@ export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {}
   return getExcludedBookIds(stateDb);
 }
 
+let activeScan = null, rescanRequested = false, lastScan = null;
+
 /**
- * Scan books not yet evaluated by inspecting page text body.
+ * Scans the whole library in a worker (search-policy-worker.js) so ordinary search hides every book whose title,
+ * author or page text names an excluded scholar, not only the ones an FTS sample found. Only books that are new,
+ * changed, or decided under an older AI_BOOK_POLICY_VERSION are scanned; the first full scan of a large library
+ * runs in the background for a while, later scans take seconds. Decisions are written as they arrive, so the
+ * search filter improves during the scan; rows from earlier scans stay in force until their book is re-decided.
+ * Resolves to a summary; a second call while a scan runs queues one more scan afterwards.
  */
-export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 50 } = {}) {
+export function startSearchPolicyScan(db, stateDb, { hasTambahan = false, pauseRatio = 1, batchSize = 25 } = {}) {
+  if (activeScan) { rescanRequested = true; return activeScan.promise; }
   ensureSearchPolicySchema(stateDb);
-  const schemas = hasTambahan ? ['main', 'tambahan'] : ['main'];
-  const now = Date.now();
-
-  const evaluated = new Set(stateDb.prepare('SELECT bkid FROM search_book_policy').all().map(r => r.bkid));
-  const candidates = [];
-
-  for (const schema of schemas) {
-    try {
-      const rows = db.prepare(`SELECT bkid, bk FROM ${schema}.books_meta`).all();
-      for (const r of rows) {
-        if (!evaluated.has(r.bkid)) {
-          candidates.push({ bkid: r.bkid, bk: r.bk, schema });
-          if (candidates.length >= limit) break;
-        }
+  const sources = policySources(db, hasTambahan);
+  if (sources.some(source => !source.file)) return Promise.reject(new Error('Pemindaian search policy memerlukan database berbasis file.'));
+  const known = stateDb.prepare('SELECT bkid, fingerprint FROM search_book_policy WHERE policy_version = ? AND fingerprint IS NOT NULL')
+    .all(AI_BOOK_POLICY_VERSION).map(r => [r.bkid, r.fingerprint]);
+  const put = stateDb.prepare('INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version, fingerprint) VALUES (?, ?, ?, ?, ?, ?)');
+  const progress = { version: AI_BOOK_POLICY_VERSION, running: true, startedAt: new Date().toISOString(), finishedAt: null, books: null, pending: null, scanned: 0, excluded: 0, error: null };
+  const worker = new Worker(new URL('./search-policy-worker.js', import.meta.url), { workerData: { sources, known, pauseRatio, batchSize } });
+  const promise = new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (error) => {
+      if (settled) return; settled = true;
+      progress.running = false; progress.finishedAt = new Date().toISOString(); progress.error = error?.message || null;
+      void worker.terminate();
+      if (error) reject(error); else resolve({ ...progress });
+    };
+    worker.on('message', message => {
+      if (message.type === 'start') { progress.books = message.books; progress.pending = message.pending; }
+      else if (message.type === 'batch') {
+        try {
+          const now = Date.now();
+          stateDb.transaction(() => { for (const [id, reason, fingerprint] of message.results) put.run(id, reason ? 1 : 0, reason, now, AI_BOOK_POLICY_VERSION, fingerprint); })();
+        } catch (error) { return finish(error); }
+        progress.scanned += message.results.length;
+        progress.excluded += message.results.filter(r => r[1]).length;
+        cachedExcludedIds = null;
       }
-    } catch {}
-    if (candidates.length >= limit) break;
-  }
-
-  if (!candidates.length) return 0;
-
-  const ins = stateDb.prepare(POLICY_UPSERT);
-
-  stateDb.transaction(() => {
-    for (const c of candidates) {
-      if (c.bk && containsExcludedAiName(c.bk)) {
-        ins.run(c.bkid, 1, 'title', now, AI_BOOK_POLICY_VERSION);
-        continue;
-      }
-      let isExcluded = false;
-      try {
-        for (const p of db.prepare(`SELECT nass FROM ${c.schema}.pages WHERE book_id = ?`).iterate(c.bkid)) {
-          if (containsExcludedAiName(policyBody(p.nass))) {
-            isExcluded = true;
-            break;
-          }
-        }
-      } catch {}
-      ins.run(c.bkid, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now, AI_BOOK_POLICY_VERSION);
-    }
-  })();
-
-  cachedExcludedIds = null;
-  return candidates.length;
+      else if (message.type === 'done') finish(null);
+      else if (message.type === 'error') finish(new Error(message.message));
+    });
+    worker.once('error', finish);
+    worker.once('exit', () => finish(new Error('Worker search policy berhenti sebelum selesai.')));
+  });
+  activeScan = { worker, promise, progress };
+  lastScan = progress;
+  const next = () => {
+    activeScan = null;
+    if (rescanRequested) { rescanRequested = false; startSearchPolicyScan(db, stateDb, { hasTambahan, pauseRatio, batchSize }).catch(() => {}); }
+  };
+  promise.then(next, next);
+  return promise;
 }
 
-export const SEARCH_POLICY_FTS_TERMS = ['"ابن باز"', '"ابن عثيمين"', '"عثيمين"', '"الألباني"', '"شيخ الإسلام ابن تيمية"', '"شيخ الاسلام ابن تيمية"'];
+/** Stops a running scan (used before the library file is swapped). Decisions already written are kept. */
+export function stopSearchPolicyScan() { rescanRequested = false; void activeScan?.worker.terminate(); }
 
-/**
- * Rapidly discover books containing excluded names in content via FTS index.
- */
-export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitPerTerm = 200 } = {}) {
-  ensureSearchPolicySchema(stateDb);
-  const schemas = (hasTambahan ? ['main', 'tambahan'] : ['main'])
-    .filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
-  const evaluated = new Set(stateDb.prepare('SELECT bkid FROM search_book_policy').all().map(r => r.bkid));
-  const candidateIds = new Set();
+/** Progress of the running or last scan, for the status endpoint. */
+export function searchPolicyScanStatus() { return lastScan ? { ...lastScan } : { version: AI_BOOK_POLICY_VERSION, running: false }; }
 
-  for (const schema of schemas) {
-    const fts = schema === 'main' ? 'pages_fts' : `${schema}.pages_fts`;
-    const pages = schema === 'main' ? 'pages' : `${schema}.pages`;
-    for (const term of SEARCH_POLICY_FTS_TERMS) {
-      try {
-        const rows = db.prepare(`SELECT DISTINCT p.book_id FROM ${fts} f JOIN ${pages} p ON p.rowid = f.rowid WHERE ${fts} MATCH ? LIMIT ?`).all(term, limitPerTerm);
-        for (const r of rows) {
-          if (!evaluated.has(r.book_id)) candidateIds.add(r.book_id);
-        }
-      } catch {}
-    }
-  }
-
-  if (!candidateIds.size) return 0;
-
-  const now = Date.now();
-  const ins = stateDb.prepare(POLICY_UPSERT);
-
-  stateDb.transaction(() => {
-    for (const bookId of candidateIds) {
-      let isExcluded = false;
-      for (const schema of schemas) {
-        const pages = schema === 'main' ? 'pages' : `${schema}.pages`;
-        try {
-          for (const p of db.prepare(`SELECT nass FROM ${pages} WHERE book_id = ?`).iterate(bookId)) {
-            if (containsExcludedAiName(policyBody(p.nass))) {
-              isExcluded = true;
-              break;
-            }
-          }
-        } catch {}
-        if (isExcluded) break;
-      }
-      ins.run(bookId, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now, AI_BOOK_POLICY_VERSION);
-    }
-  })();
-
-  cachedExcludedIds = null;
-  return candidateIds.size;
+/** A page of this book was edited in place (same page count): scan it again on the next run. */
+export function forgetSearchPolicyBook(stateDb, bookId) {
+  try { stateDb.prepare('UPDATE search_book_policy SET fingerprint = NULL WHERE bkid = ?').run(bookId); } catch {}
 }

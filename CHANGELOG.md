@@ -2269,3 +2269,48 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-11-28-3b020f.
 | 2026-11-20 21:08:24 +07:00 | `server/search-policy.js` | 185–185 | 185–185 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
 | 2026-11-20 21:08:46 +07:00 | `server/search-policy.test.js` | 150–151 | 150–152 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
 | 2026-11-20 21:08:46 +07:00 | `server/search-policy.test.js` | 193–193 | 194–194 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
+
+## [2026-11-20 21:33:19 +07:00] — Pemindaian penuh search policy di worker latar belakang (semua kitab, bukan 200 per istilah)
+
+Waktu pencatatan: **2026-11-20 21:33:19 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b73e039`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 271/271 lulus (tes baru: worker memutuskan semua kitab di database utama+tambahan, hanya memindai ulang kitab baru/berubah/diedit, versi baru memindai ulang semua, antrean pemindaian); node --check OK; oxlint tanpa error baru; uji hanya-baca D:/db/maktabah.db: 317 kitab dalam 45,7 dtk dengan jeda 50%, jeda event loop maks 117 ms, 5564/6812/346 diblokir, 225 lolos; saringan cepat 0 beda dari 93.702 halaman sampel
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-33-19-9b306c.json](docs/change-audit/2026-11-20-21-33-19-9b306c.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 21:32:02 +07:00 | `docs/ai-book-policy.md` | 52–60 | 52–72 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 21:32:02 +07:00 | `docs/ai-book-policy.md` | 73–74 | 85–86 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 21:18:26 +07:00 | `server/ai-book-policy.js` | — | 28–34 | export const policyBody = text => sourceText(text).split(/_{4,}/u)[0]; | modified |
+| 2026-11-20 21:18:26 +07:00 | `server/ai-book-policy.js` | — | 36–36 | export const containsExcludedAiName = text => { | modified |
+| 2026-11-20 21:18:26 +07:00 | `server/ai-book-policy.js` | 88–93 | 96–97 | function workerScan(sources, ids, signal) { | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | 32–32 | 32–32 | import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js'; | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | 199–199 | 199–215 | let invalidateHadithIndex=()=>{}; | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | 342–358 | 358–358 | try { | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | 803–803 | 803–803 | app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | 815–815 | 815–815 | app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => { | modified |
+| 2026-11-20 21:30:22 +07:00 | `server/index.js` | — | 971–978 | app.delete('/api/admin/book-submission/:id', requireAdmin, (req, res) => { | modified |
+| 2026-11-20 21:29:37 +07:00 | `server/search-policy-worker.js` | — | 1–60 | pause, dbs, db, meta, hasAuthors, sql, fingerprints, decided | added |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 1–1 | 1–2 | ensureSearchPolicySchema, POLICY_UPSERT, ensureTempExcludedTable, ins, getExcludedBookIds, rows, invalidateSearchPolicyCache, syncMetadataExclusions | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 20–21 | 21–22 | export function ensureSearchPolicySchema(stateDb) { | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | — | 24–24 | export function ensureSearchPolicySchema(stateDb) { | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 27–67 | — | const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | — | 95–96 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 135–135 | 98–103 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 137–137 | 105–106 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 139–166 | 108–132 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 168–182 | 134–147 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 185–210 | 150–151 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 212–232 | 153–154 | export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP | modified |
+| 2026-11-20 21:30:02 +07:00 | `server/search-policy.js` | 234–235 | 156–158 | export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 10–10 | — | import { | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 14–15 | 13–15 | import { | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 17–17 | 17–17 | import { | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 53–75 | — | test('search policy syncs title and author exclusions accurately', t => { | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 89–111 | — | test('ensureTempExcludedTable creates and populates temporary table for subqueri | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 157–185 | 111–112 | test('ابن تيمية is no longer a blocked search query, but the phrase شي | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | — | 114–117 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | — | 119–119 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 189–196 | 121–122 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |
+| 2026-11-20 21:31:48 +07:00 | `server/search-policy.test.js` | 198–201 | 124–177 | test('re-check of a file-backed library scans pages in the worker and releases f | modified |

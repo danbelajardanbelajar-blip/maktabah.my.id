@@ -49,15 +49,27 @@ Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya
 - **Kata kunci yang memuat nama terblokir** langsung menghasilkan 0 hasil.
 - **Kitab terblokir disembunyikan** dari hasil pencarian teks dan judul.
 - **Tetap tersedia:** pencarian lanjutan (*advanced*), pencarian di dalam satu kitab, katalog, dan membaca kitab.
-- **Penyimpanan hasil:** status per kitab disimpan di `search_book_policy` (database state):
-  - `excluded`, `reason` (`title` / `author` / `content`), dan `policy_version`.
-  - Saat start, judul dan penulis disinkronkan.
-  - Kitab yang memuat istilah terblokir menurut FTS dipindai isinya.
-- **Saat versi kebijakan berubah** (`reconcileSearchPolicyBatch`):
-  - Server memeriksa ulang setiap kitab yang tercatat terblokir oleh versi lama, dua kitab per giliran. Isi halaman dipindai di worker hanya-baca (batas 20 detik), sehingga server tetap responsif. *مجموع الفتاوى* (16.874 halaman) butuh sekitar 6 detik.
-  - Kitab yang tidak lagi cocok dibuka kembali.
-  - Setelah selesai, baris "bersih" dari versi lama dihapus agar nama yang baru ditambahkan ikut dievaluasi oleh pemindaian FTS.
-  - Kitab tidak pernah dibuka sebelum pemeriksaannya selesai. Batch yang gagal (mis. kedua worker sedang dipakai Tanya AI) dicoba lagi semenit kemudian, maksimal 10 kali.
+- **Daftar kitab terblokir** disimpan di `search_book_policy` (database state). Isinya per kitab:
+  - `excluded` dan `reason` (`title` / `author` / `content`);
+  - `policy_version`: versi kebijakan saat kitab diputuskan;
+  - `fingerprint`: jumlah halaman dan rowid terbesar per sumber, untuk mendeteksi kitab yang berubah.
+- **Pemindaian penuh di latar belakang** (`startSearchPolicyScan` → `server/search-policy-worker.js`):
+  - Worker membuka database utama dan tambahan dalam mode hanya-baca.
+  - Setiap kitab diperiksa: judul, nama penulis, lalu seluruh halaman (catatan kaki di bawah `____` tidak ikut).
+  - Hanya kitab baru, berubah, diedit, atau yang diputuskan oleh versi kebijakan lama yang dipindai.
+  - Hasil ditulis per 25 kitab, sehingga filter pencarian langsung membaik selama proses. Baris lama tetap berlaku sampai kitabnya diputuskan ulang.
+  - Setelah memeriksa satu kitab, worker berhenti sejenak selama waktu yang sama (beban sekitar 50%), agar CPU dan disk tetap tersedia untuk pengunjung.
+- **Kapan berjalan:**
+  - 5 detik setelah server start;
+  - satu menit setelah import, penghapusan, atau penggabungan kategori (`invalidateLibraryCache`);
+  - setelah edit atau hapus halaman (kitab itu ditandai untuk diperiksa ulang);
+  - setiap 6 jam sebagai pengaman.
+  - Pemindaian ditunda 10 menit bila import, penghapusan, atau compact transfer sedang berjalan. Bila gagal, dicoba lagi 30 menit kemudian.
+- **Durasi:** pemindaian pertama atau setelah daftar nama diubah membaca seluruh perpustakaan.
+  - Ukuran salinan lokal: 13,7 juta halaman.
+  - Kecepatan sekitar 3.700 halaman/detik saat bekerja, ditambah jeda.
+  - Pemindaian berikutnya hanya memeriksa kitab yang berubah, jadi selesai dalam hitungan detik.
+- **Progres:** `GET /api/search/policy-status` berisi jumlah kitab, sisa, sudah diperiksa, dan terblokir. Endpoint ini tidak memuat ID kitab.
 
 ## Pemeriksaan dan invalidasi (Tanya AI)
 
@@ -70,8 +82,8 @@ Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya
 
 ## Mengubah daftar nama
 
-1. Ubah `excludedAiNames` dan `patterns` di `server/ai-book-policy.js`. Bila perlu, ubah juga `SEARCH_POLICY_FTS_TERMS` di `server/search-policy.js`.
-2. Naikkan `AI_BOOK_POLICY_VERSION`. Langkah ini sekaligus memperbarui cache jawaban AI dan memicu pemeriksaan ulang `search_book_policy`.
+1. Ubah `excludedAiNames` dan `patterns` di `server/ai-book-policy.js`.
+2. Tambahkan potongan huruf tetap dari pola baru ke `LETTER_RUNS` (saringan cepat), lalu naikkan `AI_BOOK_POLICY_VERSION`. Kenaikan versi memperbarui cache jawaban AI dan memicu pemindaian penuh ulang untuk pencarian.
 3. Perbarui tes di `server/ai-book-policy.test.js`, `server/search-policy.test.js`, dan `server/ask-ai.test.js`.
 
 `GET /api/ai/status` mengembalikan `sourcePolicyVersion`, sehingga versi backend online bisa diperiksa tanpa memanggil provider AI. Perubahan ini hanya di backend: tidak perlu build frontend atau import ulang dataset.

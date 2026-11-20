@@ -25,7 +25,15 @@ export const normalizePolicyText = text => sourceText(text).normalize('NFKC')
 // An editor's footnotes (below the '______' rule) are not the book's own text: a hadith grading that cites
 // one of the names must not exclude the whole book. The quoted excerpt itself is still checked in full.
 export const policyBody = text => sourceText(text).split(/_{4,}/u)[0];
+// Fast pre-check, about 1.5x faster on whole books: every pattern above needs one of these letter runs, which
+// survive in the raw text once marks are dropped and alif/ta/ya are folded. Text that the full normalization
+// could still rewrite into Arabic letters (HTML, entities, presentation forms) always takes the full path.
+// Adding a pattern: add its fixed letter run here too (the tests fail otherwise).
+const FULL_PATH = /[<&\u{0675}-\u{0678}\u{FB50}-\u{FDFF}\u{FE70}-\u{FEFF}\u{1EE00}-\u{1EEFF}]/u, LETTER_RUNS = /باز|عثيمين|لالباني|تيميه/;
+const mayContainExcludedName = text => FULL_PATH.test(text) ||
+  LETTER_RUNS.test(text.replace(/[\p{M}\p{Cf}ـ]/gu,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/ى/g,'ي'));
 export const containsExcludedAiName = text => {
+  if (!mayContainExcludedName(String(text??''))) return false;
   const normalized = normalizePolicyText(text);
   return patterns.some(pattern=>pattern.test(normalized));
 };
@@ -85,12 +93,8 @@ function workerScan(sources, ids, signal) {
   });
 }
 
-// Whole-book content scan for background upkeep (search policy): returns [id, blocked] pairs. File-backed
-// databases are scanned read-only in a worker with the same limits as Tanya AI; in-memory test databases in-process.
-export async function scanBooksOffThread(db, ids, additional=false) {
-  const {schemas,sources}=databaseState(db,additional);
-  return sources.some(source=>!source.file) ? scanAiBooks(db,ids,schemas) : workerScan(sources,ids);
-}
+// Database files of the main library (and the attached additional one), for read-only background workers.
+export const policySources = (db, additional=false) => databaseState(db,additional).sources;
 
 export async function filterAllowedAiReferences(db, references, additional=false, {signal}={}) {
   if (!Array.isArray(references) || references.length > 8) throw unavailable();

@@ -29,7 +29,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js';
-import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, scanFtsCandidateBooks, reconcileSearchPolicyBatch } from './search-policy.js';
+import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -196,7 +196,23 @@ let hasTafsir = false;
 // Cache untuk query AI
 const askCache = new Map();
 let invalidateHadithIndex=()=>{};
-const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();scheduleSearchPolicyScan();};
+// Search policy (search-policy.js): a background worker decides every book new, changed or decided under an older
+// policy version. Runs shortly after start, a minute after library changes, and every 6 hours as a safety net;
+// it waits while an import, deletion or compact transfer is running.
+let searchPolicyTimer=null;
+function scheduleSearchPolicyScan(delay=60000){
+  clearTimeout(searchPolicyTimer);
+  searchPolicyTimer=setTimeout(()=>{
+    if(!db||!stateDb)return;
+    if(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession)return scheduleSearchPolicyScan(10*60000);
+    startSearchPolicyScan(db,stateDb,{hasTambahan})
+      .then(r=>console.log(`Search policy: ${r.scanned} kitab diperiksa, ${r.excluded} diblokir (${r.version}).`))
+      .catch(e=>{console.error('Gagal pemindaian search policy:',e.message);scheduleSearchPolicyScan(30*60000);});
+  },delay);
+  searchPolicyTimer.unref?.();
+}
+setInterval(()=>scheduleSearchPolicyScan(0),6*60*60*1000).unref();
 
 try {
   if (fs.existsSync(dbPath)) {
@@ -339,23 +355,7 @@ try {
         try {
           ensureSearchPolicySchema(stateDb);
           syncMetadataExclusions(db, stateDb, { hasTambahan });
-          // Books excluded under an older policy version are re-checked two at a time, page text in a worker, so the
-          // server stays responsive; the FTS candidate scan runs once that is finished.
-          // A failed batch (e.g. both scan workers busy with Tanya AI) is retried a minute later, up to 10 times.
-          let policyRetries = 0;
-          const maintainSearchPolicy = async () => {
-            try {
-              if (await reconcileSearchPolicyBatch(db, stateDb, { hasTambahan }) > 0) return void setImmediate(maintainSearchPolicy);
-            } catch(e) {
-              console.error("Gagal memeriksa ulang search policy:", e.message);
-              if (++policyRetries <= 10) setTimeout(maintainSearchPolicy, 60000).unref();
-              return;
-            }
-            try { scanFtsCandidateBooks(db, stateDb, { hasTambahan }); } catch(e) {
-              console.error("Gagal scan FTS content policy:", e.message);
-            }
-          };
-          setImmediate(maintainSearchPolicy);
+          scheduleSearchPolicyScan(5000);
         } catch(e) { console.error("Gagal inisialisasi search policy:", e.message); }
         
     } catch(e) { console.error("Gagal membuat tabel log:", e.message); }
@@ -800,7 +800,7 @@ app.put('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {
     const pageId = parseInt(req.params.pageId);
     const { nass, part, page } = req.body;
     const info = db.prepare(`UPDATE pages SET nass = ?, part = ?, page = ? WHERE book_id = ? AND id = ?`).run(nass, part, page, bookId, pageId);
-    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); }
+    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); forgetSearchPolicyBook(stateDb, bookId); scheduleSearchPolicyScan(); }
     if (info.changes > 0) res.json({ success: true });
     else res.status(404).json({ error: 'Page not found' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -812,7 +812,7 @@ app.delete('/api/admin/page/:bookId/:pageId', requireAdmin, (req, res) => {
     const bookId = parseInt(req.params.bookId);
     const pageId = parseInt(req.params.pageId);
     const info = db.prepare(`DELETE FROM pages WHERE book_id = ? AND id = ?`).run(bookId, pageId);
-    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); }
+    if (info.changes > 0) { askCache.clear(); invalidateAiBookPolicy(db); forgetSearchPolicyBook(stateDb, bookId); scheduleSearchPolicyScan(); }
     if (info.changes > 0) res.json({ success: true });
     else res.status(404).json({ error: 'Page not found' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -966,6 +966,14 @@ app.delete('/api/admin/book-submission/:id', requireAdmin, (req, res) => {
     stateDb.prepare('DELETE FROM book_submissions WHERE id = ?').run(parseInt(req.params.id));
     res.json({ success: true });
   } catch (error) { res.status(500).json({ error: error.message }); }
+});
+
+// Progress of the background search-policy scan: counts only, no book IDs.
+app.get('/api/search/policy-status', (req, res) => {
+  const status = searchPolicyScanStatus();
+  res.set('Cache-Control', 'no-store').json({ version: status.version, running: status.running, startedAt: status.startedAt || null,
+    finishedAt: status.finishedAt || null, books: status.books ?? null, pending: status.pending ?? null, scanned: status.scanned ?? 0,
+    excludedFound: status.excluded ?? 0, failed: Boolean(status.error) });
 });
 
 app.get('/api/search', async (req, res) => {

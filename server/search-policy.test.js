@@ -7,14 +7,14 @@ import path from 'node:path';
 import {
   ensureSearchPolicySchema,
   syncMetadataExclusions,
-  scanUncheckedBooks,
   getExcludedBookIds,
   ensureTempExcludedTable,
   invalidateSearchPolicyCache,
-  scanFtsCandidateBooks,
-  reconcileSearchPolicyBatch,
+  startSearchPolicyScan,
+  searchPolicyScanStatus,
+  forgetSearchPolicyBook,
 } from './search-policy.js';
-import { containsExcludedAiName, AI_BOOK_POLICY_VERSION } from './ai-book-policy.js';
+import { containsExcludedAiName } from './ai-book-policy.js';
 
 function setupFixture(t) {
   const db = new Database(':memory:');
@@ -50,29 +50,6 @@ test('search policy syncs title and author exclusions accurately', t => {
   assert.ok(!excluded.has(3), 'Clean book must be allowed');
 });
 
-test('scanUncheckedBooks excludes books with names in body but preserves editor footnotes', t => {
-  const { db, stateDb } = setupFixture(t);
-
-  db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 1), (3, ?, 1, 1)')
-    .run('كتاب 1', 'كتاب 2', 'كتاب 3');
-
-  // Book 1: Clean
-  db.prepare('INSERT INTO pages VALUES (1, 1, 1, 1, ?)').run('نص عادي بدون ذكر أسماء مستبعدة');
-  // Book 2: Mention in body
-  db.prepare('INSERT INTO pages VALUES (1, 2, 1, 1, ?)').run('قال ابن عثيمين رحمه الله كذا وكذا');
-  // Book 3: Mention only in editor footnote
-  db.prepare('INSERT INTO pages VALUES (1, 3, 1, 1, ?)').run('نص المتن الأصلي القديم\n__________\n(1) صححه الألباني');
-
-  ensureSearchPolicySchema(stateDb);
-  const scanned = scanUncheckedBooks(db, stateDb, { limit: 10 });
-  assert.equal(scanned, 3);
-
-  const excluded = getExcludedBookIds(stateDb);
-  assert.ok(excluded.has(2), 'Mention in body must exclude book 2');
-  assert.ok(!excluded.has(1), 'Book 1 must remain allowed');
-  assert.ok(!excluded.has(3), 'Editor footnote must NOT exclude book 3');
-});
-
 test('ensureTempExcludedTable creates and populates temporary table for subqueries', t => {
   const { db } = setupFixture(t);
   ensureTempExcludedTable(db, [10, 20, 30]);
@@ -84,29 +61,6 @@ test('ensureTempExcludedTable creates and populates temporary table for subqueri
   ensureTempExcludedTable(db, [40]);
   const updated = db.prepare('SELECT bkid FROM temp.search_excluded_books').all();
   assert.deepEqual(updated.map(r => r.bkid), [40]);
-});
-
-test('scanFtsCandidateBooks identifies books matching FTS terms and evaluates body', t => {
-  const { db, stateDb } = setupFixture(t);
-  db.exec(`
-    CREATE VIRTUAL TABLE pages_fts USING fts5(nass, content='pages', content_rowid='rowid');
-    CREATE TRIGGER pages_ai AFTER INSERT ON pages BEGIN
-      INSERT INTO pages_fts(rowid, nass) VALUES (new.rowid, new.nass);
-    END;
-  `);
-
-  db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 1), (3, ?, 1, 1)').run('كتاب 1', 'كتاب 2', 'كتاب 3');
-  db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (1, 1, 1, 1, 1, ?)').run('نص عادي بدون أسماء');
-  db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (2, 2, 2, 1, 1, ?)').run('ذكر ابن باز في الفتاوى كذا');
-  db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (3, 3, 3, 1, 1, ?)').run('متن قديم\n__________\n(1) صححه الألباني');
-
-  ensureSearchPolicySchema(stateDb);
-  const found = scanFtsCandidateBooks(db, stateDb);
-  assert.equal(found, 2);
-  const excluded = getExcludedBookIds(stateDb);
-  assert.ok(excluded.has(2), 'Book 2 body match must be excluded');
-  assert.ok(!excluded.has(3), 'Book 3 footnote-only must NOT be excluded');
-  assert.ok(!excluded.has(1), 'Book 1 must not be excluded');
 });
 
 test('title search excludes policy books in basic mode while including in advanced mode', t => {
@@ -154,49 +108,71 @@ test('ابن تيمية is no longer a blocked search query, but the phrase شي
   }
 });
 
-test('books excluded under an older policy version are re-checked and released when they no longer match', async t => {
-  const { db, stateDb } = setupFixture(t);
-  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?), (3, ?)').run('ابن تيمية', 'الشافعي', 'ابن باز');
-  db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 2), (3, ?, 1, 2), (4, ?, 1, 3), (5, ?, 1, 2)')
-    .run('الفتاوى الكبرى', 'الأم', 'كتاب فيه ذكر', 'فتاوى نور على الدرب', 'كتاب نظيف');
-  db.prepare('INSERT INTO pages VALUES (1, 2, 1, 1, ?)').run('قال ابن تيمية كذا');      // only the removed name
-  db.prepare('INSERT INTO pages VALUES (1, 3, 1, 1, ?)').run('قال ابن تيمية');
-  db.prepare('INSERT INTO pages VALUES (2, 3, 1, 2, ?)').run('وقال ابن عثيمين كذا');    // still matches on another page
+// File-backed library (main + attached additional database), as on the server, scanned by the real worker.
+function libraryFixture(t) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'search-policy-'));
+  const schema = `CREATE TABLE books_meta (bkid INTEGER PRIMARY KEY, bk TEXT, cat INTEGER, authno INTEGER);
+    CREATE TABLE authors (authid INTEGER PRIMARY KEY, auth TEXT);
+    CREATE TABLE pages (id INTEGER, book_id INTEGER, part INTEGER, page INTEGER, nass TEXT, PRIMARY KEY (book_id, id));`;
+  const extra = new Database(path.join(dir, 'tambahan.db')); extra.exec(schema); extra.close();
+  const db = new Database(path.join(dir, 'library.db')), stateDb = new Database(':memory:');
+  db.exec(schema); db.exec(`ATTACH DATABASE '${path.join(dir, 'tambahan.db').replace(/'/g, "''")}' AS tambahan`);
+  t.after(() => { db.close(); stateDb.close(); invalidateSearchPolicyCache(); fs.rmSync(dir, { recursive: true, force: true }); });
+  const book = (schemaName, id, title, authno = null) => db.prepare(`INSERT INTO ${schemaName}.books_meta VALUES (?, ?, 1, ?)`).run(id, title, authno);
+  const page = (schemaName, bookId, pageId, text) => db.prepare(`INSERT INTO ${schemaName}.pages VALUES (?, ?, 1, ?, ?)`).run(pageId, bookId, pageId, text);
   ensureSearchPolicySchema(stateDb);
-  // State left by the v4 policy: books 1 (author), 2 and 3 (content) excluded; book 5 evaluated clean.
-  const put = stateDb.prepare('INSERT INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (?, ?, ?, 0, ?)');
-  put.run(1, 1, 'author', 'whole-book-exclusions-v4'); put.run(2, 1, 'content', null); put.run(3, 1, 'content', 'whole-book-exclusions-v4');
-  put.run(5, 0, null, 'whole-book-exclusions-v4');
-  assert.deepEqual([...getExcludedBookIds(stateDb)].sort(), [1, 2, 3]);
+  return { db, stateDb, book, page };
+}
+const rows = stateDb => stateDb.prepare('SELECT bkid, excluded, reason FROM search_book_policy ORDER BY bkid').all().map(r => [r.bkid, r.excluded, r.reason]);
 
-  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 1, 'one stale book left after the first batch');
-  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0);
-  assert.equal(await reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0, 'finished: clean rows of old versions are dropped');
-  assert.deepEqual([...getExcludedBookIds(stateDb)], [3], 'only the book that still names an excluded scholar stays hidden');
-  const rows = stateDb.prepare('SELECT bkid, excluded, reason, policy_version FROM search_book_policy ORDER BY bkid').all();
-  assert.deepEqual(rows.map(r => [r.bkid, r.excluded, r.reason]), [[1, 0, null], [2, 0, null], [3, 1, 'content']]);
-  assert.ok(rows.every(r => r.policy_version === AI_BOOK_POLICY_VERSION));
-  // New scans record the current version too, so nothing is re-checked again.
-  syncMetadataExclusions(db, stateDb);
-  assert.ok(getExcludedBookIds(stateDb).has(4), 'author ابن باز still excludes');
-  assert.equal(await reconcileSearchPolicyBatch(db, stateDb), 0);
+test('full scan decides every book in both databases, including names deep inside large books', async t => {
+  const { db, stateDb, book, page } = libraryFixture(t);
+  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?)').run('الشافعي', 'محمد بن صالح العثيمين');
+  book('main', 1, 'كتاب نظيف', 1); for (let i = 1; i <= 300; i++) page('main', 1, i, `نص عادي رقم ${i}`);
+  book('main', 2, 'كتاب كبير', 1); for (let i = 1; i <= 300; i++) page('main', 2, i, i === 287 ? 'وقال الشيخ ابن باز' : 'نص');
+  book('main', 3, 'شرح للألباني', 1);
+  book('main', 4, 'كتاب', 2);
+  book('main', 5, 'متن', 1); page('main', 5, 1, 'متن قديم\n__________\n(1) صححه الألباني');
+  book('main', 6, 'فتاوى', 1); page('main', 6, 1, 'قال ابن تيمية'); page('main', 6, 2, 'كما يقولون تقضي البازي');
+  book('tambahan', 7, 'كتاب إضافي'); page('tambahan', 7, 1, '<p>قال شيخ الإسلام&nbsp;ابن تيمية</p>');
+  // An old row from a previous policy version must be replaced.
+  stateDb.prepare("INSERT INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (6, 1, 'content', 0, 'whole-book-exclusions-v4')").run();
+
+  const result = await startSearchPolicyScan(db, stateDb, { hasTambahan: true, pauseRatio: 0 });
+  assert.deepEqual([result.books, result.pending, result.scanned, result.excluded], [7, 7, 7, 4]);
+  assert.deepEqual(rows(stateDb), [[1, 0, null], [2, 1, 'content'], [3, 1, 'title'], [4, 1, 'author'], [5, 0, null], [6, 0, null], [7, 1, 'content']]);
+  assert.deepEqual([...getExcludedBookIds(stateDb)].sort(), [2, 3, 4, 7]);
+  assert.equal(searchPolicyScanStatus().running, false);
 });
 
-test('re-check of a file-backed library scans pages in the worker and releases falcon/Taymiyyah-only books', async t => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'search-policy-'));
-  const db = new Database(path.join(dir, 'library.db')), stateDb = new Database(':memory:');
-  t.after(() => { db.close(); stateDb.close(); invalidateSearchPolicyCache(); fs.rmSync(dir, { recursive: true, force: true }); });
-  db.exec(`CREATE TABLE books_meta (bkid INTEGER PRIMARY KEY, bk TEXT, cat INTEGER, authno INTEGER);
-    CREATE TABLE authors (authid INTEGER PRIMARY KEY, auth TEXT);
-    CREATE TABLE pages (id INTEGER, book_id INTEGER, part INTEGER, page INTEGER, nass TEXT, PRIMARY KEY (book_id, id));`);
-  db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(225, 'منهاج السنة النبوية');
-  db.prepare('INSERT INTO books_meta VALUES (?, ?, 1, NULL)').run(7, 'كتاب في التخريج');
-  db.prepare('INSERT INTO pages VALUES (1, 225, 1, 1, ?)').run('قال ابن تيمية رحمه الله');
-  db.prepare('INSERT INTO pages VALUES (2, 225, 1, 2, ?)').run('كما يقولون تقضي البازي وتقضض');
-  db.prepare('INSERT INTO pages VALUES (1, 7, 1, 1, ?)').run('وصححه الألباني في الصحيحة');
-  ensureSearchPolicySchema(stateDb);
-  const put = stateDb.prepare("INSERT INTO search_book_policy VALUES (?, 1, 'content', 0, 'whole-book-exclusions-v4')");
-  put.run(225); put.run(7);
-  assert.equal(await reconcileSearchPolicyBatch(db, stateDb), 0);
-  assert.deepEqual([...getExcludedBookIds(stateDb)], [7]);
+test('later scans only re-check new, changed or edited books, and every book after a policy version change', async t => {
+  const { db, stateDb, book, page } = libraryFixture(t);
+  book('main', 1, 'كتاب أ'); page('main', 1, 1, 'نص');
+  book('main', 2, 'كتاب ب'); page('main', 2, 1, 'نص');
+  book('main', 3, 'كتاب ج'); page('main', 3, 1, 'نص');
+  assert.equal((await startSearchPolicyScan(db, stateDb, { pauseRatio: 0 })).pending, 3);
+  assert.equal((await startSearchPolicyScan(db, stateDb, { pauseRatio: 0 })).pending, 0, 'nothing changed');
+
+  page('main', 1, 2, 'وصححه الألباني');                                                     // import adds a page
+  db.prepare('UPDATE pages SET nass = ? WHERE book_id = 2').run('قال ابن عثيمين'); forgetSearchPolicyBook(stateDb, 2); // admin edit
+  book('main', 4, 'كتاب جديد'); page('main', 4, 1, 'نص');                                   // new book
+  const second = await startSearchPolicyScan(db, stateDb, { pauseRatio: 0 });
+  assert.deepEqual([second.pending, second.excluded], [3, 2]);
+  assert.deepEqual([...getExcludedBookIds(stateDb)].sort(), [1, 2]);
+
+  stateDb.prepare("UPDATE search_book_policy SET policy_version = 'older'").run();
+  assert.equal((await startSearchPolicyScan(db, stateDb, { pauseRatio: 0 })).pending, 4, 'a new policy version re-checks everything');
+});
+
+test('a scan requested while one runs is queued, and in-memory libraries are refused', async t => {
+  const { db, stateDb, book, page } = libraryFixture(t);
+  book('main', 1, 'كتاب'); page('main', 1, 1, 'نص');
+  const first = startSearchPolicyScan(db, stateDb, { pauseRatio: 0 });
+  assert.equal(startSearchPolicyScan(db, stateDb, { pauseRatio: 0 }), first, 'same promise while running');
+  const firstStart = (await first).startedAt;
+  assert.equal(searchPolicyScanStatus().running, true, 'the queued scan starts as soon as the first one ends');
+  while (searchPolicyScanStatus().running) await new Promise(resolve => setTimeout(resolve, 20));
+  assert.notEqual(searchPolicyScanStatus().startedAt, firstStart);
+  const memory = new Database(':memory:'); t.after(() => memory.close());
+  await assert.rejects(startSearchPolicyScan(memory, stateDb), /berbasis file/);
 });
