@@ -18,15 +18,15 @@ function fixture(t, filename=':memory:') {
 
 test('all three names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
   for(const text of [
-    'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:','الدرر البازية','الفتاوى البازية',
+    'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:',
     'إبن باز','لابن باز','إِبْن بَاز','ابـن\nباز','<p>ابن&nbsp;باز</p>','ابن &#1576;از','ابنباز',
     'عُثَيْمِين','العثيمين','ابن عثيمين','محمد بن صالح العثيمين','لابن عثيمين',
-    'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ','التخريجات الألبانية',
+    'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ',
   ])assert.equal(containsExcludedAiName(text),true,text);
   // ابن تيمية was removed from the list in v5 at the owner's request: none of his name variants excludes a book.
   for(const text of ['ابن تيمية','بن تيمية','قال شيخ الإسلام ابن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابنتيمية','الفتاوى الكبرى لابن تيمية','دورةبن تيمية'])assert.equal(containsExcludedAiName(text),false,text);
   // محمد بن عبد الوهاب is no longer excluded: it is also the name of hadith narrators in the isnads of Muslim and the Sunan.
-  for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','تقضي البازي وتقضض','البازي','صيد البازي','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
+  for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','الدرر البازية','الفتاوى البازية','البازية','البازيه','والبازية','للبازية','التخريجات الألبانية','الألبانية','الالبانيه','للألبانية','تقضي البازي وتقضض','البازي','صيد البازي','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });
 
 test('a mention on any other page excludes every reference and catalogue entry of that book only',async t=>{

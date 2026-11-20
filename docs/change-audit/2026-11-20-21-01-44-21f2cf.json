@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-20 21:01:44 +07:00",
+  "title": "Buka blokir kata sifat البازية dan الألبانية (kebijakan v7)",
+  "baseCommit": "b6426dc66e5853198c3da02945d13e7e3efee746",
+  "checks": "node --test server/*.test.js 272/272 lulus (tes baru: البازية/البازيه/الألبانية/الالبانيه beserta awalan tidak diblokir; الألباني, ابن باز, العثيمين tetap diblokir); node --check OK",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-book-policy.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:01:17 +07:00",
+      "stagedSha256": "da732d1280498bdc325e30fb817daca26255b0d673e16f3ce37ba3ded8a26168",
+      "diffSha256": "4a68a908b848432fb8bf160b842773d04aae884dc3ccfb31ff8cde52fc382cb0",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 1
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 1
+          },
+          "after": {
+            "line": 11,
+            "count": 1
+          },
+          "section": "Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m"
+        },
+        {
+          "before": {
+            "line": 13,
+            "count": 1
+          },
+          "after": {
+            "line": 13,
+            "count": 1
+          },
+          "section": "Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m"
+        },
+        {
+          "before": {
+            "line": 25,
+            "count": 0
+          },
+          "after": {
+            "line": 26,
+            "count": 1
+          },
+          "section": "Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks"
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:01:16 +07:00",
+      "stagedSha256": "68035f7e3cd03e7a332767dcfcf67da74c57ecde6833025e4f2afa1f0f4c8854",
+      "diffSha256": "d2a5cc5bd88d76dd34cfb177d40ad4a5bedfdd573a32b097d06e4c9bee769446",
+      "symbols": [
+        "AI_BOOK_POLICY_VERSION",
+        "excludedAiNames",
+        "START",
+        "patterns",
+        "normalizePolicyText",
+        "policyBody",
+        "containsExcludedAiName",
+        "normalized",
+        "fault",
+        "unavailable",
+        "states",
+        "invalidateAiBookPolicy",
+        "scanAiBooks",
+        "databaseState",
+        "schemas",
+        "databases",
+        "sources",
+        "source",
+        "workerScan",
+        "cancel",
+        "finish",
+        "scanBooksOffThread",
+        "filterAllowedAiReferences",
+        "ids",
+        "initial",
+        "missing",
+        "results",
+        "assertAllowedAiBook"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 1
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import {sourceText} from './ai-source.js';"
+        },
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v6';"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 2
+          },
+          "after": {
+            "line": 15,
+            "count": 0
+          },
+          "section": "const patterns = ["
+        },
+        {
+          "before": {
+            "line": 18,
+            "count": 1
+          },
+          "after": {
+            "line": 17,
+            "count": 1
+          },
+          "section": "const patterns = ["
+        }
+      ]
+    },
+    {
+      "file": "server/ai-book-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:01:17 +07:00",
+      "stagedSha256": "928ade90ff8f94b7dec0a7274c528939d3169c12945efc5d20aa05b3be3a9399",
+      "diffSha256": "244ab893918ca496ff8f5dfdf6f9fc2aa0d5920b8b024e84b35fc973fca5a86f",
+      "symbols": [
+        "fixture",
+        "db",
+        "put",
+        "refs",
+        "dir",
+        "hash",
+        "before",
+        "other",
+        "extra",
+        "extraHash",
+        "pending",
+        "controller",
+        "during",
+        "scanning",
+        "body"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 1
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        },
+        {
+          "before": {
+            "line": 24,
+            "count": 1
+          },
+          "after": {
+            "line": 24,
+            "count": 1
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        },
+        {
+          "before": {
+            "line": 29,
+            "count": 1
+          },
+          "after": {
+            "line": 29,
+            "count": 1
+          },
+          "section": "test('all three names match despite harakat, tatweel, HTML entities, line breaks"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:01:17 +07:00",
+      "stagedSha256": "24552d03860bb06e59d59f700c6716f90d258dfac11e64200abf9c8de57987a4",
+      "diffSha256": "b3d04ab53a6e4695fe3698191cc6eb5b49ac88aa4097ff564175b3c72720d889",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 340,
+            "count": 1
+          },
+          "after": {
+            "line": 340,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    },
+    {
+      "file": "server/search-policy.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-20 21:01:17 +07:00",
+      "stagedSha256": "49b538ea86635481752194297319ca7c589a1423b6661ab2d610b68708239baa",
+      "diffSha256": "4d1fbef5d8b1ca8ac0de484f26da0d7556b83b2793efccba689728890526ae98",
+      "symbols": [
+        "setupFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "scanned",
+        "rows",
+        "updated",
+        "found",
+        "excludedIds",
+        "basicWhere",
+        "basicRows",
+        "advWhere",
+        "advRows",
+        "isExcluded",
+        "isAdvanced",
+        "shouldBlock",
+        "advancedBlocked",
+        "put",
+        "dir"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 135,
+            "count": 1
+          },
+          "after": {
+            "line": 135,
+            "count": 1
+          },
+          "section": "test('search query for excluded name returns empty in basic mode and allows in a"
+        }
+      ]
+    }
+  ]
+}

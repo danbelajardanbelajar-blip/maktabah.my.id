@@ -132,7 +132,7 @@ test('title search excludes policy books in basic mode while including in advanc
 });
 
 test('search query for excluded name returns empty in basic mode and allows in advanced mode', () => {
-  for (const query of ['ابن باز', 'الدرر البازية', 'الألباني', 'ابن عثيمين']) {
+  for (const query of ['ابن باز', 'الألباني', 'ابن عثيمين']) {
     const isExcluded = containsExcludedAiName(query);
     assert.equal(isExcluded, true, `Query ${query} must be recognized as excluded`);
 

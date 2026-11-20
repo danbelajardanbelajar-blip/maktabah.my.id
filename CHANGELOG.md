@@ -2209,3 +2209,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-09-34-57-3a51f8.
 | 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 153–153 | 156–156 | test('ابن تيمية is no longer a blocked search query', () => { | modified |
 | 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 168–170 | 171–173 | test('books excluded under an older policy version are re-checked and released w | modified |
 | 2026-11-20 09:34:33 +07:00 | `server/search-policy.test.js` | 178–178 | 181–200 | test('books excluded under an older policy version are re-checked and released w | modified |
+
+## [2026-11-20 21:01:44 +07:00] — Buka blokir kata sifat البازية dan الألبانية (kebijakan v7)
+
+Waktu pencatatan: **2026-11-20 21:01:44 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b6426dc`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 272/272 lulus (tes baru: البازية/البازيه/الألبانية/الالبانيه beserta awalan tidak diblokir; الألباني, ابن باز, العثيمين tetap diblokir); node --check OK
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-01-44-21f2cf.json](docs/change-audit/2026-11-20-21-01-44-21f2cf.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 21:01:17 +07:00 | `docs/ai-book-policy.md` | 3–3 | 3–3 | module/file | modified |
+| 2026-11-20 21:01:17 +07:00 | `docs/ai-book-policy.md` | 11–11 | 11–11 | Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m | modified |
+| 2026-11-20 21:01:17 +07:00 | `docs/ai-book-policy.md` | 13–13 | 13–13 | Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` m | modified |
+| 2026-11-20 21:01:17 +07:00 | `docs/ai-book-policy.md` | — | 26–26 | Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks | modified |
+| 2026-11-20 21:01:16 +07:00 | `server/ai-book-policy.js` | 6–6 | 6–6 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-20 21:01:16 +07:00 | `server/ai-book-policy.js` | — | 9–9 | export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v6'; | modified |
+| 2026-11-20 21:01:16 +07:00 | `server/ai-book-policy.js` | 15–16 | — | const patterns = [ | modified |
+| 2026-11-20 21:01:16 +07:00 | `server/ai-book-policy.js` | 18–18 | 17–17 | const patterns = [ | modified |
+| 2026-11-20 21:01:17 +07:00 | `server/ai-book-policy.test.js` | 21–21 | 21–21 | test('all three names match despite harakat, tatweel, HTML entities, line breaks | modified |
+| 2026-11-20 21:01:17 +07:00 | `server/ai-book-policy.test.js` | 24–24 | 24–24 | test('all three names match despite harakat, tatweel, HTML entities, line breaks | modified |
+| 2026-11-20 21:01:17 +07:00 | `server/ai-book-policy.test.js` | 29–29 | 29–29 | test('all three names match despite harakat, tatweel, HTML entities, line breaks | modified |
+| 2026-11-20 21:01:17 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-20 21:01:17 +07:00 | `server/search-policy.test.js` | 135–135 | 135–135 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
