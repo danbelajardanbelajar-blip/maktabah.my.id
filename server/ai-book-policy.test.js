@@ -11,18 +11,20 @@ function fixture(t, filename=':memory:') {
   const db=new Database(filename);
   db.exec('CREATE TABLE pages(id INTEGER,book_id INTEGER,nass TEXT); CREATE INDEX pages_book ON pages(book_id);');
   const put=db.prepare('INSERT INTO pages VALUES(?,?,?)');
-  put.run(1,1,'نص مباح في الصفحة المختارة');put.run(2,1,'ذكر ابن تيمية في صفحة أخرى');
+  put.run(1,1,'نص مباح في الصفحة المختارة');put.run(2,1,'ذكر ابن باز في صفحة أخرى');
   put.run(1,2,'كتاب آخر بلا أسماء مستبعدة');
   t.after(()=>db.close());return db;
 }
 
-test('all four names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
+test('all three names match despite harakat, tatweel, HTML entities, line breaks, alif, ta marbuta and proclitic variants',()=>{
   for(const text of [
-    'ابن تيمية','بن تيمية','قال شيخ الإسلام بن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابـن\nتيمية','<p>ابن&nbsp;تيمية</p>','ابن &#1578;يمية','ابنتيمية','دورةبن تيمية',
     'ابن باز','قال بن باز','عبد العزيز بن باز','وابن باز','فتاوى ابن باز:','الدرر البازية','الفتاوى البازية',
+    'إبن باز','لابن باز','إِبْن بَاز','ابـن\nباز','<p>ابن&nbsp;باز</p>','ابن &#1576;از','ابنباز',
     'عُثَيْمِين','العثيمين','ابن عثيمين','محمد بن صالح العثيمين','لابن عثيمين',
     'الألباني','الالباني','الألبانى','للألباني','والألباني','صححه الألباني.','محمد ناصر الدين الألباني','الأَلْبَانِيّ','التخريجات الألبانية',
   ])assert.equal(containsExcludedAiName(text),true,text);
+  // ابن تيمية was removed from the list in v5 at the owner's request: none of his name variants excludes a book.
+  for(const text of ['ابن تيمية','بن تيمية','قال شيخ الإسلام ابن تيمية','ابن تيميه','إبن تيمية','لابن تيمية','وابن تيمية','إِبْن تَيْمِيَّة','ابنتيمية','الفتاوى الكبرى لابن تيمية','دورةبن تيمية'])assert.equal(containsExcludedAiName(text),false,text);
   // محمد بن عبد الوهاب is no longer excluded: it is also the name of hadith narrators in the isnads of Muslim and the Sunan.
   for(const text of ['حدثنا محمد بن عبد الوهاب الفراء','محمد بن عبد الوهاب','محمد بن عبد الله','ابن كثير','ابن تيماء','صلاة الجماعة','عبد الوهاب الشعراني','تاج الدين عبد الوهاب السبكي','الباني لهذا المسجد','ابن بازل','بنباء'])assert.equal(containsExcludedAiName(text),false,text);
 });
@@ -36,7 +38,7 @@ test('a mention on any other page excludes every reference and catalogue entry o
 
 test('same book ID in either attached source is excluded and other books remain eligible',async t=>{
   const db=fixture(t);
-  db.exec("ATTACH DATABASE ':memory:' AS tambahan;CREATE TABLE tambahan.pages(id INTEGER,book_id INTEGER,nass TEXT); INSERT INTO tambahan.pages VALUES(8,2,'ابن تيمية'),(9,3,'نص آخر');");
+  db.exec("ATTACH DATABASE ':memory:' AS tambahan;CREATE TABLE tambahan.pages(id INTEGER,book_id INTEGER,nass TEXT); INSERT INTO tambahan.pages VALUES(8,2,'ابن باز'),(9,3,'نص آخر');");
   assert.deepEqual(await filterAllowedAiReferences(db,[{bkid:1},{bkid:2},{bkid:3}],true),[{bkid:3}]);
 });
 
@@ -62,7 +64,7 @@ test('file-backed scanning is read-only and detects edits by an external connect
   const other=new Database(filename);other.exec("INSERT INTO pages VALUES(3,2,'عثيمين')");other.close();
   assert.deepEqual(await filterAllowedAiReferences(db,[{bkid:2}]),[]);
   const extra=path.join(dir,'extra.db'),attached=new Database(extra);
-  attached.exec("CREATE TABLE pages(id INTEGER,book_id INTEGER,nass TEXT);INSERT INTO pages VALUES(1,3,'نص متاح'),(2,4,'قال ابن تيمية');");attached.close();
+  attached.exec("CREATE TABLE pages(id INTEGER,book_id INTEGER,nass TEXT);INSERT INTO pages VALUES(1,3,'نص متاح'),(2,4,'قال ابن باز');");attached.close();
   db.prepare('ATTACH DATABASE ? AS tambahan').run(extra);
   const extraHash=crypto.createHash('sha256').update(fs.readFileSync(extra)).digest('hex');
   assert.deepEqual(await filterAllowedAiReferences(db,[{bkid:3},{bkid:4}],true),[{bkid:3}]);
@@ -87,9 +89,9 @@ test('missing page storage cannot approve a book for use as evidence',async t=>{
 
 test('a name only in an editor footnote does not exclude the book, but an excerpt quoting it is never used',async t=>{
   const db=fixture(t);const put=db.prepare('INSERT INTO pages VALUES(?,?,?)');
-  put.run(1,3,'وقيل: من علم عبدا آية من كتاب الله فهو له عبد.\n__________\n(¬2) علق شيخ الإسلام ابن تيمية عليه بأنه موضوع.');
+  put.run(1,3,'وقيل: من علم عبدا آية من كتاب الله فهو له عبد.\n__________\n(¬2) علق الشيخ ابن باز عليه بأنه موضوع.');
   put.run(2,3,'الكذب يورث الفقر وكثرة النوم تورث الفقر.');
-  put.run(1,4,'قال ابن تيمية في متن الكتاب كذا.\n__________\n(1) حاشية عادية.');
-  const body={bkid:3,pageId:2,excerpt:'الكذب يورث الفقر'},footnote={bkid:3,pageId:1,excerpt:'فهو له عبد. (¬2) علق شيخ الإسلام ابن تيمية عليه بأنه موضوع.'},main={bkid:4,pageId:1,excerpt:'حاشية عادية'};
+  put.run(1,4,'قال ابن باز في متن الكتاب كذا.\n__________\n(1) حاشية عادية.');
+  const body={bkid:3,pageId:2,excerpt:'الكذب يورث الفقر'},footnote={bkid:3,pageId:1,excerpt:'فهو له عبد. (¬2) علق الشيخ ابن باز عليه بأنه موضوع.'},main={bkid:4,pageId:1,excerpt:'حاشية عادية'};
   assert.deepEqual(await filterAllowedAiReferences(db,[body,footnote,main]),[body]);
 });

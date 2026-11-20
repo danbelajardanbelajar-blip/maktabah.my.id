@@ -29,7 +29,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js';
-import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, scanFtsCandidateBooks } from './search-policy.js';
+import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, scanFtsCandidateBooks, reconcileSearchPolicyBatch } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -339,11 +339,17 @@ try {
         try {
           ensureSearchPolicySchema(stateDb);
           syncMetadataExclusions(db, stateDb, { hasTambahan });
-          setImmediate(() => {
-            try { scanFtsCandidateBooks(db, stateDb, { hasTambahan }); } catch(e) {
+          // Books excluded under an older policy version are re-checked a few at a time so the server stays
+          // responsive; the FTS candidate scan runs once that is finished.
+          const maintainSearchPolicy = () => {
+            try {
+              if (reconcileSearchPolicyBatch(db, stateDb, { hasTambahan }) > 0) return void setImmediate(maintainSearchPolicy);
+              scanFtsCandidateBooks(db, stateDb, { hasTambahan });
+            } catch(e) {
               console.error("Gagal scan FTS content policy:", e.message);
             }
-          });
+          };
+          setImmediate(maintainSearchPolicy);
         } catch(e) { console.error("Gagal inisialisasi search policy:", e.message); }
         
     } catch(e) { console.error("Gagal membuat tabel log:", e.message); }

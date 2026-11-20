@@ -9,8 +9,9 @@ import {
   ensureTempExcludedTable,
   invalidateSearchPolicyCache,
   scanFtsCandidateBooks,
+  reconcileSearchPolicyBatch,
 } from './search-policy.js';
-import { containsExcludedAiName } from './ai-book-policy.js';
+import { containsExcludedAiName, AI_BOOK_POLICY_VERSION } from './ai-book-policy.js';
 
 function setupFixture(t) {
   const db = new Database(':memory:');
@@ -33,14 +34,14 @@ function setupFixture(t) {
 test('search policy syncs title and author exclusions accurately', t => {
   const { db, stateDb } = setupFixture(t);
 
-  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?)').run('الشافعي', 'ابن تيمية');
+  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?)').run('الشافعي', 'ابن باز');
   db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 2), (3, ?, 1, 1), (4, ?, 1, 1)')
     .run('الأم', 'الفتاوى الكبرى', 'كتاب عادي', 'شرح الألباني على الحديث');
 
   ensureSearchPolicySchema(stateDb);
   const excluded = syncMetadataExclusions(db, stateDb);
 
-  assert.ok(excluded.has(2), 'Author ابن تيمية must be excluded');
+  assert.ok(excluded.has(2), 'Author ابن باز must be excluded');
   assert.ok(excluded.has(4), 'Title with الألباني must be excluded');
   assert.ok(!excluded.has(1), 'Imam Shafi book must be allowed');
   assert.ok(!excluded.has(3), 'Clean book must be allowed');
@@ -93,7 +94,7 @@ test('scanFtsCandidateBooks identifies books matching FTS terms and evaluates bo
 
   db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 1), (3, ?, 1, 1)').run('كتاب 1', 'كتاب 2', 'كتاب 3');
   db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (1, 1, 1, 1, 1, ?)').run('نص عادي بدون أسماء');
-  db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (2, 2, 2, 1, 1, ?)').run('ذكر ابن تيمية في الفتاوى كذا');
+  db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (2, 2, 2, 1, 1, ?)').run('ذكر ابن باز في الفتاوى كذا');
   db.prepare('INSERT INTO pages (rowid, id, book_id, part, page, nass) VALUES (3, 3, 3, 1, 1, ?)').run('متن قديم\n__________\n(1) صححه الألباني');
 
   ensureSearchPolicySchema(stateDb);
@@ -107,7 +108,7 @@ test('scanFtsCandidateBooks identifies books matching FTS terms and evaluates bo
 
 test('title search excludes policy books in basic mode while including in advanced mode', t => {
   const { db, stateDb } = setupFixture(t);
-  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?)').run('الشافعي', 'ابن تيمية');
+  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?)').run('الشافعي', 'ابن باز');
   db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 2), (3, ?, 1, 1)').run('شرح الحديث', 'الفتاوى الكبرى', 'الأم');
 
   ensureSearchPolicySchema(stateDb);
@@ -128,7 +129,7 @@ test('title search excludes policy books in basic mode while including in advanc
 });
 
 test('search query for excluded name returns empty in basic mode and allows in advanced mode', () => {
-  for (const query of ['ابن باز', 'الدرر البازية', 'ابن تيمية', 'الألباني', 'ابن عثيمين']) {
+  for (const query of ['ابن باز', 'الدرر البازية', 'الألباني', 'ابن عثيمين']) {
     const isExcluded = containsExcludedAiName(query);
     assert.equal(isExcluded, true, `Query ${query} must be recognized as excluded`);
 
@@ -141,4 +142,38 @@ test('search query for excluded name returns empty in basic mode and allows in a
     const advancedBlocked = false && isExcluded;
     assert.equal(advancedBlocked, false);
   }
+});
+
+test('ابن تيمية is no longer a blocked search query', () => {
+  for (const query of ['ابن تيمية', 'شيخ الإسلام ابن تيمية', 'الفتاوى الكبرى لابن تيمية', 'تيمية']) {
+    assert.equal(containsExcludedAiName(query), false, query);
+  }
+});
+
+test('books excluded under an older policy version are re-checked and released when they no longer match', t => {
+  const { db, stateDb } = setupFixture(t);
+  db.prepare('INSERT INTO authors VALUES (1, ?), (2, ?), (3, ?)').run('ابن تيمية', 'الشافعي', 'ابن باز');
+  db.prepare('INSERT INTO books_meta VALUES (1, ?, 1, 1), (2, ?, 1, 2), (3, ?, 1, 2), (4, ?, 1, 3), (5, ?, 1, 2)')
+    .run('الفتاوى الكبرى', 'الأم', 'كتاب فيه ذكر', 'فتاوى نور على الدرب', 'كتاب نظيف');
+  db.prepare('INSERT INTO pages VALUES (1, 2, 1, 1, ?)').run('قال ابن تيمية كذا');      // only the removed name
+  db.prepare('INSERT INTO pages VALUES (1, 3, 1, 1, ?)').run('قال ابن تيمية');
+  db.prepare('INSERT INTO pages VALUES (2, 3, 1, 2, ?)').run('وقال ابن عثيمين كذا');    // still matches on another page
+  ensureSearchPolicySchema(stateDb);
+  // State left by the v4 policy: books 1 (author), 2 and 3 (content) excluded; book 5 evaluated clean.
+  const put = stateDb.prepare('INSERT INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (?, ?, ?, 0, ?)');
+  put.run(1, 1, 'author', 'whole-book-exclusions-v4'); put.run(2, 1, 'content', null); put.run(3, 1, 'content', 'whole-book-exclusions-v4');
+  put.run(5, 0, null, 'whole-book-exclusions-v4');
+  assert.deepEqual([...getExcludedBookIds(stateDb)].sort(), [1, 2, 3]);
+
+  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 1, 'one stale book left after the first batch');
+  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0);
+  assert.equal(reconcileSearchPolicyBatch(db, stateDb, { limit: 2 }), 0, 'finished: clean rows of old versions are dropped');
+  assert.deepEqual([...getExcludedBookIds(stateDb)], [3], 'only the book that still names an excluded scholar stays hidden');
+  const rows = stateDb.prepare('SELECT bkid, excluded, reason, policy_version FROM search_book_policy ORDER BY bkid').all();
+  assert.deepEqual(rows.map(r => [r.bkid, r.excluded, r.reason]), [[1, 0, null], [2, 0, null], [3, 1, 'content']]);
+  assert.ok(rows.every(r => r.policy_version === AI_BOOK_POLICY_VERSION));
+  // New scans record the current version too, so nothing is re-checked again.
+  syncMetadataExclusions(db, stateDb);
+  assert.ok(getExcludedBookIds(stateDb).has(4), 'author ابن باز still excludes');
+  assert.equal(reconcileSearchPolicyBatch(db, stateDb), 0);
 });

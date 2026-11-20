@@ -2107,3 +2107,67 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-07-22-57-37cebe.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-20 07:22:57 +07:00 | `docs/deployment-log.md` | — | 202–210 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
+
+## [2026-11-20 09:30:38 +07:00] — Keluarkan Ibnu Taimiyah dari daftar blokir kitab (kebijakan v5) dan periksa ulang status pencarian lama
+
+Waktu pencatatan: **2026-11-20 09:30:38 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c7716c7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 271/271 lulus (tes baru: varian ابن تيمية tidak diblokir; kitab blokir versi lama diperiksa ulang bertahap); node --check OK; oxlint tanpa error; uji waktu baca-saja pada D:/db/maktabah.db: 2.433 halaman 0,8 dtk
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-09-30-38-e4404d.json](docs/change-audit/2026-11-20-09-30-38-e4404d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 1–1 | 1–1 | module/file | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 3–3 | 3–3 | module/file | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 5–5 | 5–5 | Tanya AI mengecualikan seluruh kitab apabila satu atau lebih halaman `pages.nass | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 7–7 | 7–7 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 9–13 | 9–13 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 15–15 | 15–19 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 17–17 | 21–21 | Jika seluruh sumber tersaring, respons menjelaskan belum ditemukannya konteks ya | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 19–19 | 23–26 | Jika seluruh sumber tersaring, respons menjelaskan belum ditemukannya konteks ya | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 21–21 | 28–28 | Sumber berbasis file dipindai melalui worker dengan koneksi SQLite hanya-baca; t | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 23–23 | 30–30 | Hasil pemeriksaan disimpan dalam memori per koneksi/sumber dan maksimal 2.048 ID | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 25–25 | 32–32 | Hasil pemeriksaan disimpan dalam memori per koneksi/sumber dan maksimal 2.048 ID | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 27–27 | 34–34 | Tes meliputi keempat nama dan normalisasinya, pemicu pada halaman lain, katalog, | modified |
+| 2026-11-20 09:30:21 +07:00 | `docs/ai-book-policy.md` | 29–29 | 36–72 | Perubahan hanya backend dan tes/dokumentasi, sehingga tidak memerlukan perubahan | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/ai-book-policy.js` | 4–5 | 4–8 | import {sourceText} from './ai-source.js'; | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/ai-book-policy.js` | 7–7 | 10–10 | export const excludedAiNames = ['ابن تيمية','ابن باز','ابن عث | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/ai-book-policy.js` | 10–10 | — | const patterns = [ | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 14–14 | 14–14 | function fixture(t, filename=':memory:') { | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 19–19 | 19–19 | function fixture(t, filename=':memory:') { | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 21–21 | — | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | — | 22–22 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | — | 26–27 | test('all four names match despite harakat, tatweel, HTML entities, line breaks, | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 39–39 | 41–41 | test('same book ID in either attached source is excluded and other books remain | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 65–65 | 67–67 | test('file-backed scanning is read-only and detects edits by an external connect | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 90–90 | 92–92 | test('a name only in an editor footnote does not exclude the book, but an excerp | modified |
+| 2026-11-20 09:28:44 +07:00 | `server/ai-book-policy.test.js` | 92–93 | 94–95 | test('a name only in an editor footnote does not exclude the book, but an excerp | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 278–278 | 278–278 | test('whole-book exclusion removes clean-looking hits and catalogue metadata wit | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 287–287 | 287–287 | test('selected-page explanation and translation reject the entire excluded book | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 310–310 | 310–310 | test('a book becoming excluded during generation or semantic review cannot be re | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 337–337 | 337–337 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 340–340 | 340–340 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-20 09:29:10 +07:00 | `server/ask-ai.test.js` | 446–446 | 446–446 | test('when every matching page belongs to an excluded book, the reply names the | modified |
+| 2026-11-20 09:28:11 +07:00 | `server/index.js` | 32–32 | 32–32 | import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js'; | modified |
+| 2026-11-20 09:28:11 +07:00 | `server/index.js` | 342–343 | 342–348 | try { | modified |
+| 2026-11-20 09:28:11 +07:00 | `server/index.js` | 346–346 | 351–352 | try { | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 1–1 | 1–1 | ensureSearchPolicySchema, POLICY_UPSERT, excludedReason, reconcileSearchPolicyBatch, schemas, stale, rows, decisions | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | — | 20–65 | export function ensureSearchPolicySchema(stateDb) { | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 61–61 | 107–107 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 75–75 | 121–121 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 77–77 | 123–123 | export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {} | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 114–114 | 160–160 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 119–119 | 165–165 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 131–131 | 177–177 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 139–139 | 185–185 | export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5 | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 167–167 | 213–213 | export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP | modified |
+| 2026-11-20 09:28:03 +07:00 | `server/search-policy.js` | 184–184 | 230–230 | export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | — | 12–12 | import { | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 13–13 | 14–14 | import { | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 36–36 | 37–37 | test('search policy syncs title and author exclusions accurately', t => { | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 43–43 | 44–44 | test('search policy syncs title and author exclusions accurately', t => { | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 96–96 | 97–97 | test('scanFtsCandidateBooks identifies books matching FTS terms and evaluates bo | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 110–110 | 111–111 | test('title search excludes policy books in basic mode while including in advanc | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | 131–131 | 132–132 | test('search query for excluded name returns empty in basic mode and allows in a | modified |
+| 2026-11-20 09:28:59 +07:00 | `server/search-policy.test.js` | — | 146–179 | test('search query for excluded name returns empty in basic mode and allows in a | modified |

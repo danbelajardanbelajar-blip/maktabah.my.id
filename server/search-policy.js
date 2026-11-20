@@ -1,4 +1,4 @@
-import { containsExcludedAiName, policyBody } from './ai-book-policy.js';
+import { containsExcludedAiName, policyBody, AI_BOOK_POLICY_VERSION } from './ai-book-policy.js';
 
 let cachedExcludedIds = null;
 
@@ -17,6 +17,52 @@ export function ensureSearchPolicySchema(stateDb) {
     );
     CREATE INDEX IF NOT EXISTS idx_search_policy_excluded ON search_book_policy(excluded);
   `);
+  // policy_version: the AI_BOOK_POLICY_VERSION a row was decided under. Rows from an older version are re-checked
+  // by reconcileSearchPolicyBatch, so a name removed from the list stops hiding books it used to hide.
+  try { stateDb.exec('ALTER TABLE search_book_policy ADD COLUMN policy_version TEXT'); } catch {}
+}
+
+const POLICY_UPSERT = 'INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at, policy_version) VALUES (?, ?, ?, ?, ?)';
+
+function excludedReason(db, schemas, bkid) {
+  for (const schema of schemas) {
+    let meta = null;
+    try { meta = db.prepare(`SELECT bk, authno FROM ${schema}.books_meta WHERE bkid = ?`).get(bkid); } catch {}
+    if (meta?.bk && containsExcludedAiName(meta.bk)) return 'title';
+    if (meta?.authno) {
+      let author = null;
+      try { author = db.prepare(`SELECT auth FROM ${schema}.authors WHERE authid = ?`).get(meta.authno); } catch {}
+      if (author?.auth && containsExcludedAiName(author.auth)) return 'author';
+    }
+  }
+  for (const schema of schemas) {
+    for (const p of db.prepare(`SELECT nass FROM ${schema}.pages WHERE book_id = ?`).iterate(bkid)) {
+      if (containsExcludedAiName(policyBody(p.nass))) return 'content';
+    }
+  }
+  return null;
+}
+
+/**
+ * Re-checks up to `limit` books stored as excluded under an older policy version and returns how many such
+ * books remain. Books that no longer match are released (excluded = 0). Once none remain, clean rows from older
+ * versions are deleted so a newly added name is evaluated again by the regular scans.
+ * Errors reading pages propagate, so a book is never released without a completed check.
+ */
+export function reconcileSearchPolicyBatch(db, stateDb, { hasTambahan = false, limit = 3 } = {}) {
+  ensureSearchPolicySchema(stateDb);
+  const schemas = hasTambahan ? ['main', 'tambahan'] : ['main'];
+  const stale = "excluded = 1 AND COALESCE(policy_version, '') <> ?";
+  const rows = stateDb.prepare(`SELECT bkid FROM search_book_policy WHERE ${stale} ORDER BY bkid LIMIT ?`).all(AI_BOOK_POLICY_VERSION, limit);
+  if (!rows.length) {
+    stateDb.prepare("DELETE FROM search_book_policy WHERE excluded = 0 AND COALESCE(policy_version, '') <> ?").run(AI_BOOK_POLICY_VERSION);
+    return 0;
+  }
+  const decisions = rows.map(r => [r.bkid, excludedReason(db, schemas, r.bkid)]);
+  const put = stateDb.prepare(POLICY_UPSERT), now = Date.now();
+  stateDb.transaction(() => { for (const [bkid, reason] of decisions) put.run(bkid, reason ? 1 : 0, reason, now, AI_BOOK_POLICY_VERSION); })();
+  cachedExcludedIds = null;
+  return stateDb.prepare(`SELECT COUNT(*) n FROM search_book_policy WHERE ${stale}`).get(AI_BOOK_POLICY_VERSION).n;
 }
 
 /**
@@ -58,7 +104,7 @@ export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {}
   ensureSearchPolicySchema(stateDb);
   const schemas = hasTambahan ? ['main', 'tambahan'] : ['main'];
   const now = Date.now();
-  const ins = stateDb.prepare('INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at) VALUES (?, ?, ?, ?)');
+  const ins = stateDb.prepare(POLICY_UPSERT);
 
   stateDb.transaction(() => {
     for (const schema of schemas) {
@@ -72,9 +118,9 @@ export function syncMetadataExclusions(db, stateDb, { hasTambahan = false } = {}
 
         for (const b of books) {
           if (b.bk && containsExcludedAiName(b.bk)) {
-            ins.run(b.bkid, 1, 'title', now);
+            ins.run(b.bkid, 1, 'title', now, AI_BOOK_POLICY_VERSION);
           } else if (b.authno && badAuthors.has(b.authno)) {
-            ins.run(b.bkid, 1, 'author', now);
+            ins.run(b.bkid, 1, 'author', now, AI_BOOK_POLICY_VERSION);
           }
         }
       } catch {}
@@ -111,12 +157,12 @@ export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5
 
   if (!candidates.length) return 0;
 
-  const ins = stateDb.prepare('INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at) VALUES (?, ?, ?, ?)');
+  const ins = stateDb.prepare(POLICY_UPSERT);
 
   stateDb.transaction(() => {
     for (const c of candidates) {
       if (c.bk && containsExcludedAiName(c.bk)) {
-        ins.run(c.bkid, 1, 'title', now);
+        ins.run(c.bkid, 1, 'title', now, AI_BOOK_POLICY_VERSION);
         continue;
       }
       let isExcluded = false;
@@ -128,7 +174,7 @@ export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5
           }
         }
       } catch {}
-      ins.run(c.bkid, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now);
+      ins.run(c.bkid, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now, AI_BOOK_POLICY_VERSION);
     }
   })();
 
@@ -136,7 +182,7 @@ export function scanUncheckedBooks(db, stateDb, { hasTambahan = false, limit = 5
   return candidates.length;
 }
 
-export const SEARCH_POLICY_FTS_TERMS = ['"ابن تيمية"', '"تيمية"', '"ابن باز"', '"ابن عثيمين"', '"عثيمين"', '"الألباني"'];
+export const SEARCH_POLICY_FTS_TERMS = ['"ابن باز"', '"ابن عثيمين"', '"عثيمين"', '"الألباني"'];
 
 /**
  * Rapidly discover books containing excluded names in content via FTS index.
@@ -164,7 +210,7 @@ export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP
   if (!candidateIds.size) return 0;
 
   const now = Date.now();
-  const ins = stateDb.prepare('INSERT OR REPLACE INTO search_book_policy (bkid, excluded, reason, updated_at) VALUES (?, ?, ?, ?)');
+  const ins = stateDb.prepare(POLICY_UPSERT);
 
   stateDb.transaction(() => {
     for (const bookId of candidateIds) {
@@ -181,7 +227,7 @@ export function scanFtsCandidateBooks(db, stateDb, { hasTambahan = false, limitP
         } catch {}
         if (isExcluded) break;
       }
-      ins.run(bookId, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now);
+      ins.run(bookId, isExcluded ? 1 : 0, isExcluded ? 'content' : null, now, AI_BOOK_POLICY_VERSION);
     }
   })();
 

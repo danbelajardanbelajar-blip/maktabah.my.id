@@ -1,13 +1,15 @@
 import {Worker} from 'node:worker_threads';
 import {sourceText} from './ai-source.js';
 
-export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v4';
-export const excludedAiNames = ['ابن تيمية','ابن باز','ابن عثيمين','الألباني'];
+// Changing the names or patterns: bump the version. It renews the AI answer cache namespace and makes
+// search-policy.js re-check every book it stored as excluded under an older version.
+export const AI_BOOK_POLICY_VERSION = 'whole-book-exclusions-v5';
+// ابن تيمية was removed from the list in v5 at the owner's request: his name and books are no longer excluded.
+export const excludedAiNames = ['ابن باز','ابن عثيمين','الألباني'];
 // Patterns run on normalized text: no marks/tatweel, أإآٱ→ا, ة→ه, ى→ي, punctuation→space.
-// A word may carry the proclitics و ف ب ل ك (لابن تيمية، وابن باز، للألباني); ابن may be written بن.
+// A word may carry the proclitics و ف ب ل ك (لابن باز، وابن باز، للألباني); ابن may be written بن.
 const START = '(?:^|\\s)[وفبلك]{0,2}', END = '(?=\\s|$)';
 const patterns = [
-  'تيميه',                                          // ابن تيمية، بن تيمية، ابن تيميه، دورةبن تيمية
   `${START}ا?بن\\s*باز${END}`,                       // ابن باز، بن باز، عبد العزيز بن باز
   `${START}ا?لبازي(?:ه)?${END}`,                     // البازي، البازية (الدرر البازية، الفتاوى البازية)
   'عثيمين',                                          // ابن عثيمين، العثيمين، عثيمين

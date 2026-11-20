@@ -1,29 +1,72 @@
-# Pengecualian seluruh kitab pada rujukan AI
+# Pengecualian seluruh kitab (Tanya AI dan pencarian)
 
-Tanya AI mengecualikan seluruh kitab apabila satu atau lebih halaman `pages.nass` memuat salah satu nama berikut: `بن باز`, `عثيمين`, `محمد بن عبد الوهاب`, atau `ابن تيمية`. Daftar berada di `server/ai-book-policy.js`. Pencocokan mengabaikan harakat, tatweel, penanda format tak terlihat, variasi alif, dan variasi spasi/baris pada nama. Teks HTML serta entitas karakter dibaca sebagai teks halaman. Pencocokan berlaku juga saat nama sekadar disebut atau dikritik.
+Versi kebijakan: `whole-book-exclusions-v5` (`AI_BOOK_POLICY_VERSION` di `server/ai-book-policy.js`).
 
-Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanyaan dan tidak masuk cuplikan pencarian. Pemeriksaan berlaku pada database utama dan tambahan. Karena aplikasi memakai ID kitab lintas sumber, ID yang sama dikecualikan secara konservatif jika salah satu sumber memuat nama tersebut. Judul/metadata tanpa kemunculan pada halaman tidak menjadi pemicu tersendiri. Nama yang terpisah melintasi dua halaman tidak dianggap muncul pada satu halaman.
+## Nama yang diblokir
 
-## Jalur yang dilindungi
+Sebuah kitab dikecualikan seluruhnya bila satu atau lebih halaman `pages.nass` memuat salah satu nama berikut:
 
-- Pencarian rujukan awal dan perluasan kata kunci Arab: hanya kitab yang lolos pemeriksaan dikirim sebagai konteks ke provider. Apabila hasil teratas seluruhnya dikecualikan, pencarian diulang dengan ID tersebut dikeluarkan sebelum batas jumlah hasil; maksimal delapan putaran dengan batas waktu pemeriksaan.
-- Jawaban katalog pada Tanya AI: metadata kitab yang dikecualikan tidak dipakai sebagai rujukan jawaban.
-- Penjelasan dan terjemahan dari pembaca: permintaan ditolak dengan `AI_SOURCE_EXCLUDED` dan HTTP 403 meskipun halaman/teks yang dipilih sendiri tidak memuat nama tersebut.
-- Cache jawaban: namespace memakai versi kebijakan baru; setiap penggunaan cache juga memeriksa kembali kelayakan seluruh kitab. Cache lama tidak dapat melewati filter.
-- Penyusunan/review jawaban: kelayakan diperiksa ulang sebelum pengiriman jawaban dan penyimpanan cache. Perubahan kitab saat pemeriksaan/generasi membuat permintaan gagal tanpa mengirim rujukan yang sudah tidak layak.
+| Nama | Varian yang ikut cocok |
+|---|---|
+| `ابن باز` | `بن باز`, `عبد العزيز بن باز`, `وابن باز`, `لابن باز`, `ابنباز`, serta `البازي` / `البازية` (mis. *الدرر البازية*, *الفتاوى البازية*) |
+| `ابن عثيمين` | semua kata yang memuat `عثيمين` (mis. `العثيمين`) |
+| `الألباني` | `للألباني`, `والألباني`, `الألبانية`; tidak termasuk `الباني` ("pembangun") |
 
-Jika seluruh sumber tersaring, respons menjelaskan belum ditemukannya konteks yang sesuai. Pencarian biasa, katalog publik, dan pembacaan kitab tetap tersedia. Riwayat percakapan/log terdahulu tidak dihapus atau ditulis ulang.
+Pencocokan dilakukan setelah teks dinormalkan:
+- harakat, tatweel, dan penanda format tak terlihat dihapus;
+- variasi alif disamakan (`أإآٱ` → `ا`), juga `ة` → `ه` dan `ى` → `ي`;
+- tanda baca diganti spasi;
+- HTML dan entitas karakter dibaca sebagai teks.
 
-## Pemeriksaan dan invalidasi
+Nama tetap cocok walau hanya disebut atau dikritik. Catatan kaki pentahqiq (teks di bawah garis `____`) tidak diperiksa. Jadi rujukan seperti "صححه الألباني" di catatan kaki tidak membuat kitab dikecualikan.
 
-Sumber berbasis file dipindai melalui worker dengan koneksi SQLite hanya-baca; tidak menulis indeks atau mengubah database kitab. Pemeriksaan memiliki batas 20 detik per batch dan maksimal dua worker aktif. Timeout, pembatalan, sumber hilang, atau perubahan sumber tidak pernah mengesahkan kitab yang belum selesai diperiksa. Database in-memory pada tes diperiksa melalui koneksi yang sama.
+**Riwayat daftar:**
+- `ابن تيمية` dan semua variannya dikeluarkan dari daftar pada v5 (2026-11-20) atas permintaan pemilik.
+- `محمد بن عبد الوهاب` dikeluarkan sebelumnya (`aa2b39a`), karena nama itu juga dipakai perawi hadis dalam sanad Muslim dan kitab-kitab Sunan.
+- `الألباني` ditambahkan pada `e47b067`.
 
-Hasil pemeriksaan disimpan dalam memori per koneksi/sumber dan maksimal 2.048 ID kitab. Perubahan eksternal terdeteksi lewat `data_version`/`schema_version`. Import/penghapusan melalui aplikasi membatalkan cache kebijakan bersama cache pustaka; edit/hapus halaman admin membatalkan cache kebijakan dan jawaban AI. Penulisan log biasa tidak membatalkan cache kelayakan kitab. Jika menambah jalur mutasi isi kitab pada masa mendatang, panggil `invalidateAiBookPolicy(db)` atau `invalidateLibraryCache()` setelah mutasi berhasil.
+**Batas yang diketahui:** pola `البازي` juga cocok dengan kata "البازي" yang berarti burung elang dalam bahasa Arab klasik. Akibatnya kitab seperti *مجموع الفتاوى* (5564) dan *منهاج السنة النبوية* (225) tetap dikecualikan walau tidak menyebut Ibnu Baz.
 
-## Verifikasi dan deployment
+## Cakupan
 
-Tes meliputi keempat nama dan normalisasinya, pemicu pada halaman lain, katalog, dua database, ID lintas sumber, sumber pembaca, cache lama/baru, perubahan isi selama generasi/review, pemindaian file hanya-baca, perubahan eksternal, pembatalan, serta pencarian alternatif di bawah hasil teratas yang tersaring. Provider pada pengujian adalah tiruan; kutipan tetap berasal dari SQLite fixture.
+Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanyaan. Pemeriksaan berlaku pada database utama dan tambahan. ID kitab dipakai lintas sumber, jadi sebuah ID dikecualikan bila salah satu sumber memuat nama tersebut. Nama yang terpotong di antara dua halaman tidak dianggap muncul.
 
-Perubahan hanya backend dan tes/dokumentasi, sehingga tidak memerlukan perubahan aset frontend atau import ulang dataset. Sesudah pull commit, restart backend hanya setelah memastikan tidak ada import/export/penghapusan/transfer aktif. HEAD server, status layanan, dan fungsi online wajib diperiksa sebelum deployment dinyatakan selesai. Install/build tidak dijalankan di hosting.
+### Tanya AI
 
-`GET /api/ai/status` menyertakan `sourcePolicyVersion: "whole-book-exclusions-v1"` untuk membantu memeriksa versi backend online tanpa memanggil provider AI.
+- **Pencarian rujukan:** hanya kitab yang lolos yang dikirim sebagai konteks ke provider. Bila hasil teratas seluruhnya dikecualikan, pencarian diulang tanpa ID tersebut (maksimal delapan putaran).
+- **Jawaban katalog:** metadata kitab yang dikecualikan tidak dipakai sebagai rujukan.
+- **Penjelasan dan terjemahan dari pembaca:** ditolak dengan `AI_SOURCE_EXCLUDED` (HTTP 403).
+- **Cache jawaban:** namespace memakai versi kebijakan. Setiap pemakaian cache memeriksa ulang kelayakan kitab.
+- **Penyusunan dan review jawaban:** kelayakan diperiksa ulang sebelum jawaban dikirim dan disimpan. Bila kitab berubah di tengah proses, permintaan gagal tanpa mengirim rujukan.
+
+### Pencarian biasa (`server/search-policy.js`)
+
+- **Kata kunci yang memuat nama terblokir** langsung menghasilkan 0 hasil.
+- **Kitab terblokir disembunyikan** dari hasil pencarian teks dan judul.
+- **Tetap tersedia:** pencarian lanjutan (*advanced*), pencarian di dalam satu kitab, katalog, dan membaca kitab.
+- **Penyimpanan hasil:** status per kitab disimpan di `search_book_policy` (database state):
+  - `excluded`, `reason` (`title` / `author` / `content`), dan `policy_version`.
+  - Saat start, judul dan penulis disinkronkan.
+  - Kitab yang memuat istilah terblokir menurut FTS dipindai isinya.
+- **Saat versi kebijakan berubah** (`reconcileSearchPolicyBatch`):
+  - Server memeriksa ulang setiap kitab yang tercatat terblokir oleh versi lama, tiga kitab per giliran event loop, supaya server tetap responsif.
+  - Kitab yang tidak lagi cocok dibuka kembali.
+  - Setelah selesai, baris "bersih" dari versi lama dihapus agar nama yang baru ditambahkan ikut dievaluasi oleh pemindaian FTS.
+  - Kitab tidak pernah dibuka sebelum pemeriksaannya selesai.
+
+## Pemeriksaan dan invalidasi (Tanya AI)
+
+- **Cara memindai:** sumber berbasis file dipindai lewat worker dengan koneksi SQLite hanya-baca. Batasnya 20 detik per batch dan maksimal dua worker aktif. Bila terjadi timeout, pembatalan, atau sumber berubah, kitab tidak pernah dianggap lolos.
+- **Cache:** hasil disimpan di memori per koneksi, maksimal 2.048 ID kitab. Perubahan dari luar terdeteksi lewat `data_version` dan `schema_version`.
+- **Invalidasi:**
+  - Import dan penghapusan kitab membatalkan cache kebijakan.
+  - Edit halaman membatalkan cache kebijakan dan cache jawaban AI.
+  - Jalur baru yang mengubah isi kitab harus memanggil `invalidateAiBookPolicy(db)` atau `invalidateLibraryCache()`.
+
+## Mengubah daftar nama
+
+1. Ubah `excludedAiNames` dan `patterns` di `server/ai-book-policy.js`. Bila perlu, ubah juga `SEARCH_POLICY_FTS_TERMS` di `server/search-policy.js`.
+2. Naikkan `AI_BOOK_POLICY_VERSION`. Langkah ini sekaligus memperbarui cache jawaban AI dan memicu pemeriksaan ulang `search_book_policy`.
+3. Perbarui tes di `server/ai-book-policy.test.js`, `server/search-policy.test.js`, dan `server/ask-ai.test.js`.
+
+`GET /api/ai/status` mengembalikan `sourcePolicyVersion`, sehingga versi backend online bisa diperiksa tanpa memanggil provider AI. Perubahan ini hanya di backend: tidak perlu build frontend atau import ulang dataset.
