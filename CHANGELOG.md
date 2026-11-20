@@ -2381,3 +2381,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-22-05-26-733ea4.
 | 2026-11-20 22:01:25 +07:00 | `src/api.ts` | 214–214 | 214–216 | export const webAPI = { | modified |
 | 2026-11-20 22:03:43 +07:00 | `src/components/BookPicker.tsx` | — | 1–100 | BookPicker, query, timer, picked, full, toggle | added |
 | 2026-11-20 22:01:00 +07:00 | `src/lib/search-books.ts` | — | 1–34 | MAX_PICKED_BOOKS, LIST_KEY, ACTIVE_KEY, valid, loadPickedBooks, value, savePickedBooks, loadPickedActive | added |
+
+## [2026-11-20 22:08:48 +07:00] — Catat verifikasi online pencarian beberapa kitab
+
+Waktu pencatatan: **2026-11-20 22:08:48 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `34cacba`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: aset online cocok hash build lokal; book_ids online berfungsi; pemindaian policy melanjutkan setelah restart
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-22-08-48-510f04.json](docs/change-audit/2026-11-20-22-08-48-510f04.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 22:08:47 +07:00 | `docs/deployment-log.md` | — | 244–263 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |

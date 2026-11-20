@@ -241,3 +241,23 @@ Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
   | Pencarian judul | ~90 ms |
   | `/api/book/225` | 393–487 ms |
   | Pencarian teks "الصيام" | 3,2 dtk (pertama, cache dingin), lalu 175 ms |
+
+## 2026-11-20 22:08:47 WIB — Pencarian di beberapa kitab yang dicentang (34cacba)
+
+Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server.
+
+- **Deployment:** commit aplikasi `34cacba`. Pull dan restart `maktabah.service` dijalankan pengguna.
+- **Aset frontend:** HTML online menunjuk `index.dev-BjqyAfGW.js` dan `index-DAEY34w_.css`. Hash SHA-256 keduanya cocok dengan build lokal (`559da4541da3d81b…`, `3410bd9f90aeb0b6…`). Halaman Cari lanjut menampilkan bagian "Cari di Kitab Tertentu".
+- **`GET /api/search` dengan `book_ids`:**
+
+  | Permintaan | Hasil |
+  |---|---|
+  | "الصلاة", 3 kitab (225, 2620, 104716) | 10 hasil, 0,9–1,0 dtk |
+  | "الله", sama | 359 hasil, hanya kitab 225; 6,3 dtk saat cache dingin |
+  | `book_ids=5564` (kitab terblokir), pencarian biasa | 0 hasil |
+  | `book_ids=5564` dengan `advanced=1` | 249 hasil |
+  | `book_ids=x` | 400 dengan pesan yang benar |
+  | `book_id=225` (cari dalam satu kitab) | 111 hasil, 2,2 dtk |
+
+- **Pemindaian search policy setelah restart:** melanjutkan, tidak mengulang dari awal. Sisa 16.459 dari 36.159 kitab, jadi sekitar 19.700 kitab sudah tersimpan sebelum restart.
+- **Batas pengujian:** semua angka di atas diukur saat pemindaian search policy masih berjalan.
