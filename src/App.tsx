@@ -19,6 +19,8 @@ import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
 import { detectAiQuery } from './lib/ai-query-detector';
 import { SearchSuggestions } from './components/SearchSuggestions';
+import { BookPicker } from './components/BookPicker';
+import { loadPickedBooks, savePickedBooks, loadPickedActive, savePickedActive, booksFromIds, MAX_PICKED_BOOKS, type PickedBook } from './lib/search-books';
 import { parseNavigation, navigationHash, routePage, routeCategories } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
 import { readingPositions } from './lib/reading-position';
@@ -114,9 +116,16 @@ function App() {
   // Advanced Search States
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  // "Search only in these books": the picked list stays on this device; whether it applies is in the URL.
+  const [pickedBooks, setPickedBooksState] = useState<PickedBook[]>(loadPickedBooks);
+  const [pickedActive, setPickedActiveState] = useState(loadPickedActive);
+  const setPickedBooks = (list: PickedBook[]) => { setPickedBooksState(list); savePickedBooks(list); };
+  const setPickedActive = (active: boolean) => { setPickedActiveState(active); savePickedActive(active); };
+  const bookFilterIds = pickedActive ? pickedBooks.map(book => book.bkid) : [];
+  const [appliedBooks, setAppliedBooks] = useState<number[]>([]);
 
   const setActiveTab = (tab: AppTab) => {
-    const hash = tab === 'catalog' && lastTabLocations.current.catalog ? lastTabLocations.current.catalog : navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(',')} : {});
+    const hash = tab === 'catalog' && lastTabLocations.current.catalog ? lastTabLocations.current.catalog : navigationHash(tab, tab === 'search' || tab === 'advanced_search' ? {q:query,mode:searchMode,page:currentPage,cats:selectedCategories.join(','),books:appliedBooks.join(',')} : {});
     if (hash !== window.location.hash) {
       window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
       pushLocation(hash);
@@ -260,7 +269,7 @@ function App() {
     return () => { current = false; };
   }, [homeHistoryVisible]);
 
-  const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', categoryFilter = selectedCategories, forceLiteral = false) => {
+  const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', categoryFilter = selectedCategories, forceLiteral = false, bookFilter = bookFilterIds) => {
     if (!searchQuery.trim()) return;
     if (!forceLiteral) {
       const detection = detectAiQuery(searchQuery);
@@ -270,22 +279,24 @@ function App() {
       }
     }
     const requestId = ++searchRequest.current;
-    const key = JSON.stringify([searchQuery, page, mode, categoryFilter]);
+    // Ticked books only limit text search.
+    const books = mode === 'text' ? bookFilter : [];
+    const key = JSON.stringify([searchQuery, page, mode, categoryFilter, books]);
     pendingSearch.current = key;
     const targetTab = (historyMode === 'none' ? parseNavigation(window.location.hash).tab : activeTab) === 'advanced_search' ? 'advanced_search' : 'search';
     if (historyMode === 'push') {
       window.history.replaceState({...window.history.state,scrollY:window.scrollY},'');
-      const hash = navigationHash(targetTab,{q:searchQuery,mode,page,cats:categoryFilter.join(',')});
+      const hash = navigationHash(targetTab,{q:searchQuery,mode,page,cats:categoryFilter.join(','),books:books.join(',')});
       if (hash !== window.location.hash) pushLocation(hash);
     }
-    setActiveTabState(targetTab); setQuery(searchQuery); setSearchMode(mode); setSelectedCategories(categoryFilter);
+    setActiveTabState(targetTab); setQuery(searchQuery); setSearchMode(mode); setSelectedCategories(categoryFilter); setAppliedBooks(books);
     setLoading(true);
     setError('');
     try {
       let res; let fetchedResults: any[] = []; let fetchedTotal = 0; let fetchedCapped = false;
       const isAdvanced = targetTab === 'advanced_search';
       if (mode === 'text') {
-        res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined, isAdvanced);
+        res = await webAPI.search(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined, isAdvanced, books);
         fetchedResults = res.results || []; fetchedTotal = res.total || 0; fetchedCapped = res.capped === true;
       } else if (mode === 'title') {
         res = await webAPI.searchTitles(searchQuery, page, limit, categoryFilter.length > 0 ? categoryFilter.join(',') : undefined, isAdvanced);
@@ -327,9 +338,18 @@ function App() {
       const q = route.params.get('q') || '';
       const mode = ['text','title','pdf'].includes(route.params.get('mode') || '') ? route.params.get('mode') as 'text'|'title'|'pdf' : 'text';
       const page = routePage(route.params.get('page')), cats = routeCategories(route.params.get('cats'));
-      setQuery(q); setSearchMode(mode); setCurrentPage(page); setSelectedCategories(cats);
-      const key = JSON.stringify([q,page,mode,cats]);
-      if (q && key !== loadedSearch.current && key !== pendingSearch.current) void executeSearch(q,page,mode,'none',cats);
+      // A link with ?books= turns the book limit on and adds any books not yet in the picked list.
+      const books = mode === 'text' ? routeCategories(route.params.get('books')).slice(0, MAX_PICKED_BOOKS) : [];
+      // A search URL without it (e.g. going back to an earlier search) turns the limit off, so the switch always
+      // matches the results on screen; the picked list itself is kept.
+      if (books.length) {
+        const known = loadPickedBooks();
+        const merged = [...known, ...booksFromIds(books.filter(id => !known.some(book => book.bkid === id)), known)].slice(0, MAX_PICKED_BOOKS);
+        setPickedBooks(merged); setPickedActive(true);
+      } else if (q && mode === 'text') setPickedActive(false);
+      setQuery(q); setSearchMode(mode); setCurrentPage(page); setSelectedCategories(cats); setAppliedBooks(books);
+      const key = JSON.stringify([q,page,mode,cats,books]);
+      if (q && key !== loadedSearch.current && key !== pendingSearch.current) void executeSearch(q,page,mode,'none',cats,false,books);
     }
   };
   useEffect(() => {
@@ -364,13 +384,13 @@ function App() {
   };
 
   const handleNextPage = () => {
-    executeSearch(query, currentPage + 1, searchMode, 'push', selectedCategories, true);
+    executeSearch(query, currentPage + 1, searchMode, 'push', selectedCategories, true, appliedBooks);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
-      executeSearch(query, currentPage - 1, searchMode, 'push', selectedCategories, true);
+      executeSearch(query, currentPage - 1, searchMode, 'push', selectedCategories, true, appliedBooks);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -529,7 +549,7 @@ function App() {
                 <p className="text-xs text-gray-500 mb-3">Tersimpan di perangkat ini · {favorites.length} favorit · {bookmarks.length} bookmark</p>
                 {positions.length>0?<div className="grid grid-cols-1 md:grid-cols-3 gap-3">{positions.slice(0,3).map(item=><button key={item.bookId} onClick={()=>openReader({bookId:item.bookId,pageId:item.pageId})} className="text-left rounded-xl border p-3 bg-[var(--reader-paper)]"><span className="block font-bold" dir="auto">{item.title}</span><span className="text-xs text-gray-500">Juz {item.part??'—'} · Halaman {item.page??'—'}</span></button>)}</div>:<p className="text-sm text-gray-500">Posisi bacaan akan muncul setelah membuka kitab.</p>}
               </section>}
-              {activeTab !== 'home' && <button type="button" onClick={() => setActiveTab(activeTab === 'advanced_search' ? 'search' : 'advanced_search')} aria-expanded={activeTab === 'advanced_search'} className="mb-4 rounded-lg border px-4 py-2 text-sm font-semibold">{activeTab === 'advanced_search' ? 'Tutup filter kategori' : 'Filter kategori / Cari lanjut'}</button>}
+              {activeTab !== 'home' && <button type="button" onClick={() => setActiveTab(activeTab === 'advanced_search' ? 'search' : 'advanced_search')} aria-expanded={activeTab === 'advanced_search'} className="mb-4 rounded-lg border px-4 py-2 text-sm font-semibold">{activeTab === 'advanced_search' ? 'Tutup filter' : 'Filter kategori & kitab / Cari lanjut'}</button>}
               {activeTab === 'advanced_search' && (
               <div className="mb-6 bg-[var(--reader-bg)] p-5 rounded-2xl border border-[var(--app-primary)]/20 shadow-sm">
                 <h3 className="font-bold text-[var(--app-primary)] mb-3 flex items-center gap-2">
@@ -565,6 +585,16 @@ function App() {
                     </label>
                   ))}
                 </div>
+                <BookPicker books={pickedBooks} active={pickedActive} advanced onBooksChange={setPickedBooks} onActiveChange={setPickedActive} />
+              </div>
+            )}
+            {activeTab !== 'home' && searchMode === 'text' && bookFilterIds.length > 0 && (
+              <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-[var(--app-primary)]/30 bg-[var(--app-primary)]/5 px-4 py-3 text-sm">
+                <BookMarked size={16} className="text-[var(--app-primary)] shrink-0" />
+                <span className="font-semibold">Pencarian teks hanya di {bookFilterIds.length.toLocaleString('id-ID')} kitab terpilih</span>
+                <span className="min-w-0 flex-1 truncate text-gray-600" dir="auto">{pickedBooks.slice(0, 3).map(book => book.bk).join(' · ')}{pickedBooks.length > 3 ? ' …' : ''}</span>
+                {activeTab !== 'advanced_search' && <button type="button" onClick={() => setActiveTab('advanced_search')} className="font-semibold text-[var(--app-primary)] px-2 py-1 rounded hover:bg-black/5">Ubah</button>}
+                <button type="button" onClick={() => { setPickedActive(false); if (query.trim() && hasSearched) void executeSearch(query, 1, searchMode, 'push', selectedCategories, true, []); }} className="font-semibold text-red-600 px-2 py-1 rounded hover:bg-red-50">Matikan</button>
               </div>
             )}
             <form onSubmit={handleSearch} className="mb-8 flex flex-col md:flex-row gap-3">
@@ -760,7 +790,7 @@ function App() {
             )}
 
             {/* Few results (fewer than 20) may come from a typo: offer verified alternatives above the list. */}
-            {activeTab !== 'home' && hasSearched && !loading && !error && searchMode !== 'pdf' && currentPage === 1 && totalResults > 0 && totalResults < 20 && !totalCapped && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories]) && (
+            {activeTab !== 'home' && hasSearched && !loading && !error && searchMode !== 'pdf' && currentPage === 1 && totalResults > 0 && totalResults < 20 && !totalCapped && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories,appliedBooks]) && (
               <SearchSuggestions withResults key={'few:'+JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
                 onSearch={suggestion => { void executeSearch(suggestion, 1, searchMode, 'push', selectedCategories, true); }} />
             )}
@@ -865,7 +895,7 @@ function App() {
                 <div className="text-center py-12 bg-[var(--reader-bg)] rounded-2xl border border-black/5">
                   <Search className="mx-auto text-gray-300 mb-3" size={48} />
                   <p className="text-[var(--app-text)] opacity-60 text-lg">Tidak ada hasil ditemukan.</p>
-                  {totalResults === 0 && searchMode !== 'pdf' && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories]) && <SearchSuggestions key={JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
+                  {totalResults === 0 && searchMode !== 'pdf' && loadedSearch.current === JSON.stringify([query,currentPage,searchMode,selectedCategories,appliedBooks]) && <SearchSuggestions key={JSON.stringify([query,searchMode,selectedCategories])} query={query} mode={searchMode} categories={selectedCategories}
                     onSearch={suggestion => { void executeSearch(suggestion, 1, searchMode, 'push', selectedCategories, true); }} />}
                   <button type="button" onClick={() => openAiQuestion(query, {}, query)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium shadow-sm transition-all text-sm cursor-pointer mt-4"><Bot size={18} />Tanyakan ke Tanya AI</button>
                 </div>

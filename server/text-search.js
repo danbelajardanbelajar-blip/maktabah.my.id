@@ -3,58 +3,75 @@ import { Worker } from 'node:worker_threads';
 // (الله matches ~8 million pages) took minutes on the request thread and stalled every visitor meanwhile.
 export const SEARCH_COUNT_CAP = 10000;
 
+export const MAX_SEARCH_BOOKS = 100;
+
 /**
  * @param db        better-sqlite3 connection (tambahan attached when `additional`)
- * @param options   {exactPhrase, andMatch, page, limit, catIds, bookId, additional}
+ * @param options   {exactPhrase, andMatch, page, limit, catIds, bookId, bookIds, additional, excludedBookIds}
+ *                  bookId / bookIds limit the search to those books (bookIds keeps the caller's order).
  * @returns         {results, total, capped}
  */
-export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, additional = false, excludedBookIds = [] }) {
+export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, bookIds = [], additional = false, excludedBookIds = [] }) {
   const schemas = (additional ? ['main', 'tambahan'] : ['main'])
     .filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
   const offset = (page - 1) * limit;
+  const selected = [...new Set([...(bookId ? [bookId] : []), ...bookIds])];
   const filters = [], filterParams = [];
   // Book metadata may live in either library; a direct join per source keeps the primary-key lookup.
   const books = schema => additional
     ? { join: `LEFT JOIN main.books_meta bm ON bm.bkid=p.book_id LEFT JOIN tambahan.books_meta bt ON bt.bkid=p.book_id`, name: 'COALESCE(bm.bk,bt.bk)', cat: 'COALESCE(bm.cat,bt.cat)', exists: 'COALESCE(bm.bkid,bt.bkid) IS NOT NULL' }
     : { join: `JOIN ${schema}.books_meta b ON b.bkid=p.book_id`, name: 'b.bk', cat: 'b.cat', exists: '' };
-  if (bookId) { filters.push('p.book_id=?'); filterParams.push(bookId); }
-  if (excludedBookIds && excludedBookIds.length && !bookId) {
+  if (excludedBookIds && excludedBookIds.length && !selected.length) {
     filters.push('p.book_id NOT IN (SELECT value FROM json_each(?))');
     filterParams.push(typeof excludedBookIds === 'string' ? excludedBookIds : JSON.stringify(excludedBookIds));
   }
   // main stays unqualified: older SQLite builds reject snippet() on a schema-qualified FTS table.
   const fts = schema => schema === 'main' ? 'pages_fts' : `${schema}.pages_fts`;
-  const from = schema => {
-    const meta = books(schema), where = ['pages_fts MATCH ?', ...filters, ...(catIds.length ? [`${meta.cat} IN (${catIds.map(() => '?').join(',')})`] : []), ...(meta.exists ? [meta.exists] : [])];
-    return { sql: `FROM ${fts(schema)} JOIN ${schema === 'main' ? 'pages' : `${schema}.pages`} p ON p.rowid=pages_fts.rowid ${meta.join} WHERE ${where.join(' AND ')}`, meta };
+  const pagesTable = schema => schema === 'main' ? 'pages' : `${schema}.pages`;
+  // A selected book's pages have consecutive rowids, so the FTS index is read only inside that rowid range.
+  // Filtering by book_id after a MATCH instead walked every page of a common word (27 s for الله in 5 books).
+  // p.book_id is still checked, so a book whose rowids are not consecutive stays correct, only slower.
+  const ranges = schema => selected.map(id => ({ id, ...db.prepare(`SELECT min(rowid) a, max(rowid) b FROM ${pagesTable(schema)} WHERE book_id=?`).get(id) })).filter(r => r.a != null);
+  const from = (schema, range) => {
+    const meta = books(schema), where = ['pages_fts MATCH ?', ...(range ? ['pages_fts.rowid BETWEEN ? AND ?', 'p.book_id=?'] : []), ...filters, ...(catIds.length ? [`${meta.cat} IN (${catIds.map(() => '?').join(',')})`] : []), ...(meta.exists ? [meta.exists] : [])];
+    return { sql: `FROM ${fts(schema)} JOIN ${pagesTable(schema)} p ON p.rowid=pages_fts.rowid ${meta.join} WHERE ${where.join(' AND ')}`, meta };
   };
-  const params = match => [match, ...filterParams, ...catIds];
-  const count = (schema, match) => (!filters.length && !catIds.length
+  const params = (match, range) => [match, ...(range ? [range.a, range.b, range.id] : []), ...filterParams, ...catIds];
+  const count = (schema, match, range, cap) => (!range && !filters.length && !catIds.length
     // Without filters the FTS index alone answers; with filters the join is needed, still capped.
-    ? db.prepare(`SELECT count(*) n FROM (SELECT 1 FROM ${fts(schema)} WHERE pages_fts MATCH ? LIMIT ${SEARCH_COUNT_CAP + 1})`).get(match)
-    : db.prepare(`SELECT count(*) n FROM (SELECT 1 ${from(schema).sql} LIMIT ${SEARCH_COUNT_CAP + 1})`).get(...params(match))).n;
-  const fetch = (schema, match, isExact, take, skip) => {
-    const { sql, meta } = from(schema);
-    return db.prepare(`SELECT p.id AS page_id,p.book_id,p.part,p.page,${meta.name} AS book_name,snippet(pages_fts,-1,'<b>','</b>','...',15) AS snippet,${isExact ? 1 : 0} AS is_exact ${sql} LIMIT ? OFFSET ?`).all(...params(match), take, skip);
+    ? db.prepare(`SELECT count(*) n FROM (SELECT 1 FROM ${fts(schema)} WHERE pages_fts MATCH ? LIMIT ${cap})`).get(match)
+    : db.prepare(`SELECT count(*) n FROM (SELECT 1 ${from(schema, range).sql} LIMIT ${cap})`).get(...params(match, range))).n;
+  const fetch = ({ schema, match, isExact, range }, take, skip) => {
+    const { sql, meta } = from(schema, range);
+    return db.prepare(`SELECT p.id AS page_id,p.book_id,p.part,p.page,${meta.name} AS book_name,snippet(pages_fts,-1,'<b>','</b>','...',15) AS snippet,${isExact ? 1 : 0} AS is_exact ${sql} LIMIT ? OFFSET ?`).all(...params(match, range), take, skip);
   };
-  // Exact phrase hits first, then pages that contain all words elsewhere; each source in library order.
+  // Exact phrase hits first, then pages that contain all words elsewhere; each source in library order and,
+  // with selected books, each book in the order chosen. Counting stops once the cap is passed: results beyond it
+  // cannot be paged to anyway.
   const segments = [];
+  let counted = 0, capped = false;
   for (const [match, isExact] of [[exactPhrase, true], [andMatch, false]]) {
     if (!match) continue;
-    for (const schema of schemas) segments.push({ schema, match, isExact, total: count(schema, match) });
+    for (const schema of schemas) {
+      for (const range of selected.length ? ranges(schema) : [null]) {
+        if (counted > SEARCH_COUNT_CAP) { capped = true; break; }
+        const total = count(schema, match, range, SEARCH_COUNT_CAP + 1 - counted);
+        segments.push({ schema, match, isExact, range, total });
+        counted += total;
+      }
+    }
   }
-  const sum = segments.reduce((n, s) => n + Math.min(s.total, SEARCH_COUNT_CAP), 0);
-  const capped = segments.some(s => s.total > SEARCH_COUNT_CAP) || sum > SEARCH_COUNT_CAP;
+  capped = capped || counted > SEARCH_COUNT_CAP;
   const results = [];
   let skip = offset;
   for (const segment of segments) {
     if (results.length >= limit) break;
-    const available = Math.min(segment.total, SEARCH_COUNT_CAP);
+    const available = segment.total;
     if (skip >= available) { skip -= available; continue; }
-    results.push(...fetch(segment.schema, segment.match, segment.isExact, limit - results.length, skip));
+    results.push(...fetch(segment, limit - results.length, skip));
     skip = 0;
   }
-  return { results, total: Math.min(sum, SEARCH_COUNT_CAP), capped };
+  return { results, total: Math.min(counted, SEARCH_COUNT_CAP), capped };
 }
 
 export const SEARCH_TIMEOUT = 20000;

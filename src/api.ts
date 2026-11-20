@@ -209,9 +209,11 @@ export const webAPI = {
     return readAiResponse(res,onProgress);
   },
 
-  search: async (query: string, page = 1, limit = 50, cat_id?: number | string, advanced?: boolean) => {
+  search: async (query: string, page = 1, limit = 50, cat_id?: number | string, advanced?: boolean, bookIds: number[] = []) => {
     let url = `/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
-    if (cat_id) url += `&cat_id=${cat_id}`;
+    // Ticked books replace the category filter (see BookPicker).
+    if (bookIds.length) url += `&book_ids=${bookIds.join(',')}`;
+    else if (cat_id) url += `&cat_id=${cat_id}`;
     if (advanced) url += `&advanced=1`;
     return fetchAPI(url);
   },

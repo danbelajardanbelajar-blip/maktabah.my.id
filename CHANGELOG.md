@@ -2326,3 +2326,58 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-21-41-11-719f25.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-20 21:41:10 +07:00 | `docs/deployment-log.md` | — | 223–243 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
+
+## [2026-11-20 22:05:26 +07:00] — Fitur pencarian di beberapa kitab yang dicentang (book_ids)
+
+Waktu pencatatan: **2026-11-20 22:05:26 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `8335994`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --test server/*.test.js 273/273 lulus (tes baru: kitab terpilih, urutan, halaman, dua sumber, rowid selang-seling, batas hitungan); npm run build (tsc -b + vite) sukses; oxlint tanpa error baru; uji server lokal + browser 375px: 2 kitab = 22 hasil dan ?books=315,300, Matikan = 74 hasil, kembali memulihkan filter, book_ids salah/101 kitab = 400; benchmark D:/db/maktabah.db: الله di 5 kitab 27 dtk -> 0,4 dtk
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-22-05-26-733ea4.json](docs/change-audit/2026-11-20-22-05-26-733ea4.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BhI0iUzC.css` | 1–2 | — | module/file | deleted |
+| 2026-11-20 22:04:57 +07:00 | `dist/assets/index-DAEY34w_.css` | — | 1–2 | module/file | added |
+| 2026-11-20 22:04:57 +07:00 | `dist/assets/index.dev-BjqyAfGW.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CSAmZmvI.js` | 1–22 | — | module/file | deleted |
+| 2026-11-20 22:04:57 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-20 22:05:24 +07:00 | `docs/search-books.md` | — | 1–45 | module/file | added |
+| 2026-11-20 22:00:09 +07:00 | `server/index.js` | 31–31 | 31–31 | import { searchRowa } from './rowa-search.js'; | modified |
+| 2026-11-20 22:00:09 +07:00 | `server/index.js` | 998–998 | 998–1012 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-20 22:00:09 +07:00 | `server/index.js` | 1006–1006 | 1020–1020 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | — | 6–7 | export const SEARCH_COUNT_CAP = 10000; | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 8–8 | 10–11 | export const SEARCH_COUNT_CAP = 10000; | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 11–11 | 14–14 | export const SEARCH_COUNT_CAP = 10000; | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | — | 18–18 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 20–21 | 24–24 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 27–29 | 30–37 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 31–32 | 39–40 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 34–38 | 42–46 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 40–40 | 48–50 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | — | 52–52 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 44–44 | 55–62 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 46–47 | 64–64 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 52–52 | 69–69 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 54–54 | 71–71 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:39 +07:00 | `server/text-search.js` | 57–57 | 74–74 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-20 21:59:51 +07:00 | `server/text-search.test.js` | — | 89–117 | test('excludedBookIds filters out excluded books in standard search while advanc | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | — | 22–23 | import { SearchSuggestions } from './components/SearchSuggestions'; | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | — | 119–125 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 119–119 | 128–128 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 263–263 | 272–272 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 273–273 | 282–284 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 278–278 | 289–289 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 281–281 | 292–292 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 288–288 | 299–299 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 330–332 | 341–352 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 367–367 | 387–387 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 373–373 | 393–393 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 532–532 | 552–552 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | — | 588–597 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 763–763 | 793–793 | function App() { | modified |
+| 2026-11-20 22:02:40 +07:00 | `src/App.tsx` | 868–868 | 898–898 | function App() { | modified |
+| 2026-11-20 22:01:25 +07:00 | `src/api.ts` | 212–212 | 212–212 | export const webAPI = { | modified |
+| 2026-11-20 22:01:25 +07:00 | `src/api.ts` | 214–214 | 214–216 | export const webAPI = { | modified |
+| 2026-11-20 22:03:43 +07:00 | `src/components/BookPicker.tsx` | — | 1–100 | BookPicker, query, timer, picked, full, toggle | added |
+| 2026-11-20 22:01:00 +07:00 | `src/lib/search-books.ts` | — | 1–34 | MAX_PICKED_BOOKS, LIST_KEY, ACTIVE_KEY, valid, loadPickedBooks, value, savePickedBooks, loadPickedActive | added |

@@ -86,3 +86,32 @@ test('excludedBookIds filters out excluded books in standard search while advanc
   assert.equal(singleBook.total,1);
   assert.deepEqual(singleBook.results.map(r=>r.book_id),[2]);
 });
+
+test('selected books: results stay inside them, follow the chosen order, page across books and both sources',t=>{
+  const db=library(t,{tambahan:true});
+  for(const [id,name] of [[1,'أ'],[2,'ب'],[3,'ج']])db.prepare('INSERT INTO books_meta VALUES(?,?,5)').run(id,name);
+  db.prepare('INSERT INTO tambahan.books_meta VALUES(4,?,6)').run('د');
+  const put=db.prepare('INSERT INTO pages VALUES(?,?,1,?,?)');
+  // Books 1 and 2 are interleaved, so their rowid ranges overlap: the book_id check must keep them apart.
+  for(let i=1;i<=3;i++){put.run(i,1,i,'باب الصلاة');put.run(i,2,i,'باب الصلاة');}
+  put.run(1,3,1,'باب الصلاة');
+  db.prepare('INSERT INTO tambahan.pages VALUES(1,4,1,1,?)').run('الصلاة في الإضافي');
+  const match={exactPhrase:'"الصلاة"'};
+  const picked=searchPages(db,{...match,bookIds:[2,4,1],additional:true});
+  assert.equal(picked.total,7);
+  assert.deepEqual(picked.results.map(r=>r.book_id),[2,2,2,1,1,1,4],'main source first, each book in the chosen order');
+  assert.deepEqual(searchPages(db,{...match,bookIds:[2,4,1],additional:true,page:2,limit:4}).results.map(r=>[r.book_id,r.page_id]),[[1,2],[1,3],[4,1]]);
+  assert.equal(searchPages(db,{...match,bookIds:[3]}).total,1);
+  assert.equal(searchPages(db,{...match,bookIds:[99]}).total,0,'an unknown book gives no results, not the whole library');
+  assert.equal(searchPages(db,{...match,bookIds:[1,3],catIds:[9]}).total,0,'category filter still applies');
+  assert.equal(searchPages(db,{...match,bookId:3,bookIds:[3]}).total,1,'bookId and bookIds are merged');
+});
+
+test('selected books stop counting at the cap across books',t=>{
+  const db=library(t);
+  db.prepare('INSERT INTO books_meta VALUES(1,?,5),(2,?,5)').run('أ','ب');
+  const put=db.prepare('INSERT INTO pages VALUES(?,?,1,?,?)');
+  db.transaction(()=>{for(let i=1;i<=SEARCH_COUNT_CAP;i++)put.run(i,1,i,'قال الله');for(let i=1;i<=20;i++)put.run(i,2,i,'قال الله');})();
+  const result=searchPages(db,{exactPhrase:'"الله"',bookIds:[1,2],limit:10});
+  assert.equal(result.total,SEARCH_COUNT_CAP);assert.equal(result.capped,true);assert.equal(result.results.length,10);
+});

@@ -28,7 +28,7 @@ import {registerMessages} from './messages.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
-import { searchPagesOffThread, SEARCH_COUNT_CAP } from './text-search.js';
+import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
 import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
@@ -995,7 +995,21 @@ app.get('/api/search', async (req, res) => {
     if (!isAdvanced && !targetBookId && containsExcludedAiName(query)) {
       return res.json({ results: [], total: 0, capped: false, error: null });
     }
-    const excludedBookIds = (isAdvanced || targetBookId) ? [] : Array.from(getExcludedBookIds(stateDb));
+    // book_ids: search only inside the books the visitor ticked (comma-separated, at most MAX_SEARCH_BOOKS).
+    let bookIds = [];
+    if (req.query.book_ids) {
+      bookIds = [...new Set(String(req.query.book_ids).split(',').map(Number).filter(id => Number.isSafeInteger(id) && id > 0))];
+      if (!bookIds.length || bookIds.length > MAX_SEARCH_BOOKS) {
+        return res.status(400).json({ results: [], total: 0, capped: false, error: `Pilih 1 sampai ${MAX_SEARCH_BOOKS} kitab untuk dicari.` });
+      }
+    }
+    const excluded = (isAdvanced || targetBookId) ? null : getExcludedBookIds(stateDb);
+    // Ticked books follow the same policy as the rest of basic search: excluded books are left out.
+    if (excluded && bookIds.length) {
+      bookIds = bookIds.filter(id => !excluded.has(id));
+      if (!bookIds.length) return res.json({ results: [], total: 0, capped: false, error: null });
+    }
+    const excludedBookIds = excluded && !bookIds.length ? Array.from(excluded) : [];
 
     const { exactPhrase, andMatch } = buildFtsMatch(query);
     if (!exactPhrase) return res.json({ results: [], total: 0, capped: false, error: null });
@@ -1003,7 +1017,7 @@ app.get('/api/search', async (req, res) => {
     // exact counts of common words used to block every visitor for minutes.
     let found;
     try {
-      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, additional: hasTambahan, excludedBookIds });
+      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, bookIds, additional: hasTambahan, excludedBookIds });
     } catch (error) {
       if (error.status) return res.status(error.status).json({ results: [], total: 0, code: error.code, error: error.message });
       throw error;
