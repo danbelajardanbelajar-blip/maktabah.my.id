@@ -23,7 +23,7 @@ import { registerSearchSuggestions } from './search-suggestions.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
 import {invalidateAiBookPolicy, containsExcludedAiName} from './ai-book-policy.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
-import {registerAdminLogs} from './admin-logs.js';
+import {registerAdminLogs,TODAY_WIB_START} from './admin-logs.js';
 import {registerMessages} from './messages.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
@@ -614,7 +614,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             authors: 'authors_logs'
         };
         const today = { total: 0 };
-        const todayStartSql = "created_at >= datetime('now', '+7 hours', 'start of day', '-7 hours')";
+        const todayStartSql = `created_at >= ${TODAY_WIB_START}`;
         for (const [key, table] of Object.entries(logTables)) {
             try {
                 const count = stateDb.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE ${todayStartSql}`).get()?.c || 0;

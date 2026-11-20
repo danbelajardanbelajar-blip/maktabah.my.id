@@ -2072,3 +2072,26 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-19-20-44-46-b660d4.
 | 2026-11-19 20:42:52 +07:00 | `scripts/build-author-db.js` | 51–51 | 51–51 | try { | modified |
 | 2026-11-19 20:42:51 +07:00 | `scripts/merge-author-packages.js` | — | 1–46 | prevSource, byKey, linked, hasWork, putAuthor, mapped, key, id | added |
 | 2026-11-19 20:43:50 +07:00 | `server/merge-author-packages.test.js` | — | 1–41 | script, makePackage, db, dir, works, output, result, links | added |
+
+## [2026-11-20 07:18:44 +07:00] — Samakan arti hari ini di log admin menjadi sejak 00:00 WIB
+
+Waktu pencatatan: **2026-11-20 07:18:44 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1c89f90`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/index.js dan admin-logs.js OK; node --test server/*.test.js 269/269 lulus (tes baru: log 1 detik sebelum 00:00 WIB tidak dihitung hari ini); npm run build (tsc -b + vite) sukses; oxlint tanpa error baru
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-07-18-44-511375.json](docs/change-audit/2026-11-20-07-18-44-511375.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-20 07:18:26 +07:00 | `dist/assets/index.dev-CSAmZmvI.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-20 07:18:26 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-20 07:17:21 +07:00 | `docs/library-activity.md` | 3–3 | 3–3 | module/file | modified |
+| 2026-11-20 07:16:52 +07:00 | `server/admin-logs.js` | — | 2–4 | const tables={search:'search_logs',ask:'ask_logs',visit:'visit_logs',download:'d | modified |
+| 2026-11-20 07:16:52 +07:00 | `server/admin-logs.js` | 66–66 | 69–69 | export function readAdminLogs(db,type,raw={}) { | modified |
+| 2026-11-20 07:16:52 +07:00 | `server/admin-logs.js` | 74–75 | 77–78 | export function readAdminLogs(db,type,raw={}) { | modified |
+| 2026-11-20 07:17:16 +07:00 | `server/admin-logs.test.js` | 5–5 | 5–5 | import express from 'express'; | modified |
+| 2026-11-20 07:17:16 +07:00 | `server/admin-logs.test.js` | 102–102 | 102–102 | test('daily stats aggregate all 8 log types for today and compute 7-day trend',t | modified |
+| 2026-11-20 07:17:16 +07:00 | `server/admin-logs.test.js` | — | 135–145 | test('tanya AI logs compute answered and failed stats and allow filtering by sta | modified |
+| 2026-11-20 07:16:52 +07:00 | `server/index.js` | 26–26 | 26–26 | import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity | modified |
+| 2026-11-20 07:16:52 +07:00 | `server/index.js` | 617–617 | 617–617 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-20 07:16:52 +07:00 | `src/components/Admin.tsx` | 1290–1290 | 1290–1290 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |

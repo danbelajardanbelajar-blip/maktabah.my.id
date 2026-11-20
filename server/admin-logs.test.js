@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import Database from 'better-sqlite3';
 import express from 'express';
-import {readAdminLogs,deleteAdminLogs,registerAdminLogs} from './admin-logs.js';
+import {readAdminLogs,deleteAdminLogs,registerAdminLogs,TODAY_WIB_START} from './admin-logs.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
 import {createLibraryActivity} from './library-activity.js';
 import {registerAiHistory} from './ai-history.js';
@@ -99,7 +99,7 @@ test('daily stats aggregate all 8 log types for today and compute 7-day trend',t
 
  const logTables = { search: 'search_logs', ask: 'ask_logs', visit: 'visit_logs', download: 'download_logs', quran: 'quran_logs', hadith: 'hadith_logs', rowa: 'rowa_logs', authors: 'authors_logs' };
  const today = { total: 0 };
- const todayStartSql = "created_at >= datetime('now', '+7 hours', 'start of day', '-7 hours')";
+ const todayStartSql = `created_at >= ${TODAY_WIB_START}`;
  for (const [key, table] of Object.entries(logTables)) {
    const count = db.prepare(`SELECT COUNT(*) as c FROM ${table} WHERE ${todayStartSql}`).get()?.c || 0;
    today[key] = count;
@@ -131,4 +131,15 @@ test('tanya AI logs compute answered and failed stats and allow filtering by sta
   const filteredFailed=readAdminLogs(db,'ask',{status:'failed'});
   assert.equal(filteredFailed.total,1);
   assert.equal(filteredFailed.data[0].question,'Q2');
+});
+
+test('"hari ini" on log pages means since 00:00 WIB, not the last 24 hours',t=>{
+ const db=fixture(t),put=db.prepare(`INSERT INTO ask_logs(question,response,created_at) VALUES(?,?,${'datetime(?)'})`);
+ const start=db.prepare(`SELECT ${TODAY_WIB_START} s`).get().s;
+ put.run('kemarin malam','jawaban',db.prepare("SELECT datetime(?,'-1 second') s").get(start).s); // under 24 hours ago, but yesterday in WIB
+ put.run('tengah malam','jawaban',start);
+ put.run('dua hari lalu','jawaban',db.prepare("SELECT datetime('now','-2 days') s").get().s);
+ const {stats}=readAdminLogs(db,'ask',{});
+ assert.equal(stats.total,3);assert.equal(stats.today,1);assert.equal(stats.answered_today,1);assert.equal(stats.failed_today,0);
+ assert.match(start,/ 17:00:00$/,'00:00 WIB is 17:00 UTC of the previous day');
 });

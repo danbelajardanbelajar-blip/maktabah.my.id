@@ -1,6 +1,6 @@
 # Log Kutub Hadis dan Penulis & Karya
 
-Admin → Aktivitas menyediakan **Log Kutub Hadis** dan **Log Penulis & Karya**. Keduanya memakai `LogsView` yang sama dengan riwayat kegiatan lain: statistik keseluruhan/24 jam/7 hari/30 hari, IP unik, tabel waktu/IP/peramban, pagination, pemilihan baris, serta ekspor CSV. Log baru juga menyediakan pencarian teks, pilihan jenis aktivitas, tombol muat ulang, dan detail filter/konteks. Waktu ditampilkan dalam WIB sampai detik; penyimpanan timestamp memakai UTC dengan milidetik. CSV mempertahankan jumlah hasil nol.
+Admin → Aktivitas menyediakan **Log Kutub Hadis** dan **Log Penulis & Karya**. Keduanya memakai `LogsView` yang sama dengan riwayat kegiatan lain: statistik keseluruhan/hari ini (sejak 00:00 WIB, sama dengan grafik harian di header admin)/7 hari/30 hari terakhir, IP unik, tabel waktu/IP/peramban, pagination, pemilihan baris, serta ekspor CSV. Log baru juga menyediakan pencarian teks, pilihan jenis aktivitas, tombol muat ulang, dan detail filter/konteks. Waktu ditampilkan dalam WIB sampai detik; penyimpanan timestamp memakai UTC dengan milidetik. CSV mempertahankan jumlah hasil nol.
 
 Tabel kini menggunakan pagination server pada seluruh riwayat, dengan maksimal 500 baris per halaman. Ringkasan terbanyak, filter, pemilihan, dan penghapusan dijelaskan pada [pengelolaan riwayat admin](admin-log-management.md). Statistik menghitung seluruh riwayat. Ini bukan rekonstruksi aktivitas sebelum fitur dipasang.
 

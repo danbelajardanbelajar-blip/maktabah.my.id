@@ -1287,7 +1287,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
 
         <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-blue-50/50 border-blue-100">
           <div className="p-2.5 md:p-3 bg-blue-100 text-blue-600 rounded-lg"><Activity size={22} /></div>
-          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Hari Ini (24 Jam)</div><div className="text-xl md:text-2xl font-bold text-blue-800">{stats.today.toLocaleString('id-ID')}</div></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Hari Ini (sejak 00:00 WIB)</div><div className="text-xl md:text-2xl font-bold text-blue-800">{stats.today.toLocaleString('id-ID')}</div></div>
         </div>
         <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
           <div className="p-2.5 md:p-3 bg-emerald-100 text-emerald-600 rounded-lg"><Calendar size={22} /></div>

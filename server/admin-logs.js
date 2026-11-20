@@ -1,4 +1,7 @@
 const tables={search:'search_logs',ask:'ask_logs',visit:'visit_logs',download:'download_logs',quran:'quran_logs',rowa:'rowa_logs',hadith:'hadith_logs',authors:'authors_logs'};
+// Start of the current calendar day in WIB (UTC+7), as a UTC SQLite datetime. created_at is stored in UTC.
+// Every "hari ini" figure in admin uses this, so the header chart and the log pages agree and reset at 00:00 WIB.
+export const TODAY_WIB_START="datetime('now','+7 hours','start of day','-7 hours')";
 const fail=(message,status=400)=>Object.assign(new Error(message),{status});
 const column=(name,columns)=>columns.has(name)?`COALESCE(CAST(${name} AS TEXT),'')`:"''";
 function definitions(db,type) {
@@ -63,7 +66,7 @@ export function readAdminLogs(db,type,raw={}) {
   const def=definitions(db,type),f=filtersFor(def,raw);
   const limit=integer(raw.limit,20,500),requested=integer(raw.page,1,10000000);
   const stats=db.prepare(`SELECT COUNT(*) total,
-    COALESCE(SUM(created_at>=datetime('now','-1 day')),0) today,
+    COALESCE(SUM(created_at>=${TODAY_WIB_START}),0) today,
     COALESCE(SUM(created_at>=datetime('now','-7 days')),0) weekly,
     COALESCE(SUM(created_at>=datetime('now','-30 days')),0) monthly,
     COUNT(DISTINCT NULLIF(TRIM(ip),'')) unique_ips FROM ${def.table}`).get();
@@ -71,8 +74,8 @@ export function readAdminLogs(db,type,raw={}) {
     const askStats=db.prepare(`SELECT
       COALESCE(SUM(CASE WHEN ${def.answeredCond} THEN 1 ELSE 0 END),0) answered,
       COALESCE(SUM(CASE WHEN ${def.failedCond} THEN 1 ELSE 0 END),0) failed,
-      COALESCE(SUM(CASE WHEN created_at>=datetime('now','-1 day') AND (${def.answeredCond}) THEN 1 ELSE 0 END),0) answered_today,
-      COALESCE(SUM(CASE WHEN created_at>=datetime('now','-1 day') AND (${def.failedCond}) THEN 1 ELSE 0 END),0) failed_today
+      COALESCE(SUM(CASE WHEN created_at>=${TODAY_WIB_START} AND (${def.answeredCond}) THEN 1 ELSE 0 END),0) answered_today,
+      COALESCE(SUM(CASE WHEN created_at>=${TODAY_WIB_START} AND (${def.failedCond}) THEN 1 ELSE 0 END),0) failed_today
     FROM ${def.table}`).get();
     stats.answered=askStats.answered;
     stats.failed=askStats.failed;
