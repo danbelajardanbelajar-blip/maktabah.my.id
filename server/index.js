@@ -1,4 +1,5 @@
 import {readSearchScope,searchScopeSql,registerSearchScope,scopedBooksSql} from './search-scope.js';
+import {addSearchResultCategories} from './search-result-categories.js';
 import {registerRowaBrowser} from './rowa-browse.js';
 import {registerRowaMentions} from './rowa-mentions.js';
 import {registerHadithSearch} from './hadith-search.js';
@@ -1024,7 +1025,8 @@ app.get('/api/search', async (req, res) => {
       if (error.status) return res.status(error.status).json({ results: [], total: 0, code: error.code, error: error.message });
       throw error;
     }
-    const { results, total, capped } = found;
+    const { total, capped } = found;
+    const results=addSearchResultCategories(db,found.results,hasTambahan);
 
     if (!req.isAdminActivity && page===1 && query.length>=3) {
       try {stateDb.prepare('INSERT INTO search_logs(query,ip,user_agent,result_count,mode) VALUES(?,?,?,?,?)').run(query,req.ip,req.headers['user-agent'],total,'text');}catch{}

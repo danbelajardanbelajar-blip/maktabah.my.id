@@ -2484,3 +2484,26 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-21-18-57-00-7e09ae.
 | 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | 15–15 | 17–17 | export function SearchSuggestions({query, mode, categories, onSearch, withResult | modified |
 | 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | 20–20 | 22–22 | export function SearchSuggestions({query, mode, categories, onSearch, withResult | modified |
 | 2026-11-21 16:16:35 +07:00 | `src/lib/search-scope.ts` | — | 1–67 | MAX_SCOPE_ADJUSTMENTS, emptySearchScope, ids, books, seen, normalizeSearchScope, value, scopeParams | added |
+
+## [2026-11-21 22:46:39 +07:00] — Tampilkan label kategori di dekat judul hasil pencarian
+
+Waktu pencatatan: **2026-11-21 22:46:39 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1cddcef`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 16/16 pengujian metadata kategori, text-search dan search-scope; npm run build termasuk TypeScript; node --check server/index.js dan search-result-categories.js; oxlint komponen/helper/test baru; git diff --check; Playwright pencarian biasa/lanjutan, teks/judul, desktop1440/ponsel390 memverifikasi label pada setiap hasil, tanpa overflow/pageerror; screenshot ponsel diperiksa. SSH deployment ditolak publickey,password; pull dan HEAD server belum terverifikasi.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-21-22-46-39-112ea9.json](docs/change-audit/2026-11-21-22-46-39-112ea9.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-21 22:45:38 +07:00 | `dist/assets/index.dev-BYr-kCtq.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-21 22:45:38 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-21 19:23:28 +07:00 | `server/index.js` | — | 2–2 | import {readSearchScope,searchScopeSql,registerSearchScope,scopedBooksSql} from | modified |
+| 2026-11-21 19:23:28 +07:00 | `server/index.js` | 1027–1027 | 1028–1029 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 19:23:28 +07:00 | `server/search-result-categories.js` | — | 1–13 | addSearchResultCategories, ids, books, metadata, category | added |
+| 2026-11-21 19:23:47 +07:00 | `server/search-result-categories.test.js` | — | 1–26 | db, rows, enriched | added |
+| 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | — | 23–23 | import {SearchScopePicker} from './components/SearchScopePicker'; | modified |
+| 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | 771–773 | 772–774 | function App() { | modified |
+| 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | — | 776–776 | function App() { | modified |
+| 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | 793–793 | 795–798 | function App() { | modified |
+| 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | 795–796 | 800–800 | function App() { | modified |
+| 2026-11-21 19:23:28 +07:00 | `src/components/SearchCategoryLabel.tsx` | — | 1–6 | SearchCategoryLabel, category | added |

@@ -20,6 +20,7 @@ import AskAI from './components/AskAI';
 import { detectAiQuery } from './lib/ai-query-detector';
 import { SearchSuggestions } from './components/SearchSuggestions';
 import {SearchScopePicker} from './components/SearchScopePicker';
+import {SearchCategoryLabel} from './components/SearchCategoryLabel';
 import {emptySearchScope,loadSearchScope,saveSearchScope,scopeParams,scopeKey,scopeFromParams,scopeDescription,unrestrictedScope,type SearchScope} from './lib/search-scope';
 import { parseNavigation, navigationHash, routePage } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
@@ -768,10 +769,11 @@ function App() {
                     <span className="bg-black/5 px-2 py-1 rounded-md">Jilid: {r.part} | Halaman: {r.page}</span>
                   </div>
                   {r.book_name && (
-                    <div className="mb-4">
-                      <span className="bg-[var(--app-primary)]/10 text-[var(--app-primary)] px-3 py-1.5 rounded-lg text-sm md:text-base font-semibold inline-flex items-center gap-2">
-                        <BookMarked size={16} /> <span dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{r.book_name}</span>
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                      <span className="min-w-0 max-w-full bg-[var(--app-primary)]/10 text-[var(--app-primary)] px-3 py-1.5 rounded-lg text-sm md:text-base font-semibold inline-flex items-center gap-2">
+                        <BookMarked size={16} className="shrink-0" /> <span dir="auto" className="min-w-0 break-words" style={{ fontFamily: 'var(--arabic-font)' }}>{r.book_name}</span>
                       </span>
+                      <SearchCategoryLabel name={r.category_name} id={r.category_id}/>
                     </div>
                   )}
                   <div 
@@ -790,10 +792,12 @@ function App() {
               {activeTab !== 'home' && searchMode === 'title' && results.map((r, i) => (
                 <div key={i} onClick={() => openReader({ bookId: r.bkid })} className="bg-[var(--reader-bg)] p-5 md:p-6 rounded-2xl shadow-sm hover:shadow-md border border-black/5 transition-all cursor-pointer group">
                   <div className="flex flex-col gap-3">
-                    <h3 dir="auto" style={{ fontFamily: 'var(--arabic-font)' }} className="text-2xl font-bold text-[var(--app-primary)] group-hover:text-[var(--app-primary-hover)]">{r.bk}</h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 dir="auto" style={{ fontFamily: 'var(--arabic-font)' }} className="min-w-0 break-words text-2xl font-bold text-[var(--app-primary)] group-hover:text-[var(--app-primary-hover)]">{r.bk}</h3>
+                      <SearchCategoryLabel name={r.category_name} id={r.cat}/>
+                    </div>
                     <p className="text-sm text-gray-600">
-                      <strong>Penulis:</strong> {r.author_name || 'Tidak diketahui'} <br/>
-                      <strong>Kategori:</strong> {r.category_name || '-'}
+                      <strong>Penulis:</strong> {r.author_name || 'Tidak diketahui'}
                     </p>
                     <div className="flex flex-wrap gap-3 mt-2">
                       <button onClick={(e) => { e.stopPropagation(); openBookInfo(r.bkid); }} className="bg-black/5 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[var(--app-primary)] hover:text-white transition-colors flex items-center gap-2">
