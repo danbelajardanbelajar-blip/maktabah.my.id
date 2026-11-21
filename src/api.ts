@@ -1,6 +1,7 @@
 import {readAiResponse} from './lib/ai-stream.ts';
 import type {AiRequest} from './lib/ai-source';
 const API_BASE = '/api'; // Use relative path for production (served by Express) or proxy in dev
+import {scopeParams,type SearchScope} from './lib/search-scope.ts';
 
 async function fetchAPI(endpoint: string, signal?:AbortSignal) {
   const res = await fetch(`${API_BASE}${endpoint}`,{signal});
@@ -55,8 +56,10 @@ async function waitForDeletion(token: string, job: any, onProgress?: (message: s
 }
 
 export const webAPI = {
-  searchSuggestions: (query:string, mode:'text'|'title', categories:string, signal?:AbortSignal) =>
-    fetchAPI(`/search-suggestions?${new URLSearchParams({q:query,mode,cat_id:categories})}`, signal),
+  scopeCatalogue:(q:string,ids:string,excluded:string,signal?:AbortSignal)=>fetchAPI(`/search-scope?${new URLSearchParams({q,ids,excluded})}`,signal),
+  scopeBooks:(category:number,q:string,filter:string,page:number,signal?:AbortSignal)=>fetchAPI(`/search-scope/books?${new URLSearchParams({category:String(category),q,filter,page:String(page)})}`,signal),
+  searchSuggestions: (query:string, mode:'text'|'title', categories:string, signal?:AbortSignal,scope?:SearchScope) =>
+    fetchAPI(`/search-suggestions?${new URLSearchParams({q:query,mode,cat_id:categories,...(scope?scopeParams(scope):{})})}`, signal),
   resumeDeletion: async (token: string, onProgress: (message: string) => void) => {
     let id;
     try { id = localStorage.getItem(deletionStorageKey); } catch {}
@@ -209,18 +212,20 @@ export const webAPI = {
     return readAiResponse(res,onProgress);
   },
 
-  search: async (query: string, page = 1, limit = 50, cat_id?: number | string, advanced?: boolean, bookIds: number[] = []) => {
+  search: async (query: string, page = 1, limit = 50, cat_id?: number | string, advanced?: boolean, bookIds: number[] = [],scope?:SearchScope) => {
     let url = `/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
     // Ticked books replace the category filter (see BookPicker).
-    if (bookIds.length) url += `&book_ids=${bookIds.join(',')}`;
+    if(scope)url+=`&${new URLSearchParams(scopeParams(scope))}`;
+    else if (bookIds.length) url += `&book_ids=${bookIds.join(',')}`;
     else if (cat_id) url += `&cat_id=${cat_id}`;
     if (advanced) url += `&advanced=1`;
     return fetchAPI(url);
   },
   
-  searchTitles: async (query: string, page = 1, limit = 20, cat_id?: number | string, advanced?: boolean) => {
+  searchTitles: async (query: string, page = 1, limit = 20, cat_id?: number | string, advanced?: boolean,scope?:SearchScope) => {
     let url = `/search_titles?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`;
     if (cat_id) url += `&cat_id=${cat_id}`;
+    if(scope)url+=`&${new URLSearchParams(scopeParams(scope))}`;
     if (advanced) url += `&advanced=1`;
     return fetchAPI(url);
   },

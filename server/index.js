@@ -1,3 +1,4 @@
+import {readSearchScope,searchScopeSql,registerSearchScope,scopedBooksSql} from './search-scope.js';
 import {registerRowaBrowser} from './rowa-browse.js';
 import {registerRowaMentions} from './rowa-mentions.js';
 import {registerHadithSearch} from './hadith-search.js';
@@ -979,6 +980,7 @@ app.get('/api/search/policy-status', (req, res) => {
 app.get('/api/search', async (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
+    const scope = readSearchScope(req.query);
     const rawQuery = req.query.q || '';
     const query = rawQuery.trim();
 
@@ -997,7 +999,7 @@ app.get('/api/search', async (req, res) => {
     }
     // book_ids: search only inside the books the visitor ticked (comma-separated, at most MAX_SEARCH_BOOKS).
     let bookIds = [];
-    if (req.query.book_ids) {
+    if (!scope && req.query.book_ids) {
       bookIds = [...new Set(String(req.query.book_ids).split(',').map(Number).filter(id => Number.isSafeInteger(id) && id > 0))];
       if (!bookIds.length || bookIds.length > MAX_SEARCH_BOOKS) {
         return res.status(400).json({ results: [], total: 0, capped: false, error: `Pilih 1 sampai ${MAX_SEARCH_BOOKS} kitab untuk dicari.` });
@@ -1009,7 +1011,7 @@ app.get('/api/search', async (req, res) => {
       bookIds = bookIds.filter(id => !excluded.has(id));
       if (!bookIds.length) return res.json({ results: [], total: 0, capped: false, error: null });
     }
-    const excludedBookIds = excluded && !bookIds.length ? Array.from(excluded) : [];
+    const excludedBookIds = excluded && (scope || !bookIds.length) ? Array.from(excluded) : [];
 
     const { exactPhrase, andMatch } = buildFtsMatch(query);
     if (!exactPhrase) return res.json({ results: [], total: 0, capped: false, error: null });
@@ -1017,7 +1019,7 @@ app.get('/api/search', async (req, res) => {
     // exact counts of common words used to block every visitor for minutes.
     let found;
     try {
-      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, bookIds, additional: hasTambahan, excludedBookIds });
+      found = await searchPagesOffThread(db, { exactPhrase, andMatch, page, limit, catIds: cat_ids, bookId: targetBookId, bookIds, additional: hasTambahan, excludedBookIds, scope });
     } catch (error) {
       if (error.status) return res.status(error.status).json({ results: [], total: 0, code: error.code, error: error.message });
       throw error;
@@ -1032,7 +1034,7 @@ app.get('/api/search', async (req, res) => {
     try {
         fs.appendFileSync(logPath, new Date().toISOString() + ' /api/search route error: ' + (error ? error.stack || error : 'null') + '\n');
     } catch(e) {}
-    res.status(500).json({ error: error.message });
+    res.status(error.status||500).json({ error: error.message });
   }
 });
 
@@ -1406,9 +1408,12 @@ app.get('/api/category/:id/books', (req,res) => {
 
 // --- NEW SEARCH ENDPOINTS ---
 
+registerSearchScope(app,{getDb:()=>db,hasAdditional:()=>hasTambahan,categoriesSql:categoryCatalogueSql});
+
 app.get('/api/search_titles', (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   try {
+    const scope=readSearchScope(req.query);
     const query = stripHarakat(req.query.q || '');
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
@@ -1433,11 +1438,12 @@ app.get('/api/search_titles', (req, res) => {
     let likeQuery = buildLikeMatch(req.query.q || '');
     let params = [`%${likeQuery}%`];
 
-    if (cat_ids.length > 0) {
+    if (!scope && cat_ids.length > 0) {
       const placeholders = cat_ids.map(() => '?').join(',');
       whereClause += ` AND b.cat IN (${placeholders})`;
       params.push(...cat_ids);
     }
+    if(scope){const selected=searchScopeSql(scope);whereClause+=' AND '+selected.sql;params.push(...selected.params);}
     if (targetBookId) {
       whereClause += ` AND b.bkid = ?`;
       params.push(targetBookId);
@@ -1451,13 +1457,14 @@ app.get('/api/search_titles', (req, res) => {
       }
     }
 
-    // Gunakan UNION ALL: search di main + tambahan
-    const countStmt = db.prepare(`SELECT COUNT(*) as total FROM ${booksMeta()} b ${whereClause}`);
+    const titleBooks=scope?scopedBooksSql(hasTambahan):booksMeta();
+    // Keep primary book identity when both libraries share an ID.
+    const countStmt = db.prepare(`SELECT COUNT(*) as total FROM ${titleBooks} b ${whereClause}`);
     const total = countStmt.get(...params).total;
 
     const stmt = db.prepare(`
       SELECT b.bkid, b.bk, b.cat, b.inf, a.auth as author_name, c.name as category_name
-      FROM ${booksMeta()} b
+      FROM ${titleBooks} b
       LEFT JOIN ${authorsUnion()} a ON b.authno = a.authid
       LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id
       ${whereClause}
@@ -1473,7 +1480,7 @@ app.get('/api/search_titles', (req, res) => {
     }
     res.json({ data, total, page, limit });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status||500).json({ error: error.message });
   }
 });
 

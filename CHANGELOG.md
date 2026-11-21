@@ -2405,3 +2405,82 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-20-23-24-55-13e828.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-20 23:24:55 +07:00 | `docs/deployment-log.md` | — | 264–286 | Waktu ini adalah pencatatan verifikasi online, bukan waktu pull di server. | modified |
+
+## [2026-11-21 18:57:00 +07:00] — Gabungkan pemilihan kategori dan kitab dalam tempat pencarian
+
+Waktu pencatatan: **2026-11-21 18:57:00 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `5aa839b`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 281/281 pengujian server; npm run build (TypeScript dan Vite); node --check untuk empat modul server; oxlint komponen/helper baru dan SearchSuggestions tanpa temuan; git diff --check; Playwright kategori 125 kitab, union/pengecualian, lazy-load, filter/collapse, URL reload/back, tautan lama, teks/judul, tiga tema, desktop 1440 dan ponsel 390 tanpa overflow/pageerror. Build hanya peringatan Vite __dirname dan ukuran chunk yang sudah ada. SSH deployment ditolak publickey,password; pull/HEAD/endpoint server belum terverifikasi.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-21-18-57-00-7e09ae.json](docs/change-audit/2026-11-21-18-57-00-7e09ae.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-21 18:56:13 +07:00 | `dist/assets/index-BQ6Hekp_.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DAEY34w_.css` | 1–2 | — | module/file | deleted |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BjqyAfGW.js` | 1–22 | — | module/file | deleted |
+| 2026-11-21 18:56:13 +07:00 | `dist/assets/index.dev-DzMf9j9g.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-21 18:56:13 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-21 18:55:32 +07:00 | `docs/search-scope.md` | — | 1–32 | module/file | added |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | — | 983–983 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1000–1000 | 1002–1002 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1012–1012 | 1014–1014 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1020–1020 | 1022–1022 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1035–1035 | 1037–1037 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | — | 1411–1412 | app.get('/api/category/:id/books', (req,res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | — | 1416–1416 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1436–1436 | 1441–1441 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | — | 1446–1446 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1454–1455 | 1460–1462 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1460–1460 | 1467–1467 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/index.js` | 1476–1476 | 1483–1483 | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-21 16:18:37 +07:00 | `server/search-scope.js` | — | 1–57 | scopedBooksSql, MAX_SCOPE_IDS, fail, readSearchScope, read, value, values, searchScopeSql | added |
+| 2026-11-21 18:52:17 +07:00 | `server/search-scope.test.js` | — | 1–94 | fixture, db, b, textOptions, result, category, scope, server | added |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | — | 2–2 | import {generateGemini, readAiConfig} from './ask-ai.js'; | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 40–40 | 41–41 | export const FEW_RESULTS = 20, AI_RESULTS = 5; | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 45–45 | 46–47 | export function countSuggestionResults(db, additional, query, mode, categories, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 49–49 | 51–51 | export function countSuggestionResults(db, additional, query, mode, categories, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 54–54 | 56–56 | export function countSuggestionResults(db, additional, query, mode, categories, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | — | 78–78 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 80–80 | 83–83 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 90–90 | 93–93 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-21 16:16:09 +07:00 | `server/search-suggestions.js` | 109–109 | 112–112 | export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | — | 2–2 | import { Worker } from 'node:worker_threads'; | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | 14–14 | 15–15 | export const MAX_SEARCH_BOOKS = 100; | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | 18–18 | 19–21 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | 24–24 | 27–27 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | 36–36 | 39–39 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-21 16:11:30 +07:00 | `server/text-search.js` | 39–40 | 42–43 | export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 22–24 | 22–24 | import { SearchSuggestions } from './components/SearchSuggestions'; | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 93–93 | 93–93 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 116–125 | 116–119 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 128–128 | 122–122 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 250–254 | — | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 272–272 | 261–261 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 282–284 | 271–272 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 289–289 | 277–277 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 292–292 | 280–280 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 299–299 | 287–287 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 302–302 | 290–290 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 340–352 | 328–337 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 387–387 | 372–372 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 393–393 | 378–378 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 552–599 | 537–550 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 632–632 | 583–583 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 793–795 | 744–746 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 847–847 | 798–798 | function App() { | modified |
+| 2026-11-21 16:21:22 +07:00 | `src/App.tsx` | 898–899 | 849–850 | function App() { | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | — | 4–4 | const API_BASE = '/api'; // Use relative path for production (served by Express) | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | 58–59 | 59–62 | export const webAPI = { | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | 212–212 | 215–215 | export const webAPI = { | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | 215–215 | 218–219 | export const webAPI = { | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | 221–221 | 225–225 | export const webAPI = { | modified |
+| 2026-11-21 18:54:31 +07:00 | `src/api.ts` | — | 228–228 | export const webAPI = { | modified |
+| 2026-11-21 16:20:39 +07:00 | `src/components/SearchScopePicker.tsx` | — | 1–95 | MixedCheckbox, ref, CategoryBooks, timer, controller, SearchScopePicker, knownBooks, valueKey | added |
+| 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | — | 3–3 | import {webAPI} from '../api'; | modified |
+| 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | 6–7 | 7–8 | import {webAPI} from '../api'; | modified |
+| 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | — | 13–13 | export function SearchSuggestions({query, mode, categories, onSearch, withResult | modified |
+| 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | 15–15 | 17–17 | export function SearchSuggestions({query, mode, categories, onSearch, withResult | modified |
+| 2026-11-21 18:55:44 +07:00 | `src/components/SearchSuggestions.tsx` | 20–20 | 22–22 | export function SearchSuggestions({query, mode, categories, onSearch, withResult | modified |
+| 2026-11-21 16:16:35 +07:00 | `src/lib/search-scope.ts` | — | 1–67 | MAX_SCOPE_ADJUSTMENTS, emptySearchScope, ids, books, seen, normalizeSearchScope, value, scopeParams | added |

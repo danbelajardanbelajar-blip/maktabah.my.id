@@ -1,4 +1,5 @@
 import { Worker } from 'node:worker_threads';
+import {searchScopeSql} from './search-scope.js';
 // Full-text page search. Totals are counted only up to SEARCH_COUNT_CAP: an exact COUNT(*) of a common word
 // (الله matches ~8 million pages) took minutes on the request thread and stalled every visitor meanwhile.
 export const SEARCH_COUNT_CAP = 10000;
@@ -11,17 +12,19 @@ export const MAX_SEARCH_BOOKS = 100;
  *                  bookId / bookIds limit the search to those books (bookIds keeps the caller's order).
  * @returns         {results, total, capped}
  */
-export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, bookIds = [], additional = false, excludedBookIds = [] }) {
+export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 50, catIds = [], bookId = null, bookIds = [], additional = false, excludedBookIds = [], scope = null }) {
   const schemas = (additional ? ['main', 'tambahan'] : ['main'])
     .filter(schema => db.prepare(`SELECT 1 FROM ${schema}.sqlite_master WHERE name='pages_fts' AND type='table'`).get());
   const offset = (page - 1) * limit;
-  const selected = [...new Set([...(bookId ? [bookId] : []), ...bookIds])];
+  const selected = scope ? (!scope.all&&!scope.categories.length?scope.books:[]) : [...new Set([...(bookId ? [bookId] : []), ...bookIds])];
+  if(scope)catIds=[];
+  const scoped=searchScopeSql(scope);
   const filters = [], filterParams = [];
   // Book metadata may live in either library; a direct join per source keeps the primary-key lookup.
   const books = schema => additional
     ? { join: `LEFT JOIN main.books_meta bm ON bm.bkid=p.book_id LEFT JOIN tambahan.books_meta bt ON bt.bkid=p.book_id`, name: 'COALESCE(bm.bk,bt.bk)', cat: 'COALESCE(bm.cat,bt.cat)', exists: 'COALESCE(bm.bkid,bt.bkid) IS NOT NULL' }
     : { join: `JOIN ${schema}.books_meta b ON b.bkid=p.book_id`, name: 'b.bk', cat: 'b.cat', exists: '' };
-  if (excludedBookIds && excludedBookIds.length && !selected.length) {
+  if (excludedBookIds && excludedBookIds.length && (!selected.length || scope)) {
     filters.push('p.book_id NOT IN (SELECT value FROM json_each(?))');
     filterParams.push(typeof excludedBookIds === 'string' ? excludedBookIds : JSON.stringify(excludedBookIds));
   }
@@ -33,11 +36,11 @@ export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit = 
   // p.book_id is still checked, so a book whose rowids are not consecutive stays correct, only slower.
   const ranges = schema => selected.map(id => ({ id, ...db.prepare(`SELECT min(rowid) a, max(rowid) b FROM ${pagesTable(schema)} WHERE book_id=?`).get(id) })).filter(r => r.a != null);
   const from = (schema, range) => {
-    const meta = books(schema), where = ['pages_fts MATCH ?', ...(range ? ['pages_fts.rowid BETWEEN ? AND ?', 'p.book_id=?'] : []), ...filters, ...(catIds.length ? [`${meta.cat} IN (${catIds.map(() => '?').join(',')})`] : []), ...(meta.exists ? [meta.exists] : [])];
+    const meta = books(schema), where = ['pages_fts MATCH ?', ...(range ? ['pages_fts.rowid BETWEEN ? AND ?', 'p.book_id=?'] : []), ...filters, ...(scope?[searchScopeSql(scope,`COALESCE(${meta.cat},0)`,'p.book_id').sql]:[]), ...(catIds.length ? [`${meta.cat} IN (${catIds.map(() => '?').join(',')})`] : []), ...(meta.exists ? [meta.exists] : [])];
     return { sql: `FROM ${fts(schema)} JOIN ${pagesTable(schema)} p ON p.rowid=pages_fts.rowid ${meta.join} WHERE ${where.join(' AND ')}`, meta };
   };
-  const params = (match, range) => [match, ...(range ? [range.a, range.b, range.id] : []), ...filterParams, ...catIds];
-  const count = (schema, match, range, cap) => (!range && !filters.length && !catIds.length
+  const params = (match, range) => [match, ...(range ? [range.a, range.b, range.id] : []), ...filterParams, ...scoped.params, ...catIds];
+  const count = (schema, match, range, cap) => (!range && !filters.length && !catIds.length && scoped.sql==='(1)'
     // Without filters the FTS index alone answers; with filters the join is needed, still capped.
     ? db.prepare(`SELECT count(*) n FROM (SELECT 1 FROM ${fts(schema)} WHERE pages_fts MATCH ? LIMIT ${cap})`).get(match)
     : db.prepare(`SELECT count(*) n FROM (SELECT 1 ${from(schema, range).sql} LIMIT ${cap})`).get(...params(match, range))).n;

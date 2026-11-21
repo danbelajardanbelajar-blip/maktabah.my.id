@@ -1,0 +1,1845 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-21 18:57:00 +07:00",
+  "title": "Gabungkan pemilihan kategori dan kitab dalam tempat pencarian",
+  "baseCommit": "5aa839ba5a0dc005854054b4f68e3f43475fa263",
+  "checks": "LULUS: 281/281 pengujian server; npm run build (TypeScript dan Vite); node --check untuk empat modul server; oxlint komponen/helper baru dan SearchSuggestions tanpa temuan; git diff --check; Playwright kategori 125 kitab, union/pengecualian, lazy-load, filter/collapse, URL reload/back, tautan lama, teks/judul, tiga tema, desktop 1440 dan ponsel 390 tanpa overflow/pageerror. Build hanya peringatan Vite __dirname dan ukuran chunk yang sudah ada. SSH deployment ditolak publickey,password; pull/HEAD/endpoint server belum terverifikasi.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BQ6Hekp_.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 18:56:13 +07:00",
+      "stagedSha256": "be9a15388e903177b61004ca9e564c8d8c1ca78b8cbe56d311df310e9f207658",
+      "diffSha256": "806eea0a12b4c628a04266c8a5e012de1a1248f94484a43beee62d4324814bc6",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-DAEY34w_.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "721113794108a123cb8c8f53a979747851bbc5ddfea5335167063e910a6dbee3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-BjqyAfGW.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "4615519fd4295053176c9077f93c32cafa2316efdcfc5ca5b7b727d4181da9f3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 22
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-DzMf9j9g.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 18:56:13 +07:00",
+      "stagedSha256": "70ad76ad7cd8161fbb4795b7dedacd281caeaa3111ee4b2e5e7075ee881579bb",
+      "diffSha256": "a3e3941ed75976d46445b670f1df58b1becf71a76150070ff0d5366a1a274e1a",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "rt",
+        "at",
+        "ot",
+        "ht",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "B",
+        "V",
+        "H",
+        "re",
+        "ie",
+        "W",
+        "ae",
+        "se",
+        "le",
+        "ue",
+        "de",
+        "Oe",
+        "je",
+        "Fe",
+        "Ie",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "q",
+        "st",
+        "ct",
+        "lt",
+        "ft",
+        "pt",
+        "vt",
+        "yt",
+        "bt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "kt",
+        "At",
+        "jt",
+        "Mt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "Rt",
+        "zt",
+        "Bt",
+        "Ut",
+        "Wt",
+        "Kt",
+        "Yt",
+        "Zt",
+        "Qt",
+        "on",
+        "sn",
+        "cn",
+        "ln",
+        "un",
+        "Dn",
+        "On",
+        "Hn",
+        "Un",
+        "Gn",
+        "Kn",
+        "Jn",
+        "Yn",
+        "Qn",
+        "er",
+        "ar",
+        "or",
+        "sr",
+        "cr",
+        "lr",
+        "ur",
+        "dr",
+        "pr",
+        "mr",
+        "hr",
+        "gr",
+        "_r",
+        "vr",
+        "wr",
+        "Tr",
+        "kr",
+        "zr",
+        "Wr",
+        "Gr",
+        "Kr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "oi",
+        "ci",
+        "vi",
+        "yi",
+        "bi",
+        "xi",
+        "Si",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Qi",
+        "ia",
+        "aa",
+        "oa",
+        "la",
+        "ua",
+        "da",
+        "ga",
+        "_a",
+        "va",
+        "ba",
+        "xa",
+        "wa",
+        "Ta",
+        "Ea",
+        "Da",
+        "u",
+        "f",
+        "h",
+        "ja",
+        "Ma",
+        "Na",
+        "Pa",
+        "Fa",
+        "Ia",
+        "Ra",
+        "za",
+        "Ba",
+        "Va",
+        "Wa",
+        "Ga",
+        "Ka",
+        "Ya",
+        "Xa",
+        "Za",
+        "Qa",
+        "to",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "As",
+        "Fs",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Js",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "dc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "qc",
+        "el",
+        "tl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "cl",
+        "ll",
+        "ul",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "Cl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "kl",
+        "Al",
+        "jl",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "Lt",
+        "Vt",
+        "qt",
+        "Jt",
+        "rn",
+        "dn",
+        "fn",
+        "pn",
+        "hn",
+        "gn",
+        "yn",
+        "bn",
+        "xn",
+        "Sn",
+        "Cn",
+        "wn",
+        "Tn",
+        "En",
+        "An",
+        "Nn",
+        "Pn",
+        "Fn",
+        "In",
+        "Vn",
+        "_",
+        "qn",
+        "Xn",
+        "nr",
+        "fr",
+        "Er",
+        "jr",
+        "Mr",
+        "Nr",
+        "Pr",
+        "Fr",
+        "Ir",
+        "Br",
+        "Vr",
+        "Ur",
+        "Xr",
+        "extends",
+        "si",
+        "li",
+        "ui",
+        "di",
+        "fi",
+        "pi",
+        "mi",
+        "hi",
+        "_i",
+        "Ci",
+        "Li",
+        "sa",
+        "fa",
+        "pa",
+        "ha",
+        "ya",
+        "Oa",
+        "ka",
+        "Aa",
+        "Ha",
+        "Ja"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 22
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 18:56:13 +07:00",
+      "stagedSha256": "48a1c88c1a11f176c2f3d7d79dee7669532cb27cb2953ec17002acc42c7be3b2",
+      "diffSha256": "48ac88a8de2c3006315269ee0ceb88f71e60e846c63801e9157deb5e47c64ea0",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/search-scope.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 18:55:32 +07:00",
+      "stagedSha256": "cad818b7f4154af1e7c0a317404b7d83e40e082fa390463c2669f8c0ad79b4eb",
+      "diffSha256": "b452befbd1fa0e0691bea2f7da0f7a846e05eb682533434399f5e527ec7a2cf9",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 32
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 16:18:37 +07:00",
+      "stagedSha256": "f2b32f6a1a29660f5823fed8edb5665a15b43b715194a60a7b0a8e5032e6018b",
+      "diffSha256": "de73e581df00cc37c6be51ec1b5cc7097b6c4245fc0b535aeff98b6ca8b5a5c8",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "isAdvanced",
+        "excluded",
+        "excludedBookIds",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 981,
+            "count": 0
+          },
+          "after": {
+            "line": 983,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1000,
+            "count": 1
+          },
+          "after": {
+            "line": 1002,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1012,
+            "count": 1
+          },
+          "after": {
+            "line": 1014,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1020,
+            "count": 1
+          },
+          "after": {
+            "line": 1022,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1035,
+            "count": 1
+          },
+          "after": {
+            "line": 1037,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1408,
+            "count": 0
+          },
+          "after": {
+            "line": 1411,
+            "count": 2
+          },
+          "section": "app.get('/api/category/:id/books', (req,res) => {"
+        },
+        {
+          "before": {
+            "line": 1411,
+            "count": 0
+          },
+          "after": {
+            "line": 1416,
+            "count": 1
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1436,
+            "count": 1
+          },
+          "after": {
+            "line": 1441,
+            "count": 1
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1440,
+            "count": 0
+          },
+          "after": {
+            "line": 1446,
+            "count": 1
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1454,
+            "count": 2
+          },
+          "after": {
+            "line": 1460,
+            "count": 3
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1460,
+            "count": 1
+          },
+          "after": {
+            "line": 1467,
+            "count": 1
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1476,
+            "count": 1
+          },
+          "after": {
+            "line": 1483,
+            "count": 1
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-scope.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 16:18:37 +07:00",
+      "stagedSha256": "d6f27162d377e5d92c96590ce8adfbfaf9a60b43abfeafe5dbbabd4efc0e7740",
+      "diffSha256": "43e36a63e494f5098f49c13a8eb5ccd5c52f12922585f5abdc6c5851e5b6e2b0",
+      "symbols": [
+        "scopedBooksSql",
+        "MAX_SCOPE_IDS",
+        "fail",
+        "readSearchScope",
+        "read",
+        "value",
+        "values",
+        "searchScopeSql",
+        "params",
+        "membership",
+        "normalize",
+        "registerSearchScope",
+        "catalogue",
+        "db",
+        "additional",
+        "raw",
+        "grouped",
+        "book",
+        "names",
+        "send",
+        "data",
+        "picked",
+        "selected",
+        "id",
+        "q",
+        "filtered",
+        "page"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 57
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/search-scope.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 18:52:17 +07:00",
+      "stagedSha256": "4f19d8d5f974b5162cec1edf8ea292be83d74967112baa9cc822e21a606018eb",
+      "diffSha256": "aac45a610c84e68dc3cd7cc33ec4e4e5ef368f9ec2e7658583bbc70f0096c10a",
+      "symbols": [
+        "fixture",
+        "db",
+        "b",
+        "textOptions",
+        "result",
+        "category",
+        "scope",
+        "server",
+        "get",
+        "r",
+        "meta",
+        "first",
+        "next",
+        "previous"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 94
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/search-suggestions.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 16:16:09 +07:00",
+      "stagedSha256": "088d7bd49320ff9c6434fec65f55ea4c55334f632c3f57184785d55e50f50633",
+      "diffSha256": "c6cf5639b01c819e3bcd17ae28a6b4b155c450017690ad103cfc3eb614e911eb",
+      "symbols": [
+        "normalizeSuggestion",
+        "wordDistance",
+        "rows",
+        "row",
+        "textMatch",
+        "words",
+        "options",
+        "FEW_RESULTS",
+        "countSuggestionResults",
+        "match",
+        "selected",
+        "filter",
+        "sql",
+        "hasSuggestionResults",
+        "registerSearchSuggestions",
+        "cache",
+        "ttl",
+        "remember",
+        "q",
+        "mode",
+        "rawCategories",
+        "db",
+        "categories",
+        "additional",
+        "exists",
+        "identity",
+        "limit",
+        "found",
+        "allowAi",
+        "normalized",
+        "known",
+        "key",
+        "cached",
+        "work",
+        "candidates",
+        "matches",
+        "distance",
+        "suggestions",
+        "normalizedQuery",
+        "seen",
+        "add",
+        "settings",
+        "generated",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 0
+          },
+          "after": {
+            "line": 2,
+            "count": 1
+          },
+          "section": "import {generateGemini, readAiConfig} from './ask-ai.js';"
+        },
+        {
+          "before": {
+            "line": 40,
+            "count": 1
+          },
+          "after": {
+            "line": 41,
+            "count": 1
+          },
+          "section": "export const FEW_RESULTS = 20, AI_RESULTS = 5;"
+        },
+        {
+          "before": {
+            "line": 45,
+            "count": 1
+          },
+          "after": {
+            "line": 46,
+            "count": 2
+          },
+          "section": "export function countSuggestionResults(db, additional, query, mode, categories,"
+        },
+        {
+          "before": {
+            "line": 49,
+            "count": 1
+          },
+          "after": {
+            "line": 51,
+            "count": 1
+          },
+          "section": "export function countSuggestionResults(db, additional, query, mode, categories,"
+        },
+        {
+          "before": {
+            "line": 54,
+            "count": 1
+          },
+          "after": {
+            "line": 56,
+            "count": 1
+          },
+          "section": "export function countSuggestionResults(db, additional, query, mode, categories,"
+        },
+        {
+          "before": {
+            "line": 75,
+            "count": 0
+          },
+          "after": {
+            "line": 78,
+            "count": 1
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        },
+        {
+          "before": {
+            "line": 80,
+            "count": 1
+          },
+          "after": {
+            "line": 83,
+            "count": 1
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        },
+        {
+          "before": {
+            "line": 90,
+            "count": 1
+          },
+          "after": {
+            "line": 93,
+            "count": 1
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        },
+        {
+          "before": {
+            "line": 109,
+            "count": 1
+          },
+          "after": {
+            "line": 112,
+            "count": 1
+          },
+          "section": "export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,"
+        }
+      ]
+    },
+    {
+      "file": "server/text-search.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 16:11:30 +07:00",
+      "stagedSha256": "a8202c1ce68a4ad99e13e974fa71e0fc516a5ba6ea8e941a8ee3954a5c15915a",
+      "diffSha256": "c83e89150aa10e193c5e478370d797bc5a462d051837aad825ef4326f74584e4",
+      "symbols": [
+        "SEARCH_COUNT_CAP",
+        "MAX_SEARCH_BOOKS",
+        "searchPages",
+        "schemas",
+        "offset",
+        "selected",
+        "scoped",
+        "filters",
+        "books",
+        "fts",
+        "pagesTable",
+        "ranges",
+        "from",
+        "meta",
+        "params",
+        "count",
+        "fetch",
+        "segments",
+        "total",
+        "results",
+        "available",
+        "SEARCH_TIMEOUT",
+        "MAX_WORKERS",
+        "fault",
+        "searchPagesOffThread",
+        "list",
+        "main",
+        "tambahan",
+        "worker",
+        "finish"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 0
+          },
+          "after": {
+            "line": 2,
+            "count": 1
+          },
+          "section": "import { Worker } from 'node:worker_threads';"
+        },
+        {
+          "before": {
+            "line": 14,
+            "count": 1
+          },
+          "after": {
+            "line": 15,
+            "count": 1
+          },
+          "section": "export const MAX_SEARCH_BOOKS = 100;"
+        },
+        {
+          "before": {
+            "line": 18,
+            "count": 1
+          },
+          "after": {
+            "line": 19,
+            "count": 3
+          },
+          "section": "export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit ="
+        },
+        {
+          "before": {
+            "line": 24,
+            "count": 1
+          },
+          "after": {
+            "line": 27,
+            "count": 1
+          },
+          "section": "export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit ="
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 1
+          },
+          "after": {
+            "line": 39,
+            "count": 1
+          },
+          "section": "export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit ="
+        },
+        {
+          "before": {
+            "line": 39,
+            "count": 2
+          },
+          "after": {
+            "line": 42,
+            "count": 2
+          },
+          "section": "export function searchPages(db, { exactPhrase, andMatch = '', page = 1, limit ="
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 16:21:22 +07:00",
+      "stagedSha256": "2c148f661a63bdb184bc3c094806ed9dd8720e36e809436d1a9240e8bf3b9754",
+      "diffSha256": "d53b707ed7d5bcb89bc296bf12294b08d7bbbd4a8b9e2ec6315874e1dc317097",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "limit",
+        "setSearchScope",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "scope",
+        "key",
+        "targetTab",
+        "isAdvanced",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "previous",
+        "known",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 22,
+            "count": 3
+          },
+          "after": {
+            "line": 22,
+            "count": 3
+          },
+          "section": "import { SearchSuggestions } from './components/SearchSuggestions';"
+        },
+        {
+          "before": {
+            "line": 93,
+            "count": 1
+          },
+          "after": {
+            "line": 93,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 116,
+            "count": 10
+          },
+          "after": {
+            "line": 116,
+            "count": 4
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 128,
+            "count": 1
+          },
+          "after": {
+            "line": 122,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 250,
+            "count": 5
+          },
+          "after": {
+            "line": 243,
+            "count": 0
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 272,
+            "count": 1
+          },
+          "after": {
+            "line": 261,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 282,
+            "count": 3
+          },
+          "after": {
+            "line": 271,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 289,
+            "count": 1
+          },
+          "after": {
+            "line": 277,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 292,
+            "count": 1
+          },
+          "after": {
+            "line": 280,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 299,
+            "count": 1
+          },
+          "after": {
+            "line": 287,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 302,
+            "count": 1
+          },
+          "after": {
+            "line": 290,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 340,
+            "count": 13
+          },
+          "after": {
+            "line": 328,
+            "count": 10
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 387,
+            "count": 1
+          },
+          "after": {
+            "line": 372,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 393,
+            "count": 1
+          },
+          "after": {
+            "line": 378,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 552,
+            "count": 48
+          },
+          "after": {
+            "line": 537,
+            "count": 14
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 632,
+            "count": 1
+          },
+          "after": {
+            "line": 583,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 793,
+            "count": 3
+          },
+          "after": {
+            "line": 744,
+            "count": 3
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 847,
+            "count": 1
+          },
+          "after": {
+            "line": 798,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 898,
+            "count": 2
+          },
+          "after": {
+            "line": 849,
+            "count": 2
+          },
+          "section": "function App() {"
+        }
+      ]
+    },
+    {
+      "file": "src/api.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 18:54:31 +07:00",
+      "stagedSha256": "3a8ad842c5039eb8fd72d90d2ccca0c95d1541103a84a79c676d9e9c8851b4c5",
+      "diffSha256": "66de1de9b73ddbc4ca44f8babe9860964640379961787feb18a7b8afffb178c5",
+      "symbols": [
+        "API_BASE",
+        "fetchAPI",
+        "res",
+        "errObj",
+        "fetchQuran",
+        "controller",
+        "cancel",
+        "timer",
+        "deletionStorageKey",
+        "rememberDeletion",
+        "waitForDeletion",
+        "progress",
+        "response",
+        "webAPI",
+        "err",
+        "r",
+        "params",
+        "data",
+        "o"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 3,
+            "count": 0
+          },
+          "after": {
+            "line": 4,
+            "count": 1
+          },
+          "section": "const API_BASE = '/api'; // Use relative path for production (served by Express)"
+        },
+        {
+          "before": {
+            "line": 58,
+            "count": 2
+          },
+          "after": {
+            "line": 59,
+            "count": 4
+          },
+          "section": "export const webAPI = {"
+        },
+        {
+          "before": {
+            "line": 212,
+            "count": 1
+          },
+          "after": {
+            "line": 215,
+            "count": 1
+          },
+          "section": "export const webAPI = {"
+        },
+        {
+          "before": {
+            "line": 215,
+            "count": 1
+          },
+          "after": {
+            "line": 218,
+            "count": 2
+          },
+          "section": "export const webAPI = {"
+        },
+        {
+          "before": {
+            "line": 221,
+            "count": 1
+          },
+          "after": {
+            "line": 225,
+            "count": 1
+          },
+          "section": "export const webAPI = {"
+        },
+        {
+          "before": {
+            "line": 223,
+            "count": 0
+          },
+          "after": {
+            "line": 228,
+            "count": 1
+          },
+          "section": "export const webAPI = {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/SearchScopePicker.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 16:20:39 +07:00",
+      "stagedSha256": "6bff2b0687ce47f12856b5a955f4870ee3f382db390cdc59db0985ba445dd332",
+      "diffSha256": "7da87300b841d276c1221f6234b209f76629f484ede6c30da1f629979c492403",
+      "symbols": [
+        "MixedCheckbox",
+        "ref",
+        "CategoryBooks",
+        "timer",
+        "controller",
+        "SearchScopePicker",
+        "knownBooks",
+        "valueKey",
+        "known",
+        "selected",
+        "visible",
+        "bookChanged",
+        "count",
+        "next"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 95
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/components/SearchSuggestions.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-21 18:55:44 +07:00",
+      "stagedSha256": "a28acad4b7b8dcf616619830d14c39473d88cc5cda2afbda066a1157d4fe85f7",
+      "diffSha256": "f4abddcbae4d877a72053a6e358efc4cac6f6165d94728292f8341f05e152352",
+      "symbols": [
+        "SearchSuggestions",
+        "categoryKey",
+        "selectionKey",
+        "controller"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import {webAPI} from '../api';"
+        },
+        {
+          "before": {
+            "line": 6,
+            "count": 2
+          },
+          "after": {
+            "line": 7,
+            "count": 2
+          },
+          "section": "import {webAPI} from '../api';"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 0
+          },
+          "after": {
+            "line": 13,
+            "count": 1
+          },
+          "section": "export function SearchSuggestions({query, mode, categories, onSearch, withResult"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 1
+          },
+          "after": {
+            "line": 17,
+            "count": 1
+          },
+          "section": "export function SearchSuggestions({query, mode, categories, onSearch, withResult"
+        },
+        {
+          "before": {
+            "line": 20,
+            "count": 1
+          },
+          "after": {
+            "line": 22,
+            "count": 1
+          },
+          "section": "export function SearchSuggestions({query, mode, categories, onSearch, withResult"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/search-scope.ts",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-21 16:16:35 +07:00",
+      "stagedSha256": "55f4e8ffdbe423d9de4135180bf3d997db60626d6db637fd4742b53a9dadba5d",
+      "diffSha256": "f5000c14712dc1cb58c152d3c399f2cb95671b99aa437bd52338dc807571a62f",
+      "symbols": [
+        "MAX_SCOPE_ADJUSTMENTS",
+        "emptySearchScope",
+        "ids",
+        "books",
+        "seen",
+        "normalizeSearchScope",
+        "value",
+        "scopeParams",
+        "scopeKey",
+        "unrestrictedScope",
+        "scopeFromParams",
+        "read",
+        "text",
+        "toBooks",
+        "selected",
+        "key",
+        "loadSearchScope",
+        "saveSearchScope",
+        "categoryBaseSelected",
+        "scopeBookSelected",
+        "categorySelectedCount",
+        "selectScopeCategory",
+        "toggleScopeBook",
+        "base",
+        "result",
+        "scopeDescription",
+        "parts"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 67
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

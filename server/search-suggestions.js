@@ -1,4 +1,5 @@
 import {generateGemini, readAiConfig} from './ask-ai.js';
+import {readSearchScope,searchScopeSql} from './search-scope.js';
 
 export const normalizeSuggestion = text => String(text).toLowerCase().normalize('NFKC')
   .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
@@ -37,21 +38,22 @@ function textMatch(query) {
 export const FEW_RESULTS = 20, AI_RESULTS = 5;
 
 /** Number of matching pages (text) or books (title), counted only up to `cap`. */
-export function countSuggestionResults(db, additional, query, mode, categories, likeMatch, cap = 1) {
+export function countSuggestionResults(db, additional, query, mode, categories, likeMatch, cap = 1,scope=null) {
   const match = mode === 'title' ? `%${likeMatch(query)}%` : textMatch(query);
   if (!match) return 0;
   let found = 0;
   for (const schema of additional ? ['main','tambahan'] : ['main']) {
-    const filter = categories.length ? ` AND b.cat IN (${categories.map(() => '?').join(',')})` : '';
+    const selected=searchScopeSql(scope);
+    const filter = scope?' AND '+selected.sql:categories.length ? ` AND b.cat IN (${categories.map(() => '?').join(',')})` : '';
     const sql = mode === 'title'
       ? `SELECT 1 FROM ${schema}.books_meta b WHERE b.bk LIKE ?${filter} LIMIT ?`
       : `SELECT 1 FROM ${schema}.pages_fts JOIN ${schema}.pages p ON pages_fts.rowid=p.rowid JOIN ${schema}.books_meta b ON b.bkid=p.book_id WHERE pages_fts MATCH ?${filter} LIMIT ?`;
-    found += db.prepare(sql).all(match, ...categories, cap - found).length;
+    found += db.prepare(sql).all(match, ...(scope?selected.params:categories), cap - found).length;
     if (found >= cap) return found;
   }
   return found;
 }
-export const hasSuggestionResults = (db, additional, query, mode, categories, likeMatch) => countSuggestionResults(db, additional, query, mode, categories, likeMatch, 1) > 0;
+export const hasSuggestionResults = (db, additional, query, mode, categories, likeMatch,scope=null) => countSuggestionResults(db, additional, query, mode, categories, likeMatch, 1,scope) > 0;
 
 export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch, configPath, localExportMode,
   isMaintenance = () => false, fetchImpl = fetch, env = process.env, now = Date.now}) {
@@ -73,11 +75,12 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
       || !['text','title'].includes(mode) || !/^(?:\d+(?:,\d+)*)?$/.test(rawCategories) || rawCategories.split(',').length > 50) {
       return res.status(400).json({suggestions:[], error:'Parameter saran pencarian tidak valid.'});
     }
+    let scope;try{scope=readSearchScope(req.query);}catch(e){return res.status(400).json({suggestions:[],error:e.message});}
     const db = getDb();
     if (!db || isMaintenance()) return res.json({suggestions:[]});
     const categories = [...new Set(rawCategories.split(',').filter(Boolean).map(Number))].sort((a,b) => a-b);
     const additional = hasAdditional();
-    const exists = candidate => hasSuggestionResults(db, additional, candidate, mode, categories, likeMatch);
+    const exists = candidate => hasSuggestionResults(db, additional, candidate, mode, categories, likeMatch,scope);
     const identity = req.ip || 'unknown';
     const limit = limits.get(identity);
     if (limit && now()-limit.at < 60000 && limit.count >= 12) return res.status(429).json({suggestions:[]});
@@ -87,7 +90,7 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
     } else limit.count++;
     try {
       // A search with many matches needs no suggestion; only near-empty ones may consult the model.
-      const found = countSuggestionResults(db, additional, q, mode, categories, likeMatch, FEW_RESULTS);
+      const found = countSuggestionResults(db, additional, q, mode, categories, likeMatch, FEW_RESULTS,scope);
       if (found >= FEW_RESULTS) return res.json({suggestions:[]});
       const allowAi = found < AI_RESULTS;
       if (vocabularyDb !== db || now()-vocabularyAt > ttl) {
@@ -106,7 +109,7 @@ export function registerSearchSuggestions(app, {getDb, hasAdditional, likeMatch,
         }
       }
       // Include mode, filters, original spelling, and dataset generation in the cache key.
-      const key = JSON.stringify([q,mode,categories,vocabularyAt,allowAi]);
+      const key = JSON.stringify([q,mode,categories,scope,vocabularyAt,allowAi]);
       const cached = cache.get(key);
       if (cached && now()-cached.at < ttl) return res.json({suggestions:cached.suggestions.filter(exists)});
       if (!pending.has(key)) {
