@@ -57,7 +57,17 @@ Di bawah setiap pesan milik sendiri ada tanda di samping jam:
 - `GET /api/messages` mengembalikan `readUpTo` (sampai id berapa admin sudah membaca).
 - Data percakapan admin memuat `admin_read_id` dan `visitor_read_id`.
 
-## API admin
+## Pemulihan gangguan koneksi pada inbox admin
+
+Kegagalan pembaruan daftar/percakapan dan putusnya stream memiliki status sinkronisasi tersendiri di panel ringkas maupun halaman admin. Status ini menampilkan **Menghubungkan kembali secara otomatis** serta tombol **Coba sekarang**. Keberhasilan daftar tidak menutupi stream yang masih putus; setiap sumber gangguan pulih setelah permintaannya sendiri berhasil. Error tindakan (kirim balasan, izin lampiran, hapus) tetap terpisah dan tidak dihapus oleh polling yang berhasil.
+
+Stream mengulang koneksi dengan jeda 3–30 detik. Polling cadangan setiap 30 detik, kembali ke tab, dan event online memperbarui daftar serta mengambil ulang pesan percakapan yang terlihat. Pesan digabung berdasarkan ID agar tidak berulang. Panel tertutup/tab tersembunyi tidak mengambil endpoint percakapan yang menandai pesan dibaca. Respons daftar yang sudah disusul permintaan lebih baru diabaikan.
+
+Permintaan baca metadata pesan memiliki tenggat 15 detik. POST balasan tidak diulang otomatis: jika hasilnya gagal dikonfirmasi, draf dipertahankan, pesan error meminta pemeriksaan percakapan sebelum mengirim ulang, dan percakapan yang terlihat disinkronkan kembali. Ini menghindari anggapan bahwa semua error 502 berasal dari pengiriman balasan. Perbaikan frontend ini tidak membuktikan penyebab 502 pada proxy/server; diagnosis infrastruktur tetap memerlukan log server.
+
+Verifikasi: pengujian klien mencakup stream gagal/tutup tanpa retry lanjutan, tenggat GET, dan satu POST saja ketika respons 502. Pengujian browser memakai server/database sementara dan menyuntikkan 502 untuk stream, pembaruan daftar, dan pengiriman; memastikan status pulih, draf bertahan, serta error kirim tidak hilang akibat pembaruan latar belakang. Tidak ada pesan uji yang dikirim ke produksi.
+
+## Endpoint izin lampiran
 
 - `PUT /api/admin/messages/:id/permissions` dengan body `{allowFiles:boolean, allowImages:boolean}` → `{success, allow_files, allow_images}`
 - `GET /api/messages` mengembalikan `settings` milik percakapan peramban tersebut: `{allowFiles, allowImages, maxImageBytes, maxFileBytes}`.

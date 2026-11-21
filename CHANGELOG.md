@@ -2507,3 +2507,45 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-21-22-46-39-112ea9.
 | 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | 793–793 | 795–798 | function App() { | modified |
 | 2026-11-21 19:23:28 +07:00 | `src/App.tsx` | 795–796 | 800–800 | function App() { | modified |
 | 2026-11-21 19:23:28 +07:00 | `src/components/SearchCategoryLabel.tsx` | — | 1–6 | SearchCategoryLabel, category | added |
+
+## [2026-11-22 05:24:52 +07:00] — Pisahkan gangguan sinkronisasi dan error pengiriman pesan admin
+
+Waktu pencatatan: **2026-11-22 05:24:52 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `a89b557`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: 22/22 tes messages/messages-client/message-attachments; npm run build (TypeScript dan Vite); oxlint modul pesan dan komponen status tanpa temuan; git diff --check. Playwright server/database sementara: simulasi stream502 dengan pemulihan otomatis, polling502 dan pemulihan, panel ringkas dan halaman admin penuh, draf tetap ada, POST gagal hanya sekali, error kirim tidak dihapus oleh GET sukses; screenshot ponsel diperiksa. Peringatan build Vite __dirname dan ukuran chunk sudah ada. SSH deployment ditolak publickey,password; pull dan HEAD server belum terverifikasi.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-22-05-24-52-3e62af.json](docs/change-audit/2026-11-22-05-24-52-3e62af.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-22 05:21:52 +07:00 | `dist/assets/index.dev-Awv03bAd.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-22 05:21:52 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-22 05:24:15 +07:00 | `docs/messages.md` | 60–60 | 60–70 | Di bawah setiap pesan milik sendiri ada tanda di samping jam: | modified |
+| 2026-11-22 05:22:06 +07:00 | `server/messages-client.test.js` | 5–5 | 5–6 | import {linkifyText,safeHref} from '../src/lib/linkify.ts'; | modified |
+| 2026-11-22 05:22:06 +07:00 | `server/messages-client.test.js` | — | 67–93 | test('the token-authenticated admin stream parses server-sent event blocks like | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/AdminInboxMini.tsx` | — | 2–2 | import { useEffect, useRef, useState } from 'react'; | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/AdminInboxMini.tsx` | — | 25–25 | export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/AdminInboxMini.tsx` | — | 70–70 | export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/AdminMessages.tsx` | — | 2–2 | import { useEffect, useRef, useState } from 'react'; | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/AdminMessages.tsx` | — | 40–40 | export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri | modified |
+| 2026-11-22 05:20:13 +07:00 | `src/components/MessageSyncStatus.tsx` | — | 1–7 | MessageSyncStatus | added |
+| 2026-11-22 05:18:58 +07:00 | `src/lib/auth-event-source.ts` | — | 62–62 | export class AuthEventSource extends EventTarget { | modified |
+| 2026-11-22 05:18:58 +07:00 | `src/lib/messages.ts` | 52–52 | 52–52 | async function request(path:string, init:RequestInit = {}) { | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 18–19 | 18–18 | type Options = { | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 32–33 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 36–36 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 45–45 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 48–48 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 50–50 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 50–50 | 55–59 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 63–63 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 67–67 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 69–69 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 60–60 | 72–72 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 63–63 | 75–90 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 68–69 | 95–96 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 75–75 | 102–106 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 117–117 | 148–152 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 120–120 | 155–155 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 133–134 | 168–174 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+| 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 199–200 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |

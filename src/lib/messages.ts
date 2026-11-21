@@ -49,7 +49,7 @@ export function messagePreview(message:ChatMessage) {
 }
 
 async function request(path:string, init:RequestInit = {}) {
-  const res = await fetch(`/api${path}`, {...init, headers:{...(init.body ? {'Content-Type':'application/json'} : {}), ...(init.headers || {})}});
+  const res = await fetch(`/api${path}`, {...init, ...(!init.method || init.method==='GET' ? {signal:AbortSignal.timeout(15000)} : {}), headers:{...(init.body ? {'Content-Type':'application/json'} : {}), ...(init.headers || {})}});
   let data:any = null;
   try { data = await res.json(); } catch { /* Empty or non-JSON body. */ }
   if (res.status === 401) throw new Error('401');

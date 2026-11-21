@@ -59,6 +59,7 @@ export class AuthEventSource extends EventTarget {
       }
     } catch { /* Dropped or refused; retried below unless closed. */ }
     if (this.closed) return;
+    this.dispatchEvent(new Event('error'));
     this.timer = window.setTimeout(() => void this.connect(), this.retryMs);
     this.retryMs = Math.min(this.retryMs * 2, 30000);
   }

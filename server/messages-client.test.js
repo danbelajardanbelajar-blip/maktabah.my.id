@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DEFAULT_MESSAGE_SETTINGS,checkAttachment,formatBytes,mergeMessages,messagePreview,nextScrollHidden} from '../src/lib/messages.ts';
 import {linkifyText,safeHref} from '../src/lib/linkify.ts';
-import {parseEventBlock} from '../src/lib/auth-event-source.ts';
+import {parseEventBlock,AuthEventSource} from '../src/lib/auth-event-source.ts';
+import {adminMessagesAPI} from '../src/lib/messages.ts';
 import {adminGroup,adminLocation,adminParent,adminTitle} from '../src/lib/admin-navigation.ts';
 
 test('the floating message button hides on scroll down, returns on scroll up and near the top', () => {
@@ -62,4 +63,31 @@ test('the token-authenticated admin stream parses server-sent event blocks like 
   assert.equal(parseEventBlock(': ping'), null);
   assert.equal(parseEventBlock('retry: 5000'), null);
   assert.deepEqual(parseEventBlock('event: read\r\ndata:x\r'), {event:'read', data:'x'});
+});
+
+test('a refused stream reports a recoverable disconnect and closing prevents a retry',async()=>{
+  const originalFetch=globalThis.fetch,originalWindow=globalThis.window;
+  let attempts=0,timer,cleared=false;
+  globalThis.window={setTimeout:callback=>{timer=callback;return 1;},clearInterval(){},clearTimeout(){cleared=true;}};
+  globalThis.fetch=async()=>{attempts++;return new Response('Bad Gateway',{status:502});};
+  const source=new AuthEventSource('/api/admin/messages/stream','test-token');
+  try{
+    await new Promise(resolve=>source.addEventListener('error',resolve,{once:true}));
+    assert.equal(typeof timer,'function');
+    source.close();assert(cleared);timer();
+    assert.equal(attempts,1);
+  }finally{source.close();globalThis.fetch=originalFetch;globalThis.window=originalWindow;}
+});
+
+test('background reads have a deadline; failed writes are never retried automatically',async()=>{
+  const originalFetch=globalThis.fetch,calls=[];
+  globalThis.fetch=async(url,init)=>{calls.push({url,init});return new Response('Bad Gateway',{status:502});};
+  try{
+    await assert.rejects(adminMessagesAPI.list('test-token'),/502/);
+    assert(calls[0].init.signal instanceof AbortSignal);
+    await assert.rejects(adminMessagesAPI.reply('test-token',14,'draf tetap ada'),/502/);
+    assert.equal(calls.length,2);
+    assert.equal(calls[1].init.method,'POST');
+    assert.equal(calls[1].init.signal,undefined);
+  }finally{globalThis.fetch=originalFetch;}
 });

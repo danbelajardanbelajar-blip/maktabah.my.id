@@ -15,8 +15,7 @@ type Options = {
   onNotificationClick?: (threadId: number) => void;
 };
 
-// Admin inbox state shared by the admin page and the floating message button: live via the admin SSE
-// stream (HttpOnly admin cookie) with a slow poll as fallback for sessions without that cookie.
+// Admin inbox shared by the full page and floating panel: authenticated SSE with polling fallback.
 export function useAdminInbox({ token, enabled = true, isViewing = () => true, onUnreadChange, onAuthError, onNotificationClick }: Options) {
   const [threads, setThreads] = useState<MessageThreadRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -30,8 +29,11 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [syncFailures,setSyncFailures]=useState({list:false,thread:false,stream:false});
+  const listRequest=useRef(0);
   const selectedRef = useRef<number | null>(null);
   selectedRef.current = selected;
+  const viewingRef=useRef(isViewing);viewingRef.current=isViewing;
 
   const handle = useCallback((e: unknown) => {
     const message = e instanceof Error ? e.message : 'Terjadi kesalahan.';
@@ -40,39 +42,68 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
 
   const loadList = useCallback(async () => {
     if (!enabled || !token) return;
+    const request=++listRequest.current;
     try {
       const res = await adminMessagesAPI.list(token, page, search);
+      if(request!==listRequest.current)return;
       setThreads(res.data); setTotal(res.total); setPages(res.pages); setUnread(res.unread);
+      setSyncFailures(current=>({...current,list:false}));
       // The list carries read receipts too, so a refresh also updates ✓/✓✓ in the open conversation.
       const open = res.data.find(t => t.id === selectedRef.current);
       if (open) setThread(current => current && current.id === open.id ? {...current, visitor_read_id:Math.max(current.visitor_read_id || 0, open.visitor_read_id || 0)} : current);
       if (res.page !== page) setPage(res.page);
-    } catch (e) { handle(e); }
+    } catch (e) {
+      if(request!==listRequest.current)return;
+      if(e instanceof Error&&e.message==='401')handle(e);
+      else setSyncFailures(current=>({...current,list:true}));
+    }
   }, [enabled, token, page, search, handle]);
 
   const openThread = useCallback(async (id: number) => {
+    selectedRef.current=id;
     setSelected(id); setLoading(true); setError('');
     try {
       const res = await adminMessagesAPI.thread(token, id);
+      if(selectedRef.current!==id)return;
       setThread(res.thread); setMessages(res.messages); setUnread(res.unread);
+      setSyncFailures(current=>({...current,thread:false}));
       setThreads(list => list.map(t => t.id === id ? {...t, admin_unread:0} : t));
       onUnreadChange?.();
-    } catch (e) { handle(e); setSelected(null); } finally { setLoading(false); }
+    } catch (e) { if(selectedRef.current===id){handle(e);setSelected(null);} } finally { if(selectedRef.current===id)setLoading(false); }
   }, [token, handle, onUnreadChange]);
 
-  const closeThread = useCallback(() => { setSelected(null); setThread(null); setMessages([]); }, []);
+  const closeThread = useCallback(() => { selectedRef.current=null;setSelected(null); setThread(null); setMessages([]); }, []);
+
+  const refreshThread=useCallback(async()=>{
+    const id=selectedRef.current;
+    if(!id||!enabled||!token||document.visibilityState!=='visible'||!viewingRef.current())return;
+    try{
+      const res=await adminMessagesAPI.thread(token,id);
+      if(selectedRef.current!==id)return;
+      setMessages(current=>mergeMessages(current,res.messages));setThread(res.thread);setUnread(res.unread);
+      setSyncFailures(current=>({...current,thread:false}));
+    }catch(e){
+      if(selectedRef.current!==id)return;
+      if(e instanceof Error&&e.message==='401')handle(e);
+      else setSyncFailures(current=>({...current,thread:true}));
+    }
+  },[enabled,token,handle]);
 
   useEffect(() => { void loadList(); }, [loadList]);
 
   // The stream stays open across renders; it reads the latest callbacks through this ref.
-  const latest = useRef({loadList, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError});
-  latest.current = {loadList, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError};
+  const latest = useRef({loadList, refreshThread, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError});
+  latest.current = {loadList, refreshThread, openThread, onUnreadChange, isViewing, onNotificationClick, onAuthError};
   useEffect(() => {
     if (!enabled || !token) return;
     // Authenticated with the token (not the admin cookie), so every admin session gets live updates.
     const source = new AuthEventSource('/api/admin/messages/stream', token, () => latest.current.onAuthError());
     // After a (re)connect, catch up on whatever happened while disconnected.
-    source.addEventListener('open', () => { void latest.current.loadList(); });
+    source.addEventListener('open', () => {
+      setSyncFailures(current=>({...current,stream:false}));
+      void latest.current.loadList();void latest.current.refreshThread();
+    });
+    source.addEventListener('error',()=>setSyncFailures(current=>({...current,stream:true})));
     source.addEventListener('message', event => {
       let payload: {threadId?: number; name?: string; message?: ChatMessage};
       try { payload = JSON.parse((event as MessageEvent).data); } catch { return; }
@@ -114,10 +145,14 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
     });
     source.addEventListener('read', refresh);
     source.addEventListener('deleted', refresh);
-    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') void latest.current.loadList(); }, 30000);
+    const reconnect=()=>{void latest.current.loadList();void latest.current.refreshThread();};
+    const timer = window.setInterval(() => { if (document.visibilityState === 'visible') reconnect(); }, 30000);
+    const visible=()=>{if(document.visibilityState==='visible')reconnect();};
+    window.addEventListener('online',reconnect);
+    document.addEventListener('visibilitychange',visible);
     const unlock = () => unlockMessageSound();
     window.addEventListener('pointerdown', unlock);
-    return () => { source.close(); window.clearInterval(timer); window.removeEventListener('pointerdown', unlock); };
+    return () => { source.close();window.clearInterval(timer); window.removeEventListener('pointerdown', unlock);window.removeEventListener('online',reconnect);document.removeEventListener('visibilitychange',visible); };
   }, [enabled, token]);
 
   const reply = useCallback(async (text: string, file?: File | null) => {
@@ -130,8 +165,13 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
       setMessages(current => mergeMessages(current, [res.message]));
       void loadList();
       return true;
-    } catch (e) { handle(e); return false; } finally { setSending(false); }
-  }, [selected, sending, token, loadList, handle]);
+    } catch (e) {
+      if(e instanceof Error&&e.message==='401')handle(e);
+      else setError(`Balasan belum dapat dikonfirmasi. Periksa percakapan sebelum mengirim ulang. ${e instanceof Error?e.message:''}`);
+      void refreshThread();
+      return false;
+    } finally { setSending(false); }
+  }, [selected, sending, token, loadList, handle,refreshThread]);
 
   // Attachment permission for the open conversation only; the visitor's panel updates live.
   const [savingPermissions, setSavingPermissions] = useState(false);
@@ -156,5 +196,7 @@ export function useAdminInbox({ token, enabled = true, isViewing = () => true, o
   }, [selected, token, closeThread, loadList, onUnreadChange, handle]);
 
   return {threads, total, unread, page, setPage, pages, search, setSearch, selected, thread, messages, loading, sending, error, setError,
+    syncIssue:syncFailures.list||syncFailures.stream||(!!selected&&syncFailures.thread),
+    retrySync:()=>{void loadList();void refreshThread();},
     loadList, openThread, closeThread, reply, remove, setPermissions, savingPermissions};
 }

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import {MessageSyncStatus} from './MessageSyncStatus';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
 import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
@@ -36,6 +37,7 @@ export function AdminMessages({ token, onLogout, onUnreadChange }: { token: stri
       </div>
       {(error || attach.error) && <div role="alert" className="m-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm flex justify-between gap-3"><span>{attach.error || error}</span><button onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></div>}
 
+      <MessageSyncStatus issue={inbox.syncIssue} onRetry={inbox.retrySync}/>
       <div className="grid md:grid-cols-[minmax(240px,320px)_1fr] min-h-[60vh]">
         <aside className={`${selected ? 'hidden md:flex' : 'flex'} flex-col border-r min-h-0`}>
           <form className="p-3 border-b flex gap-2" onSubmit={e => { e.preventDefault(); setPage(1); setSearch(query.trim()); }}>

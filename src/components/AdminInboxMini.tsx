@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import {MessageSyncStatus} from './MessageSyncStatus';
 import { ArrowLeft, Send, ExternalLink, Trash2 } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime } from '../lib/messages';
 import { threadName } from '../lib/use-admin-inbox';
@@ -21,6 +22,7 @@ export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok
 
   if (!selected) return (
     <div className="flex-1 flex flex-col min-h-0 bg-[var(--reader-bg)]">
+      <MessageSyncStatus issue={inbox.syncIssue} onRetry={inbox.retrySync}/>
       {error && <p role="alert" className="m-3 text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
       <ul className="flex-1 overflow-y-auto divide-y divide-black/5" aria-label="Percakapan pengunjung">
         {threads.map(t => (
@@ -65,6 +67,7 @@ export function AdminInboxMini({ inbox, token, onOpenFull }: { inbox: Inbox; tok
           </div>
         ))}
       </div>
+      <MessageSyncStatus issue={inbox.syncIssue} onRetry={inbox.retrySync}/>
       <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void reply(); }} {...attach.dropProps}>
         {shownError && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-lg px-3 py-2 flex justify-between gap-2"><span>{shownError}</span><button type="button" onClick={() => { setError(''); attach.setError(''); }} className="underline">Tutup</button></p>}
         <ThreadPermissions thread={thread} saving={inbox.savingPermissions} onChange={value => void inbox.setPermissions(value)} compact />
