@@ -5,10 +5,12 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {randomBytes} from 'node:crypto';
 import {registerMessages,cleanMessageText,createRateLimiter,MESSAGE_LIMITS} from './messages.js';
 import {adminActivityIdentity} from './admin-log-identity.js';
 
 const NO_ATTACHMENTS = {allowFiles:false, allowImages:false, maxImageBytes:8 * 1024 * 1024, maxFileBytes:10 * 1024 * 1024};
+const ACKNOWLEDGMENT = 'Terima kasih telah menghubungi admin Maktabah. Pesan Anda sudah kami terima. Mohon menunggu, kami akan membalasnya sesegera mungkin.';
 
 async function fixture(t, {busy = false} = {}) {
   const db = new Database(':memory:');db.exec("CREATE TABLE admin_tokens(token TEXT PRIMARY KEY); INSERT INTO admin_tokens VALUES('admintoken')");
@@ -49,7 +51,12 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   assert.equal(first.json.message.body, '<img src=x onerror=alert(1)> Assalamu alaikum');assert.equal(first.json.thread.name, 'Ahmad');
   const other = await f.send({body:'Pesan browser lain'});assert.notEqual(other.cookie, first.cookie);
   const read = async cookie => (await fetch(f.base + '/api/messages', {headers:cookie ? {cookie} : {}})).json();
-  assert.deepEqual((await read(first.cookie)).messages.map(m => m.body), ['<img src=x onerror=alert(1)> Assalamu alaikum']);
+  const {created_at, ...autoReply} = first.json.autoReply;
+  assert.ok(Number.isFinite(Date.parse(created_at)));
+  assert.deepEqual(autoReply, {id:first.json.message.id + 1, sender:'admin', body:ACKNOWLEDGMENT, automatic:true, attachment:null});
+  const firstState = await read(first.cookie);
+  assert.deepEqual(firstState.messages, [first.json.message, first.json.autoReply]);
+  assert.equal(firstState.unread, 0);assert.equal(firstState.readUpTo, 0);
   assert.deepEqual(await read(), {thread:null, messages:[], unread:0, readUpTo:0, settings:NO_ATTACHMENTS});
   assert.ok(!JSON.stringify(f.db.prepare('SELECT session_id FROM visitor_message_threads').all()).includes(first.cookie.split('=')[1]), 'only the hash is stored');
 
@@ -61,8 +68,8 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   assert.equal(detail.thread.admin_unread, 0);assert.equal(detail.unread, 1);assert.equal(detail.thread.session_id, undefined);
   assert.equal((await f.admin('/' + thread.id, {method:'POST', body:JSON.stringify({body:'Wa alaikumussalam'})})).status, 201);
   const after = await read(first.cookie);
-  assert.equal(after.unread, 1);assert.deepEqual(after.messages.map(m => m.sender), ['visitor', 'admin']);
-  assert.deepEqual((await (await fetch(f.base + `/api/messages?after=${after.messages[0].id}`, {headers:{cookie:first.cookie}})).json()).messages.map(m => m.body), ['Wa alaikumussalam']);
+  assert.equal(after.unread, 1);assert.deepEqual(after.messages.map(m => m.sender), ['visitor', 'admin', 'admin']);
+  assert.deepEqual((await (await fetch(f.base + `/api/messages?after=${first.json.autoReply.id}`, {headers:{cookie:first.cookie}})).json()).messages.map(m => m.body), ['Wa alaikumussalam']);
   await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
   assert.equal((await read(first.cookie)).unread, 0);
 
@@ -70,7 +77,19 @@ test('a visitor conversation with an admin reply stays isolated per browser and 
   assert.equal((await f.admin('/' + thread.id, {method:'POST', body:JSON.stringify({body:'  '})})).status, 400);
   assert.equal((await f.admin('/' + thread.id, {method:'DELETE'})).status, 200);
   assert.deepEqual(await read(first.cookie), {thread:null, messages:[], unread:0, readUpTo:0, settings:NO_ATTACHMENTS});
-  assert.equal(f.db.prepare('SELECT count(*) AS n FROM visitor_messages').get().n, 1);
+  assert.equal(f.db.prepare('SELECT count(*) AS n FROM visitor_messages').get().n, 2);
+});
+
+test('a failure to store the acknowledgment rolls back the visitor message and unread count', async t => {
+  const f = await fixture(t);
+  const cookie = `maktabah_ai=${randomBytes(32).toString('hex')}`;
+  f.db.exec("CREATE TRIGGER fail_ack BEFORE INSERT ON visitor_messages WHEN NEW.is_automatic=1 BEGIN SELECT RAISE(ABORT, 'ack failed'); END");
+  assert.equal((await f.send({body:'Coba lagi'}, cookie)).status, 503);
+  assert.equal(f.db.prepare('SELECT count(*) AS n FROM visitor_messages').get().n, 0);
+  assert.equal(f.messages.adminUnread(), 0);
+  f.db.exec('DROP TRIGGER fail_ack');
+  const retry = await f.send({body:'Coba lagi'}, cookie);
+  assert.equal(retry.status, 201);assert.equal(retry.json.autoReply.body, ACKNOWLEDGMENT);
 });
 
 test('validation, duplicates, honeypot, rate limits and admin activity are rejected without storing', async t => {
@@ -83,7 +102,10 @@ test('validation, duplicates, honeypot, rate limits and admin activity are rejec
 
   const first = await f.send({body:'Pesan 1'});const cookie = first.cookie;
   assert.equal((await f.send({body:'Pesan 1'}, cookie)).status, 409);
-  for (let i = 2; i <= MESSAGE_LIMITS.perMinute; i++) assert.equal((await f.send({body:`Pesan ${i}`}, cookie)).status, 201);
+  for (let i = 2; i <= MESSAGE_LIMITS.perMinute; i++) {
+    const followup = await f.send({body:`Pesan ${i}`}, cookie);
+    assert.equal(followup.status, 201);assert.equal(followup.json.autoReply, null);
+  }
   const limited = await f.send({body:'Terlalu cepat'}, cookie);assert.equal(limited.status, 429);assert.match(limited.json.error, /Terlalu banyak/);
   f.tick(61000);
   for (let i = 6; i <= MESSAGE_LIMITS.unanswered; i++) {f.tick(13000);assert.equal((await f.send({body:`Pesan ${i}`}, cookie)).status, 201, `pesan ${i}`);}
@@ -116,19 +138,21 @@ test('streams deliver admin replies to the visitor and visitor messages to the a
   const adminStream = await open('/api/admin/messages/stream', {cookie:'maktabah_admin_session=admintoken'});
   await visitor.until(/retry: 5000/);await adminStream.until(/retry: 5000/);
   const id = (await (await f.admin('')).json()).data[0].id;
-  await f.admin('/' + id, {method:'POST', body:JSON.stringify({body:'Balasan admin'})});
+  const reply = await (await f.admin('/' + id, {method:'POST', body:JSON.stringify({body:'Balasan admin'})})).json();
   assert.match(await visitor.until(/Balasan admin/), /event: message\ndata: .*"sender":"admin"/);
-  await f.send({body:'Terima kasih'}, first.cookie);
-  assert.match(await adminStream.until(/Terima kasih/), /"threadId":\d+/);
+  const followup = await f.send({body:'Pesan lanjutan'}, first.cookie);
+  assert.equal(followup.json.autoReply.body, ACKNOWLEDGMENT);
+  assert.match(await visitor.until(/"automatic":true/), /event: message\ndata: .*"automatic":true/);
+  assert.match(await adminStream.until(/"automatic":true/), /"threadId":\d+.*Pesan lanjutan/);
   // A permission change reaches this visitor's open panel and other admin tabs.
   await f.admin(`/${id}/permissions`, {method:'PUT', body:JSON.stringify({allowFiles:true, allowImages:false})});
   assert.match(await visitor.until(/event: settings/), /event: settings\ndata: \{"allowFiles":true,"allowImages":false/);
   assert.match(await adminStream.until(/event: permissions/), /"allow_files":1,"allow_images":0/);
   // Read receipts: replying marks the visitor's message read (✓✓ for the visitor), and the visitor
   // reading the reply turns the admin's ✓ into ✓✓.
-  assert.match(await visitor.until(/event: seen/), /event: seen\ndata: \{"readUpTo":2\}/);
+  assert.match(await visitor.until(/event: seen/), new RegExp(`event: seen\\ndata: \\{"readUpTo":${reply.message.id}\\}`));
   await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
-  assert.match(await adminStream.until(/event: seen/), new RegExp(`event: seen\\ndata: \\{"threadId":${id},"visitor_read_id":3\\}`));
+  assert.match(await adminStream.until(/event: seen/), new RegExp(`event: seen\\ndata: \\{"threadId":${id},"visitor_read_id":${followup.json.autoReply.id}\\}`));
   // Admin sessions without the admin cookie connect with the Bearer token and get the same events.
   const bearerStream = await open('/api/admin/messages/stream', {Authorization:'Bearer admintoken'});
   await bearerStream.until(/retry: 5000/);
@@ -144,16 +168,16 @@ test('read receipts move forward per side and are exposed to the right party onl
   assert.equal((await state()).readUpTo, 0, 'sent, not yet read by the admin');
   const id = (await (await f.admin('')).json()).data[0].id;
   const detail = await (await f.admin('/' + id)).json();
-  assert.equal(detail.thread.admin_read_id, 1);assert.equal(detail.thread.visitor_read_id, 0);
-  assert.equal((await state()).readUpTo, 1, 'the admin opened the conversation');
+  assert.equal(detail.thread.admin_read_id, first.json.autoReply.id);assert.equal(detail.thread.visitor_read_id, 0);
+  assert.equal((await state()).readUpTo, first.json.autoReply.id, 'the admin opened the conversation');
   await f.send({body:'Dua'}, first.cookie);
-  assert.equal((await state()).readUpTo, 1, 'a newer message is only sent');
-  await f.admin('/' + id, {method:'POST', body:JSON.stringify({body:'Balasan'})});
-  assert.equal((await state()).readUpTo, 3, 'replying reads everything before it');
+  assert.equal((await state()).readUpTo, first.json.autoReply.id, 'a newer message is only sent');
+  const reply = await (await f.admin('/' + id, {method:'POST', body:JSON.stringify({body:'Balasan'})})).json();
+  assert.equal((await state()).readUpTo, reply.message.id, 'replying reads everything before it');
   assert.equal((await (await f.admin('/' + id)).json()).thread.visitor_read_id, 0, 'the visitor has not opened the reply yet');
   await fetch(f.base + '/api/messages/read', {method:'POST', headers:{cookie:first.cookie}});
   const row = (await (await f.admin('')).json()).data[0];
-  assert.equal(row.visitor_read_id, 3);assert.equal(row.admin_read_id, 3);
+  assert.equal(row.visitor_read_id, reply.message.id);assert.equal(row.admin_read_id, reply.message.id);
   assert.equal((await state()).thread.admin_read_id, undefined, 'the visitor sees only readUpTo');
 });
 
@@ -244,4 +268,5 @@ test('an existing message table gains the attachment columns without losing mess
   const {store} = registerMessages(express(), {getStateDb:() => db, requireAdmin:(q, r, n) => n()});
   assert.deepEqual(store.messages(1), [{id:1, sender:'visitor', body:'lama', created_at:'2026-11-15T00:00:00Z', attachment:null}]);
   assert.ok(db.prepare('PRAGMA table_info(visitor_messages)').all().some(c => c.name === 'attachment_file'));
+  assert.equal(db.prepare('SELECT is_automatic FROM visitor_messages').get().is_automatic, 0);
 });

@@ -2549,3 +2549,49 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-22-05-24-52-3e62af.
 | 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 120–120 | 155–155 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | 133–134 | 168–174 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
 | 2026-11-22 05:21:34 +07:00 | `src/lib/use-admin-inbox.ts` | — | 199–200 | export function useAdminInbox({ token, enabled = true, isViewing = () => true, o | modified |
+
+## [2026-11-23 15:46:30 +07:00] — Balasan otomatis tanpa salam pada pesan pengunjung
+
+Waktu pencatatan: **2026-11-23 15:46:30 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `9b7d56c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Sintaks Node.js, TypeScript dan build produksi lulus. 285 tes server lulus, termasuk 19 tes perpesanan/klien yang memeriksa teks balasan, SSE, pencegahan duplikasi, status pesan dibaca, migrasi, dan rollback. Diff staged lulus git diff --check. Balasan dikirim sekali saat mulai menunggu admin dan tampil dengan label Balasan otomatis.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-23-15-46-30-48eee7.json](docs/change-audit/2026-11-23-15-46-30-48eee7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-23 15:45:31 +07:00 | `dist/assets/index.dev-CduF99x2.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-23 15:45:31 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | — | 10–10 | export const MESSAGE_LIMITS = {body:2000, name:80, perMinute:5, perHour:30, ipPe | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 25–26 | 26–27 | export function publicMessage(row) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | — | 49–49 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 71–71 | 73–73 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 75–75 | 77–77 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 78–81 | 80–83 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | — | 88–97 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 99–99 | 111–111 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 115–116 | 127–128 | export function createMessageStore(getStateDb) { | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 229–229 | 241–241 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | — | 243–243 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-23 15:43:51 +07:00 | `server/messages.js` | 232–233 | 245–250 | export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | — | 8–8 | import path from 'node:path'; | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | — | 13–13 | const NO_ATTACHMENTS = {allowFiles:false, allowImages:false, maxImageBytes:8 * 1 | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 52–52 | 54–59 | test('a visitor conversation with an admin reply stays isolated per browser and | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 64–65 | 71–72 | test('a visitor conversation with an admin reply stays isolated per browser and | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 73–73 | 80–92 | test('a visitor conversation with an admin reply stays isolated per browser and | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 86–86 | 105–108 | test('validation, duplicates, honeypot, rate limits and admin activity are rejec | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 119–119 | 141–141 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 121–122 | 143–146 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 129–129 | 153–153 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 131–131 | 155–155 | test('streams deliver admin replies to the visitor and visitor messages to the a | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 147–148 | 171–172 | test('read receipts move forward per side and are exposed to the right party onl | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 150–152 | 174–176 | test('read receipts move forward per side and are exposed to the right party onl | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | 156–156 | 180–180 | test('read receipts move forward per side and are exposed to the right party onl | modified |
+| 2026-11-23 15:45:10 +07:00 | `server/messages.test.js` | — | 271–271 | test('an existing message table gains the attachment columns without losing mess | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/components/MessageParts.tsx` | — | 84–84 | export function MessageBody({ message, mine, token }: { message: ChatMessage; mi | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/components/MessageParts.tsx` | 106–106 | 107–107 | export function MessageMeta({ message, mine, read, full = false, className = '' | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/components/MessageWidget.tsx` | 97–97 | 97–97 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/components/MessageWidget.tsx` | 185–185 | 185–185 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/components/MessageWidget.tsx` | 228–228 | 228–228 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/lib/messages.ts` | 3–3 | 3–3 | export type ChatAttachment = {kind:'image'\|'file'; name:string; mime:string; siz | modified |
+| 2026-11-23 15:44:21 +07:00 | `src/lib/messages.ts` | 63–63 | 63–63 | export const messagesAPI = { | modified |

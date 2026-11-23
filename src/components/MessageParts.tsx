@@ -81,6 +81,7 @@ function ImageAttachment({ attachment, mine, token }: { attachment: ChatAttachme
 export function MessageBody({ message, mine, token }: { message: ChatMessage; mine: boolean; token?: string }) {
   const attachment = message.attachment;
   return <>
+    {message.automatic && <div className="text-[11px] font-bold mb-0.5">Balasan otomatis</div>}
     {attachment && <div className={message.body ? 'mb-1.5' : ''}>
       {attachment.kind === 'image' ? <ImageAttachment attachment={attachment} mine={mine} token={token} /> : <FileCard attachment={attachment} mine={mine} token={token} />}
     </div>}
@@ -103,7 +104,7 @@ export function MessageMeta({ message, mine, read, full = false, className = '' 
   return (
     <div className={`flex items-center justify-end gap-1 text-[10px] mt-1 ${className}`}>
       <time dateTime={message.created_at}>{messageTime(message.created_at, full)}</time>
-      {mine && read !== undefined && <ReadTicks read={read} />}
+      {mine && !message.automatic && read !== undefined && <ReadTicks read={read} />}
     </div>
   );
 }

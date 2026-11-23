@@ -94,7 +94,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
       const message = payload.message;
       if (!message) return;
       apply([message]);
-      if (message.sender !== 'admin') return;
+      if (message.sender !== 'admin' || message.automatic) return;
       if (viewing.current && document.visibilityState === 'visible') { markRead(); return; }
       setUnread(count => typeof payload.unread === 'number' ? payload.unread : count + 1);
       playMessageSound();
@@ -182,7 +182,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     setSending(true); setError(''); attach.setError('');
     try {
       const result = await messagesAPI.send(body, name.trim(), website, file ? await readAttachment(file) : null);
-      if (result.message) apply([result.message]);
+      if (result.message) apply(result.autoReply ? [result.message, result.autoReply] : [result.message]);
       setDraft(''); attach.clear(); setHasThread(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Pesan gagal dikirim.');
@@ -225,7 +225,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
             ) : messages.map(m => (
               <div key={m.id} className={`flex ${m.sender === 'visitor' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'visitor' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
-                  {m.sender === 'admin' && <div className="text-[11px] font-bold text-[var(--app-primary)] mb-0.5">Admin</div>}
+                  {m.sender === 'admin' && !m.automatic && <div className="text-[11px] font-bold text-[var(--app-primary)] mb-0.5">Admin</div>}
                   <MessageBody message={m} mine={m.sender === 'visitor'} />
                   <MessageMeta message={m} mine={m.sender === 'visitor'} read={m.id <= readUpTo} className={m.sender === 'visitor' ? 'text-white/75' : 'opacity-60'} />
                 </div>

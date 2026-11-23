@@ -7,6 +7,7 @@ import {ATTACHMENT_LIMITS,contentDisposition,createAttachmentStorage,parseAttach
 // Visitor ↔ admin messages. Visitors are identified only by the anonymous browser cookie (hashed);
 // admins reply from the admin panel. Text is stored as plain text and always rendered as text, never HTML.
 export const MESSAGE_LIMITS = {body:2000, name:80, perMinute:5, perHour:30, ipPerHour:60, newThreadsPerIpHour:10, unanswered:15, duplicateMs:10*60*1000, page:200};
+const AUTO_REPLY = 'Terima kasih telah menghubungi admin Maktabah. Pesan Anda sudah kami terima. Mohon menunggu, kami akan membalasnya sesegera mungkin.';
 const STREAM_LIMITS = {total:1000, perSession:4, pingMs:25000};
 const now = () => new Date().toISOString();
 const iso = "strftime('%Y-%m-%dT%H:%M:%fZ','now')";
@@ -22,8 +23,8 @@ export function cleanMessageText(value) {
 
 // The stored file name never leaves the server; clients fetch attachments by message id.
 export function publicMessage(row) {
-  const {attachment_kind:kind, attachment_name:name, attachment_mime:mime, attachment_size:size, ...message} = row;
-  return {...message, attachment:kind ? {kind, name, mime:String(mime || '').split(';')[0], size:Number(size) || 0, url:`/api/messages/attachments/${row.id}`} : null};
+  const {attachment_kind:kind, attachment_name:name, attachment_mime:mime, attachment_size:size, is_automatic, ...message} = row;
+  return {...message, ...(is_automatic ? {automatic:true} : {}), attachment:kind ? {kind, name, mime:String(mime || '').split(';')[0], size:Number(size) || 0, url:`/api/messages/attachments/${row.id}`} : null};
 }
 
 export function createMessageStore(getStateDb) {
@@ -45,6 +46,7 @@ export function createMessageStore(getStateDb) {
       const columns = new Set(current.prepare('PRAGMA table_info(visitor_messages)').all().map(c => c.name));
       for (const [name, type] of [['attachment_kind','TEXT'],['attachment_name','TEXT'],['attachment_mime','TEXT'],['attachment_size','INTEGER'],['attachment_file','TEXT']])
         if (!columns.has(name)) current.exec(`ALTER TABLE visitor_messages ADD COLUMN ${name} ${type}`);
+      if (!columns.has('is_automatic')) current.exec('ALTER TABLE visitor_messages ADD COLUMN is_automatic INTEGER NOT NULL DEFAULT 0');
       // Permission to attach is granted per conversation by the admin; new conversations start without it.
       const threadColumns = new Set(current.prepare('PRAGMA table_info(visitor_message_threads)').all().map(c => c.name));
       for (const name of ['allow_files', 'allow_images'])
@@ -68,21 +70,31 @@ export function createMessageStore(getStateDb) {
   };
   const threadBySession = sessionId => db().prepare('SELECT * FROM visitor_message_threads WHERE session_id=?').get(sessionId);
   const thread = id => db().prepare('SELECT * FROM visitor_message_threads WHERE id=?').get(id);
-  const COLUMNS = 'id,sender,body,created_at,attachment_kind,attachment_name,attachment_mime,attachment_size';
+  const COLUMNS = 'id,sender,body,created_at,is_automatic,attachment_kind,attachment_name,attachment_mime,attachment_size';
   const messages = (threadId, after = 0, limit = MESSAGE_LIMITS.page) => (after > 0
     ? db().prepare(`SELECT ${COLUMNS} FROM visitor_messages WHERE thread_id=? AND id>? ORDER BY id LIMIT ?`).all(threadId, after, limit)
     : db().prepare(`SELECT * FROM (SELECT ${COLUMNS} FROM visitor_messages WHERE thread_id=? ORDER BY id DESC LIMIT ?) ORDER BY id`).all(threadId, limit)).map(publicMessage);
-  function add(threadRow, sender, body, attachment = null) {
+  function add(threadRow, sender, body, attachment = null, automatic = false) {
     const d = db(), created = now();
     return d.transaction(() => {
-      const id = Number(d.prepare('INSERT INTO visitor_messages(thread_id,sender,body,created_at,attachment_kind,attachment_name,attachment_mime,attachment_size,attachment_file) VALUES(?,?,?,?,?,?,?,?,?)')
-        .run(threadRow.id, sender, body, created, attachment?.kind ?? null, attachment?.name ?? null, attachment?.mime ?? null, attachment?.size ?? null, attachment?.file ?? null).lastInsertRowid);
-      d.prepare(`UPDATE visitor_message_threads SET updated_at=?, ${sender === 'visitor' ? 'admin_unread=admin_unread+1' : 'visitor_unread=visitor_unread+1'} WHERE id=?`).run(created, threadRow.id);
-      return publicMessage({id, sender, body, created_at:created, attachment_kind:attachment?.kind, attachment_name:attachment?.name, attachment_mime:attachment?.mime, attachment_size:attachment?.size});
+      const id = Number(d.prepare('INSERT INTO visitor_messages(thread_id,sender,body,created_at,attachment_kind,attachment_name,attachment_mime,attachment_size,attachment_file,is_automatic) VALUES(?,?,?,?,?,?,?,?,?,?)')
+        .run(threadRow.id, sender, body, created, attachment?.kind ?? null, attachment?.name ?? null, attachment?.mime ?? null, attachment?.size ?? null, attachment?.file ?? null, Number(automatic)).lastInsertRowid);
+      if (!automatic) d.prepare(`UPDATE visitor_message_threads SET updated_at=?, ${sender === 'visitor' ? 'admin_unread=admin_unread+1' : 'visitor_unread=visitor_unread+1'} WHERE id=?`).run(created, threadRow.id);
+      return publicMessage({id, sender, body, created_at:created, is_automatic:automatic, attachment_kind:attachment?.kind, attachment_name:attachment?.name, attachment_mime:attachment?.mime, attachment_size:attachment?.size});
     })();
   }
   return {
     db, threadBySession, thread, messages, add,
+    addVisitorMessage(threadRow, body, attachment) {
+      const d = db();
+      return d.transaction(() => {
+        const message = add(threadRow, 'visitor', body, attachment);
+        // Send one acknowledgment while the visitor is waiting for a human reply.
+        const lastReply = d.prepare("SELECT is_automatic FROM visitor_messages WHERE thread_id=? AND sender='admin' ORDER BY id DESC LIMIT 1").get(threadRow.id);
+        const autoReply = lastReply?.is_automatic ? null : add(threadRow, 'admin', AUTO_REPLY, null, true);
+        return {message, autoReply};
+      })();
+    },
     attachment(messageId) { return db().prepare('SELECT m.id,m.attachment_kind,m.attachment_name,m.attachment_mime,m.attachment_file,t.session_id FROM visitor_messages m JOIN visitor_message_threads t ON t.id=m.thread_id WHERE m.id=? AND m.attachment_file IS NOT NULL').get(messageId); },
     attachmentFiles(threadId) { return db().prepare('SELECT attachment_file FROM visitor_messages WHERE thread_id=? AND attachment_file IS NOT NULL').all(threadId).map(r => r.attachment_file); },
     setPermissions(threadId, {allowFiles, allowImages}) {
@@ -96,7 +108,7 @@ export function createMessageStore(getStateDb) {
     },
     rename(threadId, name) { if (name) db().prepare('UPDATE visitor_message_threads SET name=? WHERE id=?').run(name, threadId); },
     unansweredCount(threadId) {
-      return db().prepare("SELECT count(*) AS n FROM visitor_messages WHERE thread_id=? AND sender='visitor' AND id>coalesce((SELECT max(id) FROM visitor_messages WHERE thread_id=? AND sender='admin'),0)").get(threadId, threadId).n;
+      return db().prepare("SELECT count(*) AS n FROM visitor_messages WHERE thread_id=? AND sender='visitor' AND id>coalesce((SELECT max(id) FROM visitor_messages WHERE thread_id=? AND sender='admin' AND is_automatic=0),0)").get(threadId, threadId).n;
     },
     lastVisitorMessage(threadId) { return db().prepare("SELECT body,created_at FROM visitor_messages WHERE thread_id=? AND sender='visitor' ORDER BY id DESC LIMIT 1").get(threadId); },
     // Clears the unread counter and moves the read receipt up to the newest message; returns the receipt.
@@ -112,8 +124,8 @@ export function createMessageStore(getStateDb) {
       const total = db().prepare(`SELECT count(*) AS n FROM visitor_message_threads t ${where}`).get(...args).n;
       const pages = Math.max(1, Math.ceil(total / limit)), current = Math.min(Math.max(1, page), pages);
       const data = db().prepare(`SELECT t.id,t.name,t.ip,t.user_agent,t.admin_unread,t.visitor_unread,t.allow_files,t.allow_images,t.admin_read_id,t.visitor_read_id,t.created_at,t.updated_at,
-        (SELECT CASE WHEN m.body='' AND m.attachment_name IS NOT NULL THEN (CASE WHEN m.attachment_kind='image' THEN '📷 ' ELSE '📎 ' END)||m.attachment_name ELSE m.body END FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_body,
-        (SELECT sender FROM visitor_messages m WHERE m.thread_id=t.id ORDER BY m.id DESC LIMIT 1) AS last_sender,
+        (SELECT CASE WHEN m.body='' AND m.attachment_name IS NOT NULL THEN (CASE WHEN m.attachment_kind='image' THEN '📷 ' ELSE '📎 ' END)||m.attachment_name ELSE m.body END FROM visitor_messages m WHERE m.thread_id=t.id AND m.is_automatic=0 ORDER BY m.id DESC LIMIT 1) AS last_body,
+        (SELECT sender FROM visitor_messages m WHERE m.thread_id=t.id AND m.is_automatic=0 ORDER BY m.id DESC LIMIT 1) AS last_sender,
         (SELECT count(*) FROM visitor_messages m WHERE m.thread_id=t.id) AS message_count
         FROM visitor_message_threads t ${where} ORDER BY t.updated_at DESC, t.id DESC LIMIT ? OFFSET ?`).all(...args, limit, (current - 1) * limit);
       return {data, total, page:current, pages, unread:this.adminUnread()};
@@ -226,11 +238,16 @@ export function registerMessages(app, {getStateDb, requireAdmin, isBusy = () => 
       saved = storeAttachment(attachment);
       row ||= store.createThread(session, {name, ip, userAgent:String(req.headers['user-agent'] || '').slice(0, 500)});
       if (name && name !== row.name) { store.rename(row.id, name); row = {...row, name}; }
-      const message = store.add(row, 'visitor', body, saved);
+      const {message, autoReply} = store.addVisitorMessage(row, body, saved);
       saved = null;
+      const unread = store.adminUnread();
       hub.toVisitor(session, 'message', {message});
-      hub.toAdmins('message', {threadId:row.id, name:row.name, message, unread:store.adminUnread()});
-      res.status(201).json({success:true, thread:publicThread(row), message});
+      hub.toAdmins('message', {threadId:row.id, name:row.name, message, unread});
+      if (autoReply) {
+        hub.toVisitor(session, 'message', {message:autoReply});
+        hub.toAdmins('message', {threadId:row.id, name:row.name, message:autoReply, unread});
+      }
+      res.status(201).json({success:true, thread:publicThread(row), message, autoReply});
     } catch (error) { fail(res, error); } finally { if (saved) files.remove([saved.file]); }
   });
 
