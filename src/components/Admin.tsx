@@ -10,6 +10,7 @@ import { useModalFocus } from '../lib/use-modal-focus';
 import { adminParent, adminTitle, adminGroup, adminLocation } from '../lib/admin-navigation';
 import { AdminNavigation } from './AdminNavigation';
 import { AdminMessages } from './AdminMessages';
+import { useAdminInbox } from '../lib/use-admin-inbox';
 import { restoreAdminEntities } from '../lib/admin-loader';
 import { StorageCleanup } from './StorageCleanup';
 import { AskLogDetail } from './AskLogDetail';
@@ -1519,6 +1520,14 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
     });
   }, [token, onLogout]);
 
+  const inbox = useAdminInbox({
+    token, onAuthError:onLogout, onUnreadChange:fetchStats,
+    isViewing:() => view === 'messages' && !restoring && !routeError,
+    onNotificationClick:id => { setView('messages'); void inbox.openThread(id); },
+  });
+  const {closeThread} = inbox;
+  useEffect(() => { if (view !== 'messages') closeThread(); }, [view, closeThread]);
+
   useEffect(() => {
     fetchStats();window.addEventListener('maktabah:logs-changed',fetchStats);
     return()=>window.removeEventListener('maktabah:logs-changed',fetchStats);
@@ -1590,7 +1599,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
           {view === 'edit_page' && selectedBook && selectedPage && (
             <EditPageView token={token} onLogout={onLogout} book={selectedBook} pageRow={selectedPage} onSaved={() => { setView('pages'); setSelectedPage(null); }} />
           )}
-          {view === 'messages' && <AdminMessages token={token} onLogout={onLogout} onUnreadChange={fetchStats} />}
+          {view === 'messages' && <AdminMessages token={token} inbox={inbox} />}
           {view === 'feedback' && <FeedbackView token={token} onLogout={onLogout} />}
           {view === 'requests' && <RequestsView token={token} onLogout={onLogout} />}
                     {view === 'submissions' && <SubmissionsView token={token} onLogout={onLogout} />}

@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import {MessageSyncStatus} from './MessageSyncStatus';
 import { MessageCircle, Send, Trash2, Search, Bell, BellOff, ArrowLeft, RefreshCw } from 'lucide-react';
 import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime, notificationPermission, requestNotifications, unlockMessageSound } from '../lib/messages';
-import { threadName, useAdminInbox } from '../lib/use-admin-inbox';
+import { threadName } from '../lib/use-admin-inbox';
+import type { useAdminInbox } from '../lib/use-admin-inbox';
 import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, ThreadPermissions, useAttachmentDraft } from './MessageParts';
 
 // Full admin inbox page for visitor messages (the floating button offers a compact version).
-export function AdminMessages({ token, onLogout, onUnreadChange }: { token: string; onLogout: () => void; onUnreadChange: () => void }) {
-  const inbox = useAdminInbox({token, onAuthError:onLogout, onUnreadChange});
+export function AdminMessages({ token, inbox }: { token: string; inbox: ReturnType<typeof useAdminInbox> }) {
   const {threads, total, page, setPage, pages, search, setSearch, selected, thread, messages, loading, sending, error, setError, loadList, openThread, closeThread, remove} = inbox;
   const [query, setQuery] = useState('');
   const [draft, setDraft] = useState('');

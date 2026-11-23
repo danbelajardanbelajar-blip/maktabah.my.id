@@ -12,6 +12,7 @@ import { AdminInboxMini } from './AdminInboxMini';
 import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, useAttachmentDraft } from './MessageParts';
 
 const readAdminToken = () => { try { return localStorage.getItem('adminToken') || ''; } catch { return ''; } };
+const AUTO_REPLY_DELAY_MS = 1500;
 
 // Floating visitor ↔ admin chat. While reading a book (or inside the admin page) it is hidden but keeps
 // the live connection so new messages still raise the badge, sound and notification. A browser logged
@@ -21,6 +22,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   const [open, setOpen] = useState(false);
   const [scrollHidden, setScrollHidden] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [pendingReplies, setPendingReplies] = useState<number[]>([]);
+  const [revealedReply, setRevealedReply] = useState<number | null>(null);
   const [hasThread, setHasThread] = useState(false);
   const [unread, setUnread] = useState(0);
   // The admin has read this visitor's messages up to this id (✓✓); newer ones show ✓ (sent).
@@ -37,6 +40,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const lastId = useRef(0);
+  const receivedIds = useRef(new Set<number>());
+  const replyTimers = useRef(new Map<number, number>());
   const viewing = useRef(false);
   viewing.current = open && !suppressed;
 
@@ -50,11 +55,36 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     onNotificationClick:id => { setOpen(true); void inbox.openThread(id); },
   });
 
-  const apply = useCallback((incoming: ChatMessage[]) => {
-    if (!incoming.length) return;
-    lastId.current = Math.max(lastId.current, ...incoming.map(m => m.id));
-    setMessages(current => mergeMessages(current, incoming));
+  const apply = useCallback((incoming: ChatMessage[], live = false) => {
+    const fresh = incoming.filter(message => {
+      if (receivedIds.current.has(message.id)) return false;
+      receivedIds.current.add(message.id);
+      return true;
+    });
+    if (!fresh.length) return false;
+    lastId.current = Math.max(lastId.current, ...fresh.map(m => m.id));
+    if (live) {
+      if (fresh.some(message => message.sender === 'admin' && !message.automatic)) playMessageSound();
+      for (const message of fresh) {
+        if (!message.automatic) continue;
+        setPendingReplies(current => [...current, message.id]);
+        replyTimers.current.set(message.id, window.setTimeout(() => {
+          replyTimers.current.delete(message.id);
+          setRevealedReply(message.id);
+          setPendingReplies(current => current.filter(id => id !== message.id));
+          playMessageSound();
+        }, AUTO_REPLY_DELAY_MS));
+      }
+    }
+    setMessages(current => mergeMessages(current, fresh));
+    return true;
   }, []);
+
+  const clearReplyTimers = useCallback(() => {
+    for (const timer of replyTimers.current.values()) window.clearTimeout(timer);
+    replyTimers.current.clear();
+  }, []);
+  useEffect(() => clearReplyTimers, [clearReplyTimers]);
 
   // Initial load: the cookie is HttpOnly, so the server tells us whether this browser has a conversation.
   useEffect(() => {
@@ -78,7 +108,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     if (!hasThread || adminMode) return;
     const source = new EventSource('/api/messages/stream');
     source.addEventListener('open', () => {
-      messagesAPI.load(lastId.current).then(data => { apply(data.messages); seen(data.readUpTo); if (!viewing.current) setUnread(data.unread); if (data.settings) setSettings(data.settings); }).catch(() => {});
+      messagesAPI.load(lastId.current).then(data => { apply(data.messages, true); seen(data.readUpTo); if (!viewing.current) setUnread(data.unread); if (data.settings) setSettings(data.settings); }).catch(() => {});
     });
     // The admin opened (or replied in) this conversation.
     source.addEventListener('seen', event => {
@@ -92,19 +122,20 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
       let payload: {message?: ChatMessage; unread?: number};
       try { payload = JSON.parse((event as MessageEvent).data); } catch { return; }
       const message = payload.message;
-      if (!message) return;
-      apply([message]);
+      if (!message || !apply([message], true)) return;
       if (message.sender !== 'admin' || message.automatic) return;
       if (viewing.current && document.visibilityState === 'visible') { markRead(); return; }
       setUnread(count => typeof payload.unread === 'number' ? payload.unread : count + 1);
-      playMessageSound();
       if (document.visibilityState !== 'visible' || !viewing.current)
         showMessageNotification('Balasan baru dari admin', messagePreview(message), () => setOpen(true));
     });
     source.addEventListener('read', () => setUnread(0));
-    source.addEventListener('reset', () => { setMessages([]); lastId.current = 0; setHasThread(false); setUnread(0); setReadUpTo(0); });
+    source.addEventListener('reset', () => {
+      clearReplyTimers(); receivedIds.current.clear(); lastId.current = 0;
+      setPendingReplies([]); setRevealedReply(null); setMessages([]); setHasThread(false); setUnread(0); setReadUpTo(0);
+    });
     return () => source.close();
-  }, [hasThread, adminMode, apply, markRead, seen]);
+  }, [hasThread, adminMode, apply, clearReplyTimers, markRead, seen]);
 
   const badge = adminMode ? inbox.unread : unread;
   useEffect(() => { setAppBadge(badge); }, [badge]);
@@ -130,7 +161,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
 
   useEffect(() => {
     if (open) listRef.current?.scrollTo({top:listRef.current.scrollHeight});
-  }, [open, messages.length]);
+  }, [open, messages.length, pendingReplies.length]);
   useEffect(() => { if (open) inputRef.current?.focus({preventScroll:true}); }, [open]);
 
   // Hide on scroll down, show on scroll up; a fresh page load always starts visible.
@@ -150,8 +181,9 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   useEffect(() => {
     const unlock = () => unlockMessageSound();
     window.addEventListener('pointerdown', unlock, {once:true});
+    window.addEventListener('pointerup', unlock, {once:true});
     window.addEventListener('keydown', unlock, {once:true});
-    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+    return () => { window.removeEventListener('pointerdown', unlock); window.removeEventListener('pointerup', unlock); window.removeEventListener('keydown', unlock); };
   }, []);
 
   useEffect(() => {
@@ -169,7 +201,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
   // conversation have no live stream yet).
   useEffect(() => {
     if (!open || adminMode) return;
-    messagesAPI.load(lastId.current).then(data => { apply(data.messages); seen(data.readUpTo); if (data.settings) setSettings(data.settings); }).catch(() => {});
+    const after = lastId.current;
+    messagesAPI.load(after).then(data => { apply(data.messages, after > 0); seen(data.readUpTo); if (data.settings) setSettings(data.settings); }).catch(() => {});
   }, [open, adminMode, apply, seen]);
 
   const send = async () => {
@@ -182,7 +215,7 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
     setSending(true); setError(''); attach.setError('');
     try {
       const result = await messagesAPI.send(body, name.trim(), website, file ? await readAttachment(file) : null);
-      if (result.message) apply(result.autoReply ? [result.message, result.autoReply] : [result.message]);
+      if (result.message) apply(result.autoReply ? [result.message, result.autoReply] : [result.message], true);
       setDraft(''); attach.clear(); setHasThread(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Pesan gagal dikirim.');
@@ -222,8 +255,8 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
                 <p>Tulis pesan untuk admin al Maktabah as Sunniyyah. Balasan akan muncul di sini dan Anda akan diberi tahu.</p>
                 <p className="mt-2 text-xs opacity-70">Percakapan terhubung dengan peramban ini (tanpa akun). Jangan kirim data pribadi yang sensitif.</p>
               </div>
-            ) : messages.map(m => (
-              <div key={m.id} className={`flex ${m.sender === 'visitor' ? 'justify-end' : 'justify-start'}`}>
+            ) : messages.filter(m => !pendingReplies.includes(m.id)).map(m => (
+              <div key={m.id} className={`flex ${m.sender === 'visitor' ? 'justify-end' : 'justify-start'} ${m.id === revealedReply ? 'motion-safe:animate-[message-panel-in_180ms_ease-out]' : ''}`}>
                 <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 shadow-sm ${m.sender === 'visitor' ? 'bg-[var(--app-primary)] text-white rounded-br-md' : 'bg-[var(--reader-paper)] border border-black/5 rounded-bl-md'}`}>
                   {m.sender === 'admin' && !m.automatic && <div className="text-[11px] font-bold text-[var(--app-primary)] mb-0.5">Admin</div>}
                   <MessageBody message={m} mine={m.sender === 'visitor'} />
@@ -231,6 +264,16 @@ export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin
                 </div>
               </div>
             ))}
+            {pendingReplies.length > 0 && (
+              <div className="flex w-fit items-center gap-2 rounded-2xl rounded-bl-md border border-black/5 bg-[var(--reader-paper)] px-3.5 py-2 text-xs">
+                <span>Balasan otomatis sedang disiapkan</span>
+                <span aria-hidden="true" className="flex gap-1 text-[var(--app-primary)]">
+                  <span className="size-1.5 rounded-full bg-current motion-safe:animate-[message-typing-dot_900ms_ease-in-out_infinite]" />
+                  <span className="size-1.5 rounded-full bg-current motion-safe:animate-[message-typing-dot_900ms_ease-in-out_150ms_infinite]" />
+                  <span className="size-1.5 rounded-full bg-current motion-safe:animate-[message-typing-dot_900ms_ease-in-out_300ms_infinite]" />
+                </span>
+              </div>
+            )}
           </div>
 
           <form className="border-t border-black/10 p-3 space-y-2 bg-[var(--reader-paper)]" onSubmit={e => { e.preventDefault(); void send(); }} {...attach.dropProps}>

@@ -99,7 +99,7 @@ export function unlockMessageSound() {
   try {
     const Ctor = window.AudioContext || (window as any).webkitAudioContext;
     if (!audio && Ctor) audio = new Ctor();
-    if (audio?.state === 'suspended') void audio.resume();
+    if (audio && audio.state !== 'running') void audio.resume().catch(() => {});
   } catch { /* Audio is optional. */ }
 }
 export function playMessageSound() {

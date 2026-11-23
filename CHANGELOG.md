@@ -2595,3 +2595,42 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-23-15-46-30-48eee7.
 | 2026-11-23 15:44:21 +07:00 | `src/components/MessageWidget.tsx` | 228–228 | 228–228 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
 | 2026-11-23 15:44:21 +07:00 | `src/lib/messages.ts` | 3–3 | 3–3 | export type ChatAttachment = {kind:'image'\|'file'; name:string; mime:string; siz | modified |
 | 2026-11-23 15:44:21 +07:00 | `src/lib/messages.ts` | 63–63 | 63–63 | export const messagesAPI = { | modified |
+
+## [2026-11-23 17:35:43 +07:00] — Suara pesan masuk dan animasi jeda balasan otomatis
+
+Waktu pencatatan: **2026-11-23 17:35:43 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `797e129`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Sintaks Node.js, TypeScript, build produksi, 285 tes server, dan diff staged lulus. Uji Chrome dengan database sementara memverifikasi suara pada halaman kategori admin, suara balasan manual saat chat terbuka, jeda 1,5 detik dengan indikator animasi, satu suara untuk balasan otomatis yang sampai lewat HTTP dan SSE, serta riwayat yang tampil senyap setelah muat ulang.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-23-17-35-43-66d547.json](docs/change-audit/2026-11-23-17-35-43-66d547.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BQ6Hekp_.css` | 1–2 | — | module/file | deleted |
+| 2026-11-23 15:53:47 +07:00 | `dist/assets/index-BrIgRAGJ.css` | — | 1–2 | module/file | added |
+| 2026-11-23 15:53:47 +07:00 | `dist/assets/index.dev-CtdlN1td.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-23 15:53:47 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/Admin.tsx` | — | 13–13 | import { AdminMessages } from './AdminMessages'; | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/Admin.tsx` | — | 1523–1530 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/Admin.tsx` | 1593–1593 | 1602–1602 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/AdminMessages.tsx` | 5–5 | 5–6 | import { DEFAULT_MESSAGE_SETTINGS, MESSAGE_MAX, messageTime, notificationPermiss | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/AdminMessages.tsx` | 9–10 | 10–10 | import { AttachmentButtons, MessageBody, MessageMeta, PendingAttachmentChip, Thr | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 15–15 | const readAdminToken = () => { try { return localStorage.getItem('adminToken') \| | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 25–26 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 43–44 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 53–56 | 58–85 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 87–87 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 81–81 | 111–111 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 95–96 | 125–125 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 100–100 | — | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 105–105 | 133–136 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 107–107 | 138–138 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 133–133 | 164–164 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 184–184 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 154–154 | 186–186 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 172–172 | 204–205 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 185–185 | 218–218 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | 225–226 | 258–259 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 267–276 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
+| 2026-11-23 15:52:43 +07:00 | `src/index.css` | — | 53–57 | b { | modified |
+| 2026-11-23 15:53:22 +07:00 | `src/lib/messages.ts` | 102–102 | 102–102 | export function unlockMessageSound() { | modified |
