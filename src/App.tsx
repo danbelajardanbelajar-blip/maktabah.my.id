@@ -2,7 +2,7 @@ import {HadithBooks} from './components/HadithBooks';
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
-import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest, HeartHandshake } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -10,6 +10,7 @@ import QuranReader from './components/QuranReader';
 import RowaDictionary from './components/RowaDictionary';
 import {Authors} from './components/Authors';
 import About from './components/About';
+import Donation from './components/Donation';
 import Privacy from './components/Privacy';
 import { Admin } from './components/Admin';
 import Feedback from './components/Feedback';
@@ -35,7 +36,7 @@ import Settings, { THEMES } from './components/Settings';
 import { useEffect, useRef } from 'react';
 
 
-const pageTitles:Record<AppTab,string> = {hadith:'Kutub Hadis',authors:'Penulis & Karya',home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya'};
+const pageTitles:Record<AppTab,string> = {hadith:'Kutub Hadis',authors:'Penulis & Karya',home:'Beranda',search:'Pencarian',advanced_search:'Pencarian Lanjut',catalog:'Katalog Kitab',quran:'Al-Qur’an & Tafsir',rowa:'Kamus Perawi',about:'Tentang Kami',privacy:'Kebijakan Privasi',settings:'Pengaturan Tampilan',more:'Lainnya',ask:'Tanya AI',admin:'Administrator',feedback:'Masukan',book_request:'Permintaan Kitab',book_submit:'Kirim Kitab',collection:'Koleksi Saya',donation:'Dukung Maktabah'};
 
 function App() {
   const [activeTab, setActiveTabState] = useState<AppTab>(() => parseNavigation(window.location.hash, window.location.search).tab);
@@ -479,6 +480,8 @@ function App() {
           <Privacy />
         ) : activeTab === 'settings' ? (
           <Settings settings={settings} setSettings={setSettings} />
+        ) : activeTab === 'donation' ? (
+          <Donation />
         ) : activeTab === 'feedback' ? (
           <Feedback />
         ) : activeTab === 'book_request' ? (
@@ -707,8 +710,8 @@ function App() {
                   </div>
                 </div>
 
-                {/* Submit, Request, Feedback Cards */}
-                <div className="grid grid-cols-3 gap-2 md:gap-4">
+                {/* Submit, Request, Feedback, Donation Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4">
                   <button onClick={() => setActiveTab('book_submit')} className="bg-[var(--reader-bg)] p-3 md:p-5 rounded-2xl border border-black/5 shadow-sm hover:shadow-md hover:border-[var(--app-primary)] transition-all flex flex-col items-center justify-center gap-2 md:gap-3 text-gray-700 hover:text-[var(--app-primary)]">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[var(--app-primary)]/10 flex items-center justify-center text-[var(--app-primary)]">
                         <Upload size={20} className="md:hidden" />
@@ -730,6 +733,13 @@ function App() {
                     </div>
                     <span className="font-bold text-[10px] sm:text-xs md:text-base text-center leading-tight">Kirim Feedback</span>
                   </button>
+                  <a href={navigationHash('donation')} onClick={event => { if (event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) { event.preventDefault(); setActiveTab('donation'); } }} className="bg-[var(--reader-bg)] p-3 md:p-5 rounded-2xl border border-black/5 shadow-sm hover:shadow-md hover:border-[var(--app-primary)] transition-all flex flex-col items-center justify-center gap-2 md:gap-3 text-gray-700 hover:text-[var(--app-primary)]">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[var(--app-primary)]/10 flex items-center justify-center text-[var(--app-primary)]">
+                        <HeartHandshake size={20} className="md:hidden" />
+                        <HeartHandshake size={24} className="hidden md:block" />
+                    </div>
+                    <span className="font-bold text-[10px] sm:text-xs md:text-base text-center leading-tight">Dukung Maktabah</span>
+                  </a>
                 </div>
               </div>
             )}

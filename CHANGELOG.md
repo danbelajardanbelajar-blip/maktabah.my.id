@@ -2634,3 +2634,78 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-23-17-35-43-66d547.
 | 2026-11-23 15:53:22 +07:00 | `src/components/MessageWidget.tsx` | — | 267–276 | export function MessageWidget({ reading, adminPanel }: { reading: boolean; admin | modified |
 | 2026-11-23 15:52:43 +07:00 | `src/index.css` | — | 53–57 | b { | modified |
 | 2026-11-23 15:53:22 +07:00 | `src/lib/messages.ts` | 102–102 | 102–102 | export function unlockMessageSound() { | modified |
+
+## [2026-11-24 19:25:42 +07:00] — Pratinjau lokal card dan halaman Dukung Maktabah tanpa deskripsi card
+
+Waktu pencatatan: **2026-11-24 19:25:42 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1c481bd`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: TypeScript dan build produksi lulus; 7 tes navigasi/back lulus; pemeriksaan langsung route donasi dan fallback beranda lulus; oxlint tanpa error (3 peringatan catch lama di App.tsx); git diff --check lulus. Rekening/QRIS belum diberikan sehingga kanal donasi ditandai sedang disiapkan. Perubahan lokal saja, tanpa commit/push/deployment.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-25-42-5ac639.json](docs/change-audit/2026-11-24-19-25-42-5ac639.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-24 19:25:07 +07:00 | `dist/assets/index-DcIixM9u.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CtdlN1td.js` | 1–22 | — | module/file | deleted |
+| 2026-11-24 19:25:07 +07:00 | `dist/assets/index.dev-JT4Ck0dh.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-24 19:25:07 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 5–5 | 5–5 | import { useState } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 13–13 | import About from './components/About'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 38–38 | 39–39 | import { useEffect, useRef } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 483–484 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 710–711 | 713–714 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 736–742 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/components/Donation.tsx` | — | 1–42 | purposes, Donation | added |
+| 2026-11-24 19:24:40 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
+
+## [2026-11-24 19:30:23 +07:00] — Card dan halaman donasi lokal dengan QRIS pengguna
+
+Waktu pencatatan: **2026-11-24 19:30:23 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1c481bd`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: TypeScript dan build produksi lulus; oxlint Donation.tsx tanpa error/peringatan; QRIS asli identik SHA256 dengan aset lokal dan respons HTTP 200; pemeriksaan browser halaman donasi, gambar utuh, penerima dan tautan unduh lulus; git diff --check lulus. Perubahan lokal saja; tanpa commit/push/deployment. Tidak melakukan transaksi pembayaran.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-30-23-c8e0fe.json](docs/change-audit/2026-11-24-19-30-23-c8e0fe.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BrIgRAGJ.css` | 1–2 | — | module/file | deleted |
+| 2026-11-24 19:29:29 +07:00 | `dist/assets/index-DTnWHJcV.css` | — | 1–2 | module/file | added |
+| 2026-11-24 19:29:29 +07:00 | `dist/assets/index.dev-BHVvtjtE.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CtdlN1td.js` | 1–22 | — | module/file | deleted |
+| 2026-11-24 19:28:26 +07:00 | `dist/donations/qris-maktabah.jpg` | — | — | aset/biner | added |
+| 2026-11-24 19:29:29 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-24 19:28:26 +07:00 | `public/donations/qris-maktabah.jpg` | — | — | aset/biner | added |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 5–5 | 5–5 | import { useState } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 13–13 | import About from './components/About'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 38–38 | 39–39 | import { useEffect, useRef } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 483–484 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 710–711 | 713–714 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 736–742 | function App() { | modified |
+| 2026-11-24 19:29:04 +07:00 | `src/components/Donation.tsx` | — | 1–64 | purposes, qrisUrl, Donation | added |
+| 2026-11-24 19:24:40 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
+
+## [2026-11-24 19:32:41 +07:00] — Rilis card Dukung Maktabah dan halaman donasi QRIS
+
+Waktu pencatatan: **2026-11-24 19:32:41 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `1c481bd`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: TypeScript lulus; build produksi dan uji browser lokal lulus pada pratinjau sebelumnya tanpa perubahan kode sesudahnya; 7 tes navigasi/back ulang lulus; oxlint komponen donasi/navigasi lulus; git diff --cached --check lulus; QRIS HTTP 200 dan SHA256 sesuai sumber pengguna. Push diotorisasi pengguna; SSH ubuntu@VPS ditolak autentikasi sehingga pull server belum terlaksana.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-32-41-43c61a.json](docs/change-audit/2026-11-24-19-32-41-43c61a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BrIgRAGJ.css` | 1–2 | — | module/file | deleted |
+| 2026-11-24 19:29:29 +07:00 | `dist/assets/index-DTnWHJcV.css` | — | 1–2 | module/file | added |
+| 2026-11-24 19:29:29 +07:00 | `dist/assets/index.dev-BHVvtjtE.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-CtdlN1td.js` | 1–22 | — | module/file | deleted |
+| 2026-11-24 19:28:26 +07:00 | `dist/donations/qris-maktabah.jpg` | — | — | aset/biner | added |
+| 2026-11-24 19:29:29 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-24 19:28:26 +07:00 | `public/donations/qris-maktabah.jpg` | — | — | aset/biner | added |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 5–5 | 5–5 | import { useState } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 13–13 | import About from './components/About'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 38–38 | 39–39 | import { useEffect, useRef } from 'react'; | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 483–484 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | 710–711 | 713–714 | function App() { | modified |
+| 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 736–742 | function App() { | modified |
+| 2026-11-24 19:29:04 +07:00 | `src/components/Donation.tsx` | — | 1–64 | purposes, qrisUrl, Donation | added |
+| 2026-11-24 19:24:40 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
