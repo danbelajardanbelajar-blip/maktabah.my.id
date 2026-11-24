@@ -12,6 +12,7 @@ interface DailyItem {
   hadith: number;
   rowa: number;
   authors: number;
+  activity: number;
 }
 
 interface TodayStats {
@@ -24,6 +25,7 @@ interface TodayStats {
   hadith: number;
   rowa: number;
   authors: number;
+  activity: number;
 }
 
 interface Props {
@@ -42,6 +44,7 @@ const LOG_META = [
   { key: 'quran', label: 'Al-Qur\'an', icon: BookOpen, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', bar: '#0d9488' },
   { key: 'hadith', label: 'Kutub Hadis', icon: ScrollText, color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-200', bar: '#e11d48' },
   { key: 'rowa', label: 'Kamus Perawi', icon: Users, color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', bar: '#7c3aed' },
+  { key: 'activity', label: 'Aktivitas Situs', icon: Eye, color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-200', bar: '#db2777' },
   { key: 'authors', label: 'Penulis & Karya', icon: Feather, color: 'text-cyan-600', bg: 'bg-cyan-50', border: 'border-cyan-200', bar: '#0891b2' },
 ] as const;
 
@@ -58,6 +61,7 @@ export function AdminDailyChart({ stats }: Props) {
     hadith: 0,
     rowa: 0,
     authors: 0,
+    activity: 0,
   };
 
   const daily: DailyItem[] = Array.isArray(stats?.daily) && stats.daily.length > 0 ? stats.daily : [];

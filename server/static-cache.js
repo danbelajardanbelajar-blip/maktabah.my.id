@@ -4,6 +4,6 @@ export function staticCacheControl(filename) {
   if (path.basename(path.dirname(filename)) === 'assets' && /-[\w-]{8,}\.(?:js|css|woff2?)$/.test(path.basename(filename))) {
     return 'public, max-age=31536000, immutable';
   }
-  if (/\.html$/i.test(filename)) return 'no-cache';
+  if (path.basename(filename) === 'visit-tracker.js' || /\.html$/i.test(filename)) return 'no-cache';
   return 'public, max-age=3600';
 }

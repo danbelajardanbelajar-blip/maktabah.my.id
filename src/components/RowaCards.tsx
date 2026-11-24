@@ -4,6 +4,7 @@ import {createPortal} from 'react-dom';
 import {RowaProfileModal} from './RowaProfileModal';
 import type {RowaDetail} from './RowaProfileModal';
 import {useModalFocus} from '../lib/use-modal-focus';
+import {recordVisit,visitPath} from '../lib/visit-tracker.js';
 import {BackButton} from './BackButton';
 
 const RowaCards=createContext<(name:string,id?:number,returnLabel?:string)=>void>(()=>{});
@@ -12,10 +13,11 @@ export function RowaCardsProvider({children}:{children:ReactNode}) {
   const [returnLabel,setReturnLabel]=useState('Kembali ke teks kitab');
   const [name,setName]=useState(''),[page,setPage]=useState(1),[reply,setReply]=useState<any>(null),[profile,setProfile]=useState<RowaDetail|null>(null);
   const [loading,setLoading]=useState(false),[error,setError]=useState(''),[retry,setRetry]=useState(0),[profileId,setProfileId]=useState<number|null>(null);
-  const origin=useRef<HTMLElement|null>(null),active=useRef(false);
-  const open=useCallback((value:string,id?:number,label?:string)=>{if(!active.current){origin.current=document.activeElement as HTMLElement;setReturnLabel(label||'Kembali ke teks kitab');}else if(label)setReturnLabel(label);active.current=true;setName(value.trim());setPage(1);setProfileId(id||null);setProfile(null);setReply(null);setError('');setRetry(n=>n+1);},[]);
-  const close=useCallback(()=>{active.current=false;setName('');setProfile(null);setReply(null);requestAnimationFrame(()=>{if(!active.current&&origin.current?.isConnected)origin.current.focus({preventScroll:true});});},[]);
+  const origin=useRef<HTMLElement|null>(null),active=useRef(false),returnPath=useRef<string|null>(null);
+  const open=useCallback((value:string,id?:number,label?:string)=>{if(!active.current){returnPath.current=visitPath(window.location.href) || (/^#\/read\/\d+\/\d+$/.test(window.location.hash)?window.location.hash.slice(1):null);origin.current=document.activeElement as HTMLElement;setReturnLabel(label||'Kembali ke teks kitab');}else if(label)setReturnLabel(label);active.current=true;setName(value.trim());setPage(1);setProfileId(id||null);setProfile(null);setReply(null);setError('');setRetry(n=>n+1);},[]);
+  const close=useCallback(()=>{if(active.current)recordVisit(visitPath(window.location.href) || returnPath.current);active.current=false;setName('');setProfile(null);setReply(null);requestAnimationFrame(()=>{if(!active.current&&origin.current?.isConnected)origin.current.focus({preventScroll:true});});},[]);
   const dialog=useModalFocus(close,!!name&&!profile);
+  useEffect(()=>{if(profile)recordVisit(`/perawi/profil/${profile.id}`);},[profile?.id]);
   useEffect(()=>{for(const event of ['hashchange','popstate','maktabah:navigate'])window.addEventListener(event,close);return()=>{for(const event of ['hashchange','popstate','maktabah:navigate'])window.removeEventListener(event,close);};},[close]);
   useEffect(()=>{if(!name)return;const previous=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=previous;};},[name]);
   useEffect(()=>{

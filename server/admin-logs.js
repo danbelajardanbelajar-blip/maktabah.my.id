@@ -1,4 +1,4 @@
-const tables={search:'search_logs',ask:'ask_logs',visit:'visit_logs',download:'download_logs',quran:'quran_logs',rowa:'rowa_logs',hadith:'hadith_logs',authors:'authors_logs'};
+const tables={activity:'site_action_logs',search:'search_logs',ask:'ask_logs',visit:'visit_logs',download:'download_logs',quran:'quran_logs',rowa:'rowa_logs',hadith:'hadith_logs',authors:'authors_logs'};
 // Start of the current calendar day in WIB (UTC+7), as a UTC SQLite datetime. created_at is stored in UTC.
 // Every "hari ini" figure in admin uses this, so the header chart and the log pages agree and reset at 00:00 WIB.
 export const TODAY_WIB_START="datetime('now','+7 hours','start of day','-7 hours')";
@@ -8,7 +8,7 @@ function definitions(db,type) {
   if(!Object.hasOwn(tables,type))throw fail('Jenis log tidak valid.');
   const table=tables[type],columns=new Set(db.prepare(`PRAGMA table_info(${table})`).all().map(c=>c.name));
   const query=column('query',columns),question=column('question',columns),ip=column('ip',columns);
-  const page=type==='visit'?column('path',columns):type==='download'?column('book_title',columns):type==='quran'?"'Surah #' || COALESCE(surah_id,'')":type==='rowa'?"COALESCE(rowa_name,'Perawi') || ' (ID: ' || COALESCE(rowa_id,'') || ')'":['hadith','authors'].includes(type)?
+  const page=['visit','activity'].includes(type)?column('path',columns):type==='download'?column('book_title',columns):type==='quran'?"'Surah #' || COALESCE(surah_id,'')":type==='rowa'?"COALESCE(rowa_name,'Perawi') || ' (ID: ' || COALESCE(rowa_id,'') || ')'":['hadith','authors'].includes(type)?
     "CASE WHEN target_id IS NOT NULL AND action IN ('read_book','book_detail','profile') THEN CASE WHEN action='profile' THEN 'Penulis #' ELSE 'Kitab #' END || target_id || CASE WHEN json_valid(context) AND json_extract(CASE WHEN json_valid(context) THEN context ELSE '{}' END,'$.page_id') IS NOT NULL THEN ' · halaman #' || json_extract(CASE WHEN json_valid(context) THEN context ELSE '{}' END,'$.page_id') ELSE '' END ELSE '' END":
     type==='ask'&&columns.has('context_json')?"CASE WHEN json_valid(context_json) AND json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.bookId') IS NOT NULL THEN 'Kitab #' || json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.bookId') || ' · halaman #' || COALESCE(json_extract(CASE WHEN json_valid(context_json) THEN context_json ELSE '{}' END,'$.source.pageId'),'') ELSE '' END":"''";
   // Only groups this log actually records: searches in search logs, questions in Tanya AI logs, pages/books

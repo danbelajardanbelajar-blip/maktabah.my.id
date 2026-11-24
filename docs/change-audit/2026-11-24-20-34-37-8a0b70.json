@@ -1,0 +1,2052 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-24 20:34:37 +07:00",
+  "title": "Lengkapi log rute halaman, privasi mandiri, pembaca dan aktivitas QRIS",
+  "baseCommit": "e247343c8ecf1b0b5e8c121cdf3dc205f185380f",
+  "checks": "294 tes regresi server lulus; 11 tes terkait diulang setelah pelengkapan parameter rute dan cache lulus; TypeScript/build produksi lulus; pemeriksaan sintaks backend/tracker/build script dan oxlint modul baru lulus; browser database QA terisolasi memverifikasi 8 kunjungan (donasi, privasi, beranda, katalog, kategori, metadata kitab, 2 halaman pembaca) serta 2 klik QRIS terpisah; admin menampilkan catatan dan mengecualikan aktivitas admin; API stats QA HTTP 200 total=10, kunjungan=8, aktivitas situs=2; tracker no-cache dan privasi terbaru diverifikasi. Audit mencatat waktu modifikasi akhir/hunk, bukan merekonstruksi setiap keystroke. SSH VPS ditolak autentikasi; pull/deployment server belum berhasil.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-C1A8IBZ5.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:28:46 +07:00",
+      "stagedSha256": "0933d5f18aaccb06e4ab3edf5387de62e15c19e316f11aef25b910eecd754121",
+      "diffSha256": "023e390df8516f2adab52f7db38d9392ae28deb594bc87f722b636a2c6659d8d",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-DTnWHJcV.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "f5b1688d1ead3477df8bc6878f1f04b8f48b14fdb676e4494760cab6fc0ea5c6",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-BjniO3Ae.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:28:46 +07:00",
+      "stagedSha256": "a1765da04f2013cb79bd59d6ffd99ec99169e57e1795fe1cd23475855dbb663e",
+      "diffSha256": "9ba3262d76298aa15a6e2a05ee6aaf5d5e37e8cbb6dccfc1a662f00d51354f52",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "ot",
+        "ct",
+        "lt",
+        "bt",
+        "xt",
+        "wt",
+        "Tt",
+        "Et",
+        "Dt",
+        "At",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "B",
+        "V",
+        "H",
+        "re",
+        "ie",
+        "W",
+        "ae",
+        "se",
+        "le",
+        "ue",
+        "de",
+        "Oe",
+        "Me",
+        "Ie",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "qe",
+        "Je",
+        "Ye",
+        "Xe",
+        "at",
+        "st",
+        "q",
+        "ft",
+        "pt",
+        "_t",
+        "vt",
+        "yt",
+        "St",
+        "Ct",
+        "Ot",
+        "kt",
+        "jt",
+        "Nt",
+        "Pt",
+        "Ft",
+        "It",
+        "Rt",
+        "zt",
+        "Bt",
+        "Ut",
+        "Wt",
+        "Kt",
+        "Yt",
+        "Zt",
+        "Qt",
+        "on",
+        "sn",
+        "cn",
+        "ln",
+        "un",
+        "On",
+        "J",
+        "Vn",
+        "Hn",
+        "Wn",
+        "Gn",
+        "qn",
+        "Jn",
+        "Zn",
+        "Qn",
+        "ir",
+        "ar",
+        "or",
+        "sr",
+        "cr",
+        "lr",
+        "ur",
+        "fr",
+        "pr",
+        "mr",
+        "hr",
+        "gr",
+        "_r",
+        "Cr",
+        "wr",
+        "Or",
+        "Rr",
+        "Ur",
+        "Wr",
+        "Gr",
+        "Kr",
+        "qr",
+        "Jr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ii",
+        "ai",
+        "si",
+        "_i",
+        "vi",
+        "yi",
+        "bi",
+        "xi",
+        "Di",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Mi",
+        "Ni",
+        "Li",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Gi",
+        "Ki",
+        "Zi",
+        "Qi",
+        "ra",
+        "ia",
+        "aa",
+        "ca",
+        "la",
+        "ua",
+        "ha",
+        "ga",
+        "_a",
+        "ya",
+        "ba",
+        "Ca",
+        "wa",
+        "Ta",
+        "Ea",
+        "u",
+        "f",
+        "h",
+        "Aa",
+        "ja",
+        "Ma",
+        "Na",
+        "Pa",
+        "Fa",
+        "La",
+        "Ra",
+        "za",
+        "Ba",
+        "Ua",
+        "Wa",
+        "Ga",
+        "Ja",
+        "Ya",
+        "Xa",
+        "Za",
+        "Qa",
+        "eo",
+        "fo",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Os",
+        "ks",
+        "Ps",
+        "Is",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Ks",
+        "qs",
+        "Xs",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "lc",
+        "uc",
+        "fc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Gc",
+        "Kc",
+        "Qc",
+        "el",
+        "rl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "cl",
+        "ll",
+        "dl",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "xl",
+        "Sl",
+        "wl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "kl",
+        "Al",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "Yu",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "pd",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "Lt",
+        "Vt",
+        "Ht",
+        "Gt",
+        "qt",
+        "Jt",
+        "Xt",
+        "en",
+        "tn",
+        "nn",
+        "an",
+        "hn",
+        "yn",
+        "xn",
+        "Sn",
+        "Tn",
+        "En",
+        "Dn",
+        "kn",
+        "An",
+        "Nn",
+        "Pn",
+        "Fn",
+        "In",
+        "Ln",
+        "Rn",
+        "zn",
+        "Bn",
+        "Yn",
+        "Xn",
+        "tr",
+        "_",
+        "rr",
+        "yr",
+        "Sr",
+        "Er",
+        "kr",
+        "jr",
+        "Mr",
+        "Pr",
+        "Fr",
+        "Hr",
+        "Yr",
+        "ci",
+        "ui",
+        "di",
+        "fi",
+        "pi",
+        "mi",
+        "hi",
+        "extends",
+        "Si",
+        "Ci",
+        "X",
+        "wi",
+        "Ti",
+        "Ei",
+        "Pi",
+        "Fi",
+        "Ii",
+        "Xi",
+        "ta",
+        "Da",
+        "ka",
+        "Ia",
+        "Ka",
+        "qa",
+        "to",
+        "ro",
+        "oo",
+        "so"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 22
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-DnXg22N1.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "038f7d5f9462c214a418d569bf29968f4587257bbab8ad822a8c448739b0a042",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 22
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:28:46 +07:00",
+      "stagedSha256": "8f140e92a878767c5862305a9b5fe31d262876a2ef5beadd62262c376c9b5e25",
+      "diffSha256": "a7803cd71be314cb22d096ffac524abc97b8a163573817b0fa53690f860b8fa0",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 2
+          },
+          "after": {
+            "line": 10,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/privacy-policy.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:28:48 +07:00",
+      "stagedSha256": "d864557956e37cbd4e5a627ac59303285a4839e21ab0aa4ab1ea329f17926a9a",
+      "diffSha256": "b1a8ce0eea99991245d01e73a8958cbf61f259106c0aaf9fa0e61fa28cb6f517",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 18,
+            "count": 2
+          },
+          "after": {
+            "line": 18,
+            "count": 2
+          },
+          "section": "a{color:#047857;overflow-wrap:anywhere}"
+        }
+      ]
+    },
+    {
+      "file": "dist/privacy-policy/index.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:28:48 +07:00",
+      "stagedSha256": "d864557956e37cbd4e5a627ac59303285a4839e21ab0aa4ab1ea329f17926a9a",
+      "diffSha256": "51158422adfd8a510828dabaabd1f032636e9b65721ffe28ed33cbdacb61dc5e",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 18,
+            "count": 2
+          },
+          "after": {
+            "line": 18,
+            "count": 2
+          },
+          "section": "a{color:#047857;overflow-wrap:anywhere}"
+        }
+      ]
+    },
+    {
+      "file": "dist/visit-tracker.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:28:09 +07:00",
+      "stagedSha256": "7be9a76f3aca911fbcfd6a46d4b2c21342a73cb554468e85da1dd5e26439e910",
+      "diffSha256": "d99285353f1294a8c11e543f65892e256731d2c200ed560442cf5dc135be386a",
+      "symbols": [
+        "routes",
+        "parameters",
+        "prefix",
+        "lifetime",
+        "visitPath",
+        "url",
+        "path",
+        "params",
+        "createLogClient",
+        "pending",
+        "remove",
+        "restore",
+        "key",
+        "event",
+        "persist",
+        "flush",
+        "response",
+        "reply",
+        "next",
+        "enqueue",
+        "browserClient",
+        "recordVisit",
+        "recordSiteAction",
+        "startVisitTracking",
+        "track",
+        "resume",
+        "pageShow",
+        "visible"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 111
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "docs/visit-tracking.md",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:25:55 +07:00",
+      "stagedSha256": "2f35d1092eb3d90601102dd127a605c828e00a3b85f34238d0174d8d787ea8c2",
+      "diffSha256": "a46728c2317a02ab9d314ed0ce672da7eaa9087358e013b410663a9a080e12ae",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 30
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "scripts/build_privacy.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "418fa530765bf82cd3f4f62020e413820ccaa165943e4112980ee4d857b18648",
+      "diffSha256": "338ae7a42c0988a2a905b589ddfbb97baf31c860e445b7216330b82d00752e4e",
+      "symbols": [
+        "root",
+        "cache",
+        "compiled",
+        "modulePath",
+        "html"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 17,
+            "count": 0
+          },
+          "after": {
+            "line": 18,
+            "count": 1
+          },
+          "section": "const { default: Privacy } = await import(pathToFileURL(modulePath).href);"
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 1
+          },
+          "after": {
+            "line": 37,
+            "count": 1
+          },
+          "section": "a{color:#047857;overflow-wrap:anywhere}"
+        }
+      ]
+    },
+    {
+      "file": "server/admin-logs.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "16937bd7f29d683ab9f5645e3e65d55b3c0bff7699608545d40cb8d5cbcd0fbc",
+      "diffSha256": "3a37399af74715ce046ae1deca25f330a43fcaa4d3d1868eb8e505f1b335db02",
+      "symbols": [
+        "tables",
+        "TODAY_WIB_START",
+        "fail",
+        "column",
+        "definitions",
+        "table",
+        "query",
+        "page",
+        "dimensions",
+        "hasMeta",
+        "filtersFor",
+        "value",
+        "filters",
+        "conditions",
+        "fields",
+        "integer",
+        "readAdminLogs",
+        "def",
+        "limit",
+        "stats",
+        "askStats",
+        "scope",
+        "data",
+        "top",
+        "deleteAdminLogs",
+        "ids",
+        "f",
+        "where",
+        "count",
+        "registerAdminLogs"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 11,
+            "count": 1
+          },
+          "after": {
+            "line": 11,
+            "count": 1
+          },
+          "section": "function definitions(db,type) {"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:25:46 +07:00",
+      "stagedSha256": "50b4493afbfea9c2f5dc2749ccc2cad513010bcbf5c5371a73c54871459dee55",
+      "diffSha256": "5abec2820e0ff39718cb437dc50cd8dac6b7e526ac1d4947b505e85f95655a24",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "isAdvanced",
+        "excluded",
+        "excludedBookIds",
+        "results",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 156,
+            "count": 1
+          },
+          "after": {
+            "line": 157,
+            "count": 1
+          },
+          "section": "app.use((req, res, next) => {"
+        },
+        {
+          "before": {
+            "line": 164,
+            "count": 1
+          },
+          "after": {
+            "line": 165,
+            "count": 1
+          },
+          "section": "app.use((req, res, next) => {"
+        },
+        {
+          "before": {
+            "line": 350,
+            "count": 0
+          },
+          "after": {
+            "line": 352,
+            "count": 1
+          },
+          "section": "try {"
+        },
+        {
+          "before": {
+            "line": 383,
+            "count": 0
+          },
+          "after": {
+            "line": 386,
+            "count": 1
+          },
+          "section": "app.use(adminActivityIdentity(()=>stateDb));"
+        },
+        {
+          "before": {
+            "line": 588,
+            "count": 13
+          },
+          "after": {
+            "line": 590,
+            "count": 0
+          },
+          "section": "app.post('/api/log/download', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 611,
+            "count": 0
+          },
+          "after": {
+            "line": 602,
+            "count": 1
+          },
+          "section": "app.get('/api/admin/stats', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 628,
+            "count": 1
+          },
+          "after": {
+            "line": 619,
+            "count": 2
+          },
+          "section": "app.get('/api/admin/stats', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 647,
+            "count": 1
+          },
+          "after": {
+            "line": 639,
+            "count": 1
+          },
+          "section": "app.get('/api/admin/stats', requireAdmin, (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/static-cache.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:18:30 +07:00",
+      "stagedSha256": "1363f11277c5bd220eb92b9bd8ce3015ea37e356c752abe26829c1d999c8ef60",
+      "diffSha256": "682951714b1762ecdef2ee160f54dcc114de76d3045910cb71535bbbe9384cd5",
+      "symbols": [
+        "staticCacheControl"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 7,
+            "count": 1
+          },
+          "after": {
+            "line": 7,
+            "count": 1
+          },
+          "section": "export function staticCacheControl(filename) {"
+        }
+      ]
+    },
+    {
+      "file": "server/static-cache.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:26:39 +07:00",
+      "stagedSha256": "ce70ebb221329caa17469b322f5a99128f7312171e7a06f950d5f3632ea411b6",
+      "diffSha256": "d377e6b1637335ef18fa598f08fce921f494fae4900ae8c13ca50c669048421d",
+      "symbols": [
+        "url",
+        "changed"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 9,
+            "count": 1
+          },
+          "after": {
+            "line": 9,
+            "count": 1
+          },
+          "section": "test('versioned assets can be reused while HTML and unversioned files stay refre"
+        }
+      ]
+    },
+    {
+      "file": "server/visit-tracking.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:18:30 +07:00",
+      "stagedSha256": "c637a253b3a785eb97f14dad4f3bc2a40774a26d336378a5e981fb9cff3d2af0",
+      "diffSha256": "28e3d158bf44fde3cdf9337a44339fbd2338b346da5514f8db552ddc9ee83f2a",
+      "symbols": [
+        "ensureVisitTrackingSchema",
+        "registerVisitTracking",
+        "record",
+        "db",
+        "result"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 32
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/visit-tracking.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:28:09 +07:00",
+      "stagedSha256": "2004be8240d823e8d8f0a9041800579eae137263f76316059c6a0de7f944482c",
+      "diffSha256": "d817a26008e6bc33d67b11196ecdef7ea1a68eb680c49d4652356666380cfd59",
+      "symbols": [
+        "id",
+        "fixture",
+        "db",
+        "app",
+        "server",
+        "post",
+        "memoryStorage",
+        "values",
+        "tick",
+        "route",
+        "bodies",
+        "storage",
+        "client",
+        "body",
+        "response",
+        "offline",
+        "sent",
+        "restored",
+        "previousWindow",
+        "events",
+        "stop"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 149
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:18:30 +07:00",
+      "stagedSha256": "f077788f6630e54cb1d5d5d40666adac3240c0272ea4507a143d517ca285499d",
+      "diffSha256": "ca5f7046bf2905637ef748172ee5a7a5067497807d6047d94d6c634b73c55687",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "limit",
+        "setSearchScope",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "scope",
+        "key",
+        "targetTab",
+        "isAdvanced",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "previous",
+        "known",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 61,
+            "count": 5
+          },
+          "after": {
+            "line": 61,
+            "count": 0
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 323,
+            "count": 0
+          },
+          "after": {
+            "line": 320,
+            "count": 1
+          },
+          "section": "function App() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Admin.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:25:46 +07:00",
+      "stagedSha256": "2f3ef3f557481f6abeae322ba838b484371d6ae1936f753385f09b1ac4ea0faf",
+      "diffSha256": "c2e6d015267f1ac62b1d69bb029266c31af99f0f8835268ca356c2739c3b5067",
+      "symbols": [
+        "downloadCSV",
+        "keys",
+        "csvContent",
+        "blob",
+        "link",
+        "url",
+        "SelectionBar",
+        "adminFetch",
+        "Pagination",
+        "totalPages",
+        "ErrorBanner",
+        "LoginForm",
+        "dialogRef",
+        "handleSubmit",
+        "res",
+        "useDeletionFeedback",
+        "locked",
+        "run",
+        "message",
+        "recoveryCallback",
+        "feedback",
+        "CategoriesView",
+        "toggleAll",
+        "newSel",
+        "toggleOne",
+        "n",
+        "deletion",
+        "current",
+        "load",
+        "filtered",
+        "handleEdit",
+        "handleDelete",
+        "paginated",
+        "handleBulkDelete",
+        "ids",
+        "bookCount",
+        "BooksView",
+        "handleBulkMove",
+        "handleSearch",
+        "PagesView",
+        "handleDeletePage",
+        "EditPageView",
+        "fetch",
+        "handleSave",
+        "FeedbackView",
+        "t",
+        "RequestsView",
+        "handleStatus",
+        "SubmissionsView",
+        "getAskLogStatus",
+        "stage",
+        "stageLabel",
+        "refCount",
+        "resp",
+        "surrenderPhrases",
+        "isSurrender",
+        "LogsView",
+        "filters",
+        "filterKey",
+        "readyPreview",
+        "hasFilter",
+        "timer",
+        "controller",
+        "remove",
+        "count",
+        "choose",
+        "reset",
+        "askStatus",
+        "AdminDashboard",
+        "drawerRef",
+        "requestId",
+        "restoreRef",
+        "route",
+        "nested",
+        "setView",
+        "previous",
+        "category",
+        "book",
+        "page",
+        "old",
+        "hash",
+        "restore",
+        "fetchStats",
+        "inbox",
+        "breadcrumb",
+        "goBack",
+        "Admin"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1234,
+            "count": 1
+          },
+          "after": {
+            "line": 1234,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1310,
+            "count": 1
+          },
+          "after": {
+            "line": 1310,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1376,
+            "count": 0
+          },
+          "after": {
+            "line": 1377,
+            "count": 1
+          },
+          "section": "const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ("
+        },
+        {
+          "before": {
+            "line": 1607,
+            "count": 0
+          },
+          "after": {
+            "line": 1609,
+            "count": 1
+          },
+          "section": "const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:"
+        }
+      ]
+    },
+    {
+      "file": "src/components/AdminDailyChart.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:25:46 +07:00",
+      "stagedSha256": "8037a7f08069263dcaebea09ac2ad69d3bcf40a7fc7675f5ae507a585dc05085",
+      "diffSha256": "1d5c7b7068d9271f5c61906954a2e4eb1ed118ec9ded2c919c368ca07a617839",
+      "symbols": [
+        "LOG_META",
+        "AdminDailyChart",
+        "maxTotal",
+        "isToday",
+        "heightPct",
+        "Icon",
+        "val",
+        "parts",
+        "displayDate",
+        "pct"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 14,
+            "count": 0
+          },
+          "after": {
+            "line": 15,
+            "count": 1
+          },
+          "section": "interface DailyItem {"
+        },
+        {
+          "before": {
+            "line": 26,
+            "count": 0
+          },
+          "after": {
+            "line": 28,
+            "count": 1
+          },
+          "section": "interface TodayStats {"
+        },
+        {
+          "before": {
+            "line": 44,
+            "count": 0
+          },
+          "after": {
+            "line": 47,
+            "count": 1
+          },
+          "section": "const LOG_META = ["
+        },
+        {
+          "before": {
+            "line": 60,
+            "count": 0
+          },
+          "after": {
+            "line": 64,
+            "count": 1
+          },
+          "section": "export function AdminDailyChart({ stats }: Props) {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Donation.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "0b038bef097c2ac10ce9ddee2958b46ed248555966633bcb78050fc106ddd61b",
+      "diffSha256": "eee9be170f004aeccf8664106400382f45359204a1ed328f87e777eaa948aad3",
+      "symbols": [
+        "purposes",
+        "qrisUrl",
+        "Donation"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 38,
+            "count": 1
+          },
+          "after": {
+            "line": 39,
+            "count": 1
+          },
+          "section": "export default function Donation() {"
+        },
+        {
+          "before": {
+            "line": 52,
+            "count": 1
+          },
+          "after": {
+            "line": 53,
+            "count": 1
+          },
+          "section": "export default function Donation() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Privacy.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:23:36 +07:00",
+      "stagedSha256": "32944f1f04d0a0d84db9365c2acc061c9aa10ebdb714da41983480bc23d9f202",
+      "diffSha256": "1c715f524694d00b366f1aceb2f4fa5b03cb8f0dd583b6248aa4896e09fc012d",
+      "symbols": [
+        "LAST_UPDATED",
+        "SITE_URL",
+        "CONTACT"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 1
+          },
+          "after": {
+            "line": 4,
+            "count": 1
+          },
+          "section": "const Privacy: React.FC = () => {"
+        },
+        {
+          "before": {
+            "line": 26,
+            "count": 0
+          },
+          "after": {
+            "line": 27,
+            "count": 2
+          },
+          "section": "const Privacy: React.FC = () => {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/QuranReader.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:18:30 +07:00",
+      "stagedSha256": "869c77f42928623cf7acac4a981eaf5a4bbdbf639243456170dedc987447ffad",
+      "diffSha256": "4aba9e856290775539ec3749aa5064f9ceca1a72e47d5b3a5448547223f15fd2",
+      "symbols": [
+        "toArabicNumber",
+        "arabicNums",
+        "stripHtml",
+        "wantedPosition",
+        "routeHandler",
+        "mainAreaRef",
+        "controller",
+        "loadSurahs",
+        "res",
+        "loadAyahs",
+        "result",
+        "index",
+        "loadMappings",
+        "seen",
+        "chosen",
+        "navigate",
+        "next",
+        "hash",
+        "state",
+        "goToAyah",
+        "goToPrevAyah",
+        "goToNextAyah",
+        "setView",
+        "chooseSurah",
+        "selectTafsirBook",
+        "currentAyah",
+        "mapping",
+        "openPanel",
+        "closePanel",
+        "rootRef",
+        "focusRef",
+        "panelRef",
+        "selectedSurahData",
+        "latinName",
+        "normalize",
+        "filteredSurahs",
+        "filteredBooks",
+        "ready",
+        "hasMapping",
+        "hasBismillah",
+        "sync",
+        "update",
+        "root",
+        "bottom",
+        "padding",
+        "height",
+        "observer",
+        "old",
+        "retryButton",
+        "surahList",
+        "tafsirList",
+        "ayahControls"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 295,
+            "count": 1
+          },
+          "after": {
+            "line": 295,
+            "count": 1
+          },
+          "section": "const QuranReader: React.FC = () => {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/ReaderModal.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "9e196d56da60cb190db673e3d0efda31f7f8a1d0a146f9589913fb2ed510a217",
+      "diffSha256": "605b813bcef2d84b69ed2772cede5339da21b02078d8f7589ebb8eca4146668c",
+      "symbols": [
+        "buildArabicRegex",
+        "harakat",
+        "safeWord",
+        "highlightText",
+        "words",
+        "regexStr",
+        "regex",
+        "readingTextRef",
+        "openRowa",
+        "change",
+        "selection",
+        "aiActive",
+        "onAiBusy",
+        "closeAi",
+        "askPage",
+        "text",
+        "loadRequest",
+        "dialogRef",
+        "loadToc",
+        "res",
+        "handleBookSearch",
+        "isFavorite",
+        "toggleFavorite",
+        "isBookmarked",
+        "toggleBookmark",
+        "touchStartX",
+        "touchStartY",
+        "handleTouchStart",
+        "handleTouchEnd",
+        "startX",
+        "direction",
+        "toggleUi",
+        "loadBookAndPage",
+        "request",
+        "data",
+        "checkRelations",
+        "rels",
+        "relation",
+        "rPage",
+        "rBook",
+        "nextPage",
+        "prevPage",
+        "firstPage",
+        "lastPage",
+        "nextJuz",
+        "prevJuz"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 4,
+            "count": 0
+          },
+          "after": {
+            "line": 5,
+            "count": 1
+          },
+          "section": "import React, { useState, useEffect, useRef, useCallback } from 'react';"
+        },
+        {
+          "before": {
+            "line": 175,
+            "count": 0
+          },
+          "after": {
+            "line": 177,
+            "count": 1
+          },
+          "section": "const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli"
+        }
+      ]
+    },
+    {
+      "file": "src/components/RowaCards.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:19:59 +07:00",
+      "stagedSha256": "a27680cc5ce76e8dfd8bd86fd3bf1e1cf91bc7a39852ed6c50baec118c074396",
+      "diffSha256": "b486364e8be55295d487aded97b4865e8b8525527ea88f7ffefc87a165c8e430",
+      "symbols": [
+        "RowaCards",
+        "useRowaCards",
+        "RowaCardsProvider",
+        "origin",
+        "open",
+        "close",
+        "dialog",
+        "previous",
+        "controller",
+        "json",
+        "r",
+        "data",
+        "run",
+        "value"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 6,
+            "count": 0
+          },
+          "after": {
+            "line": 7,
+            "count": 1
+          },
+          "section": "import {useModalFocus} from '../lib/use-modal-focus';"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 3
+          },
+          "after": {
+            "line": 16,
+            "count": 3
+          },
+          "section": "export function RowaCardsProvider({children}:{children:ReactNode}) {"
+        },
+        {
+          "before": {
+            "line": 18,
+            "count": 0
+          },
+          "after": {
+            "line": 20,
+            "count": 1
+          },
+          "section": "export function RowaCardsProvider({children}:{children:ReactNode}) {"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/admin-navigation.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "0dc808b97ac38389101511888fbe34e0781a895f0c174cedd71f6294e0d31584",
+      "diffSha256": "8f9679fdfaf12dde5bfb280ad33d91af7dea2d1f85b89f195fbb1a1dbb4ce19e",
+      "symbols": [
+        "adminParent",
+        "adminTitle",
+        "adminGroup",
+        "adminLocation",
+        "p",
+        "raw",
+        "id",
+        "v"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 8,
+            "count": 1
+          },
+          "after": {
+            "line": 8,
+            "count": 1
+          },
+          "section": "const parents: Record<AdminView, AdminView> = {"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 1
+          },
+          "after": {
+            "line": 15,
+            "count": 1
+          },
+          "section": "const titles: Record<AdminView,string> = {"
+        },
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 1
+          },
+          "section": "export const adminGroups: {label:string;views:AdminView[]}[] = ["
+        }
+      ]
+    },
+    {
+      "file": "src/lib/back-navigation.ts",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:01 +07:00",
+      "stagedSha256": "55c74258c47e1384979e832efe508cfa0b96265c68587a25c26ecf9943d7d9f6",
+      "diffSha256": "f042312198e9797633917c3dc9fc9d73ea3d45a35770b40b158a077fa897d306",
+      "symbols": [
+        "backState",
+        "url",
+        "previousLocation",
+        "previous",
+        "current",
+        "pushLocation",
+        "backFallback",
+        "page",
+        "parent"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 16,
+            "count": 0
+          },
+          "after": {
+            "line": 17,
+            "count": 1
+          },
+          "section": "export function pushLocation(hash:string,state:Record<string,unknown>|null=null)"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/visit-tracker.d.ts",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:14:20 +07:00",
+      "stagedSha256": "2c657926129d0d2390d01d278198f6df8ff8e4d9dcb8ab6dadfbd84eb99d8652",
+      "diffSha256": "c022f6f364c5c77a18a1f097abff1e1d893da82369b03babf4da0a18d3f11c9c",
+      "symbols": [
+        "visitPath",
+        "recordVisit",
+        "recordSiteAction",
+        "startVisitTracking"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 4
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/visit-tracker.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-24 20:28:09 +07:00",
+      "stagedSha256": "7be9a76f3aca911fbcfd6a46d4b2c21342a73cb554468e85da1dd5e26439e910",
+      "diffSha256": "63a8998b28744d6f29beec3c03c8a498283ee43434213058226e4368af00a32a",
+      "symbols": [
+        "routes",
+        "parameters",
+        "prefix",
+        "lifetime",
+        "visitPath",
+        "url",
+        "path",
+        "params",
+        "createLogClient",
+        "pending",
+        "remove",
+        "restore",
+        "key",
+        "event",
+        "persist",
+        "flush",
+        "response",
+        "reply",
+        "next",
+        "enqueue",
+        "browserClient",
+        "recordVisit",
+        "recordSiteAction",
+        "startVisitTracking",
+        "track",
+        "resume",
+        "pageShow",
+        "visible"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 111
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/main.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-24 20:15:00 +07:00",
+      "stagedSha256": "d6f95bae302158f7396139ad2d29687c5e05059157d4275041b0b1763ab6dbde",
+      "diffSha256": "a6c66d24e4f83eb1ca1acfe9908b86dc2f6f2e01b8a54a2a7cf933a09666c2e3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 5,
+            "count": 0
+          },
+          "after": {
+            "line": 6,
+            "count": 1
+          },
+          "section": "import App from './App.tsx'"
+        },
+        {
+          "before": {
+            "line": 8,
+            "count": 0
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "installAdminRequestIdentity();"
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ import {selectedFontsUrl} from '../src/lib/fonts.ts';
 test('versioned assets can be reused while HTML and unversioned files stay refreshable',()=>{
   assert.equal(staticCacheControl('/app/dist/assets/index.dev-vcOle8HE.js'),'public, max-age=31536000, immutable');
   assert.equal(staticCacheControl('/app/dist/assets/index-Cjurx9qf.css'),'public, max-age=31536000, immutable');
-  for(const name of ['index.dev.html','privacy-policy/index.html'])assert.equal(staticCacheControl('/app/dist/'+name),'no-cache');
+  for(const name of ['index.dev.html','privacy-policy/index.html','visit-tracker.js'])assert.equal(staticCacheControl('/app/dist/'+name),'no-cache');
   assert.equal(staticCacheControl('/app/dist/logo.png'),'public, max-age=3600');
   assert.equal(staticCacheControl('/app/dist/assets/app.js'),'public, max-age=3600');
 });

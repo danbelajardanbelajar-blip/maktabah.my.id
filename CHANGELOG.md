@@ -2740,3 +2740,71 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-37-41-6ee894.
 | 2026-11-24 19:37:28 +07:00 | `dist/assets/index.dev-DnXg22N1.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
 | 2026-11-24 19:37:28 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
 | 2026-11-24 19:37:07 +07:00 | `src/components/About.tsx` | 48–48 | 48–48 | const About: React.FC<{ onDonate: () => void }> = ({ onDonate }) => { | modified |
+
+## [2026-11-24 20:34:37 +07:00] — Lengkapi log rute halaman, privasi mandiri, pembaca dan aktivitas QRIS
+
+Waktu pencatatan: **2026-11-24 20:34:37 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `e247343`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 294 tes regresi server lulus; 11 tes terkait diulang setelah pelengkapan parameter rute dan cache lulus; TypeScript/build produksi lulus; pemeriksaan sintaks backend/tracker/build script dan oxlint modul baru lulus; browser database QA terisolasi memverifikasi 8 kunjungan (donasi, privasi, beranda, katalog, kategori, metadata kitab, 2 halaman pembaca) serta 2 klik QRIS terpisah; admin menampilkan catatan dan mengecualikan aktivitas admin; API stats QA HTTP 200 total=10, kunjungan=8, aktivitas situs=2; tracker no-cache dan privasi terbaru diverifikasi. Audit mencatat waktu modifikasi akhir/hunk, bukan merekonstruksi setiap keystroke. SSH VPS ditolak autentikasi; pull/deployment server belum berhasil.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-20-34-37-8a0b70.json](docs/change-audit/2026-11-24-20-34-37-8a0b70.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-24 20:28:46 +07:00 | `dist/assets/index-C1A8IBZ5.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DTnWHJcV.css` | 1–2 | — | module/file | deleted |
+| 2026-11-24 20:28:46 +07:00 | `dist/assets/index.dev-BjniO3Ae.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-DnXg22N1.js` | 1–22 | — | module/file | deleted |
+| 2026-11-24 20:28:46 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-24 20:28:48 +07:00 | `dist/privacy-policy.html` | 18–19 | 18–19 | a{color:#047857;overflow-wrap:anywhere} | modified |
+| 2026-11-24 20:28:48 +07:00 | `dist/privacy-policy/index.html` | 18–19 | 18–19 | a{color:#047857;overflow-wrap:anywhere} | modified |
+| 2026-11-24 20:28:09 +07:00 | `dist/visit-tracker.js` | — | 1–111 | routes, parameters, prefix, lifetime, visitPath, url, path, params | added |
+| 2026-11-24 20:25:55 +07:00 | `docs/visit-tracking.md` | — | 1–30 | module/file | added |
+| 2026-11-24 20:15:01 +07:00 | `scripts/build_privacy.js` | — | 18–18 | const { default: Privacy } = await import(pathToFileURL(modulePath).href); | modified |
+| 2026-11-24 20:15:01 +07:00 | `scripts/build_privacy.js` | 36–36 | 37–37 | a{color:#047857;overflow-wrap:anywhere} | modified |
+| 2026-11-24 20:15:01 +07:00 | `server/admin-logs.js` | 1–1 | 1–1 | tables, TODAY_WIB_START, fail, column, definitions, table, query, page | modified |
+| 2026-11-24 20:15:01 +07:00 | `server/admin-logs.js` | 11–11 | 11–11 | function definitions(db,type) { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | — | 1–1 | __filename, __dirname, logPath, stripHarakat, generateWordVariations, chars, alefs, ya | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | 156–156 | 157–157 | app.use((req, res, next) => { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | 164–164 | 165–165 | app.use((req, res, next) => { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | — | 352–352 | try { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | — | 386–386 | app.use(adminActivityIdentity(()=>stateDb)); | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | 588–600 | — | app.post('/api/log/download', (req, res) => { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | — | 602–602 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | 628–628 | 619–620 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-24 20:25:46 +07:00 | `server/index.js` | 647–647 | 639–639 | app.get('/api/admin/stats', requireAdmin, (req, res) => { | modified |
+| 2026-11-24 20:18:30 +07:00 | `server/static-cache.js` | 7–7 | 7–7 | export function staticCacheControl(filename) { | modified |
+| 2026-11-24 20:26:39 +07:00 | `server/static-cache.test.js` | 9–9 | 9–9 | test('versioned assets can be reused while HTML and unversioned files stay refre | modified |
+| 2026-11-24 20:18:30 +07:00 | `server/visit-tracking.js` | — | 1–32 | ensureVisitTrackingSchema, registerVisitTracking, record, db, result | added |
+| 2026-11-24 20:28:09 +07:00 | `server/visit-tracking.test.js` | — | 1–149 | id, fixture, db, app, server, post, memoryStorage, values | added |
+| 2026-11-24 20:18:30 +07:00 | `src/App.tsx` | — | 1–1 | App, navigationHandler, loadedSearch, lastTabLocations, pendingSearch, searchRequest, openAiQuestion, cancelAiRedirect | modified |
+| 2026-11-24 20:18:30 +07:00 | `src/App.tsx` | 61–65 | — | function App() { | modified |
+| 2026-11-24 20:18:30 +07:00 | `src/App.tsx` | — | 320–320 | function App() { | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/Admin.tsx` | 1234–1234 | 1234–1234 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/Admin.tsx` | 1310–1310 | 1310–1310 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/Admin.tsx` | — | 1377–1377 | const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: ( | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/Admin.tsx` | — | 1609–1609 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/AdminDailyChart.tsx` | — | 15–15 | interface DailyItem { | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/AdminDailyChart.tsx` | — | 28–28 | interface TodayStats { | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/AdminDailyChart.tsx` | — | 47–47 | const LOG_META = [ | modified |
+| 2026-11-24 20:25:46 +07:00 | `src/components/AdminDailyChart.tsx` | — | 64–64 | export function AdminDailyChart({ stats }: Props) { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/components/Donation.tsx` | — | 1–1 | purposes, qrisUrl, Donation | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/components/Donation.tsx` | 38–38 | 39–39 | export default function Donation() { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/components/Donation.tsx` | 52–52 | 53–53 | export default function Donation() { | modified |
+| 2026-11-24 20:23:36 +07:00 | `src/components/Privacy.tsx` | 4–4 | 4–4 | const Privacy: React.FC = () => { | modified |
+| 2026-11-24 20:23:36 +07:00 | `src/components/Privacy.tsx` | — | 27–28 | const Privacy: React.FC = () => { | modified |
+| 2026-11-24 20:18:30 +07:00 | `src/components/QuranReader.tsx` | 295–295 | 295–295 | const QuranReader: React.FC = () => { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/components/ReaderModal.tsx` | — | 5–5 | import React, { useState, useEffect, useRef, useCallback } from 'react'; | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/components/ReaderModal.tsx` | — | 177–177 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-24 20:19:59 +07:00 | `src/components/RowaCards.tsx` | — | 7–7 | import {useModalFocus} from '../lib/use-modal-focus'; | modified |
+| 2026-11-24 20:19:59 +07:00 | `src/components/RowaCards.tsx` | 15–17 | 16–18 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-24 20:19:59 +07:00 | `src/components/RowaCards.tsx` | — | 20–20 | export function RowaCardsProvider({children}:{children:ReactNode}) { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/lib/admin-navigation.ts` | 1–1 | 1–1 | adminParent, adminTitle, adminGroup, adminLocation, p, raw, id, v | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/lib/admin-navigation.ts` | 8–8 | 8–8 | const parents: Record<AdminView, AdminView> = { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/lib/admin-navigation.ts` | 15–15 | 15–15 | const titles: Record<AdminView,string> = { | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/lib/admin-navigation.ts` | 21–21 | 21–21 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+| 2026-11-24 20:15:01 +07:00 | `src/lib/back-navigation.ts` | — | 17–17 | export function pushLocation(hash:string,state:Record<string,unknown>\|null=null) | modified |
+| 2026-11-24 20:14:20 +07:00 | `src/lib/visit-tracker.d.ts` | — | 1–4 | visitPath, recordVisit, recordSiteAction, startVisitTracking | added |
+| 2026-11-24 20:28:09 +07:00 | `src/lib/visit-tracker.js` | — | 1–111 | routes, parameters, prefix, lifetime, visitPath, url, path, params | added |
+| 2026-11-24 20:15:00 +07:00 | `src/main.tsx` | — | 6–6 | import App from './App.tsx' | modified |
+| 2026-11-24 20:15:00 +07:00 | `src/main.tsx` | — | 10–10 | installAdminRequestIdentity(); | modified |

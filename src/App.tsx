@@ -1,3 +1,4 @@
+import {recordVisit,visitPath} from './lib/visit-tracker.js';
 import {HadithBooks} from './components/HadithBooks';
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
@@ -58,11 +59,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    try {
-      webAPI.logVisit(activeTab).catch(() => {});
-    } catch(e) {}
-  }, [activeTab]);
 
   const [error, setError] = useState('');
   const [stats, setStats] = useState<{ total_books?: number, total_categories?: number, total_searches?: number, online_users?: number } | null>(null);
@@ -321,6 +317,7 @@ function App() {
 
   navigationHandler.current = () => {
     if (window.location.hash.startsWith('#/read/')) return;
+    recordVisit(visitPath(window.location.href));
     const route = parseNavigation(window.location.hash,window.location.search);
     lastTabLocations.current[route.tab] = window.location.hash;
     setActiveTabState(route.tab);

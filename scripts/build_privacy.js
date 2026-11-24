@@ -15,6 +15,7 @@ const compiled = ts.transpileModule(await fs.readFile(path.join(root, 'src/compo
 const modulePath = path.join(cache, 'Privacy.mjs');
 await fs.writeFile(modulePath, compiled);
 const { default: Privacy } = await import(pathToFileURL(modulePath).href);
+await fs.copyFile(path.join(root,'src/lib/visit-tracker.js'),path.join(root,'dist/visit-tracker.js'));
 const html = `<!doctype html>
 <html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Kebijakan Privasi — al Maktabah as Sunniyyah</title>
@@ -33,7 +34,7 @@ a{color:#047857;overflow-wrap:anywhere}
 </style></head><body>
 <header><a class="back-link" href="/#/beranda" aria-label="Kembali ke beranda"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7M5 12h14"/></svg>Kembali ke beranda</a></header>
 <main>${renderToStaticMarkup(React.createElement(Privacy))}</main>
-<footer><a href="/">maktab.my.id</a></footer></body></html>`;
+<footer><a href="/">maktab.my.id</a></footer><script type="module">import {startVisitTracking} from "/visit-tracker.js";startVisitTracking();</script></body></html>`;
 await fs.mkdir(path.join(root, 'dist/privacy-policy'), { recursive: true });
 await fs.writeFile(path.join(root, 'dist/privacy-policy/index.html'), html);
 await fs.writeFile(path.join(root, 'dist/privacy-policy.html'), html);

@@ -14,6 +14,7 @@ export function previousLocation(state:unknown, href:string):string|null {
 }
 export function pushLocation(hash:string,state:Record<string,unknown>|null=null) {
   window.history.pushState(backState(state,window.location.href),'',hash);
+  window.dispatchEvent?.(new Event('maktabah:location'));
 }
 export function backFallback(hash:string) {
   const [path,query='']=hash.split('?'),params=new URLSearchParams(query);

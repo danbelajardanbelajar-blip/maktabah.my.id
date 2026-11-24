@@ -292,7 +292,7 @@ const QuranReader: React.FC = () => {
     const position:QuranPosition={surah:selectedSurah,ayah:currentAyah.ayah_no,view,book:tafsirListLoading || mappingError?wantedPosition.current.book:activeTafsirBook?.bookId,fontSize};
     wantedPosition.current=position;
     const hash=quranHash(position);
-    if(window.location.hash!==hash)window.history.replaceState(window.history.state,'',hash);
+    if(window.location.hash!==hash) {window.history.replaceState(window.history.state,'',hash);window.dispatchEvent(new Event('maktabah:location'));}
     saveQuranPosition(localStorage,position);
   },[ready,selectedSurah,currentAyah?.ayah_no,view,activeTafsirBook?.bookId,fontSize,tafsirListLoading,mappingError]);
   useEffect(()=>{saveQuranPosition(localStorage,{...readQuranPosition(localStorage),fontSize});},[fontSize]);

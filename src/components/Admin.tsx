@@ -1231,7 +1231,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
       <div className={`grid gap-3 md:gap-4 p-4 border-b bg-white ${type === 'ask' ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-4'}`}>
         <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl border shadow-2xs bg-gray-50/70 border-gray-200">
           <div className="p-2.5 md:p-3 bg-gray-200 text-gray-700 rounded-lg"><Layers size={22} /></div>
-          <div><div className="text-xs md:text-sm text-gray-500 font-medium">Total Pertanyaan</div><div className="text-xl md:text-2xl font-bold text-gray-800">{stats.total.toLocaleString('id-ID')}</div></div>
+          <div><div className="text-xs md:text-sm text-gray-500 font-medium">{type === 'ask' ? 'Total Pertanyaan' : type === 'visit' ? 'Total Kunjungan' : 'Total Aktivitas'}</div><div className="text-xl md:text-2xl font-bold text-gray-800">{stats.total.toLocaleString('id-ID')}</div></div>
         </div>
 
         {type === 'ask' && (
@@ -1307,7 +1307,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
         <div className="flex flex-wrap gap-2">
           <input aria-label="Cari aktivitas" placeholder="Cari pencarian, pertanyaan, halaman, atau IP…" value={logFilter} onChange={e=>setLogFilter(e.target.value)} className="border rounded-lg px-3 py-2 text-sm w-full sm:w-auto sm:flex-1 min-w-0 bg-white" />
           {capabilities.action&&<select aria-label="Jenis aktivitas" value={actionFilter} onChange={e=>{setActionFilter(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
-            <option value="">Semua aktivitas</option><option value="browse">Telusur & filter</option><option value="search">Pencarian</option><option value="profile">Profil penulis</option><option value="timeline">Muat linimasa</option><option value="timeline_year">Pilih tahun</option><option value="read_book">Buka pembaca</option><option value="book_detail">Detail kitab</option><option value="edition">Pilih edisi</option>
+            <option value="">Semua aktivitas</option>{type === 'activity' && <><option value="qris_view">Klik lihat QRIS</option><option value="qris_download">Klik unduh QRIS</option></>}{type !== 'activity' && <><option value="browse">Telusur & filter</option><option value="search">Pencarian</option><option value="profile">Profil penulis</option><option value="timeline">Muat linimasa</option><option value="timeline_year">Pilih tahun</option><option value="read_book">Buka pembaca</option><option value="book_detail">Detail kitab</option><option value="edition">Pilih edisi</option></>}
           </select>}
           {capabilities.outcome&&<select aria-label="Hasil pencarian" value={outcome} onChange={e=>{setOutcome(e.target.value);setCurrentPage(1);}} className="border rounded-lg px-3 py-2 text-sm bg-white">
             <option value="">Semua hasil</option><option value="zero">Hasil nol</option><option value="positive">Ada hasil</option><option value="unknown">Jumlah hasil tidak dicatat</option>
@@ -1374,6 +1374,7 @@ const LogsView = ({ token, onLogout, type, title }: { token: string, onLogout: (
                   <td className="p-3 text-gray-500">{d.id}</td>
                   <td className="p-3 whitespace-nowrap text-gray-600">{new Date((d.created_at || '').replace(' ', 'T') + 'Z').toLocaleString('id-ID',{timeZone:'Asia/Jakarta'})} WIB</td>
                   <td className="p-3 font-medium">
+                    {type === 'activity' && <div><span>{d.action === 'qris_download' ? 'Klik unduh QRIS' : 'Klik lihat QRIS'}</span><p className="text-xs text-gray-500 mt-1">{d.path} · Klik ini bukan bukti pembayaran.</p></div>}
                     {type === 'search' && <div><span dir="auto">{d.query}</span><p className="text-xs text-gray-500 mt-1">{d.mode==='title'?'Judul kitab':'Isi kitab'} · {d.result_count==null?'Jumlah hasil belum dicatat':`${d.result_count} hasil`}</p></div>}
                     {type === 'download' && (() => {
                       let t = d.book_title || '';
@@ -1605,6 +1606,7 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
                     {view === 'submissions' && <SubmissionsView token={token} onLogout={onLogout} />}
           {view === 'log_search' && <LogsView token={token} onLogout={onLogout} type="search" title="Log Pencarian" />}
           {view === 'log_download' && <LogsView token={token} onLogout={onLogout} type="download" title="Log Download" />}
+          {view === 'log_activity' && <LogsView token={token} onLogout={onLogout} type="activity" title="Log Aktivitas Situs" />}
           {view === 'log_visit' && <LogsView token={token} onLogout={onLogout} type="visit" title="Log Kunjungan Halaman" />}
           {view === 'log_quran' && <LogsView token={token} onLogout={onLogout} type="quran" title="Log Penggunaan Al Qur'an" />}
           {view === 'log_rowa' && <LogsView token={token} onLogout={onLogout} type="rowa" title="Log Kamus Perawi" />}

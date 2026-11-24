@@ -1,3 +1,4 @@
+import {ensureVisitTrackingSchema,registerVisitTracking} from './visit-tracking.js';
 import {readSearchScope,searchScopeSql,registerSearchScope,scopedBooksSql} from './search-scope.js';
 import {addSearchResultCategories} from './search-result-categories.js';
 import {registerRowaBrowser} from './rowa-browse.js';
@@ -153,7 +154,7 @@ const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
 const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
-    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
+    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/site-action', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
     && !req.path.startsWith('/api/log/library/')
     && !req.path.startsWith('/api/admin/category')
     && !req.path.startsWith('/api/admin/rowa-database/')
@@ -161,7 +162,7 @@ app.use((req, res, next) => {
     && req.path!=='/api/admin/authors/decision') {
     return res.status(403).json({ error: 'Versi lokal ini untuk membaca dan export. Import dan perubahan data dilakukan di web online.' });
   }
-  if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/download'].includes(req.path)){
+  if((transferRuntime.compactSession || transferRuntime.compactExport) && !['GET','HEAD','OPTIONS'].includes(req.method) && !req.path.startsWith('/api/admin/compact/') && !['/api/admin/login','/api/admin/logout','/api/ask','/api/log/visit','/api/log/site-action','/api/log/download'].includes(req.path)){
     return res.status(409).json({error:transferRuntime.compactExport?'Export hemat ruang sedang berjalan. Tunggu selesai sebelum mengubah database.':'Import bertahap belum selesai. Lanjutkan atau akhiri sesi pada Import / Export sebelum mengubah database.'});
   }
   if ((transferRuntime.importing || transferRuntime.deleting) && !['GET', 'HEAD', 'OPTIONS'].includes(req.method) && !['/api/admin/login', '/api/admin/logout'].includes(req.path)) {
@@ -348,6 +349,7 @@ try {
             try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN user_agent TEXT;`); } catch(e) {}
         }
         
+        ensureVisitTrackingSchema(stateDb);
         try {stateDb.exec('ALTER TABLE search_logs ADD COLUMN result_count INTEGER');}catch{}
         try {stateDb.exec("ALTER TABLE search_logs ADD COLUMN mode TEXT DEFAULT 'text'");}catch{}
 
@@ -381,6 +383,7 @@ function booksMeta() {
 
 const libraryActivity = createLibraryActivity(() => stateDb);
 app.use(adminActivityIdentity(()=>stateDb));
+registerVisitTracking(app,{getStateDb:()=>stateDb});
 registerLibraryActivity(app,{activity:libraryActivity,
   getBook:id=>db?.prepare(`SELECT bkid,bk FROM ${booksMeta()} WHERE bkid=? LIMIT 1`).get(id),
   isBusy:()=>Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession)});
@@ -585,19 +588,6 @@ app.post('/api/log/download', (req, res) => {
     }
 });
 
-app.post('/api/log/visit', (req, res) => {
-    if (!db) return res.status(500).json({ error: 'Database not loaded' });
-    try {
-        const { path } = req.body;
-        if (path) {
-            if (!req.isAdminActivity) stateDb.prepare("INSERT INTO visit_logs (path, ip, user_agent) VALUES (?, ?, ?)").run(path, req.ip || req.headers['x-forwarded-for'], req.headers['user-agent']);
-        }
-        res.json({ success: true });
-    } catch(err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 app.get('/api/admin/stats', requireAdmin, (req, res) => {
     if (!db) return res.status(500).json({ error: 'Database not loaded' });
     try {
@@ -609,6 +599,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             submissions: stateDb.prepare("SELECT COUNT(*) as c FROM book_submissions").get().c,
             log_search: stateDb.prepare("SELECT COUNT(*) as c FROM search_logs").get().c,
             log_download: stateDb.prepare("SELECT COUNT(*) as c FROM download_logs").get().c,
+            log_activity: stateDb.prepare("SELECT COUNT(*) as c FROM site_action_logs").get().c,
             log_visit: stateDb.prepare("SELECT COUNT(*) as c FROM visit_logs").get().c,
             log_quran: stateDb.prepare("SELECT COUNT(*) as c FROM quran_logs").get().c,
             log_rowa: stateDb.prepare("SELECT COUNT(*) as c FROM rowa_logs").get().c,
@@ -625,7 +616,8 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
             quran: 'quran_logs',
             hadith: 'hadith_logs',
             rowa: 'rowa_logs',
-            authors: 'authors_logs'
+            authors: 'authors_logs',
+            activity: 'site_action_logs'
         };
         const today = { total: 0 };
         const todayStartSql = `created_at >= ${TODAY_WIB_START}`;
@@ -644,7 +636,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
         }
         const dailyMap = {};
         for (const d of days) {
-            dailyMap[d] = { date: d, total: 0, search: 0, ask: 0, visit: 0, download: 0, quran: 0, hadith: 0, rowa: 0, authors: 0 };
+            dailyMap[d] = { date: d, total: 0, search: 0, ask: 0, visit: 0, download: 0, quran: 0, hadith: 0, rowa: 0, authors: 0, activity: 0 };
         }
         const sevenDaysStartSql = "datetime('now', '+7 hours', 'start of day', '-6 days', '-7 hours')";
         for (const [key, table] of Object.entries(logTables)) {

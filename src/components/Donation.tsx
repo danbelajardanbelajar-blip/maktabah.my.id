@@ -1,3 +1,4 @@
+import {recordSiteAction} from '../lib/visit-tracker.js';
 import { HeartHandshake, Server, Library, Wrench, Download } from 'lucide-react';
 
 const purposes = [
@@ -35,7 +36,7 @@ export default function Donation() {
           <section aria-labelledby="donation-method" className="rounded-xl bg-[var(--app-primary)]/5 border border-[var(--app-primary)]/15 p-5 md:p-6">
             <h2 id="donation-method" className="text-lg font-bold mb-5">Donasi melalui QRIS</h2>
             <div className="grid md:grid-cols-2 gap-6 items-start">
-              <a href={qrisUrl} target="_blank" rel="noopener noreferrer" aria-label="Buka gambar QRIS Maktabah ukuran penuh" className="block w-full max-w-sm mx-auto rounded-xl overflow-hidden border border-black/10 focus-visible:outline-2 focus-visible:outline-[var(--app-primary)]">
+              <a href={qrisUrl} onClick={() => recordSiteAction('qris_view')} target="_blank" rel="noopener noreferrer" aria-label="Buka gambar QRIS Maktabah ukuran penuh" className="block w-full max-w-sm mx-auto rounded-xl overflow-hidden border border-black/10 focus-visible:outline-2 focus-visible:outline-[var(--app-primary)]">
                 <img src={qrisUrl} alt="QRIS donasi Maktabah, penerima ZAINUL HAKIM, BUKU" width={1129} height={1600} className="w-full h-auto" />
               </a>
               <div className="space-y-5 min-w-0">
@@ -49,7 +50,7 @@ export default function Donation() {
                   <li>Masukkan nominal donasi sesuai keinginan.</li>
                   <li>Pastikan nama penerima sesuai sebelum menyelesaikan pembayaran.</li>
                 </ol>
-                <a href={qrisUrl} download="QRIS-Maktabah.jpg" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--app-primary)] text-white font-semibold px-5 py-3 text-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--app-primary)]">
+                <a href={qrisUrl} onClick={() => recordSiteAction('qris_download')} download="QRIS-Maktabah.jpg" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--app-primary)] text-white font-semibold px-5 py-3 text-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--app-primary)]">
                   <Download size={18} aria-hidden="true" /> Unduh QRIS
                 </a>
                 <p className="text-sm leading-relaxed opacity-75">Ketuk gambar untuk melihat QRIS ukuran penuh.</p>

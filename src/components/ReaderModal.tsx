@@ -2,6 +2,7 @@ import {RowaLinkedText} from './RowaLinkedText';
 import {useRowaCards} from './RowaCards';
 import {ReaderAiPanel} from './ReaderAiPanel';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {recordVisit} from '../lib/visit-tracker.js';
 import { webAPI } from '../api';
 import { loadReaderData } from '../lib/reader-loader';
 import { rememberReadingPosition, swipeDirection } from '../lib/reading-position';
@@ -173,6 +174,7 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
   useEffect(() => {
     if (bookInfo?.bkid !== bookId || !currentPage) return;
     onPageChange?.(bookId,currentPage.id);
+    recordVisit(`/read/${bookId}/${currentPage.id}`);
     rememberReadingPosition(localStorage,{bookId,pageId:currentPage.id,page:currentPage.page,part:currentPage.part,title:bookInfo.bk,updatedAt:Date.now()});
     window.dispatchEvent(new Event('readingPositionsUpdated'));
   },[bookId,bookInfo?.bkid,currentPage?.id]);
