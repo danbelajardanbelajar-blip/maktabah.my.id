@@ -473,7 +473,7 @@ function App() {
             removeBookmark={(id,pageId)=>setBookmarks((items:any[])=>items.filter(item=>item.bkid!==id||item.id!==pageId))}
             removePosition={id=>{const next=positions.filter(item=>item.bookId!==id);try{localStorage.setItem('maktabah-reading-positions',JSON.stringify(next));}catch{}setPositions(next);}} />
         ) : activeTab === 'about' ? (
-          <About />
+          <About onDonate={() => setActiveTab('donation')} />
         ) : activeTab === 'admin' ? (
           <Admin onClose={() => { const url = new URL(window.location.href); url.searchParams.delete('admin'); window.history.replaceState(null, '', url.pathname + url.search + url.hash); setActiveTab('home'); }} />
         ) : activeTab === 'privacy' ? (

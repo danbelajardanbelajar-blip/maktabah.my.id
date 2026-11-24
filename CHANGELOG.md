@@ -2709,3 +2709,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-32-41-43c61a.
 | 2026-11-24 19:24:40 +07:00 | `src/App.tsx` | — | 736–742 | function App() { | modified |
 | 2026-11-24 19:29:04 +07:00 | `src/components/Donation.tsx` | — | 1–64 | purposes, qrisUrl, Donation | added |
 | 2026-11-24 19:24:40 +07:00 | `src/lib/navigation.ts` | 1–2 | 1–2 | parseNavigation, params, found, navigationHash, routePage, routeCategories | modified |
+
+## [2026-11-24 19:35:20 +07:00] — Card Beri Dukungan pada halaman Tentang
+
+Waktu pencatatan: **2026-11-24 19:35:20 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b9093bf`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: TypeScript/build produksi lulus; 7 tes navigasi/back lulus; oxlint About.tsx lulus; uji browser card Tentang ke donasi QRIS dan kembali ke Tentang lulus; diff whitespace lulus. Card tanpa deskripsi sebelum Kontak dan Akses. SSH ubuntu@VPS masih ditolak autentikasi; pull/deployment server belum terlaksana.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-35-20-6e4b81.json](docs/change-audit/2026-11-24-19-35-20-6e4b81.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-24 19:34:38 +07:00 | `dist/assets/index.dev-Bpdht2Sb.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-24 19:34:38 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-24 19:34:01 +07:00 | `src/App.tsx` | 476–476 | 476–476 | function App() { | modified |
+| 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | — | 2–3 | import React from 'react'; | modified |
+| 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | 3–3 | 5–5 | import React from 'react'; | modified |
+| 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | — | 30–46 | const About: React.FC = () => { | modified |

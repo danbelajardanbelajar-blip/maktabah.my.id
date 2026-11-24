@@ -1,6 +1,8 @@
 import React from 'react';
+import { HeartHandshake, ChevronRight } from 'lucide-react';
+import { navigationHash } from '../lib/navigation';
 
-const About: React.FC = () => {
+const About: React.FC<{ onDonate: () => void }> = ({ onDonate }) => {
   return (
     <div className="w-full bg-white p-6 md:p-10 rounded-2xl shadow-md text-slate-700 leading-relaxed my-4">
       <h2 className="text-2xl font-bold text-[#5d4037] mb-4 border-b pb-2">Tentang Kami</h2>
@@ -24,6 +26,23 @@ const About: React.FC = () => {
         <div className="arabic text-[#5d4037] text-2xl font-bold mb-2">طلب العلم فريضة على كل مسلم</div>
         <div className="text-[#795548] text-sm font-semibold">HR. Ibnu Mājah — Menuntut ilmu adalah kewajiban setiap Muslim</div>
       </div>
+
+      <a
+        href={navigationHash('donation')}
+        onClick={event => {
+          if (event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+            event.preventDefault();
+            onDonate();
+          }
+        }}
+        className="mb-8 flex items-center gap-4 rounded-2xl border border-[#d7ccc8] bg-[#faf8f5] p-5 text-[#5d4037] shadow-sm transition-all hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--app-primary)]"
+      >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--app-primary)]/10 text-[var(--app-primary)]">
+          <HeartHandshake size={24} aria-hidden="true" />
+        </span>
+        <span className="flex-1 font-bold">Beri Dukungan</span>
+        <ChevronRight size={20} aria-hidden="true" />
+      </a>
 
       <h2 className="text-xl font-bold text-[#5d4037] mb-4">Kontak & Akses</h2>
       <p className="mb-6">Anda dapat mengakses perpustakaan ini di: <a href="https://maktabah.my.id" className="text-amber-700 hover:underline font-medium">maktabah.my.id</a></p>
