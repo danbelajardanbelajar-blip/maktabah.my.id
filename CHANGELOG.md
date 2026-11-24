@@ -2726,3 +2726,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-35-20-6e4b81.
 | 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | — | 2–3 | import React from 'react'; | modified |
 | 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | 3–3 | 5–5 | import React from 'react'; | modified |
 | 2026-11-24 19:34:01 +07:00 | `src/components/About.tsx` | — | 30–46 | const About: React.FC = () => { | modified |
+
+## [2026-11-24 19:37:41 +07:00] — Koreksi domain halaman Tentang menjadi maktab.my.id
+
+Waktu pencatatan: **2026-11-24 19:37:41 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b3b2179`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Teks dan href pada Kontak dan Akses diperiksa: https://maktab.my.id; TypeScript dan build produksi lulus; git diff --check lulus. SSH VPS ditolak autentikasi sehingga pull server belum dapat dilakukan.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-19-37-41-6ee894.json](docs/change-audit/2026-11-24-19-37-41-6ee894.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-24 19:37:28 +07:00 | `dist/assets/index.dev-DnXg22N1.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-24 19:37:28 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-24 19:37:07 +07:00 | `src/components/About.tsx` | 48–48 | 48–48 | const About: React.FC<{ onDonate: () => void }> = ({ onDonate }) => { | modified |

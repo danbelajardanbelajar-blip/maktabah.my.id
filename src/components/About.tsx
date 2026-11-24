@@ -45,7 +45,7 @@ const About: React.FC<{ onDonate: () => void }> = ({ onDonate }) => {
       </a>
 
       <h2 className="text-xl font-bold text-[#5d4037] mb-4">Kontak & Akses</h2>
-      <p className="mb-6">Anda dapat mengakses perpustakaan ini di: <a href="https://maktabah.my.id" className="text-amber-700 hover:underline font-medium">maktabah.my.id</a></p>
+      <p className="mb-6">Anda dapat mengakses perpustakaan ini di: <a href="https://maktab.my.id" className="text-amber-700 hover:underline font-medium">maktab.my.id</a></p>
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="border border-[#d7ccc8] rounded-xl p-5 bg-[#faf8f5]">
