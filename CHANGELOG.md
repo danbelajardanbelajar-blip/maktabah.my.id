@@ -2832,3 +2832,21 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-25-07-56-44-fb7f43.
 | 2026-11-25 07:54:31 +07:00 | `src/App.tsx` | 553–564 | 555–570 | function App() { | modified |
 | 2026-11-25 07:53:37 +07:00 | `src/api.ts` | — | 284–286 | export const webAPI = { | modified |
 | 2026-11-25 07:54:00 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 1–356 | LOCAL_HISTORY_KEY, clientCache, CACHE_TTL, getLocalSearches, raw, parsed, saveLocalSearch, clean | added |
+
+## [2026-11-25 08:07:51 +07:00] — fix(search): batasi pemblokiran 4 nama hanya untuk Tanya AI, buka pencarian standar
+
+Waktu pencatatan: **2026-11-25 08:07:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `536dc39`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/index.js lulus; 81 unit tests lulus
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-25-08-07-51-5bfbf7.json](docs/change-audit/2026-11-25-08-07-51-5bfbf7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 28–28 | 28–28 | import {createLibraryActivity,registerLibraryActivity} from './library-activity. | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 36–36 | 36–36 | import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 990–993 | — | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1002–1008 | 998–998 | app.get('/api/search', async (req, res) => { | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1386–1386 | — | registerSearchAutocomplete(app, { | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1436–1440 | — | app.get('/api/search_titles', (req, res) => { | modified |
+| 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1456–1463 | — | app.get('/api/search_titles', (req, res) => { | modified |

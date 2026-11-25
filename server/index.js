@@ -25,7 +25,7 @@ import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
 import { registerSearchAutocomplete } from './search-autocomplete.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
-import {invalidateAiBookPolicy, containsExcludedAiName} from './ai-book-policy.js';
+import {invalidateAiBookPolicy} from './ai-book-policy.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
 import {registerAdminLogs,TODAY_WIB_START} from './admin-logs.js';
 import {registerMessages} from './messages.js';
@@ -33,7 +33,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
-import { ensureSearchPolicySchema, syncMetadataExclusions, getExcludedBookIds, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook } from './search-policy.js';
+import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -987,10 +987,6 @@ app.get('/api/search', async (req, res) => {
       cat_ids = req.query.cat_id.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
     }
     const targetBookId = Number.isSafeInteger(parseInt(req.query.book_id)) ? parseInt(req.query.book_id) : null;
-    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
-    if (!isAdvanced && !targetBookId && containsExcludedAiName(query)) {
-      return res.json({ results: [], total: 0, capped: false, error: null });
-    }
     // book_ids: search only inside the books the visitor ticked (comma-separated, at most MAX_SEARCH_BOOKS).
     let bookIds = [];
     if (!scope && req.query.book_ids) {
@@ -999,13 +995,7 @@ app.get('/api/search', async (req, res) => {
         return res.status(400).json({ results: [], total: 0, capped: false, error: `Pilih 1 sampai ${MAX_SEARCH_BOOKS} kitab untuk dicari.` });
       }
     }
-    const excluded = (isAdvanced || targetBookId) ? null : getExcludedBookIds(stateDb);
-    // Ticked books follow the same policy as the rest of basic search: excluded books are left out.
-    if (excluded && bookIds.length) {
-      bookIds = bookIds.filter(id => !excluded.has(id));
-      if (!bookIds.length) return res.json({ results: [], total: 0, capped: false, error: null });
-    }
-    const excludedBookIds = excluded && (scope || !bookIds.length) ? Array.from(excluded) : [];
+    const excludedBookIds = [];
 
     const { exactPhrase, andMatch } = buildFtsMatch(query);
     if (!exactPhrase) return res.json({ results: [], total: 0, capped: false, error: null });
@@ -1383,7 +1373,6 @@ registerSearchAutocomplete(app, {
   getStateDb: () => stateDb,
   hasAdditional: () => hasTambahan,
   likeMatch: buildLikeMatch,
-  getExcludedBookIds,
   isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
 });
 
@@ -1433,11 +1422,6 @@ app.get('/api/search_titles', (req, res) => {
        return res.json({ data: [], total: 0, page, limit });
     }
 
-    const isAdvanced = req.query.advanced === '1' || req.query.advanced === 'true';
-    if (!isAdvanced && !targetBookId && containsExcludedAiName(query)) {
-      return res.json({ data: [], total: 0, page, limit });
-    }
-
     let whereClause = "WHERE b.bk LIKE ?";
     let likeQuery = buildLikeMatch(req.query.q || '');
     let params = [`%${likeQuery}%`];
@@ -1451,14 +1435,6 @@ app.get('/api/search_titles', (req, res) => {
     if (targetBookId) {
       whereClause += ` AND b.bkid = ?`;
       params.push(targetBookId);
-    }
-
-    if (!isAdvanced && !targetBookId) {
-      const excludedBookIds = Array.from(getExcludedBookIds(stateDb));
-      if (excludedBookIds.length > 0) {
-        whereClause += ` AND b.bkid NOT IN (SELECT value FROM json_each(?))`;
-        params.push(JSON.stringify(excludedBookIds));
-      }
     }
 
     const titleBooks=scope?scopedBooksSql(hasTambahan):booksMeta();

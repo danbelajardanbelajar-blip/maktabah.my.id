@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-25 08:07:51 +07:00",
+  "title": "fix(search): batasi pemblokiran 4 nama hanya untuk Tanya AI, buka pencarian standar",
+  "baseCommit": "536dc39b9a86a909ffc7c0394ee8c7069709e464",
+  "checks": "node --check server/index.js lulus; 81 unit tests lulus",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-25 08:06:57 +07:00",
+      "stagedSha256": "605f2b2f20e17f02ad3861312587a0d6f4651196f636dd3a875948d8afde4693",
+      "diffSha256": "328211f8ca3133d31688d161e9546bb75ba310a3458687531c13f9aabd13dd44",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "excludedBookIds",
+        "results",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 28,
+            "count": 1
+          },
+          "after": {
+            "line": 28,
+            "count": 1
+          },
+          "section": "import {createLibraryActivity,registerLibraryActivity} from './library-activity."
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 1
+          },
+          "after": {
+            "line": 36,
+            "count": 1
+          },
+          "section": "import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text"
+        },
+        {
+          "before": {
+            "line": 990,
+            "count": 4
+          },
+          "after": {
+            "line": 989,
+            "count": 0
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1002,
+            "count": 7
+          },
+          "after": {
+            "line": 998,
+            "count": 1
+          },
+          "section": "app.get('/api/search', async (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1386,
+            "count": 1
+          },
+          "after": {
+            "line": 1375,
+            "count": 0
+          },
+          "section": "registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 1436,
+            "count": 5
+          },
+          "after": {
+            "line": 1424,
+            "count": 0
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 1456,
+            "count": 8
+          },
+          "after": {
+            "line": 1439,
+            "count": 0
+          },
+          "section": "app.get('/api/search_titles', (req, res) => {"
+        }
+      ]
+    }
+  ]
+}
