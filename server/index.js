@@ -23,6 +23,7 @@ import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
 import { registerSearchSuggestions } from './search-suggestions.js';
+import { registerSearchAutocomplete } from './search-autocomplete.js';
 import {createLibraryActivity,registerLibraryActivity} from './library-activity.js';
 import {invalidateAiBookPolicy, containsExcludedAiName} from './ai-book-policy.js';
 import {adminActivityIdentity,setAdminActivityCookie} from './admin-log-identity.js';
@@ -1376,6 +1377,15 @@ app.get('/api/toc/:bookId', (req, res) => {
 registerSearchSuggestions(app, {getDb:()=>db, hasAdditional:()=>hasTambahan, likeMatch:buildLikeMatch,
   configPath:path.join(rootDir,'dev-data','ai-config.local.json'), localExportMode,
   isMaintenance:()=>Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession)});
+
+registerSearchAutocomplete(app, {
+  getDb: () => db,
+  getStateDb: () => stateDb,
+  hasAdditional: () => hasTambahan,
+  likeMatch: buildLikeMatch,
+  getExcludedBookIds,
+  isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
+});
 
 registerAskAi(app, { getDb: () => db, getStateDb: () => stateDb, hasAdditional: () => hasTambahan,
   requireAdmin, cache: askCache, configPath: path.join(rootDir, 'dev-data', 'ai-config.local.json'), localExportMode,

@@ -2808,3 +2808,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-24-20-34-37-8a0b70.
 | 2026-11-24 20:28:09 +07:00 | `src/lib/visit-tracker.js` | — | 1–111 | routes, parameters, prefix, lifetime, visitPath, url, path, params | added |
 | 2026-11-24 20:15:00 +07:00 | `src/main.tsx` | — | 6–6 | import App from './App.tsx' | modified |
 | 2026-11-24 20:15:00 +07:00 | `src/main.tsx` | — | 10–10 | installAdminRequestIdentity(); | modified |
+
+## [2026-11-25 07:56:44 +07:00] — feat(search): dropdown usulan pencarian cepat saat mengetik (autocomplete)
+
+Waktu pencatatan: **2026-11-25 07:56:44 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `8cf4cbe`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: tsc -b lulus 0 error; oxlint 0 error; node --check server/index.js lulus; 60 unit tests lulus; build produksi index.dev-YYfi_zxC.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-25-07-56-44-fb7f43.json](docs/change-audit/2026-11-25-07-56-44-fb7f43.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-C1A8IBZ5.css` | 1–2 | — | module/file | deleted |
+| 2026-11-25 07:56:13 +07:00 | `dist/assets/index-S7TqulSu.css` | — | 1–2 | module/file | added |
+| 2026-11-25 07:56:13 +07:00 | `dist/assets/index.dev-YYfi_zxC.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-25 07:56:13 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-25 07:53:18 +07:00 | `server/index.js` | — | 26–26 | import { registerSearchSuggestions } from './search-suggestions.js'; | modified |
+| 2026-11-25 07:53:18 +07:00 | `server/index.js` | — | 1381–1389 | registerSearchSuggestions(app, {getDb:()=>db, hasAdditional:()=>hasTambahan, lik | modified |
+| 2026-11-25 07:52:10 +07:00 | `server/search-autocomplete.js` | — | 1–145 | queryAutocomplete, q, likeQuery, containsPattern, prefixPattern, books, seenBooks, excluded | added |
+| 2026-11-25 07:52:46 +07:00 | `server/search-autocomplete.test.js` | — | 1–135 | createFixture, db, stateDb, excluded, arRes, exclRes, idRes, app | added |
+| 2026-11-25 07:54:31 +07:00 | `src/App.tsx` | — | 24–24 | import { SearchSuggestions } from './components/SearchSuggestions'; | modified |
+| 2026-11-25 07:54:31 +07:00 | `src/App.tsx` | — | 262–262 | function App() { | modified |
+| 2026-11-25 07:54:31 +07:00 | `src/App.tsx` | 553–564 | 555–570 | function App() { | modified |
+| 2026-11-25 07:53:37 +07:00 | `src/api.ts` | — | 284–286 | export const webAPI = { | modified |
+| 2026-11-25 07:54:00 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 1–356 | LOCAL_HISTORY_KEY, clientCache, CACHE_TTL, getLocalSearches, raw, parsed, saveLocalSearch, clean | added |

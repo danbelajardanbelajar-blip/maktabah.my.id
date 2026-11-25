@@ -21,6 +21,7 @@ import Catalog from './components/Catalog';
 import AskAI from './components/AskAI';
 import { detectAiQuery } from './lib/ai-query-detector';
 import { SearchSuggestions } from './components/SearchSuggestions';
+import { SearchAutocompleteInput, saveLocalSearch } from './components/SearchAutocompleteInput';
 import {SearchScopePicker} from './components/SearchScopePicker';
 import {SearchCategoryLabel} from './components/SearchCategoryLabel';
 import {emptySearchScope,loadSearchScope,saveSearchScope,scopeParams,scopeKey,scopeFromParams,scopeDescription,unrestrictedScope,type SearchScope} from './lib/search-scope';
@@ -258,6 +259,7 @@ function App() {
 
   const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', scopeFilter = searchScope, forceLiteral = false) => {
     if (!searchQuery.trim()) return;
+    saveLocalSearch(searchQuery);
     if (!forceLiteral) {
       const detection = detectAiQuery(searchQuery);
       if (detection.shouldRedirect) {
@@ -550,18 +552,22 @@ function App() {
                 <button onClick={()=>{const scope=emptySearchScope();setSearchScope(scope);if(query.trim()&&hasSearched)void executeSearch(query,1,searchMode,'push',scope,true);}} className="font-semibold text-red-600 min-h-11 px-2">Cari di semua kitab</button>
               </div>}
             <form onSubmit={handleSearch} className="mb-8 flex flex-col md:flex-row gap-3">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                  <Search className="text-gray-400" size={20} />
-                </div>
-                <input 
-                  type="text" 
-                  value={activeTab === 'home' ? homeQuery : query}
-                  onChange={(e) => { if (activeTab === 'home') setHomeQuery(e.target.value); else { setQuery(e.target.value); setHasSearched(false); } }}
-                  placeholder="Cari di sini..." 
-                  className="w-full pl-4 pr-12 py-4 rounded-xl border-2 border-black/10 text-lg md:text-xl focus:outline-none focus:border-[var(--app-primary)] bg-[var(--reader-paper)] shadow-inner transition-all"
-                />
-              </div>
+              <SearchAutocompleteInput
+                value={activeTab === 'home' ? homeQuery : query}
+                onChange={(val) => {
+                  if (activeTab === 'home') setHomeQuery(val);
+                  else { setQuery(val); setHasSearched(false); }
+                }}
+                onSelectQuery={(selectedQ) => {
+                  if (activeTab === 'home') setHomeQuery(selectedQ);
+                  else setQuery(selectedQ);
+                  void executeSearch(selectedQ, 1, activeTab === 'home' ? 'text' : searchMode);
+                }}
+                onSelectBook={(book) => {
+                  openReader({ bookId: book.bkid });
+                }}
+                placeholder="Cari di sini..."
+              />
               <button 
                 type="submit" 
                 disabled={loading}

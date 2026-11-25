@@ -281,6 +281,9 @@ export const webAPI = {
   getRecentSearches: async () => {
     return fetchAPI(`/recent-searches`);
   },
+  getAutocomplete: async (query: string, signal?: AbortSignal): Promise<{ books: { bkid: number; title: string; category: string }[]; queries: { text: string; count: number }[] }> => {
+    return fetchAPI(`/autocomplete?q=${encodeURIComponent(query)}`, signal);
+  },
   getRecentQuestions: async (scope?: 'personal' | 'global') => {
     return fetchAPI(scope === 'global' ? `/recent-questions?scope=global` : `/recent-questions`);
   },
