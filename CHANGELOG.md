@@ -2908,3 +2908,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-19-22-dc4726.
 | 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 6–6 | 6–6 | const parents: Record<AdminView, AdminView> = { | modified |
 | 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 14–14 | 14–14 | const titles: Record<AdminView,string> = { | modified |
 | 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 20–20 | 20–20 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |
+
+## [2026-11-27 04:33:42 +07:00] — fix(nu-online): potong bagian Tags dan daftar Terpopuler ke bawah dari isi postingan
+
+Waktu pencatatan: **2026-11-27 04:33:42 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `061a271`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/nu-online.js lulus; 4 unit tests nu-online lulus; verifikasi live artikel tanpa Tags/Terpopuler
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-33-42-ab807c.json](docs/change-audit/2026-11-27-04-33-42-ab807c.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 04:33:17 +07:00 | `server/nu-online.js` | 121–122 | 121–122 | export function parseNuOnlineArticleHtml(html, url = '') { | modified |
+| 2026-11-27 04:33:17 +07:00 | `server/nu-online.js` | — | 140–140 | export function parseNuOnlineArticleHtml(html, url = '') { | modified |
+| 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 40–40 | const SAMPLE_ARTICLE_HTML = ` | modified |
+| 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 42–46 | const SAMPLE_ARTICLE_HTML = ` | modified |
+| 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 69–69 | test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata | modified |
+| 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 71–73 | test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata | modified |

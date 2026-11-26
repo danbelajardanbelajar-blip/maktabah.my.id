@@ -37,7 +37,13 @@ const SAMPLE_ARTICLE_HTML = `
     <div class="font-roboto"><div><p>Baca Juga</p></div></div><a href="/lain"><h2>Artikel Lain</h2></a>
     <p><strong>Jawaban</strong></p>
     <p>Dalam kitab <em>I'anatut Thalibin</em> disebutkan: يُشْتَرَطُ أَنْ يَكُونَ الْبِنَاءُ مَمْلُوكًا.</p>
+    <p>Editor: Zainuddin Lubis</p>
   </div>
+  <nav class="mx-auto mt-7">
+    <p>Tags</p>
+    <p>Terpopuler</p>
+    <p>Khutbah Jumat Lainnya</p>
+  </nav>
 </body>
 </html>
 `;
@@ -60,7 +66,11 @@ test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata 
   assert.equal(article.author, 'Muhammad Zainul Mujahid');
   assert.equal(article.containsBahtsulMasail, true);
   assert.ok(article.fullText.includes('يُشْتَرَطُ أَنْ يَكُونَ الْبِنَاءُ مَمْلُوكًا'));
+  assert.ok(article.fullText.includes('Editor: Zainuddin Lubis'));
   assert.ok(!article.fullText.includes('Baca Juga'));
+  assert.ok(!article.fullText.includes('Tags'));
+  assert.ok(!article.fullText.includes('Terpopuler'));
+  assert.ok(!article.fullText.includes('Khutbah Jumat Lainnya'));
 });
 
 test('splitArticleIntoPages splits long text cleanly at paragraph boundaries', () => {

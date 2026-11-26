@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 04:33:42 +07:00",
+  "title": "fix(nu-online): potong bagian Tags dan daftar Terpopuler ke bawah dari isi postingan",
+  "baseCommit": "061a2717caf5e298e48514c7793f262b2cde5cd4",
+  "checks": "node --check server/nu-online.js lulus; 4 unit tests nu-online lulus; verifikasi live artikel tanpa Tags/Terpopuler",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/nu-online.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 04:33:17 +07:00",
+      "stagedSha256": "55f2a0794a9267623afe38ecfa776aa59dfe520054053d16b7237e379ebb6098",
+      "diffSha256": "94b5ac6eb11f5824fda268ba4f8e7d8f257e76cd1e661829304ef22d66162637",
+      "symbols": [
+        "fail",
+        "ALLOWED_HOSTS",
+        "validateNuOnlineUrl",
+        "decodeHtmlEntities",
+        "code",
+        "stripTags",
+        "normalizeKeywordMatch",
+        "parseNuOnlineListHtml",
+        "seen",
+        "posts",
+        "anchorRegex",
+        "rawHref",
+        "url",
+        "inner",
+        "altMatch",
+        "headingMatch",
+        "title",
+        "slug",
+        "parseNuOnlineArticleHtml",
+        "raw",
+        "jsonLds",
+        "parsed",
+        "newsLd",
+        "h1Match",
+        "publishedAt",
+        "description",
+        "byline",
+        "detailStart",
+        "slice",
+        "endMarker",
+        "paragraphs",
+        "blockRegex",
+        "text",
+        "fullText",
+        "norm",
+        "containsBahtsulMasail",
+        "splitArticleIntoPages",
+        "clean",
+        "pages",
+        "ensureNuOnlineSchema",
+        "indexNuOnlinePages",
+        "start",
+        "count",
+        "normKw",
+        "indexedPosts",
+        "upsert",
+        "listUrl",
+        "res",
+        "html",
+        "matchesKeyword",
+        "existing",
+        "previewNuOnlineArticle",
+        "safeUrl",
+        "article",
+        "row",
+        "importNuOnlineArticle",
+        "infoParts",
+        "created",
+        "registerNuOnline",
+        "stateDb",
+        "q",
+        "status",
+        "page",
+        "limit",
+        "offset",
+        "conds",
+        "params",
+        "pat",
+        "where",
+        "total",
+        "stats",
+        "data",
+        "result",
+        "db",
+        "book"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 121,
+            "count": 2
+          },
+          "after": {
+            "line": 121,
+            "count": 2
+          },
+          "section": "export function parseNuOnlineArticleHtml(html, url = '') {"
+        },
+        {
+          "before": {
+            "line": 139,
+            "count": 0
+          },
+          "after": {
+            "line": 140,
+            "count": 1
+          },
+          "section": "export function parseNuOnlineArticleHtml(html, url = '') {"
+        }
+      ]
+    },
+    {
+      "file": "server/nu-online.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 04:33:20 +07:00",
+      "stagedSha256": "0ba5d1826776bb98ba742461a1203c9b0647dc289ab03d1263caeedac9583955",
+      "diffSha256": "0b33da3c5e958c129d6a2171d9b7162bd96036817d9a75a52ce34a46b3d36411",
+      "symbols": [
+        "SAMPLE_LIST_HTML",
+        "SAMPLE_ARTICLE_HTML",
+        "posts",
+        "article",
+        "longText",
+        "pages",
+        "db",
+        "stateDb",
+        "mockFetch",
+        "app",
+        "server",
+        "port",
+        "auth",
+        "idxRes",
+        "idxJson",
+        "listRes",
+        "listJson",
+        "targetUrl",
+        "prevRes",
+        "prevJson",
+        "impRes",
+        "impJson",
+        "books",
+        "listAfter"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 39,
+            "count": 0
+          },
+          "after": {
+            "line": 40,
+            "count": 1
+          },
+          "section": "const SAMPLE_ARTICLE_HTML = `"
+        },
+        {
+          "before": {
+            "line": 40,
+            "count": 0
+          },
+          "after": {
+            "line": 42,
+            "count": 5
+          },
+          "section": "const SAMPLE_ARTICLE_HTML = `"
+        },
+        {
+          "before": {
+            "line": 62,
+            "count": 0
+          },
+          "after": {
+            "line": 69,
+            "count": 1
+          },
+          "section": "test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata"
+        },
+        {
+          "before": {
+            "line": 63,
+            "count": 0
+          },
+          "after": {
+            "line": 71,
+            "count": 3
+          },
+          "section": "test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata"
+        }
+      ]
+    }
+  ]
+}

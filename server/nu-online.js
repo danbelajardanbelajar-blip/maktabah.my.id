@@ -118,8 +118,8 @@ export function parseNuOnlineArticleHtml(html, url = '') {
   const detailStart = raw.search(/<div[^>]+id="detail-content"[^>]*>/i);
   if (detailStart >= 0) {
     const slice = raw.slice(detailStart);
-    // Stop before share/tags/related footer if encountered
-    const endMarker = slice.search(/<(?:div[^>]+id="(?:share|tags|related)|footer\b)/i);
+    // Stop before Tags section, share/tags/related, or footer
+    const endMarker = slice.search(/<(?:nav\b[^>]*>[\s\S]{0,160}>\s*Tags\s*<|div[^>]+id="(?:share|tags|related)|footer\b)/i);
     bodyHtml = endMarker > 0 ? slice.slice(0, endMarker) : slice.slice(0, 120000);
   } else {
     bodyHtml = raw;
@@ -137,6 +137,7 @@ export function parseNuOnlineArticleHtml(html, url = '') {
   for (const m of bodyHtml.matchAll(blockRegex)) {
     const text = stripTags(m[2]);
     if (!text) continue;
+    if (/^(?:Tags|Tag|Terpopuler|Artikel Terkait|Berita Terkait|Download Aplikasi NU Online)$/i.test(text)) break;
     if (/^(Baca Juga|Lihat Semua|Kolumnis|Editor|Penulis|Bagikan:?)$/i.test(text)) continue;
     if (paragraphs.length && paragraphs[paragraphs.length - 1] === text) continue;
     paragraphs.push(text);
