@@ -2881,3 +2881,30 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-03-56-31-95fa6a.
 | 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | 658–658 | 780–780 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
 | 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 786–792 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
 | 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 794–824 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
+
+## [2026-11-27 04:19:22 +07:00] — feat(admin): menu import artikel Bahtsul Masail dari NU Online (indexing, preview, dan import)
+
+Waktu pencatatan: **2026-11-27 04:19:22 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `f7277bb`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check lulus; oxlint 0 error; tsc -b lulus; 17 unit tests lulus; build produksi index.dev-BRlZUAm6.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-19-22-dc4726.json](docs/change-audit/2026-11-27-04-19-22-dc4726.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 04:18:12 +07:00 | `dist/assets/index-DE3pi38d.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DEt_Mz9e.css` | 1–2 | — | module/file | deleted |
+| 2026-11-27 04:18:12 +07:00 | `dist/assets/index.dev-BRlZUAm6.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-X7sVcBNb.js` | 1–22 | — | module/file | deleted |
+| 2026-11-27 04:18:12 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-27 04:16:06 +07:00 | `server/index.js` | — | 23–23 | import { registerManualBook } from './manual-book.js'; | modified |
+| 2026-11-27 04:16:06 +07:00 | `server/index.js` | — | 742–748 | registerManualBook(app, { | modified |
+| 2026-11-27 04:18:38 +07:00 | `server/nu-online.js` | — | 1–394 | fail, ALLOWED_HOSTS, validateNuOnlineUrl, decodeHtmlEntities, code, stripTags, normalizeKeywordMatch, parseNuOnlineListHtml | added |
+| 2026-11-27 04:15:32 +07:00 | `server/nu-online.test.js` | — | 1–162 | SAMPLE_LIST_HTML, SAMPLE_ARTICLE_HTML, posts, article, longText, pages, db, stateDb | added |
+| 2026-11-27 04:16:28 +07:00 | `src/components/Admin.tsx` | — | 5–5 | import { BookTransfer } from './BookTransfer'; | modified |
+| 2026-11-27 04:16:28 +07:00 | `src/components/Admin.tsx` | — | 1749–1749 | const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout: | modified |
+| 2026-11-27 04:16:10 +07:00 | `src/components/NuOnlineImport.tsx` | — | 1–456 | NuOnlineImport, apiCall, res, data, loadPosts, params, preferred, handleIndex | added |
+| 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 1–1 | 1–1 | adminParent, adminTitle, adminGroup, adminLocation, p, raw, id, v | modified |
+| 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 6–6 | 6–6 | const parents: Record<AdminView, AdminView> = { | modified |
+| 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 14–14 | 14–14 | const titles: Record<AdminView,string> = { | modified |
+| 2026-11-27 04:16:08 +07:00 | `src/lib/admin-navigation.ts` | 20–20 | 20–20 | export const adminGroups: {label:string;views:AdminView[]}[] = [ | modified |

@@ -20,6 +20,7 @@ import { generateBookHtmlPdf } from './pdf-export.js';
 import 'dotenv/config';
 import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
 import { registerManualBook } from './manual-book.js';
+import { registerNuOnline } from './nu-online.js';
 import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
@@ -737,6 +738,13 @@ registerManualBook(app, {
   hasAdditional: () => hasTambahan,
   invalidateCache: () => invalidateLibraryCache(),
   forgetPolicyBook: forgetSearchPolicyBook,
+});
+registerNuOnline(app, {
+  getDb: () => db,
+  getStateDb: () => stateDb,
+  requireAdmin,
+  hasAdditional: () => hasTambahan,
+  invalidateCache: () => invalidateLibraryCache(),
 });
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});
