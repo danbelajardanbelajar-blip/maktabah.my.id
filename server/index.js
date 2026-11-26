@@ -746,7 +746,9 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
 
 registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
-  hasAdditional: () => hasTambahan, clearCache: () => invalidateLibraryCache(), runtime: transferRuntime,
+  hasAdditional: () => hasTambahan, clearCache: () => invalidateLibraryCache(),
+  onBookCreated: (info) => authorService.linkBookToAuthor(info),
+  runtime: transferRuntime,
 });
 registerManualBook(app, {
   getDb: () => db,
@@ -755,6 +757,7 @@ registerManualBook(app, {
   hasAdditional: () => hasTambahan,
   invalidateCache: () => invalidateLibraryCache(),
   forgetPolicyBook: forgetSearchPolicyBook,
+  onBookCreated: (info) => authorService.linkBookToAuthor(info),
 });
 registerNuOnline(app, {
   getDb: () => db,
@@ -762,6 +765,7 @@ registerNuOnline(app, {
   requireAdmin,
   hasAdditional: () => hasTambahan,
   invalidateCache: () => invalidateLibraryCache(),
+  onBookCreated: (info) => authorService.linkBookToAuthor(info),
 });
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});

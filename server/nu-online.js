@@ -319,7 +319,7 @@ export function importNuOnlineArticle(db, stateDb, { url, title, author, catId, 
   return { ...created, pagesCount: pages.length, url: safeUrl };
 }
 
-export function registerNuOnline(app, { getDb, getStateDb, requireAdmin, hasAdditional, invalidateCache, fetchImpl = fetch }) {
+export function registerNuOnline(app, { getDb, getStateDb, requireAdmin, hasAdditional, invalidateCache, onBookCreated, fetchImpl = fetch }) {
   app.get('/api/admin/nu-online/posts', requireAdmin, (req, res) => {
     const stateDb = getStateDb();
     if (!stateDb) return res.status(503).json({ error: 'Database state belum tersedia.' });
@@ -386,6 +386,7 @@ export function registerNuOnline(app, { getDb, getStateDb, requireAdmin, hasAddi
     if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
     try {
       const book = importNuOnlineArticle(db, getStateDb(), req.body || {}, { hasAdditional: hasAdditional() });
+      try { onBookCreated?.({ bookId: book.bkid, title: book.bk, authorName: req.body?.author, sourceRef: 'Import NU Online' }); } catch { /* Non-fatal */ }
       invalidateCache?.();
       res.status(201).json({ success: true, book });
     } catch (error) {

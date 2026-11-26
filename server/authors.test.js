@@ -131,3 +131,23 @@ test('HTTP admin auth, upload preview, activation and public routes work across 
   const info=service.bookCase(100),res=await send('/api/admin/authors/decision',{book_id:100,author_id:7,expected_author:'السيوطي',expected_title:info.title,revision:info.revision,action:'rejected',note:'Checked source metadata'});assert.equal(res.status,200);assert.equal((await(await fetch(base+'/api/authors/7')).json()).total,0);
   const backup=await fetch(base+'/api/admin/authors-database/download',{headers:{Authorization:'Bearer test'}});assert.equal(backup.status,200);assert.equal(Buffer.from(await backup.arrayBuffer()).subarray(0,16).toString(),'SQLite format 3\0');
 });
+test('linkBookToAuthor automatically links existing or new authors when admin adds a book',t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'authors-link-')),store=createAuthorStore(path.join(dir,'store')),input=makePackage(dir);
+  const lib=[{bkid:100,bk:'الإتقان'},{bkid:300,bk:'كتاب جديد للسيوطي'},{bkid:301,bk:'رسالة المعاصر'}];
+  const service=createAuthorService(store,()=>lib);
+  t.after(()=>{store.close();fs.rmSync(dir,{recursive:true,force:true});});
+  store.install(input);
+
+  // 1. Existing author ('السيوطي' -> authorId 7)
+  const linkedExisting=service.linkBookToAuthor({bookId:300,title:'كتاب جديد للسيوطي',authorName:'السيوطي'});
+  assert.equal(linkedExisting.authorId,7);
+  assert.equal(service.detail(7,{}).total,2);
+
+  // 2. Brand new author
+  const linkedNew=service.linkBookToAuthor({bookId:301,title:'رسالة المعاصر',authorName:'مؤلف جديد تماما'});
+  assert.ok(linkedNew.authorId>0);
+  const newDetail=service.detail(linkedNew.authorId,{});
+  assert.equal(newDetail.data.name,'مؤلف جديد تماما');
+  assert.equal(newDetail.total,1);
+  assert.equal(newDetail.works[0].book_id,301);
+});

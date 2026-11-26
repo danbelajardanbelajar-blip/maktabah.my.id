@@ -2983,3 +2983,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-05-11-42-8980a2.
 | 2026-11-27 05:10:28 +07:00 | `src/App.tsx` | — | 258–258 | function App() { | modified |
 | 2026-11-27 05:10:28 +07:00 | `src/App.tsx` | — | 718–750 | function App() { | modified |
 | 2026-11-27 05:10:23 +07:00 | `src/api.ts` | — | 317–319 | export const webAPI = { | modified |
+
+## [2026-11-27 06:15:53 +07:00] — feat(authors): tautkan penulis dan karya otomatis saat admin menambah atau mengimport kitab
+
+Waktu pencatatan: **2026-11-27 06:15:53 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `f5c11c7`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check lulus; 36 unit tests (authors, manual-book, nu-online, book-transfer) lulus 100%
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-06-15-53-47abb7.json](docs/change-audit/2026-11-27-06-15-53-47abb7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 06:14:14 +07:00 | `server/authors.js` | 111–111 | 111–148 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-27 06:15:11 +07:00 | `server/authors.test.js` | — | 134–153 | test('HTTP admin auth, upload preview, activation and public routes work across | modified |
+| 2026-11-27 06:14:31 +07:00 | `server/book-transfer.js` | 227–227 | 227–227 | export function importBooks(db, payload, existsInAdditional = () => false) { | modified |
+| 2026-11-27 06:14:31 +07:00 | `server/book-transfer.js` | — | 311–311 | export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA | modified |
+| 2026-11-27 06:14:36 +07:00 | `server/index.js` | 749–749 | 749–751 | registerBookTransfer(app, { | modified |
+| 2026-11-27 06:14:36 +07:00 | `server/index.js` | — | 760–760 | registerManualBook(app, { | modified |
+| 2026-11-27 06:14:36 +07:00 | `server/index.js` | — | 768–768 | registerNuOnline(app, { | modified |
+| 2026-11-27 06:14:17 +07:00 | `server/manual-book.js` | 101–101 | 101–101 | export function createManualCategory(db, input = {}, { hasAdditional = false } = | modified |
+| 2026-11-27 06:14:17 +07:00 | `server/manual-book.js` | — | 119–119 | export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAd | modified |
+| 2026-11-27 06:14:25 +07:00 | `server/nu-online.js` | 322–322 | 322–322 | export function importNuOnlineArticle(db, stateDb, { url, title, author, catId, | modified |
+| 2026-11-27 06:14:25 +07:00 | `server/nu-online.js` | — | 389–389 | export function registerNuOnline(app, { getDb, getStateDb, requireAdmin, hasAddi | modified |

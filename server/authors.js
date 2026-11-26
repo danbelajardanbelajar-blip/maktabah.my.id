@@ -108,7 +108,44 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
       db.prepare('INSERT INTO events VALUES(?,?,?,?,?,?)').run(crypto.randomBytes(16).toString('hex'),new Date().toISOString(),bookId,authorId,body.action,body.note.trim());
     })();invalidate();return bookCase(bookId);
   }
-  return{authorList,detail,related,review,bookCase,decide,invalidate};
+  function linkBookToAuthor({ bookId, title, authorName, sourceRef = 'Input Admin' }) {
+    const db = store.getDb();
+    const id = Number(bookId);
+    const cleanTitle = String(title || '').replace(/\s+/g, ' ').trim();
+    const cleanAuthor = String(authorName || '').replace(/\s+/g, ' ').trim();
+    if (!db || !Number.isSafeInteger(id) || id < 1 || !cleanTitle || !cleanAuthor) return null;
+
+    const titleKey = normalizeIdentity(cleanTitle);
+    const nameKey = normalizeIdentity(cleanAuthor);
+    if (!titleKey || !nameKey) return null;
+
+    let linkedAuthorId = null;
+    db.transaction(() => {
+      let author = db.prepare('SELECT id, name, name_key FROM authors WHERE name_key = ? LIMIT 1').get(nameKey);
+      if (!author) {
+        const nextAuthorId = db.prepare('SELECT COALESCE(MAX(id), 0) + 1 AS n FROM authors').get()?.n || 1;
+        db.prepare('INSERT INTO authors (id, name, biography, death_text, source_ref, name_key) VALUES (?, ?, ?, ?, ?, ?)')
+          .run(nextAuthorId, cleanAuthor, '', '', sourceRef, nameKey);
+        db.prepare('UPDATE manifest SET authors = (SELECT count(*) FROM authors)').run();
+        author = { id: nextAuthorId, name: cleanAuthor, name_key: nameKey };
+      }
+      linkedAuthorId = author.id;
+
+      db.prepare('INSERT INTO works (book_id, title, metadata_author, source_ref, title_key) VALUES (?, ?, ?, ?, ?) ON CONFLICT(book_id) DO UPDATE SET title = excluded.title, metadata_author = excluded.metadata_author, title_key = excluded.title_key')
+        .run(id, cleanTitle, cleanAuthor, sourceRef, titleKey);
+      db.prepare('UPDATE manifest SET works = (SELECT count(*) FROM works)').run();
+
+      const now = new Date().toISOString();
+      const note = 'Otomatis ditautkan saat penambahan kitab oleh admin';
+      db.prepare('INSERT INTO decisions (book_id, author_id, status, note, updated_at, book_key, author_key) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(book_id, author_id) DO UPDATE SET status = excluded.status, note = excluded.note, updated_at = excluded.updated_at, book_key = excluded.book_key, author_key = excluded.author_key')
+        .run(id, author.id, 'confirmed', note, now, identityHash(titleKey), identityHash(author.name_key));
+      db.prepare('INSERT INTO events (id, created_at, book_id, author_id, action, note) VALUES (?, ?, ?, ?, ?, ?)')
+        .run(crypto.randomBytes(16).toString('hex'), now, id, author.id, 'confirmed', note);
+    })();
+    invalidate();
+    return { bookId: id, authorId: linkedAuthorId, authorName: cleanAuthor };
+  }
+  return{authorList,detail,related,review,bookCase,decide,linkBookToAuthor,invalidate};
 }
 export function registerAuthors(app,{service,requireAdmin,onActivity=()=>{}}) {
   const route=(handler,activity=false)=>(req,res)=>{try{

@@ -98,7 +98,7 @@ export function createManualCategory(db, input = {}, { hasAdditional = false } =
   })();
 }
 
-export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAdditional, invalidateCache, forgetPolicyBook }) {
+export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAdditional, invalidateCache, forgetPolicyBook, onBookCreated }) {
   app.post('/api/admin/categories', requireAdmin, (req, res) => {
     const db = getDb();
     if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
@@ -116,6 +116,7 @@ export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAd
     if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
     try {
       const book = createManualBook(db, req.body || {}, { hasAdditional: hasAdditional() });
+      try { onBookCreated?.({ bookId: book.bkid, title: book.bk, authorName: req.body?.author, sourceRef: 'Tambah Kitab Manual' }); } catch { /* Non-fatal if author DB unavailable */ }
       invalidateCache?.();
       res.status(201).json({ success: true, book });
     } catch (error) {

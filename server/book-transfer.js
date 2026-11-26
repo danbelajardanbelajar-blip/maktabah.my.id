@@ -224,7 +224,7 @@ export function importBooks(db, payload, existsInAdditional = () => false) {
   })();
 }
 
-export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasAdditional, clearCache, runtime = { importing: false } }) {
+export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasAdditional, clearCache, onBookCreated, runtime = { importing: false } }) {
   app.post('/api/admin/books/export', requireAdmin, (req, res) => {
     try {
       const db = getDb();
@@ -308,6 +308,7 @@ export function registerBookTransfer(app, { getDb, getDbPath, requireAdmin, hasA
       validateBookPackage(payload);
       const result = await backupAndImport(db, payload, state);
       if (!result.imported) throw new Error('Kitab tidak tersimpan. Silakan coba lagi.');
+      try { if (authorName) onBookCreated?.({ bookId: bkid, title, authorName, sourceRef: 'Import Word (.docx)' }); } catch { /* Non-fatal */ }
       res.json({ success: true, bkid, title, pages: book.pages.length, titles: book.titles.length, backup: state.backup });
     } catch (error) { wordError(res, error, state.backup); }
     finally { runtime.importing = false; }
