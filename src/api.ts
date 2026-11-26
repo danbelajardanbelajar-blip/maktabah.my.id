@@ -132,6 +132,17 @@ export const webAPI = {
   deleteBookSubmission: async (token: string, id: number) => { const r = await fetch(`${API_BASE}/admin/book-submission/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); return r.json(); },
 
   // ===== ADMIN BOOKS =====
+  createAdminBook: async (token: string, data: { title: string; catId: number; author?: string; inf?: string; initialPart?: number | string; initialPage?: number | string; initialNass?: string }) => {
+    const res = await fetch(`${API_BASE}/admin/books`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.status === 401) throw new Error('401');
+    const json = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(json?.error || 'Gagal menambah kitab.');
+    return json;
+  },
   getAdminBooks: async (token: string, page = 1, query = '', catId?: number, limit = 30) => {
     let url = `${API_BASE}/admin/books?page=${page}&limit=${limit}`;
     if (query) url += `&q=${encodeURIComponent(query)}`;
@@ -176,6 +187,17 @@ export const webAPI = {
   },
 
   // ===== ADMIN PAGES =====
+  createAdminPage: async (token: string, bookId: number, data: { part: number | string; page: number | string; nass: string }) => {
+    const res = await fetch(`${API_BASE}/admin/book/${bookId}/pages`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.status === 401) throw new Error('401');
+    const json = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(json?.error || 'Gagal menambah halaman.');
+    return json;
+  },
   getAdminBookPages: async (token: string, bookId: number, page = 1, limit = 20) => {
     const res = await fetch(`${API_BASE}/admin/book/${bookId}/pages?page=${page}&limit=${limit}`, { headers: { 'Authorization': `Bearer ${token}` } });
     if (!res.ok) throw new Error(`${res.status}`);

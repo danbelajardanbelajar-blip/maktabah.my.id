@@ -2850,3 +2850,34 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-25-08-07-51-5bfbf7.
 | 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1386–1386 | — | registerSearchAutocomplete(app, { | modified |
 | 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1436–1440 | — | app.get('/api/search_titles', (req, res) => { | modified |
 | 2026-11-25 08:06:57 +07:00 | `server/index.js` | 1456–1463 | — | app.get('/api/search_titles', (req, res) => { | modified |
+
+## [2026-11-27 03:56:31 +07:00] — feat(admin): fitur tambah kitab manual dan tambah halaman manual
+
+Waktu pencatatan: **2026-11-27 03:56:31 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `abcfcbc`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check lulus; oxlint 0 error; tsc -b lulus; 27 unit tests lulus; build produksi index.dev-X7sVcBNb.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-03-56-31-95fa6a.json](docs/change-audit/2026-11-27-03-56-31-95fa6a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 03:56:08 +07:00 | `dist/assets/index-DEt_Mz9e.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-S7TqulSu.css` | 1–2 | — | module/file | deleted |
+| 2026-11-27 03:56:08 +07:00 | `dist/assets/index.dev-X7sVcBNb.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-YYfi_zxC.js` | 1–22 | — | module/file | deleted |
+| 2026-11-27 03:56:08 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-27 03:53:50 +07:00 | `server/index.js` | — | 22–22 | import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js'; | modified |
+| 2026-11-27 03:53:50 +07:00 | `server/index.js` | — | 733–740 | registerBookTransfer(app, { | modified |
+| 2026-11-27 03:53:25 +07:00 | `server/manual-book.js` | — | 1–109 | fail, resolveCategory, id, mainCat, extraCat, resolveAuthor, name, existing | added |
+| 2026-11-27 03:53:27 +07:00 | `server/manual-book.test.js` | — | 1–121 | createFixture, db, b1, pageRow, b2, p1, p2, app | added |
+| 2026-11-27 03:53:43 +07:00 | `src/api.ts` | — | 135–145 | export const webAPI = { | modified |
+| 2026-11-27 03:53:43 +07:00 | `src/api.ts` | — | 190–200 | export const webAPI = { | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 465–473 | const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 515–539 | const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | 515–518 | 549–561 | const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 563–614 | const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 725–730 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 756–776 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | 658–658 | 780–780 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 786–792 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |
+| 2026-11-27 03:54:26 +07:00 | `src/components/Admin.tsx` | — | 794–824 | const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog | modified |

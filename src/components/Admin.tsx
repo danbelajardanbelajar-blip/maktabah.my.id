@@ -462,6 +462,15 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
   const deletion = useDeletionFeedback(token, onLogout, setError, () => { load(); onChanged(); });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
+  const [addMode, setAddMode] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
+  const [newInf, setNewInf] = useState('');
+  const [newPart, setNewPart] = useState('1');
+  const [newPage, setNewPage] = useState('1');
+  const [newNass, setNewNass] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createdBook, setCreatedBook] = useState<Book | null>(null);
   const [query, setQuery] = useState(() => parseNavigation(window.location.hash).params.get('bq') || '');
   const [page, setPage] = useState(() => routePage(parseNavigation(window.location.hash).params.get('bpage')));
   const [total, setTotal] = useState(0);
@@ -503,6 +512,31 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
       () => { setSelected(items => items.filter(item => item.bkid !== book.bkid)); load(page); onChanged(); });
   };
 
+  const handleCreateBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || creating) return;
+    setCreating(true);
+    setError('');
+    setCreatedBook(null);
+    const res = await adminFetch(token, () => webAPI.createAdminBook(token, {
+      title: newTitle.trim(),
+      catId: category.id,
+      author: newAuthor.trim() || undefined,
+      inf: newInf.trim() || undefined,
+      initialPart: newPart.trim() || 1,
+      initialPage: newPage.trim() || 1,
+      initialNass: newNass.trim() || undefined,
+    }), onLogout, setError);
+    if (res?.success && res.book) {
+      setCreatedBook({ bkid: res.book.bkid, bk: res.book.bk, cat: res.book.cat, cat_name: category.name });
+      setNewTitle(''); setNewAuthor(''); setNewInf(''); setNewPart('1'); setNewPage('1'); setNewNass('');
+      setAddMode(false);
+      await load(1, query, limit);
+      onChanged();
+    }
+    setCreating(false);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       {deletion.feedback}
@@ -512,11 +546,72 @@ const BooksView = ({ token, onLogout, category, onSelectBook, onChanged }: { tok
           <span dir="auto" style={{ fontFamily: 'var(--arabic-font)' }}>{category.name}</span>
           <span className="text-gray-400 text-sm font-normal">({total} kitab)</span>
         </h2>
-        <form onSubmit={handleSearch} className="flex w-full md:w-64">
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari judul..." className="border rounded-l-lg px-3 py-2 w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
-          <button type="submit" className="bg-[var(--app-primary)] text-white px-3 py-2 rounded-r-lg hover:bg-[var(--app-primary-hover)]"><Search size={16} /></button>
-        </form>
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          <button
+            type="button"
+            onClick={() => { setAddMode(v => !v); setCreatedBook(null); }}
+            className="inline-flex items-center gap-1.5 bg-[var(--app-primary)] text-white px-3.5 py-2 rounded-lg text-sm font-semibold hover:bg-[var(--app-primary-hover)] transition-colors"
+          >
+            <BookPlus size={16} /> {addMode ? 'Tutup Form' : 'Tambah Kitab Manual'}
+          </button>
+          <form onSubmit={handleSearch} className="flex w-full md:w-64">
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari judul..." className="border rounded-l-lg px-3 py-2 w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
+            <button type="submit" className="bg-[var(--app-primary)] text-white px-3 py-2 rounded-r-lg hover:bg-[var(--app-primary-hover)]"><Search size={16} /></button>
+          </form>
+        </div>
       </div>
+      {createdBook && (
+        <div className="m-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex flex-wrap items-center justify-between gap-2 text-sm">
+          <span className="flex items-center gap-2 font-medium">
+            <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+            <span>Kitab <strong dir="auto">{createdBook.bk}</strong> (ID #{createdBook.bkid}) berhasil ditambahkan.</span>
+          </span>
+          <button type="button" onClick={() => onSelectBook(createdBook)} className="px-3 py-1.5 rounded-lg bg-emerald-700 text-white font-semibold text-xs hover:bg-emerald-800">
+            Kelola / Tambah Halaman →
+          </button>
+        </div>
+      )}
+      {addMode && (
+        <form onSubmit={handleCreateBook} className="m-4 p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 space-y-3">
+          <div className="font-bold text-gray-800 flex items-center gap-2 text-sm">
+            <BookPlus size={18} className="text-[var(--app-primary)]" /> Tambah Kitab Baru ke Kategori "{category.name}"
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label className="text-xs font-semibold text-gray-700">
+              Judul Kitab *
+              <input required value={newTitle} onChange={e => setNewTitle(e.target.value)} dir="auto" placeholder="Contoh: فتح الباري atau Judul kitab..." className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white font-normal" style={{ fontFamily: 'var(--arabic-font)' }} />
+            </label>
+            <label className="text-xs font-semibold text-gray-700">
+              Pengarang (Opsional)
+              <input value={newAuthor} onChange={e => setNewAuthor(e.target.value)} dir="auto" placeholder="Nama pengarang..." className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white font-normal" style={{ fontFamily: 'var(--arabic-font)' }} />
+            </label>
+          </div>
+          <label className="block text-xs font-semibold text-gray-700">
+            Keterangan / Deskripsi Kitab (Opsional)
+            <input value={newInf} onChange={e => setNewInf(e.target.value)} dir="auto" placeholder="Ringkasan atau informasi edisi kitab..." className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white font-normal" />
+          </label>
+          <div className="pt-2 border-t border-emerald-200/70 space-y-2">
+            <div className="text-xs font-semibold text-gray-700">Halaman Pertama (Opsional — bisa diisi sekarang atau nanti di Kelola Halaman)</div>
+            <div className="flex flex-wrap gap-3">
+              <label className="text-xs text-gray-600 w-24">
+                Juz
+                <input value={newPart} onChange={e => setNewPart(e.target.value)} className="mt-1 w-full border rounded-lg px-2.5 py-1.5 text-sm bg-white" />
+              </label>
+              <label className="text-xs text-gray-600 w-24">
+                Halaman
+                <input value={newPage} onChange={e => setNewPage(e.target.value)} className="mt-1 w-full border rounded-lg px-2.5 py-1.5 text-sm bg-white" />
+              </label>
+            </div>
+            <textarea rows={4} value={newNass} onChange={e => setNewNass(e.target.value)} dir="auto" placeholder="Teks halaman pertama (opsional)..." className="w-full border rounded-lg px-3 py-2 text-sm bg-white" style={{ fontFamily: 'var(--arabic-font)' }} />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={() => setAddMode(false)} className="px-4 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50">Batal</button>
+            <button type="submit" disabled={creating || !newTitle.trim()} className="px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white text-sm font-bold hover:bg-[var(--app-primary-hover)] disabled:opacity-50 inline-flex items-center gap-1.5">
+              {creating ? <><Loader2 size={15} className="animate-spin" /> Menyimpan...</> : <><Save size={15} /> Simpan Kitab</>}
+            </button>
+          </div>
+        </form>
+      )}
       {/* Statistik Kitab dalam Kategori */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 border-b bg-white">
         <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
@@ -627,6 +722,12 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
   const [page, setPage] = useState(() => routePage(parseNavigation(window.location.hash).params.get('ppage')));
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(() => {const n=Number(parseNavigation(window.location.hash).params.get('psize')); return [15,20,25,30,50,100,500].includes(n)?n:20;});
+  const [addMode, setAddMode] = useState(false);
+  const [newPart, setNewPart] = useState('1');
+  const [newPage, setNewPage] = useState('');
+  const [newNass, setNewNass] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [addedMsg, setAddedMsg] = useState('');
 
   const load = useCallback(async (p = 1, l = limit) => {
     setLoading(true);
@@ -652,16 +753,75 @@ const PagesView = ({ token, onLogout, book, onEditPage }: { token: string, onLog
       () => { setSelected(items => items.filter(item => item.id !== pg.id)); load(page); });
   };
 
+  const handleCreatePage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNass.trim() || creating) return;
+    setCreating(true);
+    setError('');
+    setAddedMsg('');
+    const res = await adminFetch(token, () => webAPI.createAdminPage(token, book.bkid, {
+      part: newPart.trim() || 1,
+      page: newPage.trim() || '',
+      nass: newNass.trim(),
+    }), onLogout, setError);
+    if (res?.success && res.page) {
+      setAddedMsg(`Halaman Juz ${res.page.part} Hal ${res.page.page} berhasil ditambahkan.`);
+      setNewNass('');
+      const nextPageNum = Number(res.page.page);
+      setNewPage(Number.isFinite(nextPageNum) ? String(nextPageNum + 1) : '');
+      await load(page, limit);
+    }
+    setCreating(false);
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       {deletion.feedback}
-      <div className="p-5 border-b bg-gray-50/50">
+      <div className="p-5 border-b bg-gray-50/50 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-bold text-gray-800 flex items-center gap-2 text-sm">
           <FileText size={18} className="text-[var(--app-primary)]" />
           <span dir="auto" style={{ fontFamily: 'var(--arabic-font)' }} className="text-base">{book.bk}</span>
           <span className="text-gray-400 font-normal">({total} halaman)</span>
         </h2>
+        <button
+          type="button"
+          onClick={() => { setAddMode(v => !v); setAddedMsg(''); }}
+          className="inline-flex items-center gap-1.5 bg-[var(--app-primary)] text-white px-3.5 py-2 rounded-lg text-sm font-semibold hover:bg-[var(--app-primary-hover)] transition-colors"
+        >
+          <FileText size={16} /> {addMode ? 'Tutup Form' : '+ Tambah Halaman Manual'}
+        </button>
       </div>
+      {addedMsg && (
+        <div className="m-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center gap-2">
+          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+          <span>{addedMsg}</span>
+        </div>
+      )}
+      {addMode && (
+        <form onSubmit={handleCreatePage} className="m-4 p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 space-y-3">
+          <div className="font-bold text-gray-800 text-sm">Tambah Halaman Baru</div>
+          <div className="flex flex-wrap gap-3">
+            <label className="text-xs font-semibold text-gray-700 w-28">
+              Juz
+              <input value={newPart} onChange={e => setNewPart(e.target.value)} className="mt-1 w-full border rounded-lg px-2.5 py-1.5 text-sm bg-white font-normal" />
+            </label>
+            <label className="text-xs font-semibold text-gray-700 w-36">
+              Nomor Halaman
+              <input value={newPage} onChange={e => setNewPage(e.target.value)} placeholder="Otomatis jika kosong" className="mt-1 w-full border rounded-lg px-2.5 py-1.5 text-sm bg-white font-normal" />
+            </label>
+          </div>
+          <label className="block text-xs font-semibold text-gray-700">
+            Isi Teks Halaman *
+            <textarea required rows={6} value={newNass} onChange={e => setNewNass(e.target.value)} dir="auto" placeholder="Ketik atau tempel teks isi halaman kitab..." className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white font-normal" style={{ fontFamily: 'var(--arabic-font)' }} />
+          </label>
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={() => setAddMode(false)} className="px-4 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50">Tutup</button>
+            <button type="submit" disabled={creating || !newNass.trim()} className="px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white text-sm font-bold hover:bg-[var(--app-primary-hover)] disabled:opacity-50 inline-flex items-center gap-1.5">
+              {creating ? <><Loader2 size={15} className="animate-spin" /> Menyimpan...</> : <><Save size={15} /> Simpan Halaman</>}
+            </button>
+          </div>
+        </form>
+      )}
       {error && <div className="p-4"><ErrorBanner msg={error} onClose={() => setError('')} /></div>}
       
       <SelectionBar count={selected.length} onDownload={() => downloadCSV(selected, 'pagesview_export.csv')} />

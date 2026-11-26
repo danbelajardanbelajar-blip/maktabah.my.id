@@ -19,6 +19,7 @@ import { generateBookDocx } from './word-export.js';
 import { generateBookHtmlPdf } from './pdf-export.js';
 import 'dotenv/config';
 import { registerBookTransfer, categoryCatalogueSql } from './book-transfer.js';
+import { registerManualBook } from './manual-book.js';
 import { registerLargeTransfer } from './large-transfer.js';
 import { registerBookDeletion } from './book-deletion.js';
 import { registerAskAi } from './ask-ai.js';
@@ -728,6 +729,14 @@ app.get('/api/admin/books', requireAdmin, (req, res) => {
 registerBookTransfer(app, {
   getDb: () => db, getDbPath: () => dbPath, requireAdmin,
   hasAdditional: () => hasTambahan, clearCache: () => invalidateLibraryCache(), runtime: transferRuntime,
+});
+registerManualBook(app, {
+  getDb: () => db,
+  getStateDb: () => stateDb,
+  requireAdmin,
+  hasAdditional: () => hasTambahan,
+  invalidateCache: () => invalidateLibraryCache(),
+  forgetPolicyBook: forgetSearchPolicyBook,
 });
 const rowaStore = createRowaStore(path.resolve(process.env.ROWA_DATABASE_DIR || path.join(rootDir, 'dev-data', 'rowa-database')), () => db);
 registerRowaDatabase(app, {store:rowaStore, requireAdmin});
