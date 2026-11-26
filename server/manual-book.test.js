@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import Database from 'better-sqlite3';
 import express from 'express';
-import { createManualBook, createManualPage, registerManualBook } from './manual-book.js';
+import { createManualBook, createManualCategory, createManualPage, registerManualBook } from './manual-book.js';
 
 function createFixture(t) {
   const db = new Database(':memory:');
@@ -118,4 +118,30 @@ test('registerManualBook exposes protected POST endpoints and invalidates cache'
   assert.equal(addedPage.status, 201);
   assert.equal(invalidated, 2);
   assert.equal(forgotten, 6);
+
+  // Category creation via HTTP + duplicate check
+  const catRes = await fetch(`http://127.0.0.1:${port}/api/admin/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ok' },
+    body: JSON.stringify({ name: 'Bahtsul Masail' }),
+  });
+  assert.equal(catRes.status, 201);
+  const catJson = await catRes.json();
+  assert.equal(catJson.category.id, 3);
+  assert.equal(catJson.category.name, 'Bahtsul Masail');
+
+  const dupCat = await fetch(`http://127.0.0.1:${port}/api/admin/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ok' },
+    body: JSON.stringify({ name: 'bahtsul masail' }),
+  });
+  assert.equal(dupCat.status, 409);
+});
+
+test('createManualCategory validates name and allocates sequential id', (t) => {
+  const db = createFixture(t);
+  assert.throws(() => createManualCategory(db, { name: '  ' }), (e) => e.status === 400);
+  const created = createManualCategory(db, { name: 'Sejarah Islam' });
+  assert.equal(created.id, 3);
+  assert.equal(created.name, 'Sejarah Islam');
 });

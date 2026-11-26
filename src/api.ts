@@ -84,6 +84,17 @@ export const webAPI = {
   },
 
   // ===== ADMIN CATEGORIES =====
+  createAdminCategory: async (token: string, name: string) => {
+    const res = await fetch(`${API_BASE}/admin/categories`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    if (res.status === 401) throw new Error('401');
+    const json = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(json?.error || 'Gagal menambah kategori.');
+    return json;
+  },
   getAdminCategories: async (token: string) => {
     const res = await fetch(`${API_BASE}/admin/categories`, { headers: { 'Authorization': `Bearer ${token}` } });
     if (!res.ok) throw new Error(`${res.status}`);

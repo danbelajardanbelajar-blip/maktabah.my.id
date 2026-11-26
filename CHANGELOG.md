@@ -2925,3 +2925,28 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-33-42-ab807c.
 | 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 42–46 | const SAMPLE_ARTICLE_HTML = ` | modified |
 | 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 69–69 | test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata | modified |
 | 2026-11-27 04:33:20 +07:00 | `server/nu-online.test.js` | — | 71–73 | test('parseNuOnlineListHtml and parseNuOnlineArticleHtml extract clean metadata | modified |
+
+## [2026-11-27 04:42:25 +07:00] — feat(admin): fitur tambah kategori secara manual
+
+Waktu pencatatan: **2026-11-27 04:42:25 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4765056`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check lulus; oxlint 0 error; tsc -b lulus; 18 unit tests lulus; build produksi index.dev-D-w0k8b9.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-42-25-c68672.json](docs/change-audit/2026-11-27-04-42-25-c68672.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 04:42:01 +07:00 | `dist/assets/index-C-2w8A1f.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DE3pi38d.css` | 1–2 | — | module/file | deleted |
+| 2026-11-27 04:42:01 +07:00 | `dist/assets/index.dev-D-w0k8b9.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 04:42:01 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-27 04:40:54 +07:00 | `server/manual-book.js` | — | 84–100 | export function createManualPage(db, rawBookId, input = {}) { | modified |
+| 2026-11-27 04:40:54 +07:00 | `server/manual-book.js` | — | 102–113 | export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAd | modified |
+| 2026-11-27 04:40:57 +07:00 | `server/manual-book.test.js` | 5–5 | 5–5 | import express from 'express'; | modified |
+| 2026-11-27 04:40:57 +07:00 | `server/manual-book.test.js` | — | 121–146 | test('registerManualBook exposes protected POST endpoints and invalidates cache' | modified |
+| 2026-11-27 04:40:59 +07:00 | `src/api.ts` | — | 87–97 | export const webAPI = { | modified |
+| 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 244–246 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
+| 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 293–307 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
+| 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | 294–294 | 312–312 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
+| 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 314–316 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
+| 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 326–347 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |

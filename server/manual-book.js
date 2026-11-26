@@ -81,7 +81,36 @@ export function createManualPage(db, rawBookId, input = {}) {
   })();
 }
 
+export function createManualCategory(db, input = {}, { hasAdditional = false } = {}) {
+  const name = String(input.name || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+  if (!name) throw fail('Nama kategori wajib diisi.');
+
+  return db.transaction(() => {
+    const existing = db.prepare(`SELECT id FROM ${categoryCatalogueSql(hasAdditional)} WHERE LOWER(TRIM(name)) = LOWER(?) LIMIT 1`).get(name);
+    if (existing) throw fail(`Kategori "${name}" sudah ada.`, 409);
+
+    const id = (db.prepare(`SELECT MAX(id) AS n FROM ${categoryCatalogueSql(hasAdditional)}`).get()?.n || 0) + 1;
+    const catord = (db.prepare('SELECT MAX(catord) AS n FROM main.categories').get()?.n || 0) + 1;
+    const lvl = 0;
+
+    db.prepare('INSERT INTO main.categories (id, name, catord, lvl) VALUES (?, ?, ?, ?)').run(id, name, catord, lvl);
+    return { id, name, catord, lvl, book_count: 0 };
+  })();
+}
+
 export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAdditional, invalidateCache, forgetPolicyBook }) {
+  app.post('/api/admin/categories', requireAdmin, (req, res) => {
+    const db = getDb();
+    if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });
+    try {
+      const category = createManualCategory(db, req.body || {}, { hasAdditional: hasAdditional() });
+      invalidateCache?.();
+      res.status(201).json({ success: true, category });
+    } catch (error) {
+      res.status(error.status || 500).json({ error: error.message });
+    }
+  });
+
   app.post('/api/admin/books', requireAdmin, (req, res) => {
     const db = getDb();
     if (!db) return res.status(503).json({ error: 'Database belum tersedia.' });

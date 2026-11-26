@@ -241,6 +241,9 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
   const [query, setQuery] = useState(() => parseNavigation(window.location.hash).params.get('cq') || '');
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
   const [mergeSuccessMsg, setMergeSuccessMsg] = useState('');
+  const [addCatMode, setAddCatMode] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [creatingCat, setCreatingCat] = useState(false);
   useEffect(() => {
     const current=parseNavigation(window.location.hash);
     if (current.tab !== 'admin' || adminLocation(window.location.hash).view !== 'categories') return;
@@ -287,12 +290,30 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
       res => `${res.deleted.categories} kategori berhasil dihapus beserta ${res.deleted.books} kitab, ${res.deleted.pages} halaman, dan ${res.deleted.titles} entri daftar isi.`,
       () => { setSelected([]); setCurrentPage(1); load(); onChanged(); });
   };
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCatName.trim() || creatingCat) return;
+    setCreatingCat(true);
+    setError('');
+    const res = await adminFetch(token, () => webAPI.createAdminCategory(token, newCatName.trim()), onLogout, setError);
+    if (res?.success && res.category) {
+      setMergeSuccessMsg(`Kategori "${res.category.name}" (ID #${res.category.id}) berhasil ditambahkan.`);
+      setNewCatName('');
+      setAddCatMode(false);
+      await load();
+      onChanged();
+    }
+    setCreatingCat(false);
+  };
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       {deletion.feedback}
       <div className="p-5 border-b bg-gray-50/50 flex flex-col md:flex-row gap-3 justify-between items-center">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <h2 className="font-bold text-gray-800 flex items-center gap-2"><FolderOpen size={20} className="text-[var(--app-primary)]" /> Kategori ({cats.length})</h2>
+          <button type="button" onClick={() => setAddCatMode(v => !v)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--app-primary)] hover:bg-[var(--app-primary-hover)] text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+            <Folder size={15} /> {addCatMode ? 'Tutup Form' : '+ Tambah Kategori'}
+          </button>
           <button onClick={() => setMergeModalOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm" title="Gabungkan banyak kategori yang sama / serupa">
             <GitMerge size={15} /> Gabung Kategori
           </button>
@@ -302,6 +323,28 @@ const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke
           <input value={query} onChange={e => {setQuery(e.target.value);setCurrentPage(1);}} placeholder="Cari kategori..." className="pl-9 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:border-[var(--app-primary)] text-sm" />
         </div>
       </div>
+      {addCatMode && (
+        <form onSubmit={handleCreateCategory} className="m-4 p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 flex flex-col sm:flex-row sm:items-end gap-3">
+          <label className="text-xs font-semibold text-gray-700 flex-1">
+            Nama Kategori Baru *
+            <input
+              required
+              value={newCatName}
+              onChange={e => setNewCatName(e.target.value)}
+              dir="auto"
+              placeholder="Contoh: Hasil Bahtsul Masail NU Online atau تصوف..."
+              className="mt-1 w-full border rounded-lg px-3 py-2 text-sm bg-white font-normal"
+              style={{ fontFamily: 'var(--arabic-font)' }}
+            />
+          </label>
+          <div className="flex gap-2 shrink-0">
+            <button type="button" onClick={() => setAddCatMode(false)} className="px-3.5 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50">Batal</button>
+            <button type="submit" disabled={creatingCat || !newCatName.trim()} className="px-4 py-2 rounded-lg bg-[var(--app-primary)] text-white text-sm font-bold hover:bg-[var(--app-primary-hover)] disabled:opacity-50 inline-flex items-center gap-1.5">
+              {creatingCat ? <><Loader2 size={15} className="animate-spin" /> Menyimpan...</> : <><Save size={15} /> Simpan Kategori</>}
+            </button>
+          </div>
+        </form>
+      )}
       {/* Infografis Statistik Kategori & Kitab */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 p-4 border-b bg-white">
         <div className="flex items-center gap-3 p-3 rounded-xl border shadow-2xs bg-emerald-50/50 border-emerald-100">
