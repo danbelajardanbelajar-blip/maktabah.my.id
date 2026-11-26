@@ -2950,3 +2950,17 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-42-25-c68672.
 | 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | 294–294 | 312–312 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
 | 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 314–316 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
 | 2026-11-27 04:41:23 +07:00 | `src/components/Admin.tsx` | — | 326–347 | const CategoriesView = ({ token, onLogout, onSelectCategory, onChanged }: { toke | modified |
+
+## [2026-11-27 04:50:10 +07:00] — fix(nu-online): tutup modal pratinjau otomatis setelah import berhasil
+
+Waktu pencatatan: **2026-11-27 04:50:10 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `3ff0657`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: oxlint 0 error; tsc -b lulus; build produksi index.dev-B5l5jV9d.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-50-10-c83220.json](docs/change-audit/2026-11-27-04-50-10-c83220.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 04:49:50 +07:00 | `dist/assets/index.dev-B5l5jV9d.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 04:49:50 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-27 04:49:21 +07:00 | `src/components/NuOnlineImport.tsx` | 175–176 | 175–176 | export function NuOnlineImport({ | modified |

@@ -172,8 +172,8 @@ export function NuOnlineImport({
           publishedAt: article.publishedAt,
         }),
       });
-      setSuccessMsg(`Berhasil di-import sebagai kitab baru "${res.book.bk}" (ID #${res.book.bkid}, ${res.book.pagesCount} halaman).`);
-      setArticle({ ...article, imported_bkid: res.book.bkid });
+      setIndexNotice(`Berhasil di-import sebagai kitab baru "${res.book.bk}" (ID #${res.book.bkid}, ${res.book.pagesCount} halaman).`);
+      setArticle(null);
       await loadPosts(page, q, status);
       onChanged();
     } catch (e: any) {
