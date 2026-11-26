@@ -2964,3 +2964,22 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-04-50-10-c83220.
 | 2026-11-27 04:49:50 +07:00 | `dist/assets/index.dev-B5l5jV9d.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
 | 2026-11-27 04:49:50 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
 | 2026-11-27 04:49:21 +07:00 | `src/components/NuOnlineImport.tsx` | 175–176 | 175–176 | export function NuOnlineImport({ | modified |
+
+## [2026-11-27 05:11:42 +07:00] — feat(home): tambah bagian Postingan Terakhir (point ke-7) di beranda
+
+Waktu pencatatan: **2026-11-27 05:11:42 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4b37808`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/index.js lulus; oxlint 0 error; tsc -b lulus; build produksi index.dev-Bw1vYMMK.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-05-11-42-8980a2.json](docs/change-audit/2026-11-27-05-11-42-8980a2.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-B5l5jV9d.js` | 1–22 | — | module/file | deleted |
+| 2026-11-27 05:11:27 +07:00 | `dist/assets/index.dev-Bw1vYMMK.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 05:11:27 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-27 05:10:57 +07:00 | `server/index.js` | — | 513–529 | app.get('/api/popular-books', (req, res) => { | modified |
+| 2026-11-27 05:10:28 +07:00 | `src/App.tsx` | — | 96–96 | function App() { | modified |
+| 2026-11-27 05:10:28 +07:00 | `src/App.tsx` | — | 258–258 | function App() { | modified |
+| 2026-11-27 05:10:28 +07:00 | `src/App.tsx` | — | 718–750 | function App() { | modified |
+| 2026-11-27 05:10:23 +07:00 | `src/api.ts` | — | 317–319 | export const webAPI = { | modified |

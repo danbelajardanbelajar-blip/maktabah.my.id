@@ -93,6 +93,7 @@ function App() {
   };
   const [popularSearches, setPopularSearches] = useState<{query:string, count:number}[]>([]);
   const [popularBooks, setPopularBooks] = useState<{bkid:number, bk:string, count:number}[]>([]);
+  const [latestBooks, setLatestBooks] = useState<{bkid:number, bk:string, cat_name?:string, author_name?:string}[]>([]);
   const [positions,setPositions] = useState(() => readingPositions(localStorage));
   useEffect(() => {
     const update = () => setPositions(readingPositions(localStorage));
@@ -254,6 +255,7 @@ function App() {
     let current = true;
     webAPI.getRecentSearches().then(res => { if (current && res.data) setRecentSearches(res.data); }).catch(() => {});
     webAPI.getRecentQuestions('global').then(res => { if (current && res.data) setRecentAiQuestions(res.data); }).catch(() => {});
+    webAPI.getLatestBooks(6).then(res => { if (current && res.data) setLatestBooks(res.data); }).catch(() => {});
     return () => { current = false; };
   }, [homeHistoryVisible]);
 
@@ -711,6 +713,39 @@ function App() {
                       <p className="text-sm text-gray-400 italic">Belum ada data kitab paling sering dibuka.</p>
                     )}
                   </div>
+                </div>
+
+                {/* 7. Postingan Terakhir */}
+                <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                  <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2">
+                    <BookOpen size={18} className="text-[var(--app-primary)]" /> Postingan Terakhir
+                  </h3>
+                  {latestBooks.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {latestBooks.slice(0, 6).map((lb) => (
+                        <div
+                          key={lb.bkid}
+                          onClick={() => openReader({ bookId: lb.bkid })}
+                          className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center gap-3"
+                          dir="auto"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{lb.bk}</div>
+                            {(lb.cat_name || lb.author_name) && (
+                              <div className="text-xs text-gray-400 truncate mt-0.5">
+                                {[lb.cat_name, lb.author_name].filter(Boolean).join(' • ')}
+                              </div>
+                            )}
+                          </div>
+                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0">
+                            Baru
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic">Belum ada postingan terbaru.</p>
+                  )}
                 </div>
 
                 {/* Submit, Request, Feedback, Donation Cards */}

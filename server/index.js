@@ -510,6 +510,23 @@ app.get('/api/popular-books', (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/latest-books', (req, res) => {
+    if (!db) return res.status(500).json({ error: 'Database not loaded' });
+    try {
+        const limit = Math.min(20, Math.max(1, parseInt(req.query.limit) || 6));
+        const data = db.prepare(`
+          SELECT b.bkid, b.bk, c.name AS cat_name, a.auth AS author_name
+          FROM ${booksMeta()} b
+          LEFT JOIN ${categoryCatalogueSql(hasTambahan)} c ON b.cat = c.id
+          LEFT JOIN main.authors a ON b.authno = a.authid
+          WHERE b.bk IS NOT NULL AND TRIM(b.bk) <> ''
+          ORDER BY b.bkid DESC
+          LIMIT ?
+        `).all(limit);
+        res.json({ data });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // Legacy diagnostic endpoint is replaced by authenticated AI settings and connection tests.
 app.get('/api/test-gemini', (req, res) => res.sendStatus(404));
 

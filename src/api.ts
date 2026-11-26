@@ -314,6 +314,9 @@ export const webAPI = {
   getRecentSearches: async () => {
     return fetchAPI(`/recent-searches`);
   },
+  getLatestBooks: async (limit = 6) => {
+    return fetchAPI(`/latest-books?limit=${limit}`);
+  },
   getAutocomplete: async (query: string, signal?: AbortSignal): Promise<{ books: { bkid: number; title: string; category: string }[]; queries: { text: string; count: number }[] }> => {
     return fetchAPI(`/autocomplete?q=${encodeURIComponent(query)}`, signal);
   },
