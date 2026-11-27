@@ -151,3 +151,42 @@ test('linkBookToAuthor automatically links existing or new authors when admin ad
   assert.equal(newDetail.total,1);
   assert.equal(newDetail.works[0].book_id,301);
 });
+
+test('review queue returns metadata author suggestions, first-page snippets, and supports batch decisions',async t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'authors-batch-')),store=createAuthorStore(path.join(dir,'store')),input=makePackage(dir);
+  const db=new Database(input);
+  db.prepare('INSERT INTO works VALUES(?,?,?,?,?)').run(104,'كتاب الأذكار','الإمام السيوطي (ت 911 هـ)','Source catalogue',normalizeIdentity('كتاب الأذكار'));
+  db.prepare('UPDATE manifest SET works=4').run();
+  db.close();
+  const clean=path.join(dir,'clean.db');inspectAuthorPackage(input,clean);store.install(clean);
+  const library=[{bkid:102,bk:'كتاب ينتظر المراجعة'},{bkid:104,bk:'كتاب الأذكار'}];
+  const pages={102:{part:1,page:1,nass:'<p>بسم الله الرحمن الرحيم</p>   الحمد لله رب العالمين'},104:{part:2,page:3,nass:'مقدمة المؤلف '+('نص '.repeat(150))}};
+  const service=createAuthorService(store,()=>library,()=>1,id=>pages[id]||null);
+  const app=express();app.use(express.json());const auth=(req,res,next)=>req.headers.authorization==='Bearer test'?next():res.sendStatus(401);
+  registerAuthors(app,{service,requireAdmin:auth});const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));
+  t.after(()=>{server.closeAllConnections();server.close();store.close();fs.rmSync(dir,{recursive:true,force:true});});
+  const base=`http://127.0.0.1:${server.address().port}`;
+
+  const q=await(await fetch(base+'/api/admin/authors/review?filter=with_metadata',{headers:{Authorization:'Bearer test'}})).json();
+  assert.equal(q.data.length,2);
+  const item104=q.data.find(b=>b.book_id===104);
+  assert.equal(item104.suggestions[0].id,7);
+  assert.ok(item104.suggestions[0].score>=100);
+  assert.equal(item104.first_page.part,2);
+  assert.ok(item104.first_page.snippet.endsWith('…'));
+  const item102=q.data.find(b=>b.book_id===102);
+  assert.equal(item102.first_page.snippet,'بسم الله الرحمن الرحيم الحمد لله رب العالمين');
+
+  const batch=await(await fetch(base+'/api/admin/authors/decisions/batch',{
+    method:'POST',
+    headers:{Authorization:'Bearer test','Content-Type':'application/json'},
+    body:JSON.stringify({items:[
+      {book_id:104,author_id:7,expected_author:'السيوطي',expected_title:'كتاب الأذكار',revision:item104.revision,action:'confirmed',note:'Sesuai metadata kitab'},
+      {book_id:102,author_id:7,expected_author:'اسم خاطئ',expected_title:'كتاب ينتظر المراجعة',revision:item102.revision,action:'confirmed',note:'Sesuai metadata kitab'},
+    ]}),
+  })).json();
+  assert.equal(batch.saved.length,1);
+  assert.equal(batch.saved[0].book_id,104);
+  assert.equal(batch.failed.length,1);
+  assert.equal(service.detail(7,{}).total,1);
+});

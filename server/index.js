@@ -781,7 +781,7 @@ registerRowaBrowser(app,()=>rowaStore.getDb());
 const authorStore=createAuthorStore(path.resolve(process.env.AUTHOR_DATABASE_DIR || path.join(rootDir,'dev-data','authors-database')));
 invalidateHadithIndex=registerHadithSearch(app,{onActivity:(req,event)=>libraryActivity.record('hadith',req,event),directory:path.join(rootDir,'dev-data','hadith-search'),getPaths:()=>db?[path.resolve(dbPath),...(hasTambahan?[path.resolve(tambDbPath)]:[])]:[],isBusy:()=>Boolean(transferRuntime.importing||transferRuntime.deleting||transferRuntime.compactSession)});
 registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all();});
-const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n-libraryActivity.changesFor(db)}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline');
+const authorService=createAuthorService(authorStore,()=>db?db.prepare(`SELECT bkid,bk FROM ${booksMeta()}`).all():[],()=>db?`${db.pragma('data_version',{simple:true})}:${db.prepare('SELECT total_changes() n').get().n-libraryActivity.changesFor(db)}:${hasTambahan?db.pragma('tambahan.data_version',{simple:true}):0}`:'offline',(bookId)=>db?db.prepare(`SELECT part, page, nass FROM ${pagesUnion()} WHERE book_id = ? ORDER BY id ASC LIMIT 1`).get(bookId)||null:null);
 registerAuthorTransfer(app,{store:authorStore,requireAdmin});
 registerAuthors(app,{service:authorService,requireAdmin,onActivity:(req,event)=>libraryActivity.record('authors',req,event)});
 registerCompactTransfer(app,{

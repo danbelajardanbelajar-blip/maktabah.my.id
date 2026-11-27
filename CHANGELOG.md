@@ -3377,3 +3377,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-22-22-31-84e5ff.
 | 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 293–293 | 293–293 | test('selected-page explanation and translation reject the entire excluded book | modified |
 | 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 338–338 | 338–338 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
 | 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 342–342 | 342–342 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+
+## [2026-11-28 03:53:11 +07:00] — Antrean ceklis tinjauan relasi penulis dengan usulan metadata dan cuplikan halaman pertama
+
+Waktu pencatatan: **2026-11-28 03:53:11 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b5426fb`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 16/16 test lulus (authors.test.js & admin-navigation.test.js), npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-03-53-11-730776.json](docs/change-audit/2026-11-28-03-53-11-730776.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 03:52:53 +07:00 | `dist/assets/index-BnJ4xNUX.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BlpOxYW7.js` | 1–22 | — | module/file | deleted |
+| 2026-11-28 03:52:53 +07:00 | `dist/assets/index.dev-v7YudqI1.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 03:52:53 +07:00 | `dist/index.dev.html` | 38–39 | 38–39 | module/file | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 7–7 | 7–10 | const paging=(q,size=24)=>{const limit=Math.min(100,Math.max(1,parseInt(q.limit) | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 9–9 | 12–59 | const findText=s=>normalizeIdentity(s).replace(/[أإآٱ]/gu,'ا').replace(/ى/ | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | — | 124–124 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | — | 128–128 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 78–78 | 130–132 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 85–85 | 139–139 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 87–87 | 141–141 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 92–92 | 146–152 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | 148–148 | 208–223 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) { | modified |
+| 2026-11-28 03:51:26 +07:00 | `server/authors.js` | — | 240–240 | export function registerAuthors(app,{service,requireAdmin,onActivity=()=>{}}) { | modified |
+| 2026-11-28 03:52:05 +07:00 | `server/authors.test.js` | — | 154–192 | test('linkBookToAuthor automatically links existing or new authors when admin ad | modified |
+| 2026-11-28 03:51:01 +07:00 | `server/index.js` | 784–784 | 784–784 | registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return d | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 3–3 | 3–6 | interface Link {id:number;name:string;status:string;basis:string;evidence:string | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 8–8 | const date=(s:string)=>new Date(s).toLocaleString('id-ID',{timeZone:'Asia/Jakart | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 11–11 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 8–8 | 13–15 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 13–13 | 20–35 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 40–40 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 44–44 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 25–26 | 49–84 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 30–31 | 88–157 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 34–34 | 160–163 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+| 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 165–165 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |

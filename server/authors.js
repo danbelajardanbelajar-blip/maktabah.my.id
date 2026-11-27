@@ -4,9 +4,59 @@ import {authorDeathDate,compareAuthorDates} from './author-chronology.js';
 import {authorInitial,readAuthorInitial,authorInitialCounts} from './author-initials.js';
 const err=(message,status=400)=>Object.assign(Error(message),{status});
 const paging=(q,size=24)=>{const limit=Math.min(100,Math.max(1,parseInt(q.limit)||size)),page=Math.max(1,parseInt(q.page)||1);return{limit,page};};
-const findText=s=>normalizeIdentity(s).replace(/[أإآٱ]/gu,'ا').replace(/ى/gu,'ي').toLowerCase();
+const findText=s=>normalizeIdentity(s).replace(/[أإآٱ]/gu,'ا').replace(/ى/gu,'ي').replace(/ة/gu,'ه').toLowerCase();
+const HONORIFICS=new Set(['الامام','امام','الشيخ','شيخ','العلامه','علامه','الحافظ','حافظ','القاضي','قاضي','المحدث','الفقيه','الاستاذ','الدكتور','المتوفي','المتوفى','رحمه','الله','تعالي','تعالى']);
+const cleanSuggestText=s=>findText(String(s||'').replace(/\([^)]*\)|\[[^\]]*\]/gu,' ')).replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/gu,' ').trim();
+const extractYear=s=>String(s||'').match(/(?:^|\D)(\d{3,4})(?:\D|$)/)?.[1]||null;
 
-export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
+export function suggestAuthors(metadataAuthor,authorsMap,limit=3){
+  const raw=String(metadataAuthor||'').trim();
+  if(!raw)return[];
+  const metaClean=cleanSuggestText(raw);
+  if(!metaClean)return[];
+  const metaTokens=metaClean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
+  const metaNoHon=metaTokens.join(' ');
+  const metaYear=extractYear(raw);
+  const results=[];
+  for(const a of authorsMap.values()){
+    const authClean=cleanSuggestText(a.name);
+    if(!authClean)continue;
+    const authTokens=authClean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
+    const authNoHon=authTokens.join(' ');
+    let score=0,reason='';
+    if(authClean===metaClean||(authNoHon&&authNoHon===metaNoHon)){
+      score=100;reason='Nama metadata cocok persis';
+    }else if((authNoHon.length>=4&&metaNoHon.includes(authNoHon))||(metaNoHon.length>=4&&authNoHon.includes(metaNoHon))){
+      score=85;reason='Nama penulis termuat dalam metadata';
+    }else if(authTokens.length&&metaTokens.length){
+      const metaSet=new Set(metaTokens);
+      let hits=0;
+      for(const t of authTokens)if(metaSet.has(t))hits++;
+      const ratio=hits/authTokens.length;
+      if((hits>=2&&ratio>=0.5)||(hits===1&&authTokens.length===1&&authTokens[0].length>=4)){
+        score=Math.round(55+ratio*24);reason='Unsur nama cocok dengan metadata';
+      }
+    }
+    if(!score)continue;
+    const authYear=extractYear(a.death_text);
+    if(metaYear&&authYear){
+      if(metaYear===authYear){score+=15;reason+=' (tahun wafat cocok)';}
+      else if(Math.abs(Number(metaYear)-Number(authYear))>2)score-=40;
+    }
+    if(score>=55)results.push({id:a.id,name:a.name,death_text:a.death_text||'',score,reason});
+  }
+  results.sort((a,b)=>b.score-a.score||a.id-b.id);
+  return results.slice(0,limit);
+}
+
+const formatPageSnippet=(row,maxLen=320)=>{
+  if(!row||typeof row.nass!=='string')return null;
+  const text=row.nass.replace(/<[^>]+>/gu,' ').replace(/\s+/gu,' ').trim();
+  if(!text)return null;
+  return{part:row.part??1,page:row.page??1,snippet:text.length>maxLen?text.slice(0,maxLen).trimEnd()+'…':text};
+};
+
+export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,getFirstPage=()=>null) {
   let cache=null,generation=0;
   const invalidate=()=>{generation++;cache=null;};
   function graph(){
@@ -71,25 +121,35 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
     return{data:a,works:all.slice((page-1)*limit,page*limit).map(w=>({book_id:w.book_id,title:w.title,...w.links.get(id),source_ref:w.source_ref})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit)};
   };
   const revision=(db,id)=>db.prepare('SELECT id FROM events WHERE book_id=? ORDER BY rowid DESC LIMIT 1').get(id)?.id||'initial';
+  const firstPageSnippet=bookId=>{try{return formatPageSnippet(getFirstPage(bookId));}catch{return null;}};
   function bookCase(bookId){
     const g=graph(),live=g.library.get(bookId);if(!live)throw err('Kitab tidak ada pada pustaka server ini.',404);
     const w=g.works.get(bookId),decisions=g.db.prepare('SELECT * FROM decisions WHERE book_id=?').all(bookId);
+    const conflict=g.conflicts.has(bookId)||!!w&&w.title_key!==live.key;
     return{book_id:bookId,title:live.bk,metadata_author:w?.metadata_author||'',source_ref:w?.source_ref||'Metadata pustaka server saat ini',
-      conflict:g.conflicts.has(bookId)||!!w&&w.title_key!==live.key,revision:revision(g.db,bookId),
+      conflict,revision:revision(g.db,bookId),
+      first_page:firstPageSnippet(bookId),
+      suggestions:conflict?[]:suggestAuthors(w?.metadata_author||'',g.authors),
       links:related(bookId,live.bk),decisions:decisions.map(d=>({...d,name:g.authors.get(d.author_id)?.name||''})),
       events:g.db.prepare('SELECT * FROM events WHERE book_id=? ORDER BY created_at DESC,rowid DESC LIMIT 50').all(bookId)};
   }
   const review=query=>{
     const g=graph(),{limit,page}=paging(query,20),q=findText(String(query.q||'').slice(0,200)),filter=query.filter||'pending';
     const all=[];let pending=0,linked=0,conflicts=0;
-    for(const [id,b] of g.library){const w=g.works.get(id),conflict=g.conflicts.has(id)||!!w&&w.title_key!==b.key,isLinked=!conflict&&!!w?.links.size;
+    for(const [id,b] of g.library){const w=g.works.get(id),conflict=g.conflicts.has(id)||!!w&&w.title_key!==b.key,isLinked=!conflict&&!!w?.links.size,hasMeta=!!w?.metadata_author?.trim();
       if(conflict)conflicts++;else if(isLinked)linked++;else pending++;
-      if(filter==='pending'&&(isLinked||conflict)||filter==='linked'&&!isLinked||filter==='conflict'&&!conflict)continue;
+      if(filter==='pending'&&(isLinked||conflict)||filter==='with_metadata'&&(isLinked||conflict||!hasMeta)||filter==='linked'&&!isLinked||filter==='conflict'&&!conflict)continue;
       if(q&&!findText(`${b.bk} ${w?.metadata_author||''}`).includes(q))continue;
       all.push({book_id:id,title:b.bk,metadata_author:w?.metadata_author||'',status:conflict?'conflict':isLinked?'linked':'pending',count:isLinked?w.links.size:0});
     }
     all.sort((a,b)=>a.book_id-b.book_id);
-    return{data:all.slice((page-1)*limit,page*limit),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),counts:{pending,linked,conflicts,available:g.library.size}};
+    const pageData=all.slice((page-1)*limit,page*limit).map(item=>({
+      ...item,
+      revision:revision(g.db,item.book_id),
+      suggestions:item.status==='conflict'?[]:suggestAuthors(item.metadata_author,g.authors),
+      first_page:firstPageSnippet(item.book_id),
+    }));
+    return{data:pageData,total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),counts:{pending,linked,conflicts,available:g.library.size}};
   };
   function decide(body){
     const g=graph(),bookId=Number(body.book_id),authorId=Number(body.author_id),a=g.authors.get(authorId),live=g.library.get(bookId);
@@ -145,7 +205,22 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0) {
     invalidate();
     return { bookId: id, authorId: linkedAuthorId, authorName: cleanAuthor };
   }
-  return{authorList,detail,related,review,bookCase,decide,linkBookToAuthor,invalidate};
+  function decideBatch(body){
+    const items=Array.isArray(body?.items)?body.items:null;
+    if(!items||!items.length)throw err('Pilih minimal satu relasi untuk disimpan.');
+    if(items.length>50)throw err('Maksimal 50 relasi dalam satu kali simpan massal.');
+    const saved=[],failed=[];
+    for(const item of items){
+      try{
+        const updated=decide(item);
+        saved.push({book_id:updated.book_id,author_id:Number(item.author_id),revision:updated.revision});
+      }catch(e){
+        failed.push({book_id:Number(item?.book_id)||0,author_id:Number(item?.author_id)||0,error:e.message||'Gagal menyimpan.'});
+      }
+    }
+    return{saved,failed};
+  }
+  return{authorList,detail,related,review,bookCase,decide,decideBatch,linkBookToAuthor,invalidate};
 }
 export function registerAuthors(app,{service,requireAdmin,onActivity=()=>{}}) {
   const route=(handler,activity=false)=>(req,res)=>{try{
@@ -162,4 +237,5 @@ export function registerAuthors(app,{service,requireAdmin,onActivity=()=>{}}) {
   app.get('/api/admin/authors/review',requireAdmin,route(req=>service.review(req.query)));
   app.get('/api/admin/authors/book/:id',requireAdmin,route(req=>service.bookCase(Number(req.params.id))));
   app.post('/api/admin/authors/decision',requireAdmin,route(req=>service.decide(req.body||{})));
+  app.post('/api/admin/authors/decisions/batch',requireAdmin,route(req=>service.decideBatch(req.body||{})));
 }
