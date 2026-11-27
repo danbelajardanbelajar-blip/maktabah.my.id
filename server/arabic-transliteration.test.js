@@ -15,6 +15,8 @@ test('arabicWordToSkeleton and latinWordToSkeleton converge on common book terms
   assert.equal(arabicWordToSkeleton('الباري'), latinWordToSkeleton('bari'));
   assert.equal(arabicWordToSkeleton('بلوغ'), latinWordToSkeleton('bulughul'));
   assert.equal(arabicWordToSkeleton('المرام'), latinWordToSkeleton('maram'));
+  assert.equal(arabicWordToSkeleton('البردة'), latinWordToSkeleton('burdah'));
+  assert.equal(arabicWordToSkeleton('قصيدة'), latinWordToSkeleton('qashidah'));
 });
 
 test('matchTranslitBooks finds Arabic books from Latin transliteration and aliases while respecting exclusions', (t) => {
@@ -34,6 +36,9 @@ test('matchTranslitBooks finds Arabic books from Latin transliteration and alias
       (6, 'تفسير الجلالين', 3),
       (7, 'الآجرومية', 4),
       (8, 'الأربعون النووية', 2),
+      (9, 'صور وعبر', 1),
+      (10, 'بر الوالدين', 1),
+      (11, 'شرح قصيدة البردة', 1),
       (99, 'كتاب محظور بالبخاري', 1);
   `);
 
@@ -62,6 +67,15 @@ test('matchTranslitBooks finds Arabic books from Latin transliteration and alias
 
   const arbain = matchTranslitBooks(index, 'arbain nawawi', { excluded });
   assert.equal(arbain[0].title, 'الأربعون النووية');
+
+  // 'burdah' must match 'شرح قصيدة البردة', NOT short 2-letter words like 'بر الوالدين' or 'صور وعبر'
+  const burdah = matchTranslitBooks(index, 'burdah', { excluded });
+  assert.equal(burdah.length, 1);
+  assert.equal(burdah[0].title, 'شرح قصيدة البردة');
+
+  const qashidahBurdah = matchTranslitBooks(index, 'qashidah burdah', { excluded });
+  assert.equal(qashidahBurdah.length, 1);
+  assert.equal(qashidahBurdah[0].title, 'شرح قصيدة البردة');
 
   // Too short or unrelated should not match
   assert.deepEqual(matchTranslitBooks(index, 'ab', { excluded }), []);

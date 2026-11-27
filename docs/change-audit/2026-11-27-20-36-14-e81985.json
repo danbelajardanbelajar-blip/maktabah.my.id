@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 20:36:14 +07:00",
+  "title": "Perbaikan pencocokan transliterasi Latin agar tidak memunculkan kata pendek",
+  "baseCommit": "c562d343aadc7dd25ab7c97aae245abd817ebcf9",
+  "checks": "LULUS: node --check server/arabic-transliteration.js; 5/5 tes node --test server/arabic-transliteration.test.js & server/search-autocomplete.test.js; oxlint 0 error 0 warning.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/arabic-transliteration.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 20:35:42 +07:00",
+      "stagedSha256": "c887cda97c58c86a856c5ebbacdffc448cc74c6da12cf88958bbb32341b85fce",
+      "diffSha256": "744b444c54cb2ba186b77a317a95067bbd3b200f010312710468cee4f39b4559",
+      "symbols": [
+        "ARABIC_DIACRITICS_RE",
+        "NON_ARABIC_WORD_RE",
+        "LATIN_LETTER_RE",
+        "ARABIC_CONSONANT_MAP",
+        "POPULAR_BOOK_ALIASES",
+        "collapseRepeats",
+        "arabicWordToSkeleton",
+        "arabicTextToTokens",
+        "cleaned",
+        "latinWordToSkeleton",
+        "latinTextToTokens",
+        "containsLatin",
+        "buildBookTranslitIndex",
+        "schemas",
+        "index",
+        "seen",
+        "rows",
+        "title",
+        "tokens",
+        "joined",
+        "matchTranslitBooks",
+        "q",
+        "queryTokens",
+        "joinedQuery",
+        "aliasArabicTerms",
+        "scored"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 14,
+            "count": 0
+          },
+          "after": {
+            "line": 15,
+            "count": 1
+          },
+          "section": "const ARABIC_CONSONANT_MAP = {"
+        },
+        {
+          "before": {
+            "line": 198,
+            "count": 1
+          },
+          "after": {
+            "line": 199,
+            "count": 1
+          },
+          "section": "export function matchTranslitBooks("
+        }
+      ]
+    },
+    {
+      "file": "server/arabic-transliteration.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 20:35:45 +07:00",
+      "stagedSha256": "18734d53a4d0ba87ce86dcc8b6c0ea85aecc10af49f243ae90993d5257062301",
+      "diffSha256": "9367ff6baf3dfb8931a0af1b8281bc328ff8fb21d828d48ca4ab5caf51bd26f0",
+      "symbols": [
+        "db",
+        "index",
+        "excluded",
+        "bukhari",
+        "fathul",
+        "riyadh",
+        "ihya",
+        "jalalain",
+        "jurumiyah",
+        "arbain",
+        "burdah",
+        "qashidahBurdah"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 17,
+            "count": 0
+          },
+          "after": {
+            "line": 18,
+            "count": 2
+          },
+          "section": "test('arabicWordToSkeleton and latinWordToSkeleton converge on common book terms"
+        },
+        {
+          "before": {
+            "line": 36,
+            "count": 0
+          },
+          "after": {
+            "line": 39,
+            "count": 3
+          },
+          "section": "test('matchTranslitBooks finds Arabic books from Latin transliteration and alias"
+        },
+        {
+          "before": {
+            "line": 65,
+            "count": 0
+          },
+          "after": {
+            "line": 71,
+            "count": 9
+          },
+          "section": "test('matchTranslitBooks finds Arabic books from Latin transliteration and alias"
+        }
+      ]
+    }
+  ]
+}

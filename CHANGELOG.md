@@ -3198,3 +3198,19 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-27-33-ba54af.
 | 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 237–244 | export function registerSearchAutocomplete(app, { | modified |
 | 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 252–252 | export function registerSearchAutocomplete(app, { | modified |
 | 2026-11-27 20:26:30 +07:00 | `server/search-autocomplete.test.js` | — | 93–101 | test('queryAutocomplete returns matching books and popular queries while respect | modified |
+
+## [2026-11-27 20:36:14 +07:00] — Perbaikan pencocokan transliterasi Latin agar tidak memunculkan kata pendek
+
+Waktu pencatatan: **2026-11-27 20:36:14 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c562d34`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: node --check server/arabic-transliteration.js; 5/5 tes node --test server/arabic-transliteration.test.js & server/search-autocomplete.test.js; oxlint 0 error 0 warning.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-36-14-e81985.json](docs/change-audit/2026-11-27-20-36-14-e81985.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 20:35:42 +07:00 | `server/arabic-transliteration.js` | — | 15–15 | const ARABIC_CONSONANT_MAP = { | modified |
+| 2026-11-27 20:35:42 +07:00 | `server/arabic-transliteration.js` | 198–198 | 199–199 | export function matchTranslitBooks( | modified |
+| 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 18–19 | test('arabicWordToSkeleton and latinWordToSkeleton converge on common book terms | modified |
+| 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 39–41 | test('matchTranslitBooks finds Arabic books from Latin transliteration and alias | modified |
+| 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 71–79 | test('matchTranslitBooks finds Arabic books from Latin transliteration and alias | modified |

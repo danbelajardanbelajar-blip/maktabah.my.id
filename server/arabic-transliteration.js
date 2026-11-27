@@ -12,6 +12,7 @@ const ARABIC_CONSONANT_MAP = {
   ج: 'j',
   ح: 'h',
   ه: 'h',
+  ة: 'h',
   خ: 'kh',
   د: 'd',
   ض: 'd',
@@ -195,7 +196,7 @@ export function matchTranslitBooks(
             bestForToken = 2;
             break;
           }
-          if (qt.length >= 3 && (bt.startsWith(qt) || qt.startsWith(bt))) {
+          if (qt.length >= 3 && bt.startsWith(qt)) {
             bestForToken = Math.max(bestForToken, 1);
           }
         }
