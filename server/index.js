@@ -35,7 +35,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
-import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook } from './search-policy.js';
+import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook, getExcludedBookIds } from './search-policy.js';
 import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
@@ -1411,6 +1411,7 @@ registerSearchAutocomplete(app, {
   getStateDb: () => stateDb,
   hasAdditional: () => hasTambahan,
   likeMatch: buildLikeMatch,
+  getExcludedBookIds,
   isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
 });
 

@@ -261,7 +261,6 @@ function App() {
 
   const executeSearch = async (searchQuery: string, page: number, mode = searchMode, historyMode: 'push'|'none' = 'push', scopeFilter = searchScope, forceLiteral = false) => {
     if (!searchQuery.trim()) return;
-    saveLocalSearch(searchQuery);
     if (!forceLiteral) {
       const detection = detectAiQuery(searchQuery);
       if (detection.shouldRedirect) {
@@ -306,6 +305,7 @@ function App() {
         fetchedTotal = (scholariumRes.total || (scholariumRes.data?.length || 0)) + (archiveRes.response?.numFound || 0);
       }
       if (requestId !== searchRequest.current) return;
+      if (fetchedTotal > 0) saveLocalSearch(searchQuery);
       setResults(fetchedResults); setTotalResults(fetchedTotal); setTotalCapped(fetchedCapped); loadedSearch.current = key;
       setCurrentPage(page);
       setHasSearched(true);
@@ -563,7 +563,7 @@ function App() {
                 onSelectQuery={(selectedQ) => {
                   if (activeTab === 'home') setHomeQuery(selectedQ);
                   else setQuery(selectedQ);
-                  void executeSearch(selectedQ, 1, activeTab === 'home' ? 'text' : searchMode);
+                  void executeSearch(selectedQ, 1, activeTab === 'home' ? 'text' : searchMode, 'push', searchScope, true);
                 }}
                 onSelectBook={(book) => {
                   openReader({ bookId: book.bkid });

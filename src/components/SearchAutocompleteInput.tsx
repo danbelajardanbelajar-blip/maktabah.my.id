@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { BookOpen, Clock, Loader2, Search, X } from 'lucide-react';
 import { webAPI } from '../api';
 
@@ -18,7 +18,7 @@ interface AutocompleteResult {
   queries: AutocompleteQuery[];
 }
 
-const LOCAL_HISTORY_KEY = 'maktabah_local_searches';
+const LOCAL_HISTORY_KEY = 'maktabah_local_searches_v2';
 const clientCache = new Map<string, { at: number; data: AutocompleteResult }>();
 const CACHE_TTL = 2 * 60 * 1000;
 
@@ -70,6 +70,8 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
   const [remote, setRemote] = useState<AutocompleteResult>({ books: [], queries: [] });
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const listboxId = useId();
 
   const trimmed = value.trim();
 
@@ -99,6 +101,7 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
     }
 
     const controller = new AbortController();
+    setRemote({ books: [], queries: [] });
     setLoading(true);
     const timer = setTimeout(() => {
       webAPI
@@ -157,6 +160,12 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
     setActiveIndex(-1);
   }, [trimmed, remote]);
 
+  useEffect(() => {
+    if (activeIndex >= 0) {
+      itemRefs.current[activeIndex]?.scrollIntoView({ block: 'nearest' });
+    }
+  }, [activeIndex]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -182,6 +191,13 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab') {
+      setOpen(false);
+      setFocused(false);
+      setActiveIndex(-1);
+      return;
+    }
+
     if (!open || flatItems.length === 0) {
       if (e.key === 'Escape') setOpen(false);
       return;
@@ -243,11 +259,20 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
             setFocused(true);
             if (trimmed.length >= 2) setOpen(true);
           }}
+          onBlur={(e) => {
+            if (!containerRef.current?.contains(e.relatedTarget as Node)) {
+              setOpen(false);
+              setFocused(false);
+              setActiveIndex(-1);
+            }
+          }}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={showDropdown}
+          aria-controls={showDropdown ? listboxId : undefined}
+          aria-activedescendant={showDropdown && activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined}
           autoComplete="off"
           className={`w-full pl-4 ${value ? 'pr-20' : 'pr-12'} py-4 rounded-xl border-2 border-black/10 text-lg md:text-xl focus:outline-none focus:border-[var(--app-primary)] bg-[var(--reader-paper)] shadow-inner transition-all`}
         />
@@ -255,6 +280,7 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
 
       {showDropdown && (
         <div
+          id={listboxId}
           role="listbox"
           className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-[var(--reader-paper)] border border-black/15 rounded-2xl shadow-2xl overflow-hidden divide-y divide-black/5"
         >
@@ -267,10 +293,13 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
             <div className="py-1.5 max-h-80 overflow-y-auto">
               {flatItems.map((item, idx) => {
                 const isActive = idx === activeIndex;
+                const optionId = `${listboxId}-option-${idx}`;
                 if (item.kind === 'local') {
                   return (
                     <button
                       key={`local-${item.text}`}
+                      id={optionId}
+                      ref={(el) => { itemRefs.current[idx] = el; }}
                       type="button"
                       role="option"
                       aria-selected={isActive}
@@ -296,6 +325,8 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
                   return (
                     <button
                       key={`book-${item.book.bkid}`}
+                      id={optionId}
+                      ref={(el) => { itemRefs.current[idx] = el; }}
                       type="button"
                       role="option"
                       aria-selected={isActive}
@@ -327,6 +358,8 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
                 return (
                   <button
                     key={`query-${item.text}`}
+                    id={optionId}
+                    ref={(el) => { itemRefs.current[idx] = el; }}
                     type="button"
                     role="option"
                     aria-selected={isActive}
@@ -343,7 +376,9 @@ export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = (
                     <span className="flex-1 truncate font-medium text-sm md:text-base" dir="auto">
                       {item.text}
                     </span>
-                    <span className="text-[11px] text-gray-400 shrink-0">Populer</span>
+                    {item.count >= 3 && (
+                      <span className="text-[11px] text-gray-400 shrink-0">Populer</span>
+                    )}
                   </button>
                 );
               })}

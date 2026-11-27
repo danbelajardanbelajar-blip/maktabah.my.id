@@ -1,0 +1,1401 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 19:28:05 +07:00",
+  "title": "Perbaikan dropdown rekomendasi pencarian",
+  "baseCommit": "891e57cecfb5595b48018d753d2427d42af87d17",
+  "checks": "LULUS: node --check server/search-autocomplete.js & server/index.js; 11/11 tes node --test server/search-autocomplete.test.js & server/search-policy.test.js; oxlint 0 error (4 warning bawaan); tsc -b, vite build, dan build_privacy.js lokal berhasil.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index.dev-CHUbzdzF.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-27 19:27:43 +07:00",
+      "stagedSha256": "6d71aea9376b1d9d170c9ba56f87983b589806d18b615206cd70459073201f88",
+      "diffSha256": "baf7d54715f3f62034564a6781d5bf20563dbf68c8e3363cc27715298c2047e3",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "rt",
+        "at",
+        "ot",
+        "_t",
+        "vt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Dt",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "B",
+        "V",
+        "H",
+        "W",
+        "re",
+        "G",
+        "K",
+        "ae",
+        "se",
+        "ce",
+        "le",
+        "we",
+        "Oe",
+        "Me",
+        "Ne",
+        "Pe",
+        "Fe",
+        "Ie",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "nt",
+        "it",
+        "X",
+        "lt",
+        "ut",
+        "mt",
+        "ht",
+        "gt",
+        "yt",
+        "bt",
+        "Tt",
+        "Et",
+        "Ot",
+        "At",
+        "jt",
+        "Mt",
+        "Nt",
+        "Ft",
+        "It",
+        "Lt",
+        "Bt",
+        "Vt",
+        "Ut",
+        "Kt",
+        "Jt",
+        "Yt",
+        "nn",
+        "rn",
+        "an",
+        "on",
+        "sn",
+        "Tn",
+        "Z",
+        "Rn",
+        "zn",
+        "Vn",
+        "Hn",
+        "Wn",
+        "Gn",
+        "Jn",
+        "Yn",
+        "Xn",
+        "tr",
+        "nr",
+        "rr",
+        "ir",
+        "ar",
+        "or",
+        "sr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "pr",
+        "mr",
+        "br",
+        "xr",
+        "Tr",
+        "Fr",
+        "Br",
+        "Vr",
+        "Hr",
+        "Ur",
+        "Wr",
+        "Gr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ii",
+        "mi",
+        "hi",
+        "gi",
+        "_i",
+        "vi",
+        "Ti",
+        "Ei",
+        "Di",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Fi",
+        "Ii",
+        "Li",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Yi",
+        "Xi",
+        "ta",
+        "na",
+        "ra",
+        "oa",
+        "sa",
+        "ca",
+        "pa",
+        "ma",
+        "ha",
+        "_a",
+        "va",
+        "xa",
+        "Sa",
+        "Ca",
+        "wa",
+        "u",
+        "f",
+        "h",
+        "Oa",
+        "ka",
+        "Aa",
+        "ja",
+        "Ma",
+        "Na",
+        "Fa",
+        "Ia",
+        "La",
+        "Ra",
+        "Va",
+        "Ha",
+        "Ua",
+        "Ka",
+        "qa",
+        "Ja",
+        "Ya",
+        "Xa",
+        "Qa",
+        "lo",
+        "uo",
+        "fo",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Ms",
+        "Ps",
+        "Fs",
+        "Is",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Js",
+        "Ys",
+        "Xs",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "uc",
+        "dc",
+        "fc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Xc",
+        "Zc",
+        "Qc",
+        "tl",
+        "nl",
+        "rl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "ll",
+        "ul",
+        "dl",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "Sl",
+        "Cl",
+        "wl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "uu",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "td",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "_d",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "Pt",
+        "Rt",
+        "zt",
+        "Ht",
+        "Wt",
+        "Gt",
+        "qt",
+        "Zt",
+        "Qt",
+        "tn",
+        "fn",
+        "gn",
+        "vn",
+        "yn",
+        "Sn",
+        "Cn",
+        "wn",
+        "En",
+        "Dn",
+        "An",
+        "Bn",
+        "Un",
+        "Kn",
+        "qn",
+        "Qn",
+        "_",
+        "hr",
+        "vr",
+        "Sr",
+        "Dr",
+        "Ar",
+        "Pr",
+        "Lr",
+        "Rr",
+        "ai",
+        "oi",
+        "si",
+        "ci",
+        "li",
+        "pi",
+        "yi",
+        "bi",
+        "xi",
+        "Si",
+        "Ci",
+        "wi",
+        "extends",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "da",
+        "za",
+        "Ba",
+        "Wa",
+        "eo",
+        "io",
+        "ao",
+        "so",
+        "co"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 22
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:27:43 +07:00",
+      "stagedSha256": "536984b4b3c6cbb1b908e0d89c175bb18bbee5e8e22420ced68f71560a1228ea",
+      "diffSha256": "db763f13199de5d23bde47805a3cbf0f1d18c7bf835004a539b729bc4cd07598",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 10,
+            "count": 1
+          },
+          "after": {
+            "line": 10,
+            "count": 1
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:26:21 +07:00",
+      "stagedSha256": "6c883e3cd2f6b6a395aa296379288baac093c68ea853125c8caec770bab95b43",
+      "diffSha256": "03f877ad0e40d0b0116d724594735a0c2afc76487072bbef315801c36464e981",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "excludedBookIds",
+        "results",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 38,
+            "count": 1
+          },
+          "after": {
+            "line": 38,
+            "count": 1
+          },
+          "section": "import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text"
+        },
+        {
+          "before": {
+            "line": 1413,
+            "count": 0
+          },
+          "after": {
+            "line": 1414,
+            "count": 1
+          },
+          "section": "registerSearchAutocomplete(app, {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-autocomplete.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:26:18 +07:00",
+      "stagedSha256": "438f62e385486573cfe1ecd97bdc2d372754468d5b485f2c814515dbfdb39efd",
+      "diffSha256": "5ba5b034920cb55e399feb599e66d39e649b865985f978a0bfbe7e5eb9e68614",
+      "symbols": [
+        "likePatternToRegExp",
+        "escaped",
+        "loadPopularQueries",
+        "filterPopularQueries",
+        "qLower",
+        "likeRegex",
+        "matches",
+        "seenQueries",
+        "bookTitles",
+        "isMatch",
+        "queryAutocomplete",
+        "q",
+        "likeQuery",
+        "containsPattern",
+        "prefixPattern",
+        "books",
+        "seenBooks",
+        "excluded",
+        "schemas",
+        "rows",
+        "qContains",
+        "qPrefix",
+        "text",
+        "key",
+        "registerSearchAutocomplete",
+        "cache",
+        "ttlMs",
+        "db",
+        "stateDb",
+        "currentTime",
+        "cached",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 62
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 6,
+            "count": 0
+          },
+          "after": {
+            "line": 69,
+            "count": 1
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 57,
+            "count": 3
+          },
+          "after": {
+            "line": 120,
+            "count": 10
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 65,
+            "count": 1
+          },
+          "after": {
+            "line": 135,
+            "count": 1
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 67,
+            "count": 2
+          },
+          "after": {
+            "line": 137,
+            "count": 2
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 71,
+            "count": 1
+          },
+          "after": {
+            "line": 141,
+            "count": 4
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 74,
+            "count": 0
+          },
+          "after": {
+            "line": 148,
+            "count": 1
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 79,
+            "count": 1
+          },
+          "after": {
+            "line": 152,
+            "count": 0
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 103,
+            "count": 0
+          },
+          "after": {
+            "line": 177,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 123,
+            "count": 0
+          },
+          "after": {
+            "line": 198,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 126,
+            "count": 1
+          },
+          "after": {
+            "line": 201,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 129,
+            "count": 0
+          },
+          "after": {
+            "line": 205,
+            "count": 8
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 135,
+            "count": 0
+          },
+          "after": {
+            "line": 219,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 142,
+            "count": 1
+          },
+          "after": {
+            "line": 226,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-autocomplete.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:27:02 +07:00",
+      "stagedSha256": "27ad69c11f96cb1073f653887ced72057ed9dfe5805ac08aa676a159f06b057b",
+      "diffSha256": "6aeb7e925d5539197e7cfd1bfd85787d09fae08f3edf26f80bdf57df1038a921",
+      "symbols": [
+        "createFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "arRes",
+        "exclRes",
+        "idRes",
+        "app",
+        "server",
+        "port",
+        "r1",
+        "j1",
+        "r2",
+        "j2",
+        "r3",
+        "j3",
+        "r4",
+        "j4"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 31,
+            "count": 0
+          },
+          "after": {
+            "line": 32,
+            "count": 1
+          },
+          "section": "function createFixture(t) {"
+        },
+        {
+          "before": {
+            "line": 32,
+            "count": 0
+          },
+          "after": {
+            "line": 34,
+            "count": 1
+          },
+          "section": "function createFixture(t) {"
+        },
+        {
+          "before": {
+            "line": 33,
+            "count": 0
+          },
+          "after": {
+            "line": 36,
+            "count": 2
+          },
+          "section": "function createFixture(t) {"
+        },
+        {
+          "before": {
+            "line": 78,
+            "count": 1
+          },
+          "after": {
+            "line": 82,
+            "count": 1
+          },
+          "section": "test('queryAutocomplete returns matching books and popular queries while respect"
+        },
+        {
+          "before": {
+            "line": 80,
+            "count": 3
+          },
+          "after": {
+            "line": 84,
+            "count": 6
+          },
+          "section": "test('queryAutocomplete returns matching books and popular queries while respect"
+        },
+        {
+          "before": {
+            "line": 83,
+            "count": 0
+          },
+          "after": {
+            "line": 91,
+            "count": 2
+          },
+          "section": "test('queryAutocomplete returns matching books and popular queries while respect"
+        },
+        {
+          "before": {
+            "line": 116,
+            "count": 1
+          },
+          "after": {
+            "line": 125,
+            "count": 1
+          },
+          "section": "test('registerSearchAutocomplete caches responses and handles maintenance mode',"
+        },
+        {
+          "before": {
+            "line": 118,
+            "count": 1
+          },
+          "after": {
+            "line": 127,
+            "count": 1
+          },
+          "section": "test('registerSearchAutocomplete caches responses and handles maintenance mode',"
+        },
+        {
+          "before": {
+            "line": 122,
+            "count": 1
+          },
+          "after": {
+            "line": 131,
+            "count": 1
+          },
+          "section": "test('registerSearchAutocomplete caches responses and handles maintenance mode',"
+        },
+        {
+          "before": {
+            "line": 128,
+            "count": 1
+          },
+          "after": {
+            "line": 137,
+            "count": 1
+          },
+          "section": "test('registerSearchAutocomplete caches responses and handles maintenance mode',"
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:26:26 +07:00",
+      "stagedSha256": "3a7d31e91ec7ba7fd0e77596b3f3aaf055e3335e57315ac2ebb3bb12c398549f",
+      "diffSha256": "c5e36a91ca82f2ddd9b0b45aaf0a5498e80642a7175a08a030488cd152a7a9ba",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "limit",
+        "setSearchScope",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "scope",
+        "key",
+        "targetTab",
+        "isAdvanced",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "previous",
+        "known",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 264,
+            "count": 1
+          },
+          "after": {
+            "line": 263,
+            "count": 0
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 308,
+            "count": 0
+          },
+          "after": {
+            "line": 308,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 566,
+            "count": 1
+          },
+          "after": {
+            "line": 566,
+            "count": 1
+          },
+          "section": "function App() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/SearchAutocompleteInput.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 19:26:58 +07:00",
+      "stagedSha256": "afa5e0830e618eb591f9bd6137a41e8d07af2c5e556d0a5e6266396b0b8ec600",
+      "diffSha256": "d4ecdedeb190fc96508b12bf609cb87e2c66d4996a4b0eece511ae1e31fd644a",
+      "symbols": [
+        "LOCAL_HISTORY_KEY",
+        "clientCache",
+        "CACHE_TTL",
+        "getLocalSearches",
+        "raw",
+        "parsed",
+        "saveLocalSearch",
+        "clean",
+        "prev",
+        "next",
+        "containerRef",
+        "itemRefs",
+        "listboxId",
+        "trimmed",
+        "localMatches",
+        "lower",
+        "cacheKey",
+        "cached",
+        "controller",
+        "timer",
+        "firstKey",
+        "flatItems",
+        "localLower",
+        "handleClickOutside",
+        "chooseItem",
+        "handleKeyDown",
+        "showDropdown",
+        "isActive",
+        "optionId"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 21,
+            "count": 1
+          },
+          "after": {
+            "line": 21,
+            "count": 1
+          },
+          "section": "interface AutocompleteResult {"
+        },
+        {
+          "before": {
+            "line": 72,
+            "count": 0
+          },
+          "after": {
+            "line": 73,
+            "count": 2
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 101,
+            "count": 0
+          },
+          "after": {
+            "line": 104,
+            "count": 1
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 159,
+            "count": 0
+          },
+          "after": {
+            "line": 163,
+            "count": 6
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 184,
+            "count": 0
+          },
+          "after": {
+            "line": 194,
+            "count": 7
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 245,
+            "count": 0
+          },
+          "after": {
+            "line": 262,
+            "count": 7
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 250,
+            "count": 0
+          },
+          "after": {
+            "line": 274,
+            "count": 2
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 257,
+            "count": 0
+          },
+          "after": {
+            "line": 283,
+            "count": 1
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 269,
+            "count": 0
+          },
+          "after": {
+            "line": 296,
+            "count": 1
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 273,
+            "count": 0
+          },
+          "after": {
+            "line": 301,
+            "count": 2
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 298,
+            "count": 0
+          },
+          "after": {
+            "line": 328,
+            "count": 2
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 329,
+            "count": 0
+          },
+          "after": {
+            "line": 361,
+            "count": 2
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        },
+        {
+          "before": {
+            "line": 346,
+            "count": 1
+          },
+          "after": {
+            "line": 379,
+            "count": 3
+          },
+          "section": "export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ("
+        }
+      ]
+    }
+  ]
+}

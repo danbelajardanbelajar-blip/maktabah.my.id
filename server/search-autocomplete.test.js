@@ -29,8 +29,12 @@ function createFixture(t) {
     INSERT INTO search_logs (query, result_count) VALUES
       ('shalat jumat', 15),
       ('Shalat Jumat', 20),
+      ('shalat jumat', 18),
       ('shalat dhuha', 8),
+      ('shalat istikharah', 5),
       ('shalat gaib kosong', 0),
+      ('shalat tanpa jumlah', NULL),
+      ('shalat apakah ada doa khusus yang sangat panjang melebihi enam puluh karakter untuk dibaca', 12),
       ('صحيح مسلم', 10),
       ('صحيح البخاري', 5);
   `);
@@ -75,12 +79,17 @@ test('queryAutocomplete returns matching books and popular queries while respect
     stateDb,
     query: 'shalat',
   });
-  assert.equal(idRes.queries.length, 2);
+  assert.equal(idRes.queries.length, 3);
   assert.equal(idRes.queries[0].text.toLowerCase(), 'shalat jumat');
-  assert.equal(idRes.queries[0].count, 2);
-  assert.equal(idRes.queries[1].text.toLowerCase(), 'shalat dhuha');
-  // 'shalat gaib kosong' (result_count = 0) must not be suggested
+  assert.equal(idRes.queries[0].count, 3);
+  assert.equal(idRes.queries[1].text.toLowerCase(), 'shalat istikharah');
+  assert.equal(idRes.queries[1].count, 1);
+  assert.equal(idRes.queries[2].text.toLowerCase(), 'shalat dhuha');
+  assert.equal(idRes.queries[2].count, 1);
+  // 'shalat gaib kosong' (result_count = 0), NULL result_count, and >60 chars must not be suggested
   assert.ok(!idRes.queries.some((q) => q.text.includes('kosong')));
+  assert.ok(!idRes.queries.some((q) => q.text.includes('tanpa jumlah')));
+  assert.ok(!idRes.queries.some((q) => q.text.length > 60));
 });
 
 test('queryAutocomplete ignores too-short queries', (t) => {
@@ -113,19 +122,19 @@ test('registerSearchAutocomplete caches responses and handles maintenance mode',
   const r1 = await fetch(`http://127.0.0.1:${port}/api/autocomplete?q=shalat`);
   assert.equal(r1.status, 200);
   const j1 = await r1.json();
-  assert.equal(j1.queries.length, 2);
+  assert.equal(j1.queries.length, 3);
 
-  // Insert new log; cache should still return 2 items within TTL
+  // Insert new log; cache should still return 3 items within TTL
   stateDb.prepare("INSERT INTO search_logs(query, result_count) VALUES ('shalat tahajud', 12)").run();
   const r2 = await fetch(`http://127.0.0.1:${port}/api/autocomplete?q=shalat`);
   const j2 = await r2.json();
-  assert.equal(j2.queries.length, 2);
+  assert.equal(j2.queries.length, 3);
 
   // Advance clock past 2 min TTL
   currentTime += 130_000;
   const r3 = await fetch(`http://127.0.0.1:${port}/api/autocomplete?q=shalat`);
   const j3 = await r3.json();
-  assert.equal(j3.queries.length, 3);
+  assert.equal(j3.queries.length, 4);
 
   // Maintenance mode returns empty
   maintenance = true;

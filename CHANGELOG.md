@@ -3082,3 +3082,59 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-08-07-13-9453d2.
 | 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 31–31 | 41–48 | export function classifyBahtsulMasailLine( | modified |
 | 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 35–35 | 52–60 | export function classifyBahtsulMasailLine( | modified |
 | 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 38–38 | 63–63 | export function classifyBahtsulMasailLine( | modified |
+
+## [2026-11-27 19:28:05 +07:00] — Perbaikan dropdown rekomendasi pencarian
+
+Waktu pencatatan: **2026-11-27 19:28:05 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `891e57c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: node --check server/search-autocomplete.js & server/index.js; 11/11 tes node --test server/search-autocomplete.test.js & server/search-policy.test.js; oxlint 0 error (4 warning bawaan); tsc -b, vite build, dan build_privacy.js lokal berhasil.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-19-28-05-b5684f.json](docs/change-audit/2026-11-27-19-28-05-b5684f.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 19:27:43 +07:00 | `dist/assets/index.dev-CHUbzdzF.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 19:27:43 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-27 19:26:21 +07:00 | `server/index.js` | 38–38 | 38–38 | import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text | modified |
+| 2026-11-27 19:26:21 +07:00 | `server/index.js` | — | 1414–1414 | registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 1–62 | likePatternToRegExp, escaped, loadPopularQueries, filterPopularQueries, qLower, likeRegex, matches, seenQueries | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 69–69 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 57–59 | 120–129 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 65–65 | 135–135 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 67–68 | 137–138 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 71–71 | 141–144 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 148–148 | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 79–79 | — | export function queryAutocomplete({ | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 177–177 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 198–198 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 126–126 | 201–201 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 205–212 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | — | 219–219 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:26:18 +07:00 | `server/search-autocomplete.js` | 142–142 | 226–226 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | — | 32–32 | function createFixture(t) { | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | — | 34–34 | function createFixture(t) { | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | — | 36–37 | function createFixture(t) { | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 78–78 | 82–82 | test('queryAutocomplete returns matching books and popular queries while respect | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 80–82 | 84–89 | test('queryAutocomplete returns matching books and popular queries while respect | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | — | 91–92 | test('queryAutocomplete returns matching books and popular queries while respect | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 116–116 | 125–125 | test('registerSearchAutocomplete caches responses and handles maintenance mode', | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 118–118 | 127–127 | test('registerSearchAutocomplete caches responses and handles maintenance mode', | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 122–122 | 131–131 | test('registerSearchAutocomplete caches responses and handles maintenance mode', | modified |
+| 2026-11-27 19:27:02 +07:00 | `server/search-autocomplete.test.js` | 128–128 | 137–137 | test('registerSearchAutocomplete caches responses and handles maintenance mode', | modified |
+| 2026-11-27 19:26:26 +07:00 | `src/App.tsx` | 264–264 | — | function App() { | modified |
+| 2026-11-27 19:26:26 +07:00 | `src/App.tsx` | — | 308–308 | function App() { | modified |
+| 2026-11-27 19:26:26 +07:00 | `src/App.tsx` | 566–566 | 566–566 | function App() { | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 1–1 | 1–1 | LOCAL_HISTORY_KEY, clientCache, CACHE_TTL, getLocalSearches, raw, parsed, saveLocalSearch, clean | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 21–21 | 21–21 | interface AutocompleteResult { | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 73–74 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 104–104 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 163–168 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 194–200 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 262–268 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 274–275 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 283–283 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 296–296 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 301–302 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 328–329 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 361–362 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 346–346 | 379–381 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
