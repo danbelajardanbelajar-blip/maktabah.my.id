@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { BookOpen, ChevronDown, LogIn, LogOut, ShieldCheck, User, X } from 'lucide-react';
 import { clearUserSession, getSavedUser, getUserToken, userAuthHeaders } from '../lib/user-auth';
 import type { AuthUser } from '../lib/user-auth';
@@ -150,7 +151,7 @@ export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) {
         </>
       )}
 
-      {loginOpen && (
+      {loginOpen && createPortal(
         <div className="hidden xl:flex fixed inset-0 z-[100] bg-black/50 items-center justify-center p-4" onClick={() => setLoginOpen(false)}>
           <div className="bg-white text-gray-900 rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
@@ -164,10 +165,11 @@ export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) {
             </p>
             <GoogleLoginButton onSuccess={() => setLoginOpen(false)} />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {activityOpen && (
+      {activityOpen && createPortal(
         <div className="hidden xl:flex fixed inset-0 z-[100] bg-black/50 items-center justify-center p-4" onClick={() => setActivityOpen(false)}>
           <div className="bg-white text-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[82vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 py-4 border-b flex items-center justify-between">
@@ -248,7 +250,8 @@ export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

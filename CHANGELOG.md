@@ -3498,3 +3498,21 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-28-12-c7205a.
 | 2026-11-28 04:26:06 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 1–122 | GoogleLoginButton, containerRef, handleCredential, res, data, target, renderButton, existing | added |
 | 2026-11-28 04:26:40 +07:00 | `src/components/ReaderModal.tsx` | — | 230–239 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-28 04:26:05 +07:00 | `src/lib/user-auth.ts` | — | 1–60 | USER_TOKEN_KEY, USER_PROFILE_KEY, ADMIN_TOKEN_KEY, getUserToken, getSavedUser, raw, userAuthHeaders, token | added |
+
+## [2026-11-28 04:47:17 +07:00] — Render modal login dan aktivitas akun melalui portal document.body agar tidak terpotong header
+
+Waktu pencatatan: **2026-11-28 04:47:17 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c9186f4`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-47-17-6deef7.json](docs/change-audit/2026-11-28-04-47-17-6deef7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 04:47:13 +07:00 | `dist/assets/index.dev-9RAsQHMn.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 04:47:13 +07:00 | `dist/index.dev.html` | 38–38 | 38–38 | module/file | modified |
+| 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | — | 2–2 | import { useEffect, useRef, useState } from 'react'; | modified |
+| 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 153–153 | 154–154 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 167–167 | 168–169 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 170–170 | 172–172 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 251–251 | 253–254 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
