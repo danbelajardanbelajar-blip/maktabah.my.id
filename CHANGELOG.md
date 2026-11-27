@@ -3238,3 +3238,19 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-09-45-fb7768.
 | 2026-11-27 21:08:26 +07:00 | `server/seo-foundation.js` | — | 1–204 | DEFAULT_SITE_URL, normalizeSiteUrl, value, escapeXml, escapeHtml, buildRobotsTxt, base, buildSitemapXml | added |
 | 2026-11-27 21:08:48 +07:00 | `server/seo-foundation.test.js` | — | 1–111 | setupServer, distPath, app, server, base, robots, robotsText, sitemap | added |
 | 2026-11-27 21:08:28 +07:00 | `src/components/MoreMenu.tsx` | 12–12 | 12–12 | const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[ | modified |
+
+## [2026-11-27 21:27:44 +07:00] — SEO Tahap 2: layanan baca-saja dan halaman publik kitab (/kitab/:id-:slug)
+
+Waktu pencatatan: **2026-11-27 21:27:44 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `5717eac`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/index.js & server/seo-books.js lulus; oxlint 0 error/warning; 18/18 tes seo-books/seo-foundation/static-cache/visit-tracking lulus; git diff --check bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-27-44-9b2d24.json](docs/change-audit/2026-11-27-21-27-44-9b2d24.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 21:26:49 +07:00 | `server/index.js` | — | 37–37 | import { registerSeoFoundation } from './seo-foundation.js'; | modified |
+| 2026-11-27 21:26:49 +07:00 | `server/index.js` | 206–206 | 207–208 | let invalidateHadithIndex=()=>{}; | modified |
+| 2026-11-27 21:26:49 +07:00 | `server/index.js` | 1609–1609 | 1611–1623 | app.get('/api/search_archive', async (req, res) => { | modified |
+| 2026-11-27 21:26:43 +07:00 | `server/seo-books.js` | — | 1–383 | ARABIC_DIACRITICS_RE, ARABIC_SLUG_MAP, slugifyTitle, stripped, slug, escapeHtml, cleanText, text | added |
+| 2026-11-27 21:27:14 +07:00 | `server/seo-books.test.js` | — | 1–128 | createBookFixture, distPath, service, app, server, base, fixture, get | added |

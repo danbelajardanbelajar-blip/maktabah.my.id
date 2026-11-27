@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 21:27:44 +07:00",
+  "title": "SEO Tahap 2: layanan baca-saja dan halaman publik kitab (/kitab/:id-:slug)",
+  "baseCommit": "5717eaca3f4c52d8344575b6f392fca50d3a4f98",
+  "checks": "node --check server/index.js & server/seo-books.js lulus; oxlint 0 error/warning; 18/18 tes seo-books/seo-foundation/static-cache/visit-tracking lulus; git diff --check bersih.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 21:26:49 +07:00",
+      "stagedSha256": "54346d00ca5476821243e5743a38f397c467370c94953f38356d7f61550761f4",
+      "diffSha256": "86ea918e14e3859cd9dcaabf634348675b0eb36c9cbd552409cf7439af6b7b23",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "excludedBookIds",
+        "results",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "bookSeoService",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 36,
+            "count": 0
+          },
+          "after": {
+            "line": 37,
+            "count": 1
+          },
+          "section": "import { registerSeoFoundation } from './seo-foundation.js';"
+        },
+        {
+          "before": {
+            "line": 206,
+            "count": 1
+          },
+          "after": {
+            "line": 207,
+            "count": 2
+          },
+          "section": "let invalidateHadithIndex=()=>{};"
+        },
+        {
+          "before": {
+            "line": 1609,
+            "count": 1
+          },
+          "after": {
+            "line": 1611,
+            "count": 13
+          },
+          "section": "app.get('/api/search_archive', async (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "server/seo-books.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-27 21:26:43 +07:00",
+      "stagedSha256": "3b2e0f777527d16feb1fa129d5888e40f1d9968087c292c97d8b0b181308c9af",
+      "diffSha256": "a49519b4a8ad42c64643ecae94692f517478b6dfc9426280a7ca3b0552965b1b",
+      "symbols": [
+        "ARABIC_DIACRITICS_RE",
+        "ARABIC_SLUG_MAP",
+        "slugifyTitle",
+        "stripped",
+        "slug",
+        "escapeHtml",
+        "cleanText",
+        "text",
+        "createBookSeoService",
+        "cache",
+        "invalidate",
+        "getBookDetail",
+        "bookId",
+        "err",
+        "db",
+        "countRow",
+        "tocCountRow",
+        "detail",
+        "oldestKey",
+        "renderBookHtml",
+        "base",
+        "canonicalUrl",
+        "authorLabel",
+        "descriptionParts",
+        "description",
+        "jsonLd",
+        "tocHtml",
+        "summaryHtml",
+        "renderUnavailableHtml",
+        "registerBookSeoRoutes",
+        "canonicalBase",
+        "match",
+        "expectedParam"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 383
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/seo-books.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-27 21:27:14 +07:00",
+      "stagedSha256": "33d3b0134feb1f26643f5df44b3a357e8b83ac351a3d0e2b1dba7bfcc13cac9f",
+      "diffSha256": "97e718f0b24f6f0373275e59b49579b259c6a02d793d303b798552645867d3ac",
+      "symbols": [
+        "createBookFixture",
+        "distPath",
+        "service",
+        "app",
+        "server",
+        "base",
+        "fixture",
+        "get",
+        "slug",
+        "res",
+        "html",
+        "expectedPath",
+        "bare",
+        "wrong",
+        "missing",
+        "invalid",
+        "afterEdit",
+        "maintRes",
+        "noDbFixture",
+        "getNoDb",
+        "noDbRes"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 128
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

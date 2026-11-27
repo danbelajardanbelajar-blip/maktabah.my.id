@@ -34,6 +34,7 @@ import {registerMessages} from './messages.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { registerSeoFoundation } from './seo-foundation.js';
+import { createBookSeoService, registerBookSeoRoutes } from './seo-books.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
 import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook, getExcludedBookIds } from './search-policy.js';
@@ -203,7 +204,8 @@ let hasTafsir = false;
 // Cache untuk query AI
 const askCache = new Map();
 let invalidateHadithIndex=()=>{};
-const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();scheduleSearchPolicyScan();};
+let invalidateBookSeo=()=>{};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();invalidateBookSeo();scheduleSearchPolicyScan();};
 // Search policy (search-policy.js): a background worker decides every book new, changed or decided under an older
 // policy version. Runs shortly after start, a minute after library changes, and every 6 hours as a safety net;
 // it waits while an import, deletion or compact transfer is running.
@@ -1606,7 +1608,19 @@ app.get('/api/search_archive', async (req, res) => {
 
 // --- END NEW SEARCH ENDPOINTS ---
 
-// Serve static frontend files and Stage-1 SEO HTTP foundation
+// Public SEO book detail routes (/kitab/:id-:slug) and Stage-1 SEO HTTP foundation
+const bookSeoService = createBookSeoService({
+  getDb: () => db,
+  booksMeta,
+  authorsUnion,
+  pagesUnion,
+  titlesUnion,
+  getAuthorProfiles: (bookId, title) => authorService.related(bookId, title),
+  isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
+});
+invalidateBookSeo = bookSeoService.invalidate;
+registerBookSeoRoutes(app, { service: bookSeoService });
+
 const distPath = path.join(__dirname, '../dist');
 registerSeoFoundation(app, { express, distPath, staticCacheControl });
 
