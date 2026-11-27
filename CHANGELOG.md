@@ -3138,3 +3138,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-19-28-05-b5684f.
 | 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 328–329 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
 | 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 361–362 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
 | 2026-11-27 19:26:58 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 346–346 | 379–381 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+
+## [2026-11-27 20:17:56 +07:00] — Poles UX dropdown rekomendasi pencarian (Tahap 5)
+
+Waktu pencatatan: **2026-11-27 20:17:56 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0625ddd`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: oxlint 0 error (3 warning react/only-export-components); 3/3 unit test search-autocomplete; tsc -b, vite build, dan build_privacy.js lokal berhasil.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-17-56-0c6419.json](docs/change-audit/2026-11-27-20-17-56-0c6419.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-C-2w8A1f.css` | 1–2 | — | module/file | deleted |
+| 2026-11-27 20:17:40 +07:00 | `dist/assets/index-Dc7owPHM.css` | — | 1–2 | module/file | added |
+| 2026-11-27 20:17:40 +07:00 | `dist/assets/index.dev-CNtiPnXE.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 20:17:40 +07:00 | `dist/index.dev.html` | 10–11 | 10–11 | module/file | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 47–74 | export function saveLocalSearch(query: string) { | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 100–100 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 78–78 | 107–107 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 109–111 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 82–82 | 114–114 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 85–85 | 117–117 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 224–224 | 256–260 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 235–235 | 271–271 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 238–238 | 274–274 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 247–247 | 283–283 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 255–256 | 291–293 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 260–260 | 297–299 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 277–277 | 316–316 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 285–285 | 324–324 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 288–288 | 327–327 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 336–353 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 299–320 | 356–395 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 401–437 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 327–327 | — | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 339–339 | 450–450 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 342–352 | 453–455 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 457–459 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+| 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 355–382 | 461–461 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
