@@ -90,6 +90,15 @@ test('queryAutocomplete returns matching books and popular queries while respect
   assert.ok(!idRes.queries.some((q) => q.text.includes('kosong')));
   assert.ok(!idRes.queries.some((q) => q.text.includes('tanpa jumlah')));
   assert.ok(!idRes.queries.some((q) => q.text.length > 60));
+
+  // Latin transliteration fallback should recommend Arabic book titles while respecting exclusions
+  const latRes = queryAutocomplete({
+    db,
+    stateDb,
+    getExcludedBookIds: () => excluded,
+    query: 'bukhari',
+  });
+  assert.ok(latRes.books.some((b) => b.title === 'صحيح البخاري'));
 });
 
 test('queryAutocomplete ignores too-short queries', (t) => {

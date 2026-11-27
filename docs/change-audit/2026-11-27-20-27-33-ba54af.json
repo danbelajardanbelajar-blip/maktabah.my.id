@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 20:27:33 +07:00",
+  "title": "Rekomendasi kitab Arab dari ketikan transliterasi Latin",
+  "baseCommit": "4e544f3a42481567a3f90d91a53653a000831c35",
+  "checks": "LULUS: node --check server/arabic-transliteration.js & server/search-autocomplete.js; 5/5 tes node --test server/arabic-transliteration.test.js & server/search-autocomplete.test.js; oxlint 0 error 0 warning.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/arabic-transliteration.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-27 20:27:10 +07:00",
+      "stagedSha256": "fe9e150e57f2ed31602514957f70f1d12caa8641256373f7d0bf4e5d2f4888f3",
+      "diffSha256": "46317982148801310d0442285715dd7068523a6909cd4d125933f340113bffa0",
+      "symbols": [
+        "ARABIC_DIACRITICS_RE",
+        "NON_ARABIC_WORD_RE",
+        "LATIN_LETTER_RE",
+        "ARABIC_CONSONANT_MAP",
+        "POPULAR_BOOK_ALIASES",
+        "collapseRepeats",
+        "arabicWordToSkeleton",
+        "arabicTextToTokens",
+        "cleaned",
+        "latinWordToSkeleton",
+        "latinTextToTokens",
+        "containsLatin",
+        "buildBookTranslitIndex",
+        "schemas",
+        "index",
+        "seen",
+        "rows",
+        "title",
+        "tokens",
+        "joined",
+        "matchTranslitBooks",
+        "q",
+        "queryTokens",
+        "joinedQuery",
+        "aliasArabicTerms",
+        "scored"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 226
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/arabic-transliteration.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-27 20:26:29 +07:00",
+      "stagedSha256": "065299ff79a1dd6f4f0557e7929f3afd7c04290ab6ec03e84bce7c7742bff182",
+      "diffSha256": "d399b927abc4bdbd1879f97248a97fd7ed9567c4f9838bfaf0f9b7825724d60a",
+      "symbols": [
+        "db",
+        "index",
+        "excluded",
+        "bukhari",
+        "fathul",
+        "riyadh",
+        "ihya",
+        "jalalain",
+        "jurumiyah",
+        "arbain"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 69
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/search-autocomplete.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 20:26:29 +07:00",
+      "stagedSha256": "f15c8007cbff0b0f966c2068d890e9495b7ad3211dd9febbc2ee9c33ffdc0873",
+      "diffSha256": "7e227b87a1138eff30bd0c62087bb9ad74415ebe864e52ab135a60b64b3542bc",
+      "symbols": [
+        "likePatternToRegExp",
+        "escaped",
+        "loadPopularQueries",
+        "filterPopularQueries",
+        "qLower",
+        "likeRegex",
+        "matches",
+        "seenQueries",
+        "bookTitles",
+        "isMatch",
+        "queryAutocomplete",
+        "q",
+        "likeQuery",
+        "containsPattern",
+        "prefixPattern",
+        "books",
+        "seenBooks",
+        "excluded",
+        "schemas",
+        "rows",
+        "activeIndex",
+        "fallbackBooks",
+        "qContains",
+        "qPrefix",
+        "text",
+        "key",
+        "registerSearchAutocomplete",
+        "cache",
+        "ttlMs",
+        "translitTtlMs",
+        "db",
+        "stateDb",
+        "currentTime",
+        "cached",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 69,
+            "count": 0
+          },
+          "after": {
+            "line": 72,
+            "count": 1
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 119,
+            "count": 0
+          },
+          "after": {
+            "line": 123,
+            "count": 18
+          },
+          "section": "export function queryAutocomplete({"
+        },
+        {
+          "before": {
+            "line": 177,
+            "count": 0
+          },
+          "after": {
+            "line": 199,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 178,
+            "count": 0
+          },
+          "after": {
+            "line": 201,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 195,
+            "count": 0
+          },
+          "after": {
+            "line": 219,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 212,
+            "count": 0
+          },
+          "after": {
+            "line": 237,
+            "count": 8
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        },
+        {
+          "before": {
+            "line": 219,
+            "count": 0
+          },
+          "after": {
+            "line": 252,
+            "count": 1
+          },
+          "section": "export function registerSearchAutocomplete(app, {"
+        }
+      ]
+    },
+    {
+      "file": "server/search-autocomplete.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 20:26:30 +07:00",
+      "stagedSha256": "1e3f73878811949f59b1bd7b6940d66cd61535407f8f295560c05775b2d29de5",
+      "diffSha256": "831a7043b902617f5c3e8918767821d125c5e18c17e5a1d5151bec85844f11dc",
+      "symbols": [
+        "createFixture",
+        "db",
+        "stateDb",
+        "excluded",
+        "arRes",
+        "exclRes",
+        "idRes",
+        "latRes",
+        "app",
+        "server",
+        "port",
+        "r1",
+        "j1",
+        "r2",
+        "j2",
+        "r3",
+        "j3",
+        "r4",
+        "j4"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 92,
+            "count": 0
+          },
+          "after": {
+            "line": 93,
+            "count": 9
+          },
+          "section": "test('queryAutocomplete returns matching books and popular queries while respect"
+        }
+      ]
+    }
+  ]
+}

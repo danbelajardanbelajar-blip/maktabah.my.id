@@ -1,3 +1,5 @@
+import { buildBookTranslitIndex, matchTranslitBooks, containsLatin } from './arabic-transliteration.js';
+
 function likePatternToRegExp(pattern) {
   const escaped = String(pattern || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/_/g, '.');
   return new RegExp(escaped, 'i');
@@ -67,6 +69,7 @@ export function queryAutocomplete({
   likeMatch = (s) => s,
   getExcludedBookIds = () => new Set(),
   popularRows = null,
+  translitIndex = null,
   query = '',
   bookLimit = 4,
   queryLimit = 4,
@@ -114,6 +117,24 @@ export function queryAutocomplete({
       } catch {
         // Ignore if schema or table doesn't exist
       }
+    }
+  }
+
+  // Fallback to Latin-to-Arabic transliteration index when direct book search returns fewer than bookLimit
+  if (books.length < bookLimit && q.length >= 3 && containsLatin(q)) {
+    const activeIndex = Array.isArray(translitIndex)
+      ? translitIndex
+      : db
+        ? buildBookTranslitIndex(db, { hasAdditional })
+        : [];
+    const fallbackBooks = matchTranslitBooks(activeIndex, q, {
+      excluded,
+      seenBooks,
+      limit: bookLimit - books.length,
+    });
+    for (const b of fallbackBooks) {
+      seenBooks.add(b.bkid);
+      books.push(b);
     }
   }
 
@@ -175,7 +196,9 @@ export function registerSearchAutocomplete(app, {
   const cache = new Map();
   let cachedDb = null;
   let popularCache = { at: 0, stateDb: null, rows: null };
+  let translitCache = { at: 0, db: null, index: null };
   const ttlMs = 2 * 60 * 1000;
+  const translitTtlMs = 10 * 60 * 1000;
 
   app.get('/api/autocomplete', (req, res) => {
     res.set('Cache-Control', 'no-store');
@@ -193,6 +216,7 @@ export function registerSearchAutocomplete(app, {
     if (cachedDb !== db) {
       cache.clear();
       cachedDb = db;
+      translitCache = { at: 0, db: null, index: null };
     }
 
     const currentTime = now();
@@ -210,6 +234,14 @@ export function registerSearchAutocomplete(app, {
       };
     }
 
+    if (!translitCache.index || translitCache.db !== db || currentTime - translitCache.at >= translitTtlMs) {
+      translitCache = {
+        at: currentTime,
+        db,
+        index: buildBookTranslitIndex(db, { hasAdditional }),
+      };
+    }
+
     const data = queryAutocomplete({
       db,
       stateDb,
@@ -217,6 +249,7 @@ export function registerSearchAutocomplete(app, {
       likeMatch,
       getExcludedBookIds,
       popularRows: stateDb ? popularCache.rows : null,
+      translitIndex: translitCache.index,
       query: q,
     });
 

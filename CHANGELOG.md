@@ -3176,3 +3176,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-17-56-0c6419.
 | 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 342–352 | 453–455 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
 | 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | — | 457–459 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
 | 2026-11-27 20:17:14 +07:00 | `src/components/SearchAutocompleteInput.tsx` | 355–382 | 461–461 | export const SearchAutocompleteInput: React.FC<SearchAutocompleteInputProps> = ( | modified |
+
+## [2026-11-27 20:27:33 +07:00] — Rekomendasi kitab Arab dari ketikan transliterasi Latin
+
+Waktu pencatatan: **2026-11-27 20:27:33 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4e544f3`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: LULUS: node --check server/arabic-transliteration.js & server/search-autocomplete.js; 5/5 tes node --test server/arabic-transliteration.test.js & server/search-autocomplete.test.js; oxlint 0 error 0 warning.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-27-33-ba54af.json](docs/change-audit/2026-11-27-20-27-33-ba54af.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 20:27:10 +07:00 | `server/arabic-transliteration.js` | — | 1–226 | ARABIC_DIACRITICS_RE, NON_ARABIC_WORD_RE, LATIN_LETTER_RE, ARABIC_CONSONANT_MAP, POPULAR_BOOK_ALIASES, collapseRepeats, arabicWordToSkeleton, arabicTextToTokens | added |
+| 2026-11-27 20:26:29 +07:00 | `server/arabic-transliteration.test.js` | — | 1–69 | db, index, excluded, bukhari, fathul, riyadh, ihya, jalalain | added |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 1–2 | likePatternToRegExp, escaped, loadPopularQueries, filterPopularQueries, qLower, likeRegex, matches, seenQueries | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 72–72 | export function queryAutocomplete({ | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 123–140 | export function queryAutocomplete({ | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 199–199 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 201–201 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 219–219 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 237–244 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 20:26:29 +07:00 | `server/search-autocomplete.js` | — | 252–252 | export function registerSearchAutocomplete(app, { | modified |
+| 2026-11-27 20:26:30 +07:00 | `server/search-autocomplete.test.js` | — | 93–101 | test('queryAutocomplete returns matching books and popular queries while respect | modified |
