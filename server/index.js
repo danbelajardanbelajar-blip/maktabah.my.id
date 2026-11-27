@@ -33,6 +33,7 @@ import {registerAdminLogs,TODAY_WIB_START} from './admin-logs.js';
 import {registerMessages} from './messages.js';
 import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
+import { registerSeoFoundation } from './seo-foundation.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
 import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook, getExcludedBookIds } from './search-policy.js';
@@ -1605,15 +1606,9 @@ app.get('/api/search_archive', async (req, res) => {
 
 // --- END NEW SEARCH ENDPOINTS ---
 
-// Serve static frontend files in production
+// Serve static frontend files and Stage-1 SEO HTTP foundation
 const distPath = path.join(__dirname, '../dist');
-if (fs.existsSync(distPath)) {
-  app.use(express.static(distPath, {setHeaders:(res,filename)=>res.setHeader('Cache-Control',staticCacheControl(filename))}));
-  app.use((req, res) => {
-    res.setHeader('Cache-Control','no-cache');
-    res.sendFile(path.join(distPath, 'index.dev.html'));
-  });
-}
+registerSeoFoundation(app, { express, distPath, staticCacheControl });
 
 const httpServer = app.listen(port, process.env.HOST || '0.0.0.0', () => {
   console.log(`Web Server running at http://localhost:${port}`);

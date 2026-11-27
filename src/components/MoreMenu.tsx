@@ -9,7 +9,7 @@ const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[
   {tab:'collection',label:'Koleksi Saya',icon:BookOpen},
   {tab:'settings',label:'Pengaturan Tampilan',icon:Settings},{tab:'feedback',label:'Masukan',icon:MessageSquare},
   {tab:'book_request',label:'Permintaan Kitab',icon:BookPlus},{tab:'book_submit',label:'Kirim Kitab',icon:Upload},
-  {tab:'about',label:'Tentang Kami',icon:Info},{href:'/privacy-policy/',label:'Kebijakan Privasi',icon:Shield},
+  {tab:'about',label:'Tentang Kami',icon:Info},{href:'/privacy-policy',label:'Kebijakan Privasi',icon:Shield},
 ];
 export function MoreLinks({onNavigate,onSelected}:{onNavigate:(tab:AppTab)=>void;onSelected?:()=>void}) {
   return <nav aria-label="Menu layanan lainnya" className="flex flex-col gap-1">{items.map(item=>{const Icon=item.icon;return <a key={item.label} href={item.href||navigationHash(item.tab!)} onClick={e=>{if(item.tab&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){e.preventDefault();onNavigate(item.tab);}onSelected?.();}} className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold text-[var(--app-text)] hover:bg-[var(--app-primary)]/10 focus-visible:outline-2 focus-visible:outline-[var(--app-primary)]"><Icon size={18}/>{item.label}</a>;})}</nav>;

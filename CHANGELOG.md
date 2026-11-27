@@ -3214,3 +3214,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-20-36-14-e81985.
 | 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 18–19 | test('arabicWordToSkeleton and latinWordToSkeleton converge on common book terms | modified |
 | 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 39–41 | test('matchTranslitBooks finds Arabic books from Latin transliteration and alias | modified |
 | 2026-11-27 20:35:45 +07:00 | `server/arabic-transliteration.test.js` | — | 71–79 | test('matchTranslitBooks finds Arabic books from Latin transliteration and alias | modified |
+
+## [2026-11-27 21:09:45 +07:00] — Fondasi HTTP SEO Tahap 1: robots.txt, sitemap.xml, redirect canonical, 404, dan metadata beranda
+
+Waktu pencatatan: **2026-11-27 21:09:45 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `16530b6`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/index.js & server/seo-foundation.js lulus; 14/14 tes seo-foundation/static-cache/visit-tracking lulus; oxlint 0 error/warning; npm run build (tsc -b, vite build, build_privacy.js) lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-09-45-fb7768.json](docs/change-audit/2026-11-27-21-09-45-fb7768.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 21:09:16 +07:00 | `dist/assets/index.dev-CSnqIGwM.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 21:09:16 +07:00 | `dist/index.dev.html` | — | 7–35 | module/file | modified |
+| 2026-11-27 21:09:16 +07:00 | `dist/index.dev.html` | 9–10 | 38–38 | module/file | modified |
+| 2026-11-27 21:09:16 +07:00 | `dist/index.dev.html` | 14–14 | 42–58 | module/file | modified |
+| 2026-11-27 21:08:27 +07:00 | `index.dev.html` | — | 7–35 | module/file | modified |
+| 2026-11-27 21:08:27 +07:00 | `index.dev.html` | 9–9 | — | module/file | modified |
+| 2026-11-27 21:08:27 +07:00 | `index.dev.html` | 12–12 | 40–56 | module/file | modified |
+| 2026-11-27 21:08:31 +07:00 | `server/index.js` | — | 36–36 | import { staticCacheControl } from './static-cache.js'; | modified |
+| 2026-11-27 21:08:31 +07:00 | `server/index.js` | 1608–1608 | 1609–1609 | app.get('/api/search_archive', async (req, res) => { | modified |
+| 2026-11-27 21:08:31 +07:00 | `server/index.js` | 1610–1616 | 1611–1611 | const distPath = path.join(__dirname, '../dist'); | modified |
+| 2026-11-27 21:08:26 +07:00 | `server/seo-foundation.js` | — | 1–204 | DEFAULT_SITE_URL, normalizeSiteUrl, value, escapeXml, escapeHtml, buildRobotsTxt, base, buildSitemapXml | added |
+| 2026-11-27 21:08:48 +07:00 | `server/seo-foundation.test.js` | — | 1–111 | setupServer, distPath, app, server, base, robots, robotsText, sitemap | added |
+| 2026-11-27 21:08:28 +07:00 | `src/components/MoreMenu.tsx` | 12–12 | 12–12 | const items: {tab?:AppTab;href?:string;label:string;icon:typeof Menu}[]=[ | modified |
