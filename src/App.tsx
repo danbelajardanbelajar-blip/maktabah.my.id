@@ -35,7 +35,7 @@ import { Collection } from './components/Collection';
 import { MessageWidget } from './components/MessageWidget';
 import { DesktopAccountMenu } from './components/DesktopAccountMenu';
 import { MobileAccountCard } from './components/MobileAccountCard';
-import { getSavedUser, getUserToken, userAuthHeaders } from './lib/user-auth';
+import { getSavedUser, getUserToken, registerAppAuthBridge, userAuthHeaders } from './lib/user-auth';
 import type { AuthUser } from './lib/user-auth';
 import { BackButton } from './components/BackButton';
 import { loadSelectedFonts } from './lib/fonts';
@@ -123,6 +123,7 @@ function App() {
 
   const [authUser, setAuthUser] = useState<AuthUser | null>(() => getSavedUser());
   useEffect(() => {
+    registerAppAuthBridge();
     const syncAuth = () => setAuthUser(getSavedUser());
     window.addEventListener('userAuthUpdated', syncAuth);
     window.addEventListener('storage', syncAuth);

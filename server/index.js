@@ -162,7 +162,7 @@ const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
 const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
-    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/auth/google', '/api/auth/logout', '/api/user/opened-books', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/site-action', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
+    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/auth/google', '/api/auth/app-exchange', '/api/auth/logout', '/api/user/opened-books', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/site-action', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
     && !req.path.startsWith('/api/log/library/')
     && !req.path.startsWith('/api/admin/category')
     && !req.path.startsWith('/api/admin/rowa-database/')

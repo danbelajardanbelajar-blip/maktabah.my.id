@@ -19,8 +19,15 @@ function createFixture(t, { clientId = 'test-client-id', tokenMap = {} } = {}) {
   const { optionalUser } = registerGoogleAuth(app, {
     getStateDb: () => stateDb,
     activeTokens,
-    env: { GOOGLE_CLIENT_ID: clientId, ADMIN_GOOGLE_EMAILS: 'zenhkm@gmail.com' },
-    fetchImpl: async (url) => {
+    env: { GOOGLE_CLIENT_ID: clientId, GOOGLE_CLIENT_SECRET: 'test-client-secret', ADMIN_GOOGLE_EMAILS: 'zenhkm@gmail.com' },
+    fetchImpl: async (url, init) => {
+      if (url === 'https://oauth2.googleapis.com/token') {
+        const body = new URLSearchParams(String(init?.body || ''));
+        const code = body.get('code');
+        const idToken = code === 'auth-code-admin' ? 'admin-google-token-1234567890' : '';
+        if (!idToken) return new Response(JSON.stringify({ error: 'invalid_grant' }), { status: 400 });
+        return new Response(JSON.stringify({ id_token: idToken }), { status: 200 });
+      }
       const idToken = decodeURIComponent(url.split('id_token=')[1] || '');
       const payload = tokenMap[idToken];
       if (!payload) return new Response(JSON.stringify({ error_description: 'Invalid token' }), { status: 400 });
@@ -134,4 +141,45 @@ test('rejects unconfigured Google client ID and invalid audience', async (t) => 
     body: JSON.stringify({ credential: badCred }),
   });
   assert.equal(r2.status, 401);
+});
+
+test('app OAuth start, callback, and single-use app-exchange work for Android Custom Tabs', async (t) => {
+  const adminCred = 'admin-google-token-1234567890';
+  const { base } = await createFixture(t, {
+    tokenMap: {
+      [adminCred]: { sub: 'sub-admin', email: 'zenhkm@gmail.com', email_verified: 'true', name: 'Zen Admin', aud: 'test-client-id' },
+    },
+  });
+
+  const startRes = await fetch(`${base}/api/auth/google/start?app=1`, { redirect: 'manual' });
+  assert.equal(startRes.status, 302);
+  const location = new URL(startRes.headers.get('location'));
+  const state = location.searchParams.get('state');
+  assert.ok(state);
+
+  const cbRes = await fetch(`${base}/api/auth/google/callback?state=${encodeURIComponent(state)}&code=auth-code-admin`);
+  assert.equal(cbRes.status, 200);
+  const html = await cbRes.text();
+  const match = html.match(/maktabah:\/\/auth\?code=([a-f0-9]+)/);
+  assert.ok(match);
+
+  const exRes = await fetch(`${base}/api/auth/app-exchange`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: match[1] }),
+  });
+  assert.equal(exRes.status, 200);
+  const exData = await exRes.json();
+  assert.equal(exData.user.role, 'admin');
+  assert.equal(exData.redirectTo, '#/admin');
+  assert.ok(exData.userToken);
+  assert.ok(exData.adminToken);
+
+  // Single-use: second exchange fails
+  const second = await fetch(`${base}/api/auth/app-exchange`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code: match[1] }),
+  });
+  assert.equal(second.status, 400);
 });

@@ -58,3 +58,29 @@ export function saveLocalActivity(storageKey: string, item: Record<string, any>)
     localStorage.setItem(storageKey, JSON.stringify(list.slice(0, 30)));
   } catch {}
 }
+
+export function registerAppAuthBridge() {
+  (window as any).__maktabahAppAuth = async (code: string) => {
+    if (!code) return false;
+    try {
+      const res = await fetch('/api/auth/app-exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data?.userToken) return false;
+      saveUserSession({
+        user: data.user,
+        userToken: data.userToken,
+        adminToken: data.adminToken,
+      });
+      const target = data.redirectTo || (data.user?.role === 'admin' ? '#/admin' : '#/');
+      if (window.location.hash !== target) window.location.hash = target;
+      window.dispatchEvent(new Event('maktabah:navigate'));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+}

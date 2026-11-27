@@ -3562,3 +3562,35 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-24-52-45c37d.
 | 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | 38–38 | 38–39 | import { MobileAccountCard } from './components/MobileAccountCard'; | modified |
 | 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | — | 124–134 | function App() { | modified |
 | 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | 1032–1032 | 1044–1050 | function App() { | modified |
+
+## [2026-11-28 05:49:06 +07:00] — Dukungan login Google APK melalui Chrome Custom Tabs dan deep link callback
+
+Waktu pencatatan: **2026-11-28 05:49:06 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `41f0a6c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 4/4 test lulus (google-auth.test.js), npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-49-06-62c38e.json](docs/change-audit/2026-11-28-05-49-06-62c38e.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 05:47:46 +07:00 | `dist/assets/index.dev-Bc14zEad.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 05:47:46 +07:00 | `dist/index.dev.html` | 38–38 | 38–38 | module/file | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | — | 92–92 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | — | 94–150 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | — | 185–185 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | — | 188–188 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | — | 193–267 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:46:33 +07:00 | `server/google-auth.js` | 141–178 | 276–277 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 05:47:25 +07:00 | `server/google-auth.test.js` | 22–23 | 22–30 | function createFixture(t, { clientId = 'test-client-id', tokenMap = {} } = {}) { | modified |
+| 2026-11-28 05:47:25 +07:00 | `server/google-auth.test.js` | — | 145–185 | test('rejects unconfigured Google client ID and invalid audience', async (t) => | modified |
+| 2026-11-28 05:46:34 +07:00 | `server/index.js` | 165–165 | 165–165 | app.use((req, res, next) => { | modified |
+| 2026-11-28 05:46:49 +07:00 | `src/App.tsx` | 38–38 | 38–38 | import { MobileAccountCard } from './components/MobileAccountCard'; | modified |
+| 2026-11-28 05:46:49 +07:00 | `src/App.tsx` | — | 126–126 | function App() { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 15–16 | interface Props { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | 17–17 | 19–19 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 22–22 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | 26–26 | 29–29 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | 31–31 | 34–34 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | 101–101 | 104–104 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 110–128 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
+| 2026-11-28 05:46:47 +07:00 | `src/lib/user-auth.ts` | — | 61–86 | export function saveLocalActivity(storageKey: string, item: Record<string, any>) | modified |

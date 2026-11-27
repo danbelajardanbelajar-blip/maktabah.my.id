@@ -89,7 +89,65 @@ export function registerGoogleAuth(app, {
   env = process.env,
 }) {
   const getClientId = () => String(env.GOOGLE_CLIENT_ID || '').trim();
+  const getClientSecret = () => String(env.GOOGLE_CLIENT_SECRET || '').trim();
   const getAdminEmails = () => parseAdminEmails(env.ADMIN_GOOGLE_EMAILS);
+  const oauthStates = new Map();
+  const appAuthCodes = new Map();
+
+  const pruneExpired = (map) => {
+    const now = Date.now();
+    for (const [k, v] of map.entries()) {
+      if (!v || v.expiresAt <= now) map.delete(k);
+    }
+  };
+
+  const issueSessionForProfile = (stateDb, profile, req, res, setCookie = true) => {
+    const isAdmin = getAdminEmails().has(profile.email);
+    const role = isAdmin ? 'admin' : 'user';
+
+    stateDb.prepare(
+      `INSERT INTO users (google_sub, email, name, picture, role, last_login_at)
+       VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(google_sub) DO UPDATE SET
+         email = excluded.email,
+         name = excluded.name,
+         picture = excluded.picture,
+         role = excluded.role,
+         last_login_at = CURRENT_TIMESTAMP`
+    ).run(profile.sub, profile.email, profile.name, profile.picture, role);
+
+    const user = stateDb.prepare(
+      'SELECT id, email, name, picture, role FROM users WHERE google_sub = ?'
+    ).get(profile.sub);
+
+    const userToken = crypto.randomBytes(32).toString('hex');
+    stateDb.prepare('INSERT INTO user_tokens (token, user_id) VALUES (?, ?)').run(userToken, user.id);
+
+    let adminToken = null;
+    if (isAdmin) {
+      adminToken = crypto.randomBytes(32).toString('hex');
+      activeTokens?.add(adminToken);
+      try {
+        stateDb.prepare('INSERT INTO admin_tokens (token) VALUES (?)').run(adminToken);
+      } catch {}
+      if (setCookie) setAdminActivityCookie(req, res, adminToken);
+    }
+
+    return {
+      user,
+      userToken,
+      adminToken,
+      redirectTo: isAdmin ? '#/admin' : '#/',
+    };
+  };
+
+  const resolveCallbackUrl = (req) => {
+    const configured = String(env.GOOGLE_REDIRECT_URI || '').trim();
+    if (configured) return configured;
+    const host = req.get('x-forwarded-host') || req.get('host') || 'maktab.my.id';
+    const proto = host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https';
+    return `${proto}://${host}/api/auth/google/callback`;
+  };
 
   const resolveUserFromToken = (token) => {
     const stateDb = getStateDb();
@@ -124,10 +182,87 @@ export function registerGoogleAuth(app, {
 
   app.get('/api/auth/config', (_req, res) => {
     const clientId = getClientId();
+    const clientSecret = getClientSecret();
     res.set('Cache-Control', 'no-store').json({
       googleEnabled: Boolean(clientId),
+      appOAuthEnabled: Boolean(clientId && clientSecret),
       clientId: clientId || '',
     });
+  });
+
+  app.get('/api/auth/google/start', (req, res) => {
+    const clientId = getClientId();
+    const clientSecret = getClientSecret();
+    if (!clientId || !clientSecret) {
+      return res.status(503).send('<h3>Login Google aplikasi belum dikonfigurasi (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET belum diatur di server).</h3>');
+    }
+    pruneExpired(oauthStates);
+    const state = crypto.randomBytes(24).toString('hex');
+    oauthStates.set(state, { expiresAt: Date.now() + 10 * 60 * 1000 });
+    const redirectUri = resolveCallbackUrl(req);
+    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    authUrl.searchParams.set('client_id', clientId);
+    authUrl.searchParams.set('redirect_uri', redirectUri);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('scope', 'openid email profile');
+    authUrl.searchParams.set('state', state);
+    authUrl.searchParams.set('prompt', 'select_account');
+    res.redirect(authUrl.toString());
+  });
+
+  app.get('/api/auth/google/callback', async (req, res) => {
+    const stateDb = getStateDb();
+    if (!stateDb) return res.status(503).send('Database sesi belum siap.');
+    const state = String(req.query.state || '');
+    const code = String(req.query.code || '');
+    pruneExpired(oauthStates);
+    if (!state || !oauthStates.has(state) || !code) {
+      return res.status(400).send('Sesi login Google tidak valid atau kedaluwarsa. Silakan ulangi dari aplikasi.');
+    }
+    oauthStates.delete(state);
+
+    const clientId = getClientId();
+    const clientSecret = getClientSecret();
+    try {
+      const tokenRes = await fetchImpl('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: resolveCallbackUrl(req),
+          grant_type: 'authorization_code',
+        }).toString(),
+      });
+      const tokenData = await tokenRes.json().catch(() => ({}));
+      if (!tokenRes.ok || !tokenData.id_token) {
+        return res.status(401).send('Gagal menukar kode login Google.');
+      }
+      const profile = await verifyGoogleCredential(tokenData.id_token, { clientId, fetchImpl });
+      const session = issueSessionForProfile(stateDb, profile, req, res, false);
+      pruneExpired(appAuthCodes);
+      const exchangeCode = crypto.randomBytes(24).toString('hex');
+      appAuthCodes.set(exchangeCode, { payload: session, expiresAt: Date.now() + 2 * 60 * 1000 });
+      const deepLink = `maktabah://auth?code=${encodeURIComponent(exchangeCode)}`;
+      res.set('Cache-Control', 'no-store').send(
+        `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kembali ke Maktabah Turats</title></head><body style="font-family:sans-serif;text-align:center;padding:40px 20px;"><h2>Login Berhasil</h2><p>Mengembalikan Anda ke aplikasi Maktabah Turats…</p><p><a href="${deepLink}" style="display:inline-block;padding:12px 24px;background:#166534;color:#fff;border-radius:10px;text-decoration:none;font-weight:bold;">Buka Aplikasi</a></p><script>window.location.replace(${JSON.stringify(deepLink)});</script></body></html>`
+      );
+    } catch (e) {
+      res.status(e.status || 400).send(e.message || 'Login Google gagal.');
+    }
+  });
+
+  app.post('/api/auth/app-exchange', (req, res) => {
+    const code = String(req.body?.code || '').trim();
+    pruneExpired(appAuthCodes);
+    const entry = code ? appAuthCodes.get(code) : null;
+    if (!entry) return res.status(400).json({ error: 'Kode login aplikasi tidak valid atau kedaluwarsa.' });
+    appAuthCodes.delete(code);
+    if (entry.payload.adminToken) {
+      setAdminActivityCookie(req, res, entry.payload.adminToken);
+    }
+    res.json({ success: true, ...entry.payload });
   });
 
   app.post('/api/auth/google', async (req, res) => {
@@ -138,44 +273,8 @@ export function registerGoogleAuth(app, {
         clientId: getClientId(),
         fetchImpl,
       });
-      const isAdmin = getAdminEmails().has(profile.email);
-      const role = isAdmin ? 'admin' : 'user';
-
-      stateDb.prepare(
-        `INSERT INTO users (google_sub, email, name, picture, role, last_login_at)
-         VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-         ON CONFLICT(google_sub) DO UPDATE SET
-           email = excluded.email,
-           name = excluded.name,
-           picture = excluded.picture,
-           role = excluded.role,
-           last_login_at = CURRENT_TIMESTAMP`
-      ).run(profile.sub, profile.email, profile.name, profile.picture, role);
-
-      const user = stateDb.prepare(
-        'SELECT id, email, name, picture, role FROM users WHERE google_sub = ?'
-      ).get(profile.sub);
-
-      const userToken = crypto.randomBytes(32).toString('hex');
-      stateDb.prepare('INSERT INTO user_tokens (token, user_id) VALUES (?, ?)').run(userToken, user.id);
-
-      let adminToken = null;
-      if (isAdmin) {
-        adminToken = crypto.randomBytes(32).toString('hex');
-        activeTokens?.add(adminToken);
-        try {
-          stateDb.prepare('INSERT INTO admin_tokens (token) VALUES (?)').run(adminToken);
-        } catch {}
-        setAdminActivityCookie(req, res, adminToken);
-      }
-
-      res.json({
-        success: true,
-        user,
-        userToken,
-        adminToken,
-        redirectTo: isAdmin ? '#/admin' : '#/',
-      });
+      const session = issueSessionForProfile(stateDb, profile, req, res, true);
+      res.json({ success: true, ...session });
     } catch (e) {
       res.status(e.status || 400).json({ error: e.message || 'Login Google gagal.' });
     }
