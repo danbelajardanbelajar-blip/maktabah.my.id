@@ -237,7 +237,9 @@ export function registerGoogleAuth(app, {
       });
       const tokenData = await tokenRes.json().catch(() => ({}));
       if (!tokenRes.ok || !tokenData.id_token) {
-        return res.status(401).send('Gagal menukar kode login Google.');
+        console.error('Google OAuth token exchange failed:', tokenData);
+        const detail = tokenData.error_description || tokenData.error || `HTTP ${tokenRes.status}`;
+        return res.status(401).send(`Gagal menukar kode login Google (${detail}).`);
       }
       const profile = await verifyGoogleCredential(tokenData.id_token, { clientId, fetchImpl });
       const session = issueSessionForProfile(stateDb, profile, req, res, false);

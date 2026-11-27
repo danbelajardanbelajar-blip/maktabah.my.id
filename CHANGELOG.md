@@ -3594,3 +3594,15 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-49-06-62c38e.
 | 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | 101–101 | 104–104 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
 | 2026-11-28 05:46:37 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 110–128 | export function GoogleLoginButton({ onSuccess }: Props) { | modified |
 | 2026-11-28 05:46:47 +07:00 | `src/lib/user-auth.ts` | — | 61–86 | export function saveLocalActivity(storageKey: string, item: Record<string, any>) | modified |
+
+## [2026-11-28 06:39:05 +07:00] — Tampilkan detail error OAuth Google saat penukaran token gagal
+
+Waktu pencatatan: **2026-11-28 06:39:05 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `898918d`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 4/4 test lulus (google-auth.test.js)
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-06-39-05-060286.json](docs/change-audit/2026-11-28-06-39-05-060286.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 06:38:48 +07:00 | `server/google-auth.js` | 240–240 | 240–242 | export function registerGoogleAuth(app, { | modified |

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-28 06:39:05 +07:00",
+  "title": "Tampilkan detail error OAuth Google saat penukaran token gagal",
+  "baseCommit": "898918daa2c50f04c49390ad3217adf03dd6d79a",
+  "checks": "4/4 test lulus (google-auth.test.js)",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/google-auth.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 06:38:48 +07:00",
+      "stagedSha256": "8ee8c6905e4932742b38af3861caafc3c0a9f03f670dc0d727081f005ae44716",
+      "diffSha256": "265946bfc8eba75c8fc00d4f9b4736472dcd472e70f2a509e74eedaa935f94b4",
+      "symbols": [
+        "DEFAULT_ADMIN_EMAILS",
+        "parseAdminEmails",
+        "list",
+        "ensureGoogleAuthSchema",
+        "verifyGoogleCredential",
+        "err",
+        "url",
+        "res",
+        "info",
+        "registerGoogleAuth",
+        "getClientId",
+        "getClientSecret",
+        "getAdminEmails",
+        "oauthStates",
+        "appAuthCodes",
+        "pruneExpired",
+        "now",
+        "issueSessionForProfile",
+        "isAdmin",
+        "role",
+        "user",
+        "userToken",
+        "resolveCallbackUrl",
+        "configured",
+        "host",
+        "proto",
+        "resolveUserFromToken",
+        "stateDb",
+        "extractBearer",
+        "header",
+        "optionalUser",
+        "requireUser",
+        "clientId",
+        "clientSecret",
+        "state",
+        "redirectUri",
+        "authUrl",
+        "code",
+        "tokenRes",
+        "tokenData",
+        "detail",
+        "profile",
+        "session",
+        "exchangeCode",
+        "deepLink",
+        "entry",
+        "token",
+        "adminToken",
+        "rows",
+        "incoming",
+        "upsert",
+        "bookId",
+        "title",
+        "author",
+        "ts",
+        "uid",
+        "email",
+        "feedback",
+        "book_requests",
+        "book_submissions"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 240,
+            "count": 1
+          },
+          "after": {
+            "line": 240,
+            "count": 3
+          },
+          "section": "export function registerGoogleAuth(app, {"
+        }
+      ]
+    }
+  ]
+}
