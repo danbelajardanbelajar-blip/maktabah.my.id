@@ -364,15 +364,15 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
                           </span>
                         )}
                         {book.category_name && (
-                          <button
-                            type="button"
-                            onClick={() => go(book.cat || null, '', 1, '')}
+                          <a
+                            href={book.cat != null ? `/kategori/${book.cat}` : '/katalog'}
+                            onClick={(e) => { if (!e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); go(book.cat || null, '', 1, ''); } }}
                             className="inline-flex items-center gap-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 px-2 py-0.5 rounded-full font-medium transition-colors"
                             dir="auto"
                           >
                             <Folder size={11} className="text-amber-600" />
                             <span>{book.category_name}</span>
-                          </button>
+                          </a>
                         )}
                       </div>
                     </div>
@@ -385,12 +385,13 @@ export default function Catalog({ openBook, readBook }: { openBook: (id: number)
                       >
                         <BookOpen size={14} /> Baca
                       </button>
-                      <button
-                        onClick={() => openBook(book.bkid)}
+                      <a
+                        href={`/kitab/${book.bkid}`}
+                        onClick={(e) => { if (!e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) { e.preventDefault(); openBook(book.bkid); } }}
                         className="border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 rounded-lg px-3 py-1.5 flex items-center gap-1.5 text-xs font-medium transition-all"
                       >
                         <Info size={14} /> Detail
-                      </button>
+                      </a>
                       <a
                         href={`/api/download/${book.bkid}`}
                         target="_blank"

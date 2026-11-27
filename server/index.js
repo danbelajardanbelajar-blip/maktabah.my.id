@@ -35,6 +35,7 @@ import { categoryBooks } from './catalogue.js';
 import { staticCacheControl } from './static-cache.js';
 import { registerSeoFoundation } from './seo-foundation.js';
 import { createBookSeoService, registerBookSeoRoutes } from './seo-books.js';
+import { registerDirectorySeoRoutes } from './seo-directory.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
 import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook, getExcludedBookIds } from './search-policy.js';
@@ -205,7 +206,8 @@ let hasTafsir = false;
 const askCache = new Map();
 let invalidateHadithIndex=()=>{};
 let invalidateBookSeo=()=>{};
-const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();invalidateBookSeo();scheduleSearchPolicyScan();};
+let invalidateDirectorySeo=()=>{};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();invalidateBookSeo();invalidateDirectorySeo();scheduleSearchPolicyScan();};
 // Search policy (search-policy.js): a background worker decides every book new, changed or decided under an older
 // policy version. Runs shortly after start, a minute after library changes, and every 6 hours as a safety net;
 // it waits while an import, deletion or compact transfer is running.
@@ -1108,6 +1110,7 @@ app.get('/api/download/:id', async (req, res) => {
         });
 
         let filename = (book.title || 'Kitab') + '.docx';
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"; filename*=UTF-8''${encodeURIComponent(filename)}`);
         res.send(Buffer.from(buffer));
@@ -1155,6 +1158,7 @@ const handlePdfExport = async (req, res) => {
             pages,
         });
 
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.send(html);
 
@@ -1620,6 +1624,14 @@ const bookSeoService = createBookSeoService({
 });
 invalidateBookSeo = bookSeoService.invalidate;
 registerBookSeoRoutes(app, { service: bookSeoService });
+const directorySeo = registerDirectorySeoRoutes(app, {
+  getDb: () => db,
+  booksMeta,
+  getRowaDb: () => rowaStore.getDb(),
+  authorService,
+  isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
+});
+invalidateDirectorySeo = directorySeo.invalidate;
 
 const distPath = path.join(__dirname, '../dist');
 registerSeoFoundation(app, { express, distPath, staticCacheControl });

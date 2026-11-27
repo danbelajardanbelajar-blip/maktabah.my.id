@@ -3254,3 +3254,41 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-27-44-9b2d24.
 | 2026-11-27 21:26:49 +07:00 | `server/index.js` | 1609–1609 | 1611–1623 | app.get('/api/search_archive', async (req, res) => { | modified |
 | 2026-11-27 21:26:43 +07:00 | `server/seo-books.js` | — | 1–383 | ARABIC_DIACRITICS_RE, ARABIC_SLUG_MAP, slugifyTitle, stripped, slug, escapeHtml, cleanText, text | added |
 | 2026-11-27 21:27:14 +07:00 | `server/seo-books.test.js` | — | 1–128 | createBookFixture, distPath, service, app, server, base, fixture, get | added |
+
+## [2026-11-27 21:37:41 +07:00] — SEO Tahap 3: halaman publik penulis, perawi, kategori, katalog, kutub hadis, tautan katalog, dan X-Robots-Tag unduhan
+
+Waktu pencatatan: **2026-11-27 21:37:41 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `7c398b2`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check & oxlint (0 error/warning pada modul baru) lulus; 19/19 tes seo-books/seo-directory/seo-foundation/static-cache/visit-tracking lulus; npm run build (tsc -b, vite build, build_privacy.js) lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-37-41-c587e5.json](docs/change-audit/2026-11-27-21-37-41-c587e5.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-Dc7owPHM.css` | 1–2 | — | module/file | deleted |
+| 2026-11-27 21:37:10 +07:00 | `dist/assets/index-DdSW0cXV.css` | — | 1–2 | module/file | added |
+| 2026-11-27 21:37:10 +07:00 | `dist/assets/index.dev-BBFfci2Z.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 21:37:10 +07:00 | `dist/index.dev.html` | 38–39 | 38–39 | module/file | modified |
+| 2026-11-27 21:37:10 +07:00 | `dist/index.dev.html` | 49–52 | 49–52 | module/file | modified |
+| 2026-11-27 21:36:06 +07:00 | `index.dev.html` | 47–50 | 47–50 | module/file | modified |
+| 2026-11-27 21:36:15 +07:00 | `server/index.js` | — | 38–38 | import { createBookSeoService, registerBookSeoRoutes } from './seo-books.js'; | modified |
+| 2026-11-27 21:36:15 +07:00 | `server/index.js` | 208–208 | 209–210 | let invalidateBookSeo=()=>{}; | modified |
+| 2026-11-27 21:36:15 +07:00 | `server/index.js` | — | 1113–1113 | app.get('/api/download/:id', async (req, res) => { | modified |
+| 2026-11-27 21:36:15 +07:00 | `server/index.js` | — | 1161–1161 | const handlePdfExport = async (req, res) => { | modified |
+| 2026-11-27 21:36:15 +07:00 | `server/index.js` | — | 1627–1634 | registerBookSeoRoutes(app, { service: bookSeoService }); | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 1–63 | 1–11 | createBookSeoService, cache, invalidate, getBookDetail, bookId, err, db, countRow | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 189–189 | 137–143 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 207–207 | 161–161 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 220–221 | 174–176 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 243–301 | 198–206 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 304–304 | 209–210 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 310–311 | 216–217 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 317–317 | 223–223 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:35:38 +07:00 | `server/seo-books.js` | 321–346 | 227–237 | export function renderBookHtml(book, { siteUrl = DEFAULT_SITE_URL } = {}) { | modified |
+| 2026-11-27 21:37:30 +07:00 | `server/seo-directory.js` | — | 1–464 | parsePositiveIdSlug, match, parsePage, n, unavailable, renderPagination, prev, next | added |
+| 2026-11-27 21:35:40 +07:00 | `server/seo-directory.test.js` | — | 1–114 | setupFixture, distPath, db, rowaDb, mockAuthorService, e, app, server | added |
+| 2026-11-27 21:35:37 +07:00 | `server/seo-utils.js` | — | 1–182 | DEFAULT_SITE_URL, normalizeSiteUrl, value, ARABIC_DIACRITICS_RE, ARABIC_SLUG_MAP, slugifyTitle, stripped, slug | added |
+| 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 367–369 | 367–369 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 375–375 | 375–375 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 388–389 | 388–390 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+| 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 393–393 | 394–394 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
