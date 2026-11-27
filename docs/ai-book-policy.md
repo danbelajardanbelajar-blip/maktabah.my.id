@@ -40,7 +40,7 @@ Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya
 
 - **Pencarian rujukan:** hanya kitab yang lolos yang dikirim sebagai konteks ke provider. Bila hasil teratas seluruhnya dikecualikan, pencarian diulang tanpa ID tersebut (maksimal delapan putaran).
 - **Jawaban katalog:** metadata kitab yang dikecualikan tidak dipakai sebagai rujukan.
-- **Penjelasan dan terjemahan dari pembaca:** ditolak dengan `AI_SOURCE_EXCLUDED` (HTTP 403).
+- **Penjelasan dan terjemahan dari pembaca (`explain` & `translate`):** tetap diizinkan saat kitab sedang dibuka oleh pengguna.
 - **Cache jawaban:** namespace memakai versi kebijakan. Setiap pemakaian cache memeriksa ulang kelayakan kitab.
 - **Penyusunan dan review jawaban:** kelayakan diperiksa ulang sebelum jawaban dikirim dan disimpan. Bila kitab berubah di tengah proses, permintaan gagal tanpa mengirim rujukan.
 

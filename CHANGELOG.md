@@ -3353,3 +3353,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-22-03-57-f44f82.
 | 2026-11-27 22:02:42 +07:00 | `server/seo-sitemap.js` | 120–120 | 161–161 | export function registerSitemapRoutes(app, { | modified |
 | 2026-11-27 22:02:48 +07:00 | `server/seo-sitemap.test.js` | 13–13 | 13–13 | function createSitemapFixture(t, { maintenance = false } = {}) { | modified |
 | 2026-11-27 22:02:48 +07:00 | `server/seo-sitemap.test.js` | — | 73–75 | test('sitemap index and all 5 curated pilot sub-sitemaps return valid XML and in | modified |
+
+## [2026-11-27 22:22:31 +07:00] — Izinkan fitur Jelaskan dan Terjemah pada halaman kitab yang sedang dibuka
+
+Waktu pencatatan: **2026-11-27 22:22:31 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `b156c06`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check server/ask-ai.js & oxlint (0 error/warning) lulus; 54/54 tes ask-ai & ai-book-policy lulus; git diff --check bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-22-22-31-84e5ff.json](docs/change-audit/2026-11-27-22-22-31-84e5ff.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 22:19:49 +07:00 | `docs/ai-book-policy.md` | 43–43 | 43–43 | Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | — | 115–115 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | 116–116 | 117–117 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | 131–131 | 132–132 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | 207–207 | 208–208 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | 229–230 | 230–233 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:22:03 +07:00 | `server/ask-ai.js` | 275–275 | 278–278 | export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 286–286 | 286–286 | test('whole-book exclusion removes clean-looking hits and catalogue metadata wit | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 288–288 | 288–288 | test('selected-page explanation and translation reject the entire excluded book | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 291–291 | 291–291 | test('selected-page explanation and translation reject the entire excluded book | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 293–293 | 293–293 | test('selected-page explanation and translation reject the entire excluded book | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 338–338 | 338–338 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |
+| 2026-11-27 22:20:44 +07:00 | `server/ask-ai.test.js` | 342–342 | 342–342 | test('HTTP requests enforce whole-book policy through the real file-backed worke | modified |

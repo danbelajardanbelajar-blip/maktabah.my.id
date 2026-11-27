@@ -112,8 +112,9 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     if (!settings.keys.length) return res.status(503).json({ status:'error', code:'NOT_CONFIGURED', message:'Tanya AI belum diaktifkan. Administrator perlu mengatur API key Gemini melalui Pengaturan AI.' });
     let selected=null;
     const intent=req.body?.intent || (req.body?.source?'explain':'question');
+    const allowSelectedPage = ['explain','translate'].includes(intent);
     if(!['question','explain','translate'].includes(intent) || (intent!=='question'&&!req.body?.source))return res.status(400).json({status:'error',message:'Pilih halaman kitab untuk penjelasan atau terjemahan.'});
-    try {if(req.body?.source){selected=resolveAiSource(getDb(),req.body.source,hasAdditional());await assertAllowedAiBook(getDb(),selected.reference,hasAdditional());}}
+    try {if(req.body?.source){selected=resolveAiSource(getDb(),req.body.source,hasAdditional());if(!allowSelectedPage)await assertAllowedAiBook(getDb(),selected.reference,hasAdditional());}}
     catch(e){return res.status(e.status||503).json({status:'error',code:e.code||'SOURCE_ERROR',message:e.status?e.message:'Halaman sumber belum dapat dimuat. Silakan coba lagi.'});}
     history.session(req,res,true);
     const streaming=req.body?.stream===true;
@@ -128,7 +129,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
     const cached = cache.get(cacheKey);
     if (cached && cached.payload.reviewed===true && Date.now()-cached.createdAt < 300000) {
       try {
-        const allowed=await filterAllowedAiReferences(getDb(),cached.payload.references,hasAdditional());
+        const allowed=selected&&allowSelectedPage?cached.payload.references:await filterAllowedAiReferences(getDb(),cached.payload.references,hasAdditional());
         if(isMaintenance())return res.status(409).json({status:'error',code:'DATABASE_BUSY',message:'Tanya AI sementara tidak tersedia karena pembaruan database sedang berlangsung. Silakan coba lagi setelah selesai.'});
         if (allowed.length===cached.payload.references.length && validCachedAnswer(getDb(),cached.payload,hasAdditional())) {history.record(req,res,q,cached.payload.answer,contextData,cached.payload);stage('cached','Menampilkan jawaban tersimpan yang telah diperiksa sumbernya…');return finish(cached.payload);}
         cache.delete(cacheKey);
@@ -204,7 +205,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
       let answer,evidence, mode = 'grounded', rejection = null;
       // Admin-only diagnosis: why a question ended without a verified answer (never sent to the visitor).
       const reject=(stage,reason)=>{rejection={stage,reason};throw Object.assign(Error(reason),{code:'UNVERIFIED_ANSWER'});};
-      const prepare=async refs=>{if(refs.length)refs=verifiedReferences(db,refs,hasAdditional());refs=await filterAllowedAiReferences(db,refs,hasAdditional(),{signal:controller.signal});assertReady();return refs;};
+      const prepare=async refs=>{if(refs.length)refs=verifiedReferences(db,refs,hasAdditional());if(!(selected&&allowSelectedPage))refs=await filterAllowedAiReferences(db,refs,hasAdditional(),{signal:controller.signal});assertReady();return refs;};
       stage('preparing','Memeriksa dan menyiapkan teks sumber…');
       references=await prepare(references);
       if (!references.length) {
@@ -226,8 +227,10 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
           const generated = await generateGemini(settings,`TUGAS:\n${task}\n\nPERTANYAAN (riwayat pertanyaan pengguna hanya untuk memahami rujukan kata, bukan bukti):\n${focusedQuestion}\n\nKUTIPAN SUMBER:\n${context}`,{ fetchImpl, signal:controller.signal, timeout:providerTimeout(45000), json:true,
             system:ANSWER_SYSTEM });
           assertReady();stage('verifying','Memeriksa kutipan, relevansi, dan dukungan makna jawaban…');
-          const allowed=await filterAllowedAiReferences(getDb(),refs,hasAdditional(),{signal:controller.signal});
-          if(allowed.length!==refs.length)throw fault('Kelayakan rujukan berubah saat jawaban disusun. Silakan kirim pertanyaan kembali.','AI_SOURCE_CHANGED',409);
+          if(!(selected&&allowSelectedPage)){
+            const allowed=await filterAllowedAiReferences(getDb(),refs,hasAdditional(),{signal:controller.signal});
+            if(allowed.length!==refs.length)throw fault('Kelayakan rujukan berubah saat jawaban disusun. Silakan kirim pertanyaan kembali.','AI_SOURCE_CHANGED',409);
+          }
           refs=verifiedReferences(getDb(),refs,hasAdditional());
           try{
             let checked=verifyAnswer(generated.text,refs,catalog);
@@ -272,7 +275,7 @@ export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd
         }
       }
       assertReady();
-      if((await filterAllowedAiReferences(getDb(),references,hasAdditional(),{signal:controller.signal})).length!==references.length)throw fault('Kelayakan rujukan berubah saat jawaban diperiksa. Silakan kirim pertanyaan kembali.','AI_SOURCE_CHANGED',409);
+      if(!(selected&&allowSelectedPage)&&(await filterAllowedAiReferences(getDb(),references,hasAdditional(),{signal:controller.signal})).length!==references.length)throw fault('Kelayakan rujukan berubah saat jawaban diperiksa. Silakan kirim pertanyaan kembali.','AI_SOURCE_CHANGED',409);
       assertReady();
       const payload = { status:'success', answer, references, mode,reviewed:mode==='grounded'||mode==='catalogue',...(evidence?{evidence}:{}),...contextData };
       if(payload.reviewed)cache.set(cacheKey,{ createdAt:Date.now(), payload });

@@ -283,14 +283,14 @@ test('whole-book exclusion removes clean-looking hits and catalogue metadata wit
  assert.equal(calls,0);
 });
 
-test('selected-page explanation and translation reject the entire excluded book before any provider request',async t=>{
+test('selected-page explanation and translation remain allowed on opened books even if book is excluded from general AI search',async t=>{
  const f=fixture(t);f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن باز');let calls=0;
- const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ const call=await serve(t,f,async()=>{calls++;return response(JSON.stringify({answer:'Penjelasan [1]',quotes:[{source:1,quoteId:'1.1'}]}));});
  for(const intent of ['explain','translate']){
   const result=await call('/api/ask',{q:'Terangkan halaman ini',intent,source:{bookId:1,pageId:11,text:'صلاة الجماعة واجبة'}});
-  assert.equal(result.status,403);assert.equal(result.data.code,'AI_SOURCE_EXCLUDED');assert.equal(result.data.references,undefined);
+  assert.equal(result.status,200);assert.equal(result.data.mode,'grounded');assert.deepEqual(result.data.references.map(r=>r.bkid),[1]);
  }
- assert.equal(calls,0);
+ assert.equal(calls,2);
 });
 
 test('only eligible books reach the provider and cached answers are rechecked after a different page changes',async t=>{
@@ -335,11 +335,11 @@ test('excluded top-ranked pages do not hide an eligible lower-ranked book',async
 
 test('HTTP requests enforce whole-book policy through the real file-backed worker',async t=>{
  const f=fixture(t,{file:true});f.db.prepare('INSERT INTO pages VALUES(12,1,2,18,?)').run('قال ابن باز');
- let calls=0;const call=await serve(t,f,async()=>{calls++;return response('unused');});
+ let calls=0;const call=await serve(t,f,async()=>{calls++;return response(JSON.stringify({answer:'Terjemahan [1]',quotes:[{source:1,quoteId:'1.1'}]}));});
  const [question,status]=await Promise.all([call('/api/ask',{q:'صلاة الجماعة'}),call('/api/ai/status')]);
  assert.equal(question.data.mode,'no_context');assert.deepEqual(question.data.references,[]);assert.equal(status.status,200);assert.equal(status.data.sourcePolicyVersion,'whole-book-exclusions-v8');
  const selected=await call('/api/ask',{q:'Terjemahkan',intent:'translate',source:{bookId:1,pageId:11}});
- assert.equal(selected.status,403);assert.equal(selected.data.code,'AI_SOURCE_EXCLUDED');assert.equal(calls,0);
+ assert.equal(selected.status,200);assert.equal(selected.data.mode,'grounded');assert.equal(calls,1);
 });
 
 test('file-backed retrieval runs off-thread with the same ranked pool as in-process search',async t=>{

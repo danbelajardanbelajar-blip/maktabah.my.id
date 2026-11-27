@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 22:22:31 +07:00",
+  "title": "Izinkan fitur Jelaskan dan Terjemah pada halaman kitab yang sedang dibuka",
+  "baseCommit": "b156c06a356921aa50cdca7e53eafd65681d9f24",
+  "checks": "node --check server/ask-ai.js & oxlint (0 error/warning) lulus; 54/54 tes ask-ai & ai-book-policy lulus; git diff --check bersih.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "docs/ai-book-policy.md",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 22:19:49 +07:00",
+      "stagedSha256": "14068ce7b14369f57a0ca38c520b533630d4f09b57924d9c6e3a09c8cfec72e6",
+      "diffSha256": "b81d52ddc6ed2d6e6fe0f0b5a3ecae79b5078117d438caa4ec0eba44e6a96994",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 43,
+            "count": 1
+          },
+          "after": {
+            "line": 43,
+            "count": 1
+          },
+          "section": "Semua halaman kitab diperiksa, termasuk halaman yang tidak cocok dengan pertanya"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 22:22:03 +07:00",
+      "stagedSha256": "dd77ac53e70173fb43dd44d8efb889acb3525f3958cc9fb8eb37f7b083ec1d56",
+      "diffSha256": "63cbbb4f41cef6b9a9524475ba1395c787bf701bdb15cc1987618a1ac3da8e7e",
+      "symbols": [
+        "DEFAULT_MODEL",
+        "keyPattern",
+        "modelPattern",
+        "fault",
+        "readAiConfig",
+        "envKeys",
+        "keys",
+        "model",
+        "generateGemini",
+        "deadline",
+        "remaining",
+        "requestSignal",
+        "body",
+        "response",
+        "answer",
+        "REWRITE_SYSTEM",
+        "ANSWER_SYSTEM",
+        "registerAskAi",
+        "history",
+        "config",
+        "publicSettings",
+        "c",
+        "configured",
+        "reason",
+        "configure",
+        "current",
+        "supplied",
+        "apiKey",
+        "tested",
+        "limits",
+        "question",
+        "settings",
+        "intent",
+        "allowSelectedPage",
+        "streaming",
+        "headers",
+        "emit",
+        "stage",
+        "finish",
+        "q",
+        "focusedQuestion",
+        "contextData",
+        "cacheKey",
+        "cached",
+        "allowed",
+        "ip",
+        "entry",
+        "controller",
+        "requestStarted",
+        "providerTimeout",
+        "searchRemaining",
+        "heartbeat",
+        "assertReady",
+        "social",
+        "payload",
+        "db",
+        "catalogue",
+        "policyTitles",
+        "retrieveEligible",
+        "candidates",
+        "excluded",
+        "found",
+        "translated",
+        "expanded",
+        "canRewrite",
+        "rewriteSearch",
+        "terms",
+        "reject",
+        "prepare",
+        "blocked",
+        "task",
+        "attempt",
+        "catalog",
+        "context",
+        "generated",
+        "used",
+        "review",
+        "r",
+        "verdict",
+        "renumber",
+        "usedRefs",
+        "failed",
+        "retryLabel",
+        "arabic",
+        "same"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 114,
+            "count": 0
+          },
+          "after": {
+            "line": 115,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 116,
+            "count": 1
+          },
+          "after": {
+            "line": 117,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 131,
+            "count": 1
+          },
+          "after": {
+            "line": 132,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 207,
+            "count": 1
+          },
+          "after": {
+            "line": 208,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 229,
+            "count": 2
+          },
+          "after": {
+            "line": 230,
+            "count": 4
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        },
+        {
+          "before": {
+            "line": 275,
+            "count": 1
+          },
+          "after": {
+            "line": 278,
+            "count": 1
+          },
+          "section": "export function registerAskAi(app, { getDb, getStateDb, hasAdditional, requireAd"
+        }
+      ]
+    },
+    {
+      "file": "server/ask-ai.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 22:20:44 +07:00",
+      "stagedSha256": "18863c0ed94e14c66f3e2e993001fedd0d94b467d384a9f97bbb5f6e4d0bb457",
+      "diffSha256": "2dfd1082d21731bb72486e365130fa3d728e6e7ce5d653958df71943d3d195b2",
+      "symbols": [
+        "key",
+        "grounded",
+        "response",
+        "fixture",
+        "dir",
+        "configPath",
+        "db",
+        "serve",
+        "app",
+        "provider",
+        "server",
+        "r",
+        "f",
+        "request",
+        "busy",
+        "a",
+        "seen",
+        "result",
+        "refs",
+        "call",
+        "body",
+        "q",
+        "first",
+        "saved",
+        "before",
+        "quota",
+        "cookie",
+        "history",
+        "bad",
+        "catalogue",
+        "cached",
+        "cancelled",
+        "controller",
+        "reader",
+        "timer",
+        "other",
+        "actual",
+        "source",
+        "questions",
+        "second",
+        "input",
+        "prompt",
+        "next",
+        "exclude",
+        "evidence",
+        "payload",
+        "selected",
+        "args",
+        "off",
+        "picked",
+        "toc",
+        "prose",
+        "filler",
+        "text",
+        "passage",
+        "ar",
+        "focus",
+        "meta",
+        "at",
+        "sources"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 286,
+            "count": 1
+          },
+          "after": {
+            "line": 286,
+            "count": 1
+          },
+          "section": "test('whole-book exclusion removes clean-looking hits and catalogue metadata wit"
+        },
+        {
+          "before": {
+            "line": 288,
+            "count": 1
+          },
+          "after": {
+            "line": 288,
+            "count": 1
+          },
+          "section": "test('selected-page explanation and translation reject the entire excluded book"
+        },
+        {
+          "before": {
+            "line": 291,
+            "count": 1
+          },
+          "after": {
+            "line": 291,
+            "count": 1
+          },
+          "section": "test('selected-page explanation and translation reject the entire excluded book"
+        },
+        {
+          "before": {
+            "line": 293,
+            "count": 1
+          },
+          "after": {
+            "line": 293,
+            "count": 1
+          },
+          "section": "test('selected-page explanation and translation reject the entire excluded book"
+        },
+        {
+          "before": {
+            "line": 338,
+            "count": 1
+          },
+          "after": {
+            "line": 338,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        },
+        {
+          "before": {
+            "line": 342,
+            "count": 1
+          },
+          "after": {
+            "line": 342,
+            "count": 1
+          },
+          "section": "test('HTTP requests enforce whole-book policy through the real file-backed worke"
+        }
+      ]
+    }
+  ]
+}
