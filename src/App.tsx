@@ -34,6 +34,7 @@ import { useModalFocus } from './lib/use-modal-focus';
 import { Collection } from './components/Collection';
 import { MessageWidget } from './components/MessageWidget';
 import { DesktopAccountMenu } from './components/DesktopAccountMenu';
+import { MobileAccountCard } from './components/MobileAccountCard';
 import { getUserToken, userAuthHeaders } from './lib/user-auth';
 import { BackButton } from './components/BackButton';
 import { loadSelectedFonts } from './lib/fonts';
@@ -526,7 +527,10 @@ function App() {
         ) : activeTab === 'ask' ? (
             null
           ) : activeTab === 'more' ? (
-          <section className="bg-[var(--reader-bg)] rounded-2xl border p-5"><h2 className="text-xl font-bold mb-4">Lainnya</h2><MoreLinks onNavigate={setActiveTab}/></section>
+          <div className="space-y-4">
+            <MobileAccountCard onNavigate={setActiveTab} onReadBook={(bookId) => openReader({ bookId })} />
+            <section className="bg-[var(--reader-bg)] rounded-2xl border p-5"><h2 className="text-xl font-bold mb-4">Lainnya</h2><MoreLinks onNavigate={setActiveTab}/></section>
+          </div>
         ) : (
           <div className="w-full">
             {activeTab === 'home' && (

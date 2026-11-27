@@ -3516,3 +3516,29 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-47-17-6deef7.
 | 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 167–167 | 168–169 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
 | 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 170–170 | 172–172 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
 | 2026-11-28 04:46:27 +07:00 | `src/components/DesktopAccountMenu.tsx` | 251–251 | 253–254 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+
+## [2026-11-28 05:22:35 +07:00] — Card Akun Google tersendiri pada halaman Lainnya untuk browser mobile
+
+Waktu pencatatan: **2026-11-28 05:22:35 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `8624167`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-22-35-e3d552.json](docs/change-audit/2026-11-28-05-22-35-e3d552.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BgESlTGm.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 05:22:34 +07:00 | `dist/assets/index-DGCmPhX9.css` | — | 1–2 | module/file | added |
+| 2026-11-28 05:22:34 +07:00 | `dist/assets/index.dev-BTEpLjTF.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 05:22:34 +07:00 | `dist/index.dev.html` | 38–39 | 38–39 | module/file | modified |
+| 2026-11-28 05:22:03 +07:00 | `src/App.tsx` | — | 37–37 | import { DesktopAccountMenu } from './components/DesktopAccountMenu'; | modified |
+| 2026-11-28 05:22:03 +07:00 | `src/App.tsx` | 529–529 | 530–533 | function App() { | modified |
+| 2026-11-28 05:22:05 +07:00 | `src/components/Admin.tsx` | 155–155 | 155–155 | const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 4–4 | 4–4 | import { BookOpen, ChevronDown, LogIn, LogOut, ShieldCheck, User, X } from 'luci | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | — | 7–7 | import { GoogleLoginButton } from './GoogleLoginButton'; | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 19–19 | — | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 57–78 | — | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 137–137 | 115–115 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 172–255 | 150–150 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
+| 2026-11-28 05:21:59 +07:00 | `src/components/MobileAccountCard.tsx` | — | 1–97 | MobileAccountCard, sync, handleLogout, token, adminToken | added |
+| 2026-11-28 05:21:58 +07:00 | `src/components/UserActivityModal.tsx` | — | 1–126 | UserActivityModal | added |

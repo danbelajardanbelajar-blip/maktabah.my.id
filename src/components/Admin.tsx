@@ -152,7 +152,7 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
           </form>
-          <div className="hidden xl:block mt-5 pt-5 border-t border-gray-100 space-y-2">
+          <div className="mt-5 pt-5 border-t border-gray-100 space-y-2">
             <p className="text-xs text-center text-gray-500">Atau masuk sebagai admin menggunakan Google</p>
             <GoogleLoginButton onSuccess={(r) => { if (r.adminToken) onLogin(r.adminToken); else onClose(); }} />
           </div>
