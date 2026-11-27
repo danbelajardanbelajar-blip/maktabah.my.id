@@ -3336,3 +3336,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-47-25-e19414.
 | 2026-11-27 21:46:25 +07:00 | `src/App.tsx` | — | 30–30 | import type { AppTab } from './lib/navigation'; | modified |
 | 2026-11-27 21:46:25 +07:00 | `src/App.tsx` | — | 68–71 | function App() { | modified |
 | 2026-11-27 21:46:16 +07:00 | `src/lib/seo-client.ts` | — | 1–56 | SITE_URL, DEFAULT_TITLE, NOINDEX_TABS, upsertMeta, syncDocumentSeo, description, canonicalPath | added |
+
+## [2026-11-27 22:03:57 +07:00] — Kurasi kitab populer Indonesia pada /sitemap-books.xml
+
+Waktu pencatatan: **2026-11-27 22:03:57 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `4982ecd`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check & oxlint (0 error/warning) lulus; seluruh 322/322 tes server (node --test server/*.test.js) lulus; git diff --check bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-22-03-57-f44f82.json](docs/change-audit/2026-11-27-22-03-57-f44f82.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 22:02:42 +07:00 | `server/seo-sitemap.js` | — | 35–61 | export function buildSitemapIndexXml(siteUrl = DEFAULT_SITE_URL, paths = []) { | modified |
+| 2026-11-27 22:02:42 +07:00 | `server/seo-sitemap.js` | — | 139–152 | export function registerSitemapRoutes(app, { | modified |
+| 2026-11-27 22:02:42 +07:00 | `server/seo-sitemap.js` | 118–118 | 159–159 | export function registerSitemapRoutes(app, { | modified |
+| 2026-11-27 22:02:42 +07:00 | `server/seo-sitemap.js` | 120–120 | 161–161 | export function registerSitemapRoutes(app, { | modified |
+| 2026-11-27 22:02:48 +07:00 | `server/seo-sitemap.test.js` | 13–13 | 13–13 | function createSitemapFixture(t, { maintenance = false } = {}) { | modified |
+| 2026-11-27 22:02:48 +07:00 | `server/seo-sitemap.test.js` | — | 73–75 | test('sitemap index and all 5 curated pilot sub-sitemaps return valid XML and in | modified |

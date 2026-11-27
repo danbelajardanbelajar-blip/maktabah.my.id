@@ -10,7 +10,7 @@ function createSitemapFixture(t, { maintenance = false } = {}) {
     CREATE TABLE categories (id INTEGER PRIMARY KEY, name TEXT);
     CREATE TABLE books_meta (bkid INTEGER PRIMARY KEY, bk TEXT, cat INTEGER, authno INTEGER, inf TEXT, betaka TEXT);
     INSERT INTO categories VALUES (1, 'Fiqih Syafii'), (2, 'Hadis');
-    INSERT INTO books_meta VALUES (10, 'فتح المعين', 1, 1, 'Kitab fiqih klasik', 'Syarah Qurratul Ain'), (11, 'صحيح البخاري', 2, 1, '', '');
+    INSERT INTO books_meta VALUES (10, 'فتح المعين', 1, 1, 'Kitab fiqih klasik', 'Syarah Qurratul Ain'), (11, 'صحيح البخاري', 2, 1, '', ''), (999, 'سفينة النجاة', 1, 1, '', '');
   `);
 
   const rowaDb = new Database(':memory:');
@@ -69,6 +69,9 @@ test('sitemap index and all 5 curated pilot sub-sitemaps return valid XML and in
     assert.equal(subRes.status, 200);
     assert.match(await subRes.text(), /<urlset/);
   }
+
+  const initialBooks = await (await get('/sitemap-books.xml')).text();
+  assert.match(initialBooks, /999-sfynh-alnja/);
 
   fixture.db.prepare('UPDATE books_meta SET bk = ? WHERE bkid = 10').run('فتح المعين الجديد');
   fixture.ctrl.invalidate();

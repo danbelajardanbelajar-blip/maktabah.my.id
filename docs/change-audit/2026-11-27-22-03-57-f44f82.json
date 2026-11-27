@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 22:03:57 +07:00",
+  "title": "Kurasi kitab populer Indonesia pada /sitemap-books.xml",
+  "baseCommit": "4982ecddd671e313ebefd8790d44ca5149d05989",
+  "checks": "node --check & oxlint (0 error/warning) lulus; seluruh 322/322 tes server (node --test server/*.test.js) lulus; git diff --check bersih.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/seo-sitemap.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 22:02:42 +07:00",
+      "stagedSha256": "86fb38325d17bfc8644ba4928cd65699fc6c53fe59840103723f72c63c99812e",
+      "diffSha256": "5a8fc9d3c387050c4dd4aad81f6286211c4f6bc9dcd737d8fb7794d78170618e",
+      "symbols": [
+        "escapeXml",
+        "buildSitemapIndexXml",
+        "base",
+        "body",
+        "POPULAR_CURATED_PATTERNS",
+        "stripDiacritics",
+        "registerSitemapRoutes",
+        "cache",
+        "assertReady",
+        "err",
+        "sendXml",
+        "db",
+        "selected",
+        "allBooks",
+        "normalizedBooks",
+        "match",
+        "remaining",
+        "richBooks",
+        "urls",
+        "resAuthors",
+        "curated",
+        "list",
+        "rowaDb",
+        "rows",
+        "fallback",
+        "name",
+        "cats"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 34,
+            "count": 0
+          },
+          "after": {
+            "line": 35,
+            "count": 27
+          },
+          "section": "export function buildSitemapIndexXml(siteUrl = DEFAULT_SITE_URL, paths = []) {"
+        },
+        {
+          "before": {
+            "line": 111,
+            "count": 0
+          },
+          "after": {
+            "line": 139,
+            "count": 14
+          },
+          "section": "export function registerSitemapRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 118,
+            "count": 1
+          },
+          "after": {
+            "line": 159,
+            "count": 1
+          },
+          "section": "export function registerSitemapRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 120,
+            "count": 1
+          },
+          "after": {
+            "line": 161,
+            "count": 1
+          },
+          "section": "export function registerSitemapRoutes(app, {"
+        }
+      ]
+    },
+    {
+      "file": "server/seo-sitemap.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 22:02:48 +07:00",
+      "stagedSha256": "0b2ac91e4e2c0c7c0416d28b48eead11cfdd3a14f4508ebd815e6237d3e6468d",
+      "diffSha256": "49b0f0efdba05d26ba7e3dad8cceb66323e6d418ddf5e93e2a92e3539efdf62f",
+      "symbols": [
+        "createSitemapFixture",
+        "db",
+        "rowaDb",
+        "authorService",
+        "app",
+        "ctrl",
+        "server",
+        "base",
+        "fixture",
+        "get",
+        "indexRes",
+        "indexXml",
+        "subRes",
+        "initialBooks",
+        "updatedBooks",
+        "booksRes"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 13,
+            "count": 1
+          },
+          "after": {
+            "line": 13,
+            "count": 1
+          },
+          "section": "function createSitemapFixture(t, { maintenance = false } = {}) {"
+        },
+        {
+          "before": {
+            "line": 72,
+            "count": 0
+          },
+          "after": {
+            "line": 73,
+            "count": 3
+          },
+          "section": "test('sitemap index and all 5 curated pilot sub-sitemaps return valid XML and in"
+        }
+      ]
+    }
+  ]
+}

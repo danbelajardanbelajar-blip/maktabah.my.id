@@ -32,6 +32,33 @@ export function buildSitemapIndexXml(siteUrl = DEFAULT_SITE_URL, paths = []) {
   ].join('\n');
 }
 
+const POPULAR_CURATED_PATTERNS = [
+  /فتح\s+المعين/,
+  /فتح\s+القريب/,
+  /سفينة\s+النجا/,
+  /إحياء\s+علوم\s+الدين|احياء\s+علوم\s+الدين/,
+  /رياض\s+الصالحين/,
+  /الأربعين\s+النووية|الأربعون\s+النووية|الاربعين\s+النووية/,
+  /تفسير\s+الجلالين|الجلالين/,
+  /تفسير\s+القرآن\s+العظيم/,
+  /بلوغ\s+المرام/,
+  /تعليم\s+المتعلم/,
+  /الحكم\s+العطائية/,
+  /الآجرومية|الأجرومية|الاجرومية/,
+  /ألفية\s+ابن\s+مالك|الفية\s+ابن\s+مالك/,
+  /كفاية\s+الأخيار|كفاية\s+الاخيار/,
+  /المجموع\s+شرح\s+المهذب/,
+  /الأذكار|الاذكار/,
+  /فتح\s+الباري/,
+  /نور\s+الإيضاح|نور\s+الايضاح/,
+  /عقيدة\s+العوام/,
+  /إرشاد\s+العباد|ارشاد\s+العباد/,
+];
+
+function stripDiacritics(value) {
+  return String(value || '').replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '');
+}
+
 /**
  * Register Stage-4 Sitemap Index and curated pilot sub-sitemaps (~75-90 URLs).
  */
@@ -109,15 +136,29 @@ export function registerSitemapRoutes(app, {
       const selected = new Map();
 
       const allBooks = db.prepare(`SELECT bkid, bk FROM ${booksMeta()}`).all();
+      const normalizedBooks = allBooks.map((row) => ({
+        bkid: row.bkid,
+        bk: row.bk,
+        plain: stripDiacritics(row.bk),
+      }));
+
+      // 1. Prioritize popular Indonesian/classical titles (1 best match per pattern)
+      for (const pattern of POPULAR_CURATED_PATTERNS) {
+        if (selected.size >= 20) break;
+        const match = normalizedBooks.find((b) => !selected.has(b.bkid) && pattern.test(b.plain));
+        if (match) selected.set(match.bkid, match.bk);
+      }
+
+      // 2. Include representative Hadith collection editions
       const { books: hadithGroups } = hadithBooks(allBooks);
       for (const group of hadithGroups) {
         for (const ed of group.editions.slice(0, 2)) {
           if (!selected.has(ed.id)) {
             selected.set(ed.id, ed.title);
           }
-          if (selected.size >= 15) break;
+          if (selected.size >= 30) break;
         }
-        if (selected.size >= 15) break;
+        if (selected.size >= 30) break;
       }
 
       const remaining = 40 - selected.size;
