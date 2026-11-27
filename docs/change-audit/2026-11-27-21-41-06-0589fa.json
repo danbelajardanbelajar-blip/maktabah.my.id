@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-27 21:41:06 +07:00",
+  "title": "Perbaikan kolom tabel rowa pada direktori SEO /perawi",
+  "baseCommit": "75c7454dac1481c22f142409dbdc56826edb1bb1",
+  "checks": "node --check & oxlint 0 error/warning lulus; 8/8 tes seo-directory/seo-books/seo-foundation lulus.",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "server/seo-directory.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 21:40:43 +07:00",
+      "stagedSha256": "266f23bdc735d119d0a949b7b15bd13cc62a182c48c573e0c5d7b22d7a801a3c",
+      "diffSha256": "32ab4afcf8ac002d153728f045a45acd5799c484a0d496088f45162f1c153a51",
+      "symbols": [
+        "parsePositiveIdSlug",
+        "match",
+        "parsePage",
+        "n",
+        "unavailable",
+        "renderPagination",
+        "prev",
+        "next",
+        "registerDirectorySeoRoutes",
+        "canonicalBase",
+        "cache",
+        "assertReady",
+        "err",
+        "page",
+        "data",
+        "totalPages",
+        "pathWithPage",
+        "canonicalUrl",
+        "listHtml",
+        "href",
+        "death",
+        "bodyHtml",
+        "id",
+        "author",
+        "slug",
+        "canonicalPath",
+        "bio",
+        "worksHtml",
+        "jsonLd",
+        "rowaDb",
+        "limit",
+        "offset",
+        "total",
+        "rows",
+        "name",
+        "info",
+        "aqual",
+        "sources",
+        "db",
+        "cat",
+        "basePath",
+        "q",
+        "books",
+        "library",
+        "sectionsHtml",
+        "editionsHtml"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 204,
+            "count": 1
+          },
+          "after": {
+            "line": 204,
+            "count": 1
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 209,
+            "count": 1
+          },
+          "after": {
+            "line": 209,
+            "count": 1
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 211,
+            "count": 1
+          },
+          "after": {
+            "line": 211,
+            "count": 1
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 257,
+            "count": 1
+          },
+          "after": {
+            "line": 257,
+            "count": 1
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 297,
+            "count": 1
+          },
+          "after": {
+            "line": 297,
+            "count": 1
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        },
+        {
+          "before": {
+            "line": 299,
+            "count": 2
+          },
+          "after": {
+            "line": 299,
+            "count": 2
+          },
+          "section": "export function registerDirectorySeoRoutes(app, {"
+        }
+      ]
+    },
+    {
+      "file": "server/seo-directory.test.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-27 21:40:47 +07:00",
+      "stagedSha256": "157ffafe397221e86446c2885f3bdea73ac7cf425b0e3b936cb54793bbdb21d4",
+      "diffSha256": "e2427cff73a6b07a9e815cd9c3f6475d2ee4608abf1db0bcd24d81399d884bb7",
+      "symbols": [
+        "setupFixture",
+        "distPath",
+        "db",
+        "rowaDb",
+        "mockAuthorService",
+        "e",
+        "app",
+        "server",
+        "base",
+        "start",
+        "authorSlug",
+        "aRedirect",
+        "aPage",
+        "aHtml",
+        "rowaList",
+        "rowaSlug",
+        "rPage",
+        "rHtml",
+        "kat",
+        "catSlug",
+        "catPage",
+        "hadith"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 27,
+            "count": 1
+          },
+          "section": "function setupFixture(t) {"
+        },
+        {
+          "before": {
+            "line": 29,
+            "count": 1
+          },
+          "after": {
+            "line": 29,
+            "count": 1
+          },
+          "section": "function setupFixture(t) {"
+        },
+        {
+          "before": {
+            "line": 90,
+            "count": 0
+          },
+          "after": {
+            "line": 91,
+            "count": 4
+          },
+          "section": "test('author, rowa, category, katalog, and kutub-hadis SEO pages return 200/301/"
+        }
+      ]
+    }
+  ]
+}

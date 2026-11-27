@@ -3292,3 +3292,23 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-37-41-c587e5.
 | 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 375–375 | 375–375 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
 | 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 388–389 | 388–390 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
 | 2026-11-27 21:36:04 +07:00 | `src/components/Catalog.tsx` | 393–393 | 394–394 | export default function Catalog({ openBook, readBook }: { openBook: (id: number) | modified |
+
+## [2026-11-27 21:41:06 +07:00] — Perbaikan kolom tabel rowa pada direktori SEO /perawi
+
+Waktu pencatatan: **2026-11-27 21:41:06 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `75c7454`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check & oxlint 0 error/warning lulus; 8/8 tes seo-directory/seo-books/seo-foundation lulus.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-41-06-0589fa.json](docs/change-audit/2026-11-27-21-41-06-0589fa.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 204–204 | 204–204 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 209–209 | 209–209 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 211–211 | 211–211 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 257–257 | 257–257 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 297–297 | 297–297 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:43 +07:00 | `server/seo-directory.js` | 299–300 | 299–300 | export function registerDirectorySeoRoutes(app, { | modified |
+| 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | 27–27 | 27–27 | function setupFixture(t) { | modified |
+| 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | 29–29 | 29–29 | function setupFixture(t) { | modified |
+| 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | — | 91–94 | test('author, rowa, category, katalog, and kutub-hadis SEO pages return 200/301/ | modified |

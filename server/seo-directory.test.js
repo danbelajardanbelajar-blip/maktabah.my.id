@@ -24,9 +24,9 @@ function setupFixture(t) {
 
   const rowaDb = new Database(':memory:');
   rowaDb.exec(`
-    CREATE TABLE rowa (id INTEGER PRIMARY KEY, Name TEXT, KUNIA TEXT, TABAQ TEXT, DEATH TEXT, ROTB TEXT, WHO TEXT, AQUAL TEXT);
+    CREATE TABLE rowa (id INTEGER PRIMARY KEY, Name TEXT, A_esm TEXT, A_kona TEXT, death TEXT, ROTBA TEXT, WHO TEXT, AQUAL TEXT);
     CREATE TABLE rowa_logs (id INTEGER PRIMARY KEY, rowa_id INTEGER);
-    INSERT INTO rowa VALUES (5, 'أبو هريرة', 'أبو هريرة', 'صحابي', '57 هـ', 'صحابي', 'ع', 'صحابي جليل');
+    INSERT INTO rowa VALUES (5, 'أبو هريرة', 'أبو هريرة', 'أبو هريرة', '57 هـ', 'صحابي', 'ع', 'صحابي جليل');
   `);
 
   const mockAuthorService = {
@@ -87,6 +87,10 @@ test('author, rowa, category, katalog, and kutub-hadis SEO pages return 200/301/
   const aHtml = await aPage.text();
   assert.match(aHtml, /"@type":"Person"/);
   assert.match(aHtml, /href="\/kitab\/10-/);
+
+  const rowaList = await get('/perawi');
+  assert.equal(rowaList.status, 200);
+  assert.match(await rowaList.text(), /href="\/perawi\/5-/);
 
   const rowaSlug = slugifyTitle('أبو هريرة', 'perawi');
   const rPage = await get(`/perawi/5-${rowaSlug}`);

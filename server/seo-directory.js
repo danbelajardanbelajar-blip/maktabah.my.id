@@ -201,14 +201,14 @@ export function registerDirectorySeoRoutes(app, {
       const offset = (page - 1) * limit;
       const total = rowaDb.prepare('SELECT COUNT(*) as c FROM rowa').get().c || 0;
       const totalPages = Math.max(1, Math.ceil(total / limit));
-      const rows = rowaDb.prepare('SELECT id, Name, TABAQ, DEATH FROM rowa ORDER BY id ASC LIMIT ? OFFSET ?').all(limit, offset);
+      const rows = rowaDb.prepare('SELECT * FROM rowa ORDER BY id ASC LIMIT ? OFFSET ?').all(limit, offset);
       const pathWithPage = page > 1 ? `/perawi?page=${page}` : '/perawi';
       const canonicalUrl = `${canonicalBase}${pathWithPage}`;
 
       const listHtml = rows.map((r) => {
-        const name = cleanText(r.Name) || `Perawi #${r.id}`;
+        const name = cleanText(r.A_esm || r.Name || r.IsoName) || `Perawi #${r.id}`;
         const href = `/perawi/${r.id}-${slugifyTitle(name, 'perawi')}`;
-        const info = [cleanText(r.TABAQ), cleanText(r.DEATH)].filter(Boolean).join(' · ');
+        const info = [cleanText(r.ROTBA || r.R_ZAHBI), cleanText(r.death || r.DEATH)].filter(Boolean).join(' · ');
         return `<li class="list-item"><a href="${escapeHtml(href)}" dir="auto">${escapeHtml(name)}</a>${info ? `<div class="list-sub" dir="auto">${escapeHtml(info)}</div>` : ''}</li>`;
       }).join('\n');
 
@@ -254,7 +254,7 @@ export function registerDirectorySeoRoutes(app, {
 
     if (!row) return next();
     const data = withRowaSources(row);
-    const name = cleanText(data.Name || data.name) || `Perawi #${id}`;
+    const name = cleanText(data.A_esm || data.Name || data.IsoName || data.name) || `Perawi #${id}`;
     const slug = slugifyTitle(name, 'perawi');
     const canonicalPath = `/perawi/${id}-${slug}`;
     if (req.params.idSlug !== `${id}-${slug}`) {
@@ -294,10 +294,10 @@ export function registerDirectorySeoRoutes(app, {
       <article class="card">
         <h1 dir="auto">${escapeHtml(name)}</h1>
         <div class="meta">
-          ${data.KUNIA ? `<div class="meta-item"><strong>Kunyah</strong><span dir="auto">${escapeHtml(cleanText(data.KUNIA))}</span></div>` : ''}
+          ${data.A_kona || data.KUNIA ? `<div class="meta-item"><strong>Kunyah</strong><span dir="auto">${escapeHtml(cleanText(data.A_kona || data.KUNIA))}</span></div>` : ''}
           ${data.TABAQ ? `<div class="meta-item"><strong>Tabaqah</strong><span dir="auto">${escapeHtml(cleanText(data.TABAQ))}</span></div>` : ''}
-          ${data.DEATH ? `<div class="meta-item"><strong>Wafat</strong><span dir="auto">${escapeHtml(cleanText(data.DEATH))}</span></div>` : ''}
-          ${data.ROTB ? `<div class="meta-item"><strong>Derajat</strong><span dir="auto">${escapeHtml(cleanText(data.ROTB))}</span></div>` : ''}
+          ${data.death || data.DEATH ? `<div class="meta-item"><strong>Wafat</strong><span dir="auto">${escapeHtml(cleanText(data.death || data.DEATH))}</span></div>` : ''}
+          ${data.ROTBA || data.ROTB ? `<div class="meta-item"><strong>Derajat</strong><span dir="auto">${escapeHtml(cleanText(data.ROTBA || data.ROTB))}</span></div>` : ''}
         </div>
         ${sources.length ? `<p>${sources.map((s) => `<span class="badge">${escapeHtml(s)}</span>`).join('')}</p>` : ''}
         <div class="actions">
