@@ -1,4 +1,5 @@
 import { createRequire } from 'module';
+import { classifyBahtsulMasailLine } from './bahtsul-masail-format.js';
 const require = createRequire(import.meta.url);
 const {
   Document,
@@ -96,6 +97,7 @@ export async function generateBookDocx({ title = 'Kitab', author = '', higriYear
   }
 
   // 4. Halaman-Halaman Kitab
+  let bmSection = null;
   pages.forEach((p, idx) => {
     const isHeaderAr = isTitleAr;
     const headerLabel = isHeaderAr
@@ -134,17 +136,35 @@ export async function generateBookDocx({ title = 'Kitab', author = '', higriYear
 
       if (line) {
         const isAr = isArabicText(line);
+        const bm = classifyBahtsulMasailLine(line, bmSection);
+        bmSection = bm.section;
+        const textColor = bm.section === 'question'
+          ? (bm.isHeading ? '1D4ED8' : '1E3A8A')
+          : bm.section === 'answer'
+            ? (bm.isHeading ? '047857' : '064E3B')
+            : undefined;
+        const shadingFill = bm.section === 'question' ? 'EFF6FF' : bm.section === 'answer' ? 'ECFDF5' : undefined;
+        const accentColor = bm.section === 'question' ? '2563EB' : bm.section === 'answer' ? '059669' : undefined;
+
         docChildren.push(new Paragraph({
           children: [
             new TextRun({
               text: line,
               font: isAr ? ARABIC_FONT : LATIN_FONT,
               size: isAr ? 36 : 24, // 18pt untuk teks Arab agar harakat terbaca jelas; 12pt Latin
+              bold: bm.isHeading || undefined,
+              color: textColor,
               rightToLeft: isAr,
             })
           ],
           alignment: isAr ? AlignmentType.JUSTIFIED : AlignmentType.LEFT,
           bidirectional: isAr,
+          ...(shadingFill ? { shading: { type: ShadingType.CLEAR, fill: shadingFill } } : {}),
+          ...(accentColor ? {
+            border: isAr
+              ? { right: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } }
+              : { left: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } }
+          } : {}),
           spacing: {
             before: 60,
             after: 60,

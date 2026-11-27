@@ -1,4 +1,5 @@
 import { isArabicText } from './word-export.js';
+import { classifyBahtsulMasailLine } from './bahtsul-masail-format.js';
 
 export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = null, category = '', pages = [] } = {}) {
   const isTitleAr = isArabicText(title);
@@ -19,6 +20,7 @@ export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = 
     ? (isArabicText(category) ? `التصنيف: ${category}` : `Kategori: ${category}`)
     : '';
 
+  let bmSection = null;
   const pagesHtml = pages.map((p, idx) => {
     const isHeaderAr = isTitleAr;
     const headerLabel = isHeaderAr
@@ -30,7 +32,14 @@ export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = 
       let line = rawLine.replace(/<[^>]*>?/gm, '').replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F\u007F]/g, '').trim();
       if (!line) return '';
       const isAr = isArabicText(line);
-      const cls = isAr ? 'line-arabic' : 'line-latin';
+      const bm = classifyBahtsulMasailLine(line, bmSection);
+      bmSection = bm.section;
+      const bmClass = bm.section === 'question'
+        ? (bm.isHeading ? 'bm-question bm-question-heading' : 'bm-question')
+        : bm.section === 'answer'
+          ? (bm.isHeading ? 'bm-answer bm-answer-heading' : 'bm-answer')
+          : '';
+      const cls = [isAr ? 'line-arabic' : 'line-latin', bmClass].filter(Boolean).join(' ');
       const dir = isAr ? 'rtl' : 'ltr';
       return `<p class="${cls}" dir="${dir}">${escapeHtml(line)}</p>`;
     }).filter(Boolean).join('\n');
@@ -235,6 +244,30 @@ export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = 
       text-align: left;
       direction: ltr;
       margin: 0 0 3mm 0;
+    }
+
+    .bm-question {
+      background-color: #eff6ff !important;
+      color: #1e3a8a;
+      border-inline-start: 4px solid #2563eb;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .bm-question-heading {
+      color: #1d4ed8;
+      font-weight: 700;
+    }
+
+    .bm-answer {
+      background-color: #ecfdf5 !important;
+      color: #064e3b;
+      border-inline-start: 4px solid #059669;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .bm-answer-heading {
+      color: #047857;
+      font-weight: 700;
     }
 
     /* Print Specific Media */

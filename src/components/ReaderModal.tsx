@@ -1,4 +1,5 @@
 import {RowaLinkedText} from './RowaLinkedText';
+import { classifyBahtsulMasailLine, type BahtsulMasailSection } from '../lib/bahtsul-masail-format';
 import {useRowaCards} from './RowaCards';
 import {ReaderAiPanel} from './ReaderAiPanel';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -503,7 +504,19 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
                 </div>
               ) : (
                 <div ref={readingTextRef} key={pageKey} className={`flex flex-col ${slideDir ? 'animate-slide-' + slideDir : ''}`} style={{ fontSize: `${fontSize}px`, lineHeight: '2.2', fontFamily: 'var(--arabic-font)' }}>
-                    <RowaLinkedText html={(currentPage?.text||'').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line:string)=>`<div dir="auto" class="whitespace-pre-wrap text-justify" style="min-height:${line.trim()===''?'1.5em':'auto'};word-break:break-word">${highlightText(line,localHighlight)}</div>`).join('\n')}/>
+                    <RowaLinkedText html={(() => {
+                      let bmSection: BahtsulMasailSection = null;
+                      return (currentPage?.text || '').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line: string) => {
+                        const bm = classifyBahtsulMasailLine(line, bmSection);
+                        bmSection = bm.section;
+                        const sectionStyle = bm.section === 'question'
+                          ? `background-color:rgba(59,130,246,0.09);border-inline-start:4px solid #2563eb;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#1d4ed8;font-weight:700;' : ''}`
+                          : bm.section === 'answer'
+                            ? `background-color:rgba(16,185,129,0.09);border-inline-start:4px solid #059669;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#047857;font-weight:700;' : ''}`
+                            : '';
+                        return `<div dir="auto" class="whitespace-pre-wrap text-justify" style="min-height:${line.trim()===''?'1.5em':'auto'};word-break:break-word;${sectionStyle}">${highlightText(line,localHighlight)}</div>`;
+                      }).join('\n');
+                    })()}/>
 
                   </div>
               )}

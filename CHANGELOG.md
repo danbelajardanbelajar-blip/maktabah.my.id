@@ -3005,3 +3005,31 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-06-15-53-47abb7.
 | 2026-11-27 06:14:17 +07:00 | `server/manual-book.js` | — | 119–119 | export function registerManualBook(app, { getDb, getStateDb, requireAdmin, hasAd | modified |
 | 2026-11-27 06:14:25 +07:00 | `server/nu-online.js` | 322–322 | 322–322 | export function importNuOnlineArticle(db, stateDb, { url, title, author, catId, | modified |
 | 2026-11-27 06:14:25 +07:00 | `server/nu-online.js` | — | 389–389 | export function registerNuOnline(app, { getDb, getStateDb, requireAdmin, hasAddi | modified |
+
+## [2026-11-27 08:01:32 +07:00] — feat(reader,export): bedakan warna bagian Pertanyaan dan Jawaban Bahtsul Masail di view kitab, Word, dan PDF
+
+Waktu pencatatan: **2026-11-27 08:01:32 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `61f4018`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check lulus; oxlint 0 error; tsc -b lulus; 3 unit tests bahtsul-masail-format lulus; build produksi index.dev-DR6tZzLP.js sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-08-01-32-e544d7.json](docs/change-audit/2026-11-27-08-01-32-e544d7.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-Bw1vYMMK.js` | 1–22 | — | module/file | deleted |
+| 2026-11-27 08:01:16 +07:00 | `dist/assets/index.dev-DR6tZzLP.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 08:01:16 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-27 07:59:20 +07:00 | `server/bahtsul-masail-format.js` | — | 1–38 | QUESTION_HEADING, QUESTION_PREFIX, ANSWER_HEADING, ANSWER_PREFIX, NEUTRAL_PREFIX, classifyBahtsulMasailLine, clean | added |
+| 2026-11-27 08:00:32 +07:00 | `server/bahtsul-masail-format.test.js` | — | 1–52 | samplePages, pdfHtml, docxBuffer | added |
+| 2026-11-27 07:59:56 +07:00 | `server/pdf-export.js` | — | 2–2 | import { isArabicText } from './word-export.js'; | modified |
+| 2026-11-27 07:59:56 +07:00 | `server/pdf-export.js` | — | 23–23 | export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = | modified |
+| 2026-11-27 07:59:56 +07:00 | `server/pdf-export.js` | 33–33 | 35–42 | export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = | modified |
+| 2026-11-27 07:59:56 +07:00 | `server/pdf-export.js` | — | 249–272 | export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = | modified |
+| 2026-11-27 07:59:49 +07:00 | `server/word-export.js` | — | 2–2 | import { createRequire } from 'module'; | modified |
+| 2026-11-27 07:59:49 +07:00 | `server/word-export.js` | — | 100–100 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 07:59:49 +07:00 | `server/word-export.js` | — | 139–148 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 07:59:49 +07:00 | `server/word-export.js` | — | 155–156 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 07:59:49 +07:00 | `server/word-export.js` | — | 162–167 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 08:00:16 +07:00 | `src/components/ReaderModal.tsx` | — | 2–2 | import {RowaLinkedText} from './RowaLinkedText'; | modified |
+| 2026-11-27 08:00:16 +07:00 | `src/components/ReaderModal.tsx` | 506–506 | 507–519 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-27 07:59:24 +07:00 | `src/lib/bahtsul-masail-format.ts` | — | 1–39 | QUESTION_HEADING, QUESTION_PREFIX, ANSWER_HEADING, ANSWER_PREFIX, NEUTRAL_PREFIX, classifyBahtsulMasailLine, clean | added |
