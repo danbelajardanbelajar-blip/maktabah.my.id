@@ -3542,3 +3542,23 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-22-35-e3d552.
 | 2026-11-28 05:22:00 +07:00 | `src/components/DesktopAccountMenu.tsx` | 172–255 | 150–150 | export function DesktopAccountMenu({ onNavigate, onReadBook }: Props) { | modified |
 | 2026-11-28 05:21:59 +07:00 | `src/components/MobileAccountCard.tsx` | — | 1–97 | MobileAccountCard, sync, handleLogout, token, adminToken | added |
 | 2026-11-28 05:21:58 +07:00 | `src/components/UserActivityModal.tsx` | — | 1–126 | UserActivityModal | added |
+
+## [2026-11-28 05:24:52 +07:00] — Tampilkan foto profil Google pada ikon menu Lainnya di navigasi bawah mobile
+
+Waktu pencatatan: **2026-11-28 05:24:52 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `44d5fb3`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-05-24-52-45c37d.json](docs/change-audit/2026-11-28-05-24-52-45c37d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 05:24:50 +07:00 | `dist/assets/index-B_V6BpF5.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DGCmPhX9.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 05:24:50 +07:00 | `dist/assets/index.dev-B77VTg7u.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-BTEpLjTF.js` | 1–22 | — | module/file | deleted |
+| 2026-11-28 05:24:50 +07:00 | `dist/index.dev.html` | 38–39 | 38–39 | module/file | modified |
+| 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | 6–6 | 6–6 | import { useState } from 'react'; | modified |
+| 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | 38–38 | 38–39 | import { MobileAccountCard } from './components/MobileAccountCard'; | modified |
+| 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | — | 124–134 | function App() { | modified |
+| 2026-11-28 05:24:09 +07:00 | `src/App.tsx` | 1032–1032 | 1044–1050 | function App() { | modified |

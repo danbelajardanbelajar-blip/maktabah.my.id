@@ -3,7 +3,7 @@ import {HadithBooks} from './components/HadithBooks';
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
-import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest, HeartHandshake } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest, HeartHandshake, User } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -35,7 +35,8 @@ import { Collection } from './components/Collection';
 import { MessageWidget } from './components/MessageWidget';
 import { DesktopAccountMenu } from './components/DesktopAccountMenu';
 import { MobileAccountCard } from './components/MobileAccountCard';
-import { getUserToken, userAuthHeaders } from './lib/user-auth';
+import { getSavedUser, getUserToken, userAuthHeaders } from './lib/user-auth';
+import type { AuthUser } from './lib/user-auth';
 import { BackButton } from './components/BackButton';
 import { loadSelectedFonts } from './lib/fonts';
 import Settings, { THEMES } from './components/Settings';
@@ -118,6 +119,17 @@ function App() {
     };
     window.addEventListener('recentBooksUpdated', handler);
     return () => window.removeEventListener('recentBooksUpdated', handler);
+  }, []);
+
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => getSavedUser());
+  useEffect(() => {
+    const syncAuth = () => setAuthUser(getSavedUser());
+    window.addEventListener('userAuthUpdated', syncAuth);
+    window.addEventListener('storage', syncAuth);
+    return () => {
+      window.removeEventListener('userAuthUpdated', syncAuth);
+      window.removeEventListener('storage', syncAuth);
+    };
   }, []);
 
   useEffect(() => {
@@ -1029,7 +1041,13 @@ function App() {
           onClick={() => { setActiveTab('more'); window.scrollTo(0,0); }} 
           className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'more' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
         >
-          <Menu size={24} className="mb-1" />
+          {authUser?.picture ? (
+            <img src={authUser.picture} alt="" className="w-6 h-6 rounded-full object-cover mb-1 border border-current" referrerPolicy="no-referrer" />
+          ) : authUser ? (
+            <User size={24} className="mb-1" />
+          ) : (
+            <Menu size={24} className="mb-1" />
+          )}
           <span className="text-[10px] font-bold">Lainnya</span>
         </button>
       </div>
