@@ -3415,3 +3415,32 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-03-53-11-730776.
 | 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 30–31 | 88–157 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
 | 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | 34–34 | 160–163 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
 | 2026-11-28 03:51:56 +07:00 | `src/components/AuthorReview.tsx` | — | 165–165 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+
+## [2026-11-28 04:08:51 +07:00] — Ekstraksi usulan penulis dari 4 sumber data (metadata, authno, betaka/inf, halaman pertama)
+
+Waktu pencatatan: **2026-11-28 04:08:51 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `bd18697`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 17/17 test lulus (authors.test.js & admin-navigation.test.js), npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-08-51-fdd127.json](docs/change-audit/2026-11-28-04-08-51-fdd127.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 04:08:38 +07:00 | `dist/assets/index.dev-3aQeET1G.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 04:08:38 +07:00 | `dist/index.dev.html` | 38–38 | 38–38 | module/file | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 12–20 | 12–28 | const extractYear=s=>String(s\|\|'').match(/(?:^\|\D)(\d{3,4})(?:\D\|$)/)?.[1]\|\|null | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 22–25 | 30–33 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 27–32 | 35–39 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 34–37 | 41–44 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 41–44 | 48–51 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 46–46 | 53–54 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 48–49 | 56–87 | export function suggestAuthors(metadataAuthor,authorsMap,limit=3){ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 59–59 | 97–97 | const formatPageSnippet=(row,maxLen=320)=>{ | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 124–124 | 162–175 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 129–129 | 180–181 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 131–132 | 183–184 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge | modified |
+| 2026-11-28 04:08:03 +07:00 | `server/authors.js` | 146–151 | 198–207 | export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge | modified |
+| 2026-11-28 04:08:14 +07:00 | `server/authors.test.js` | — | 193–217 | test('review queue returns metadata author suggestions, first-page snippets, and | modified |
+| 2026-11-28 04:07:46 +07:00 | `server/index.js` | 784–784 | 784–794 | registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return d | modified |
+| 2026-11-28 04:08:05 +07:00 | `src/components/AuthorReview.tsx` | 3–3 | 3–3 | interface Link {id:number;name:string;status:string;basis:string;evidence:string | modified |
+| 2026-11-28 04:08:05 +07:00 | `src/components/AuthorReview.tsx` | 70–70 | 70–71 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |

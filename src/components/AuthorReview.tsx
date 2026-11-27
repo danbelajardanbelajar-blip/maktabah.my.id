@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 interface Link {id:number;name:string;status:string;basis:string;evidence:string;}
-interface Suggestion {id:number;name:string;death_text?:string;score:number;reason:string;}
+interface Suggestion {id:number;name:string;death_text?:string;score:number;reason:string;source?:string;}
 interface FirstPage {part:number;page:number;snippet:string;}
 interface Case {book_id:number;title:string;metadata_author:string;source_ref:string;conflict:boolean;revision:string;first_page?:FirstPage|null;suggestions?:Suggestion[];links:Link[];decisions:any[];events:any[];}
 interface QueueItem {book_id:number;title:string;metadata_author:string;status:string;count:number;revision:string;suggestions?:Suggestion[];first_page?:FirstPage|null;}
@@ -67,7 +67,8 @@ export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) 
       const customNote=batchNote.trim();
       const items=checkedRows.map(b=>{
         const target=picked[b.book_id];
-        const fallback=b.metadata_author?`Sesuai metadata kitab (${b.metadata_author})`:'Ditinjau melalui antrean ceklis admin';
+        const chosenSug=b.suggestions?.find(s=>s.id===target.authorId);
+        const fallback=b.metadata_author?`Sesuai metadata kitab (${b.metadata_author})`:chosenSug?.source?`Sesuai usulan dari ${chosenSug.source}`:'Ditinjau melalui antrean ceklis admin';
         return{book_id:b.book_id,author_id:target.authorId,expected_author:target.authorName,expected_title:b.title,revision:b.revision,action,note:customNote.length>=3?customNote:fallback};
       });
       const res=await request('/api/admin/authors/decisions/batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});

@@ -190,3 +190,28 @@ test('review queue returns metadata author suggestions, first-page snippets, and
   assert.equal(batch.failed.length,1);
   assert.equal(service.detail(7,{}).total,1);
 });
+
+test('suggests authors from library authno, betaka/inf, and first page text when works metadata_author is empty',t=>{
+  const f=fixture(t);
+  const lib=[
+    {bkid:201,bk:'كتاب من جدول المؤلفين'},
+    {bkid:202,bk:'كتاب من البطاقة'},
+    {bkid:203,bk:'كتاب من الصفحة الأولى'},
+  ];
+  const pages={
+    203:{part:1,page:1,nass:'عنوان الكتاب\nالمؤلف: الإمام ابن حجر\nدار النشر: ...'},
+  };
+  const metas={
+    201:{authName:'السيوطي',betaka:'',inf:''},
+    202:{authName:'',betaka:'الكتاب: كذا\nتأليف: الحافظ ابن حجر (ت 852)',inf:''},
+    203:{authName:'',betaka:'',inf:''},
+  };
+  const service=createAuthorService(f.store,()=>lib,()=>1,id=>pages[id]||null,id=>metas[id]||null);
+  const q=service.review({filter:'pending'});
+  const b201=q.data.find(b=>b.book_id===201);
+  const b202=q.data.find(b=>b.book_id===202);
+  const b203=q.data.find(b=>b.book_id===203);
+  assert.equal(b201.suggestions[0].id,7);
+  assert.equal(b202.suggestions[0].id,8);
+  assert.equal(b203.suggestions[0].id,8);
+});

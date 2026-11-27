@@ -9,44 +9,82 @@ const HONORIFICS=new Set(['الامام','امام','الشيخ','شيخ','ال�
 const cleanSuggestText=s=>findText(String(s||'').replace(/\([^)]*\)|\[[^\]]*\]/gu,' ')).replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/gu,' ').trim();
 const extractYear=s=>String(s||'').match(/(?:^|\D)(\d{3,4})(?:\D|$)/)?.[1]||null;
 
-export function suggestAuthors(metadataAuthor,authorsMap,limit=3){
-  const raw=String(metadataAuthor||'').trim();
-  if(!raw)return[];
-  const metaClean=cleanSuggestText(raw);
-  if(!metaClean)return[];
-  const metaTokens=metaClean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
-  const metaNoHon=metaTokens.join(' ');
-  const metaYear=extractYear(raw);
-  const results=[];
+const extractAuthorLines=raw=>{
+  const text=String(raw||'').replace(/<[^>]+>/gu,'\n').replace(/\r\n?/gu,'\n');
+  if(!text.trim())return[];
+  const out=[],re=/(?:المؤلف|المؤلّف|تأليف|تصنيف|مصنف|إعداد|بقلم|صنفه|ألفه)\s*[:：\-]?\s*([^\n]{2,140})/gu;
+  let m;
+  while((m=re.exec(text))!==null&&out.length<4){
+    const val=m[1].split(/(?:المحقق|تحقيق|الناشر|دار النشر|الطبعة|عدد الأجزاء)/u)[0].trim();
+    if(val.length>=2)out.push(val);
+  }
+  return out;
+};
+
+function matchTextToAuthors(raw,sourceLabel,baseBonus,authorsMap){
+  const clean=cleanSuggestText(raw);
+  if(!clean)return[];
+  const tokens=clean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
+  const noHon=tokens.join(' '),year=extractYear(raw),tokenSet=new Set(tokens),out=[];
   for(const a of authorsMap.values()){
-    const authClean=cleanSuggestText(a.name);
-    if(!authClean)continue;
-    const authTokens=authClean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
-    const authNoHon=authTokens.join(' ');
+    const aClean=cleanSuggestText(a.name);
+    if(!aClean)continue;
+    const aTokens=aClean.split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t));
+    const aNoHon=aTokens.join(' ');
     let score=0,reason='';
-    if(authClean===metaClean||(authNoHon&&authNoHon===metaNoHon)){
-      score=100;reason='Nama metadata cocok persis';
-    }else if((authNoHon.length>=4&&metaNoHon.includes(authNoHon))||(metaNoHon.length>=4&&authNoHon.includes(metaNoHon))){
-      score=85;reason='Nama penulis termuat dalam metadata';
-    }else if(authTokens.length&&metaTokens.length){
-      const metaSet=new Set(metaTokens);
+    if(aClean===clean||(aNoHon&&aNoHon===noHon)){
+      score=100;reason=`Cocok persis dengan ${sourceLabel}`;
+    }else if((aNoHon.length>=4&&noHon.includes(aNoHon))||(noHon.length>=4&&aNoHon.includes(noHon))){
+      score=85;reason=`Nama penulis termuat di ${sourceLabel}`;
+    }else if(aTokens.length&&tokens.length){
       let hits=0;
-      for(const t of authTokens)if(metaSet.has(t))hits++;
-      const ratio=hits/authTokens.length;
-      if((hits>=2&&ratio>=0.5)||(hits===1&&authTokens.length===1&&authTokens[0].length>=4)){
-        score=Math.round(55+ratio*24);reason='Unsur nama cocok dengan metadata';
+      for(const t of aTokens)if(tokenSet.has(t))hits++;
+      const ratio=hits/aTokens.length;
+      if((hits>=2&&ratio>=0.5)||(hits===1&&aTokens.length===1&&aTokens[0].length>=4)){
+        score=Math.round(55+ratio*24);reason=`Unsur nama cocok di ${sourceLabel}`;
       }
     }
     if(!score)continue;
-    const authYear=extractYear(a.death_text);
-    if(metaYear&&authYear){
-      if(metaYear===authYear){score+=15;reason+=' (tahun wafat cocok)';}
-      else if(Math.abs(Number(metaYear)-Number(authYear))>2)score-=40;
+    const aYear=extractYear(a.death_text);
+    if(year&&aYear){
+      if(year===aYear){score+=15;reason+=' (tahun wafat cocok)';}
+      else if(Math.abs(Number(year)-Number(aYear))>2)score-=40;
     }
-    if(score>=55)results.push({id:a.id,name:a.name,death_text:a.death_text||'',score,reason});
+    score+=baseBonus;
+    if(score>=55)out.push({id:a.id,name:a.name,death_text:a.death_text||'',score,reason,source:sourceLabel});
   }
-  results.sort((a,b)=>b.score-a.score||a.id-b.id);
-  return results.slice(0,limit);
+  return out;
+}
+
+export function suggestAuthors(input,authorsMap,limit=3){
+  const src=typeof input==='string'?{metadataAuthor:input}:(input||{});
+  const best=new Map();
+  const add=candidates=>{
+    for(const c of candidates){
+      const prev=best.get(c.id);
+      if(!prev||c.score>prev.score)best.set(c.id,c);
+    }
+  };
+  if(src.metadataAuthor?.trim())add(matchTextToAuthors(src.metadataAuthor,'metadata kitab',2,authorsMap));
+  if(src.libraryAuthor?.trim())add(matchTextToAuthors(src.libraryAuthor,'katalog pustaka (authno)',1,authorsMap));
+  for(const line of extractAuthorLines(`${src.betaka||''}\n${src.inf||''}`))add(matchTextToAuthors(line,'kartu kitab (betaka/inf)',0,authorsMap));
+  for(const line of extractAuthorLines(src.firstPageText||''))add(matchTextToAuthors(line,'halaman pertama kitab',0,authorsMap));
+
+  if(!best.size){
+    const scan=(raw,label,score)=>{
+      const clean=` ${cleanSuggestText(String(raw||'').replace(/<[^>]+>/gu,' ').slice(0,700))} `;
+      if(clean.length<6)return;
+      for(const a of authorsMap.values()){
+        const aNoHon=cleanSuggestText(a.name).split(' ').filter(t=>t.length>=2&&!HONORIFICS.has(t)).join(' ');
+        if(aNoHon.length>=6&&clean.includes(` ${aNoHon} `)){
+          add([{id:a.id,name:a.name,death_text:a.death_text||'',score,reason:`Nama penulis disebut di ${label}`,source:label}]);
+        }
+      }
+    };
+    scan(`${src.betaka||''} ${src.inf||''}`,'kartu kitab (betaka/inf)',75);
+    if(!best.size)scan(src.firstPageText||'','halaman pertama kitab',70);
+  }
+  return[...best.values()].sort((a,b)=>b.score-a.score||a.id-b.id).slice(0,limit);
 }
 
 const formatPageSnippet=(row,maxLen=320)=>{
@@ -56,7 +94,7 @@ const formatPageSnippet=(row,maxLen=320)=>{
   return{part:row.part??1,page:row.page??1,snippet:text.length>maxLen?text.slice(0,maxLen).trimEnd()+'…':text};
 };
 
-export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,getFirstPage=()=>null) {
+export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,getFirstPage=()=>null,getBookMeta=()=>null) {
   let cache=null,generation=0;
   const invalidate=()=>{generation++;cache=null;};
   function graph(){
@@ -121,15 +159,29 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge
     return{data:a,works:all.slice((page-1)*limit,page*limit).map(w=>({book_id:w.book_id,title:w.title,...w.links.get(id),source_ref:w.source_ref})),total:all.length,page,limit,totalPages:Math.ceil(all.length/limit)};
   };
   const revision=(db,id)=>db.prepare('SELECT id FROM events WHERE book_id=? ORDER BY rowid DESC LIMIT 1').get(id)?.id||'initial';
-  const firstPageSnippet=bookId=>{try{return formatPageSnippet(getFirstPage(bookId));}catch{return null;}};
+  const readContext=(bookId,metadataAuthor,authorsMap,conflict)=>{
+    let pageRow=null,metaRow=null;
+    try{pageRow=getFirstPage(bookId);}catch{}
+    try{metaRow=getBookMeta(bookId);}catch{}
+    const first_page=formatPageSnippet(pageRow);
+    const suggestions=conflict?[]:suggestAuthors({
+      metadataAuthor,
+      libraryAuthor:metaRow?.authName||'',
+      betaka:metaRow?.betaka||'',
+      inf:metaRow?.inf||'',
+      firstPageText:pageRow?.nass||'',
+    },authorsMap);
+    return{first_page,suggestions,library_author:metaRow?.authName||''};
+  };
   function bookCase(bookId){
     const g=graph(),live=g.library.get(bookId);if(!live)throw err('Kitab tidak ada pada pustaka server ini.',404);
     const w=g.works.get(bookId),decisions=g.db.prepare('SELECT * FROM decisions WHERE book_id=?').all(bookId);
     const conflict=g.conflicts.has(bookId)||!!w&&w.title_key!==live.key;
-    return{book_id:bookId,title:live.bk,metadata_author:w?.metadata_author||'',source_ref:w?.source_ref||'Metadata pustaka server saat ini',
+    const ctx=readContext(bookId,w?.metadata_author||'',g.authors,conflict);
+    return{book_id:bookId,title:live.bk,metadata_author:w?.metadata_author||ctx.library_author||'',source_ref:w?.source_ref||'Metadata pustaka server saat ini',
       conflict,revision:revision(g.db,bookId),
-      first_page:firstPageSnippet(bookId),
-      suggestions:conflict?[]:suggestAuthors(w?.metadata_author||'',g.authors),
+      first_page:ctx.first_page,
+      suggestions:ctx.suggestions,
       links:related(bookId,live.bk),decisions:decisions.map(d=>({...d,name:g.authors.get(d.author_id)?.name||''})),
       events:g.db.prepare('SELECT * FROM events WHERE book_id=? ORDER BY created_at DESC,rowid DESC LIMIT 50').all(bookId)};
   }
@@ -143,12 +195,16 @@ export function createAuthorService(store,getLibrary,getLibraryRevision=()=>0,ge
       all.push({book_id:id,title:b.bk,metadata_author:w?.metadata_author||'',status:conflict?'conflict':isLinked?'linked':'pending',count:isLinked?w.links.size:0});
     }
     all.sort((a,b)=>a.book_id-b.book_id);
-    const pageData=all.slice((page-1)*limit,page*limit).map(item=>({
-      ...item,
-      revision:revision(g.db,item.book_id),
-      suggestions:item.status==='conflict'?[]:suggestAuthors(item.metadata_author,g.authors),
-      first_page:firstPageSnippet(item.book_id),
-    }));
+    const pageData=all.slice((page-1)*limit,page*limit).map(item=>{
+      const ctx=readContext(item.book_id,item.metadata_author,g.authors,item.status==='conflict');
+      return{
+        ...item,
+        metadata_author:item.metadata_author||ctx.library_author||'',
+        revision:revision(g.db,item.book_id),
+        suggestions:ctx.suggestions,
+        first_page:ctx.first_page,
+      };
+    });
     return{data:pageData,total:all.length,page,limit,totalPages:Math.ceil(all.length/limit),counts:{pending,linked,conflicts,available:g.library.size}};
   };
   function decide(body){
