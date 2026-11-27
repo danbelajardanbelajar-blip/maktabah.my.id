@@ -138,20 +138,42 @@ export async function generateBookDocx({ title = 'Kitab', author = '', higriYear
         const isAr = isArabicText(line);
         const bm = classifyBahtsulMasailLine(line, bmSection);
         bmSection = bm.section;
-        const textColor = bm.section === 'question'
-          ? (bm.isHeading ? '1D4ED8' : '1E3A8A')
-          : bm.section === 'answer'
-            ? (bm.isHeading ? '047857' : '064E3B')
-            : undefined;
-        const shadingFill = bm.section === 'question' ? 'EFF6FF' : bm.section === 'answer' ? 'ECFDF5' : undefined;
+        const textColor = bm.isReference
+          ? (bm.isHeading ? '1E293B' : '334155')
+          : bm.section === 'question'
+            ? (bm.isHeading ? '1D4ED8' : '1E3A8A')
+            : bm.section === 'answer'
+              ? (bm.isHeading ? '047857' : '064E3B')
+              : undefined;
+        const shadingFill = bm.isReference
+          ? 'F1F5F9'
+          : bm.section === 'question'
+            ? 'EFF6FF'
+            : bm.section === 'answer'
+              ? 'ECFDF5'
+              : undefined;
         const accentColor = bm.section === 'question' ? '2563EB' : bm.section === 'answer' ? '059669' : undefined;
+        const runFont = bm.isReference && !isAr ? 'Consolas' : (isAr ? ARABIC_FONT : LATIN_FONT);
+        const runSize = isAr ? 36 : (bm.isReference ? 21 : 24);
+        const borderConfig = bm.isReference
+          ? {
+              top: { color: 'CBD5E1', space: 6, style: BorderStyle.SINGLE, size: 6 },
+              bottom: { color: 'CBD5E1', space: 6, style: BorderStyle.SINGLE, size: 6 },
+              left: { color: 'CBD5E1', space: 8, style: BorderStyle.SINGLE, size: 6 },
+              right: { color: 'CBD5E1', space: 8, style: BorderStyle.SINGLE, size: 6 },
+            }
+          : accentColor
+            ? (isAr
+                ? { right: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } }
+                : { left: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } })
+            : undefined;
 
         docChildren.push(new Paragraph({
           children: [
             new TextRun({
               text: line,
-              font: isAr ? ARABIC_FONT : LATIN_FONT,
-              size: isAr ? 36 : 24, // 18pt untuk teks Arab agar harakat terbaca jelas; 12pt Latin
+              font: runFont,
+              size: runSize, // 18pt untuk teks Arab agar harakat terbaca jelas; 12pt Latin (10.5pt monospace untuk referensi)
               bold: bm.isHeading || undefined,
               color: textColor,
               rightToLeft: isAr,
@@ -160,11 +182,7 @@ export async function generateBookDocx({ title = 'Kitab', author = '', higriYear
           alignment: isAr ? AlignmentType.JUSTIFIED : AlignmentType.LEFT,
           bidirectional: isAr,
           ...(shadingFill ? { shading: { type: ShadingType.CLEAR, fill: shadingFill } } : {}),
-          ...(accentColor ? {
-            border: isAr
-              ? { right: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } }
-              : { left: { color: accentColor, space: 8, style: BorderStyle.SINGLE, size: 18 } }
-          } : {}),
+          ...(borderConfig ? { border: borderConfig } : {}),
           spacing: {
             before: 60,
             after: 60,

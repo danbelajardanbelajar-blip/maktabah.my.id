@@ -509,11 +509,14 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
                       return (currentPage?.text || '').split(/\r\n|\n|\r|<br\s*\/?>|<\/br>|\u2028|\u2029/i).map((line: string) => {
                         const bm = classifyBahtsulMasailLine(line, bmSection);
                         bmSection = bm.section;
-                        const sectionStyle = bm.section === 'question'
-                          ? `background-color:rgba(59,130,246,0.09);border-inline-start:4px solid #2563eb;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#1d4ed8;font-weight:700;' : ''}`
-                          : bm.section === 'answer'
-                            ? `background-color:rgba(16,185,129,0.09);border-inline-start:4px solid #059669;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#047857;font-weight:700;' : ''}`
-                            : '';
+                        const isArabicLine = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(line);
+                        const sectionStyle = bm.isReference
+                          ? `background-color:rgba(148,163,184,0.16);border:1px solid rgba(148,163,184,0.45);padding:6px 12px;border-radius:8px;margin-bottom:4px;${!isArabicLine ? 'font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:0.85em;' : ''}${bm.isHeading ? 'font-weight:700;' : ''}`
+                          : bm.section === 'question'
+                            ? `background-color:rgba(59,130,246,0.09);border-inline-start:4px solid #2563eb;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#1d4ed8;font-weight:700;' : ''}`
+                            : bm.section === 'answer'
+                              ? `background-color:rgba(16,185,129,0.09);border-inline-start:4px solid #059669;padding:4px 12px;border-radius:4px;margin-bottom:4px;${bm.isHeading ? 'color:#047857;font-weight:700;' : ''}`
+                              : '';
                         return `<div dir="auto" class="whitespace-pre-wrap text-justify" style="min-height:${line.trim()===''?'1.5em':'auto'};word-break:break-word;${sectionStyle}">${highlightText(line,localHighlight)}</div>`;
                       }).join('\n');
                     })()}/>

@@ -34,11 +34,13 @@ export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = 
       const isAr = isArabicText(line);
       const bm = classifyBahtsulMasailLine(line, bmSection);
       bmSection = bm.section;
-      const bmClass = bm.section === 'question'
-        ? (bm.isHeading ? 'bm-question bm-question-heading' : 'bm-question')
-        : bm.section === 'answer'
-          ? (bm.isHeading ? 'bm-answer bm-answer-heading' : 'bm-answer')
-          : '';
+      const bmClass = bm.isReference
+        ? (bm.isHeading ? 'bm-reference bm-reference-heading' : 'bm-reference')
+        : bm.section === 'question'
+          ? (bm.isHeading ? 'bm-question bm-question-heading' : 'bm-question')
+          : bm.section === 'answer'
+            ? (bm.isHeading ? 'bm-answer bm-answer-heading' : 'bm-answer')
+            : '';
       const cls = [isAr ? 'line-arabic' : 'line-latin', bmClass].filter(Boolean).join(' ');
       const dir = isAr ? 'rtl' : 'ltr';
       return `<p class="${cls}" dir="${dir}">${escapeHtml(line)}</p>`;
@@ -267,6 +269,24 @@ export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = 
     }
     .bm-answer-heading {
       color: #047857;
+      font-weight: 700;
+    }
+
+    .bm-reference {
+      background-color: #f1f5f9 !important;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+    .line-latin.bm-reference {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 10.5pt;
+      line-height: 1.55;
+    }
+    .bm-reference-heading {
+      color: #1e293b;
       font-weight: 700;
     }
 

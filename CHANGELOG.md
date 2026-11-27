@@ -3033,3 +3033,52 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-08-01-32-e544d7.
 | 2026-11-27 08:00:16 +07:00 | `src/components/ReaderModal.tsx` | — | 2–2 | import {RowaLinkedText} from './RowaLinkedText'; | modified |
 | 2026-11-27 08:00:16 +07:00 | `src/components/ReaderModal.tsx` | 506–506 | 507–519 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-27 07:59:24 +07:00 | `src/lib/bahtsul-masail-format.ts` | — | 1–39 | QUESTION_HEADING, QUESTION_PREFIX, ANSWER_HEADING, ANSWER_PREFIX, NEUTRAL_PREFIX, classifyBahtsulMasailLine, clean | added |
+
+## [2026-11-27 08:07:13 +07:00] — Format referensi Bahtsul Masail bergaya WhatsApp di View Kitab, Word, dan PDF
+
+Waktu pencatatan: **2026-11-27 08:07:13 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `62a477c`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: Syntax check (node --check), oxlint 0 errors, unit test 3/3 pass, tsc -b & vite build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-08-07-13-9453d2.json](docs/change-audit/2026-11-27-08-07-13-9453d2.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-DR6tZzLP.js` | 1–22 | — | module/file | deleted |
+| 2026-11-27 08:07:03 +07:00 | `dist/assets/index.dev-jD926rpQ.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 08:07:03 +07:00 | `dist/index.dev.html` | 10–10 | 10–10 | module/file | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 7–7 | 7–17 | const ANSWER_PREFIX = /^(?:Jawaban\|Jawab\|Rumusan(?:\s+Jawaban)?\|Keputusan\|الج | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 11–11 | 21–21 | const NEUTRAL_PREFIX = /^(?:Editor\|Kontributor\|Penulis\|Sumber\|Referensi\|Daftar\s | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 16–16 | 26–26 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 20–20 | 30–30 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 23–23 | 33–33 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 27–27 | 37–37 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 30–30 | 40–47 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 34–34 | 51–59 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:39 +07:00 | `server/bahtsul-masail-format.js` | 37–37 | 62–62 | export function classifyBahtsulMasailLine(line, currentSection = null) { | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | 7–7 | 7–7 | import { generateBookDocx } from './word-export.js'; | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | — | 13–13 | test('classifyBahtsulMasailLine detects Question and Answer sections and resets | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | 22–22 | 23–23 | test('classifyBahtsulMasailLine detects Question and Answer sections and resets | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | 29–29 | 30–31 | test('classifyBahtsulMasailLine detects Question and Answer sections and resets | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | — | 34–52 | test('classifyBahtsulMasailLine detects Question and Answer sections and resets | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | — | 57–57 | test('classifyBahtsulMasailLine detects Question and Answer sections and resets | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | 39–41 | 61–63 | test('classifyBahtsulMasailLine handles inline prefixes and Arabic markers', () | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | 44–45 | 66–71 | test('classifyBahtsulMasailLine handles inline prefixes and Arabic markers', () | modified |
+| 2026-11-27 08:05:42 +07:00 | `server/bahtsul-masail-format.test.js` | — | 75–75 | test('PDF and Word exports apply distinct question and answer styling without br | modified |
+| 2026-11-27 08:06:38 +07:00 | `server/pdf-export.js` | 37–41 | 37–43 | export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = | modified |
+| 2026-11-27 08:06:38 +07:00 | `server/pdf-export.js` | — | 275–292 | export function generateBookHtmlPdf({ title = 'Kitab', author = '', higriYear = | modified |
+| 2026-11-27 08:06:20 +07:00 | `server/word-export.js` | 141–146 | 141–154 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 08:06:20 +07:00 | `server/word-export.js` | — | 156–169 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 08:06:20 +07:00 | `server/word-export.js` | 153–154 | 175–176 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 08:06:20 +07:00 | `server/word-export.js` | 163–167 | 185–185 | export async function generateBookDocx({ title = 'Kitab', author = '', higriYear | modified |
+| 2026-11-27 08:06:26 +07:00 | `src/components/ReaderModal.tsx` | 512–516 | 512–519 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 1–1 | 1–1 | QUESTION_HEADING, QUESTION_PREFIX, ANSWER_HEADING, ANSWER_PREFIX, REFERENCE_HEADING, REFERENCE_PREFIX, NEUTRAL_PREFIX, HAS_ARABIC | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 9–9 | 9–19 | const ANSWER_PREFIX = /^(?:Jawaban\|Jawab\|Rumusan(?:\s+Jawaban)?\|Keputusan\|الج | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 14–14 | 24–24 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 17–17 | 27–27 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 21–21 | 31–31 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 24–24 | 34–34 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 28–28 | 38–38 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 31–31 | 41–48 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 35–35 | 52–60 | export function classifyBahtsulMasailLine( | modified |
+| 2026-11-27 08:05:41 +07:00 | `src/lib/bahtsul-masail-format.ts` | 38–38 | 63–63 | export function classifyBahtsulMasailLine( | modified |
