@@ -3312,3 +3312,27 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-41-06-0589fa.
 | 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | 27–27 | 27–27 | function setupFixture(t) { | modified |
 | 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | 29–29 | 29–29 | function setupFixture(t) { | modified |
 | 2026-11-27 21:40:47 +07:00 | `server/seo-directory.test.js` | — | 91–94 | test('author, rowa, category, katalog, and kutub-hadis SEO pages return 200/301/ | modified |
+
+## [2026-11-27 21:47:25 +07:00] — SEO Tahap 4: sitemap index dinamis terkurasi dan sinkronisasi meta React
+
+Waktu pencatatan: **2026-11-27 21:47:25 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2f05282`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: node --check & oxlint (0 error/warning) lulus; 21/21 tes seo-sitemap/seo-books/seo-directory/seo-foundation/static-cache/visit-tracking lulus; npm run build (tsc -b, vite build, build_privacy.js) lulus; git diff --check bersih.
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-27-21-47-25-e19414.json](docs/change-audit/2026-11-27-21-47-25-e19414.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-27 21:47:04 +07:00 | `dist/assets/index.dev-BlpOxYW7.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-27 21:47:04 +07:00 | `dist/index.dev.html` | 38–38 | 38–38 | module/file | modified |
+| 2026-11-27 21:46:22 +07:00 | `server/index.js` | — | 39–39 | import { registerDirectorySeoRoutes } from './seo-directory.js'; | modified |
+| 2026-11-27 21:46:22 +07:00 | `server/index.js` | 210–210 | 211–212 | let invalidateDirectorySeo=()=>{}; | modified |
+| 2026-11-27 21:46:22 +07:00 | `server/index.js` | — | 1637–1644 | invalidateDirectorySeo = directorySeo.invalidate; | modified |
+| 2026-11-27 21:46:22 +07:00 | `server/index.js` | 1637–1637 | 1647–1647 | const distPath = path.join(__dirname, '../dist'); | modified |
+| 2026-11-27 21:46:18 +07:00 | `server/seo-foundation.js` | 138–138 | 138–138 | function redirectWithQuery(req, res, targetPath) { | modified |
+| 2026-11-27 21:46:18 +07:00 | `server/seo-foundation.js` | 150–155 | 150–157 | export function registerSeoFoundation(app, { express, distPath, siteUrl, staticC | modified |
+| 2026-11-27 21:46:13 +07:00 | `server/seo-sitemap.js` | — | 1–221 | escapeXml, buildSitemapIndexXml, base, body, registerSitemapRoutes, cache, assertReady, err | added |
+| 2026-11-27 21:46:15 +07:00 | `server/seo-sitemap.test.js` | — | 1–86 | createSitemapFixture, db, rowaDb, authorService, app, ctrl, server, base | added |
+| 2026-11-27 21:46:25 +07:00 | `src/App.tsx` | — | 30–30 | import type { AppTab } from './lib/navigation'; | modified |
+| 2026-11-27 21:46:25 +07:00 | `src/App.tsx` | — | 68–71 | function App() { | modified |
+| 2026-11-27 21:46:16 +07:00 | `src/lib/seo-client.ts` | — | 1–56 | SITE_URL, DEFAULT_TITLE, NOINDEX_TABS, upsertMeta, syncDocumentSeo, description, canonicalPath | added |

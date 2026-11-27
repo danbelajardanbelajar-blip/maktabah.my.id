@@ -27,6 +27,7 @@ import {SearchCategoryLabel} from './components/SearchCategoryLabel';
 import {emptySearchScope,loadSearchScope,saveSearchScope,scopeParams,scopeKey,scopeFromParams,scopeDescription,unrestrictedScope,type SearchScope} from './lib/search-scope';
 import { parseNavigation, navigationHash, routePage } from './lib/navigation';
 import type { AppTab } from './lib/navigation';
+import { syncDocumentSeo } from './lib/seo-client';
 import { readingPositions } from './lib/reading-position';
 import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
@@ -63,6 +64,10 @@ function App() {
 
   const [error, setError] = useState('');
   const [stats, setStats] = useState<{ total_books?: number, total_categories?: number, total_searches?: number, online_users?: number } | null>(null);
+
+  useEffect(() => {
+    syncDocumentSeo(activeTab, pageTitles[activeTab]);
+  }, [activeTab]);
 
   useEffect(() => {
     fetch('/api/stats')

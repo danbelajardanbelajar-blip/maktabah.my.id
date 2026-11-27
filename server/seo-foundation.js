@@ -135,7 +135,7 @@ function redirectWithQuery(req, res, targetPath) {
  * @param {import('express').Express} app
  * @param {{ express: typeof import('express'), distPath: string, siteUrl?: string, staticCacheControl: (filename: string) => string }} options
  */
-export function registerSeoFoundation(app, { express, distPath, siteUrl, staticCacheControl }) {
+export function registerSeoFoundation(app, { express, distPath, siteUrl, staticCacheControl, includeSitemap = true }) {
   const canonicalBase = normalizeSiteUrl(siteUrl || process.env.SITE_URL);
   const robotsTxt = buildRobotsTxt(canonicalBase);
   const sitemapXml = buildSitemapXml(canonicalBase);
@@ -147,12 +147,14 @@ export function registerSeoFoundation(app, { express, distPath, siteUrl, staticC
       .send(robotsTxt);
   });
 
-  app.get('/sitemap.xml', (_req, res) => {
-    res.status(200)
-      .set('Cache-Control', 'public, max-age=3600')
-      .type('application/xml; charset=utf-8')
-      .send(sitemapXml);
-  });
+  if (includeSitemap) {
+    app.get('/sitemap.xml', (_req, res) => {
+      res.status(200)
+        .set('Cache-Control', 'public, max-age=3600')
+        .type('application/xml; charset=utf-8')
+        .send(sitemapXml);
+    });
+  }
 
   app.get(['/index.dev.html', '/index.html'], (req, res) => {
     return redirectWithQuery(req, res, '/');

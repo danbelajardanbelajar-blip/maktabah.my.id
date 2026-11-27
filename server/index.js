@@ -36,6 +36,7 @@ import { staticCacheControl } from './static-cache.js';
 import { registerSeoFoundation } from './seo-foundation.js';
 import { createBookSeoService, registerBookSeoRoutes } from './seo-books.js';
 import { registerDirectorySeoRoutes } from './seo-directory.js';
+import { registerSitemapRoutes } from './seo-sitemap.js';
 import { searchRowa } from './rowa-search.js';
 import { searchPagesOffThread, SEARCH_COUNT_CAP, MAX_SEARCH_BOOKS } from './text-search.js';
 import { ensureSearchPolicySchema, syncMetadataExclusions, startSearchPolicyScan, searchPolicyScanStatus, forgetSearchPolicyBook, getExcludedBookIds } from './search-policy.js';
@@ -207,7 +208,8 @@ const askCache = new Map();
 let invalidateHadithIndex=()=>{};
 let invalidateBookSeo=()=>{};
 let invalidateDirectorySeo=()=>{};
-const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();invalidateBookSeo();invalidateDirectorySeo();scheduleSearchPolicyScan();};
+let invalidateSitemapSeo=()=>{};
+const invalidateLibraryCache=()=>{askCache.clear();invalidateAiBookPolicy(db);invalidateHadithIndex();invalidateBookSeo();invalidateDirectorySeo();invalidateSitemapSeo();scheduleSearchPolicyScan();};
 // Search policy (search-policy.js): a background worker decides every book new, changed or decided under an older
 // policy version. Runs shortly after start, a minute after library changes, and every 6 hours as a safety net;
 // it waits while an import, deletion or compact transfer is running.
@@ -1632,9 +1634,17 @@ const directorySeo = registerDirectorySeoRoutes(app, {
   isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
 });
 invalidateDirectorySeo = directorySeo.invalidate;
+const sitemapSeo = registerSitemapRoutes(app, {
+  getDb: () => db,
+  booksMeta,
+  getRowaDb: () => rowaStore.getDb(),
+  authorService,
+  isMaintenance: () => Boolean(transferRuntime.importing || transferRuntime.deleting || transferRuntime.compactSession),
+});
+invalidateSitemapSeo = sitemapSeo.invalidate;
 
 const distPath = path.join(__dirname, '../dist');
-registerSeoFoundation(app, { express, distPath, staticCacheControl });
+registerSeoFoundation(app, { express, distPath, staticCacheControl, includeSitemap: false });
 
 const httpServer = app.listen(port, process.env.HOST || '0.0.0.0', () => {
   console.log(`Web Server running at http://localhost:${port}`);
