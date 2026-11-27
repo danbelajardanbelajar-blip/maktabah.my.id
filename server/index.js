@@ -44,6 +44,7 @@ import { withRowaSources } from './rowa-codes.js';
 import { createRowaStore, registerRowaDatabase } from './rowa-database.js';
 import {createAuthorStore,registerAuthorTransfer} from './author-store.js';
 import {createAuthorService,registerAuthors} from './authors.js';
+import { ensureGoogleAuthSchema, registerGoogleAuth } from './google-auth.js';
 import { mergeCategories } from './category-merge.js';
 
 
@@ -161,7 +162,7 @@ const localExportMode = process.env.LOCAL_EXPORT_MODE === '1';
 const transferRuntime = { importing: false };
 app.use((req, res, next) => {
   if (localExportMode && !['GET', 'HEAD', 'OPTIONS'].includes(req.method)
-    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/site-action', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
+    && !['/api/rowa/mentions', '/api/admin/login', '/api/admin/logout', '/api/auth/google', '/api/auth/logout', '/api/user/opened-books', '/api/admin/books/export', '/api/admin/large-transfer/export', '/api/admin/compact/export', '/api/log/visit', '/api/log/site-action', '/api/log/download', '/api/admin/categories/merge', '/api/admin/books/bulk-move'].includes(req.path)
     && !req.path.startsWith('/api/log/library/')
     && !req.path.startsWith('/api/admin/category')
     && !req.path.startsWith('/api/admin/rowa-database/')
@@ -358,6 +359,7 @@ try {
             try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN ip TEXT;`); } catch(e) {}
             try { stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN user_agent TEXT;`); } catch(e) {}
         }
+        ensureGoogleAuthSchema(stateDb);
         
         ensureVisitTrackingSchema(stateDb);
         try {stateDb.exec('ALTER TABLE search_logs ADD COLUMN result_count INTEGER');}catch{}
@@ -582,6 +584,12 @@ app.post('/api/admin/logout', requireAdmin, (req, res) => {
       } catch(e) {}
   }
   res.json({ success: true });
+});
+
+const googleAuth = registerGoogleAuth(app, {
+  getStateDb: () => stateDb,
+  activeTokens,
+  setAdminActivityCookie,
 });
 
 
@@ -904,9 +912,10 @@ app.post('/api/book-submit', (req, res) => {
        }
     }
 
-    stateDb.prepare('INSERT INTO book_submissions (email, name, book_title, book_author, category_id, file_path, file_name, file_type, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
-      email, name || null, book_title, book_author || null, category_id || null,
-      savedFilePath, finalFileName, fileType, notes || null
+    const user = googleAuth.optionalUser(req);
+    stateDb.prepare('INSERT INTO book_submissions (email, name, book_title, book_author, category_id, file_path, file_name, file_type, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
+      user?.email || email, name || user?.name || null, book_title, book_author || null, category_id || null,
+      savedFilePath, finalFileName, fileType, notes || null, user?.id ?? null
     );
     res.json({ success: true, message: 'Kitab berhasil dikirimkan. Terima kasih atas kontribusinya!' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -919,8 +928,9 @@ app.post('/api/feedback', (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   const { email, name, message, rating } = req.body;
   if (!email || !message) return res.status(400).json({ error: 'Email dan pesan wajib diisi' });
+  const user = googleAuth.optionalUser(req);
   try {
-    stateDb.prepare('INSERT INTO feedback (email, name, message, rating) VALUES (?, ?, ?, ?)').run(email, name, message, rating);
+    stateDb.prepare('INSERT INTO feedback (email, name, message, rating, user_id) VALUES (?, ?, ?, ?, ?)').run(user?.email || email, name || user?.name || null, message, rating, user?.id ?? null);
     res.json({ message: 'Feedback berhasil dikirim' });
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
@@ -929,8 +939,9 @@ app.post('/api/book-request', (req, res) => {
   if (!db) return res.status(500).json({ error: 'Database not loaded. Reason: ' + (dbError || 'Not found at ' + dbPath) });
   const { email, name, book_title, book_author, category_id, notes } = req.body;
   if (!email || !book_title) return res.status(400).json({ error: 'Email dan Judul Kitab wajib diisi' });
+  const user = googleAuth.optionalUser(req);
   try {
-    stateDb.prepare('INSERT INTO book_requests (email, name, book_title, book_author, category_id, notes) VALUES (?, ?, ?, ?, ?, ?)').run(email, name, book_title, book_author, category_id || null, notes);
+    stateDb.prepare('INSERT INTO book_requests (email, name, book_title, book_author, category_id, notes, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)').run(user?.email || email, name || user?.name || null, book_title, book_author, category_id || null, notes, user?.id ?? null);
     res.json({ message: 'Request kitab berhasil dikirim' });
   } catch(e) { res.status(500).json({ error: e.message }); }
 });

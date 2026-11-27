@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Upload, Send, FileText, X } from 'lucide-react';
+import { getSavedUser, getUserToken, saveLocalActivity, userAuthHeaders } from '../lib/user-auth';
 
 const API_BASE = '/api';
 
 export default function BookSubmit() {
-  const [form, setForm] = useState({ email: '', name: '', book_title: '', book_author: '', category_id: '', notes: '' });
+  const savedUser = getSavedUser();
+  const [form, setForm] = useState({ email: savedUser?.email || '', name: savedUser?.name || '', book_title: '', book_author: '', category_id: '', notes: '' });
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -17,6 +19,15 @@ export default function BookSubmit() {
       .then(r => r.json())
       .then(d => setCategories(d.data || []))
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const sync = () => {
+      const u = getSavedUser();
+      if (u) setForm(p => ({ ...p, email: p.email || u.email, name: p.name || u.name }));
+    };
+    window.addEventListener('userAuthUpdated', sync);
+    return () => window.removeEventListener('userAuthUpdated', sync);
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,13 +70,15 @@ export default function BookSubmit() {
 
       const res = await fetch(`${API_BASE}/book-submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...userAuthHeaders() },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (res.ok) {
+        if (!getUserToken()) saveLocalActivity('maktabah_local_book_submissions', { book_title: form.book_title, book_author: form.book_author, file_name });
+        const u = getSavedUser();
         setSuccess(data.message);
-        setForm({ email: '', name: '', book_title: '', book_author: '', category_id: '', notes: '' });
+        setForm({ email: u?.email || '', name: u?.name || '', book_title: '', book_author: '', category_id: '', notes: '' });
         setFile(null);
         if (fileRef.current) fileRef.current.value = '';
       } else setError(data.error || 'Gagal mengirim kitab');

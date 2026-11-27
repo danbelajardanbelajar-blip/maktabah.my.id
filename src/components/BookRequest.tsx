@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BookPlus, Send } from 'lucide-react';
+import { getSavedUser, getUserToken, saveLocalActivity, userAuthHeaders } from '../lib/user-auth';
 
 const API_BASE = '/api';
 
 export default function BookRequest() {
-  const [form, setForm] = useState({ email: '', name: '', book_title: '', book_author: '', category_id: '', notes: '' });
+  const savedUser = getSavedUser();
+  const [form, setForm] = useState({ email: savedUser?.email || '', name: savedUser?.name || '', book_title: '', book_author: '', category_id: '', notes: '' });
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -17,6 +19,15 @@ export default function BookRequest() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const sync = () => {
+      const u = getSavedUser();
+      if (u) setForm(p => ({ ...p, email: p.email || u.email, name: p.name || u.name }));
+    };
+    window.addEventListener('userAuthUpdated', sync);
+    return () => window.removeEventListener('userAuthUpdated', sync);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.email || !form.book_title) { setError('Email dan judul kitab wajib diisi.'); return; }
@@ -24,11 +35,16 @@ export default function BookRequest() {
     try {
       const res = await fetch(`${API_BASE}/book-request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...userAuthHeaders() },
         body: JSON.stringify({ ...form, category_id: form.category_id ? parseInt(form.category_id) : null })
       });
       const data = await res.json();
-      if (res.ok) { setSuccess(data.message); setForm({ email: '', name: '', book_title: '', book_author: '', category_id: '', notes: '' }); }
+      if (res.ok) {
+        if (!getUserToken()) saveLocalActivity('maktabah_local_book_requests', { book_title: form.book_title, book_author: form.book_author });
+        const u = getSavedUser();
+        setSuccess(data.message);
+        setForm({ email: u?.email || '', name: u?.name || '', book_title: '', book_author: '', category_id: '', notes: '' });
+      }
       else setError(data.error || 'Gagal mengirim permintaan');
     } catch { setError('Terjadi kesalahan koneksi'); }
     setLoading(false);

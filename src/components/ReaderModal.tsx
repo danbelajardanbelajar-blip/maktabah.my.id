@@ -227,6 +227,16 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
             if (recent.length > 10) recent = recent.slice(0, 10);
             localStorage.setItem('recentBooks', JSON.stringify(recent));
             window.dispatchEvent(new Event('recentBooksUpdated'));
+            try {
+              const userToken = localStorage.getItem('userToken');
+              if (userToken) {
+                fetch('/api/user/opened-books', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userToken}` },
+                  body: JSON.stringify({ bkid: data.book.bkid, bk: data.book.bk, author: data.book.auth, timestamp: Date.now() }),
+                }).catch(() => {});
+              }
+            } catch {}
           } catch(e) {}
       }
         setCurrentPage(data.page);

@@ -33,6 +33,8 @@ import { MoreDropdown, MoreLinks } from './components/MoreMenu';
 import { useModalFocus } from './lib/use-modal-focus';
 import { Collection } from './components/Collection';
 import { MessageWidget } from './components/MessageWidget';
+import { DesktopAccountMenu } from './components/DesktopAccountMenu';
+import { getUserToken, userAuthHeaders } from './lib/user-auth';
 import { BackButton } from './components/BackButton';
 import { loadSelectedFonts } from './lib/fonts';
 import Settings, { THEMES } from './components/Settings';
@@ -115,6 +117,30 @@ function App() {
     };
     window.addEventListener('recentBooksUpdated', handler);
     return () => window.removeEventListener('recentBooksUpdated', handler);
+  }, []);
+
+  useEffect(() => {
+    const syncUserBooks = async () => {
+      const token = getUserToken();
+      if (!token) return;
+      try {
+        const local = JSON.parse(localStorage.getItem('recentBooks') || '[]');
+        const res = await fetch('/api/user/opened-books', {
+          method: Array.isArray(local) && local.length ? 'POST' : 'GET',
+          headers: { 'Content-Type': 'application/json', ...userAuthHeaders() },
+          ...(Array.isArray(local) && local.length ? { body: JSON.stringify({ books: local }) } : {}),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data?.data)) {
+          localStorage.setItem('recentBooks', JSON.stringify(data.data.slice(0, 10)));
+          setRecentBooks(data.data.slice(0, 10));
+        }
+      } catch {}
+    };
+    void syncUserBooks();
+    window.addEventListener('userAuthUpdated', syncUserBooks);
+    return () => window.removeEventListener('userAuthUpdated', syncUserBooks);
   }, []);
   const limit = 50;
   
@@ -455,6 +481,7 @@ function App() {
               </button>
 
             <MoreDropdown onNavigate={setActiveTab} />
+            <DesktopAccountMenu onNavigate={setActiveTab} onReadBook={(bookId) => openReader({ bookId })} />
           </nav>
         </div>
       </header>

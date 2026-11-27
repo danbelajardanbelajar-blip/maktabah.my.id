@@ -23,6 +23,7 @@ import type { AdminView } from '../lib/admin-navigation';
 import { LogIn, Edit2, Trash2, Save, X, Search, ChevronLeft, ChevronRight, LogOut, Globe, FolderOpen, BookOpen, FileText, Eye, AlertTriangle, MessageSquare, BookPlus, Upload, Download, FolderSync, Activity, Calendar, BarChart2, CheckCircle2, Loader2, GitMerge, Layers, Star, ThumbsUp, Clock, XCircle, Hash, Folder } from 'lucide-react';
 import { CategoryMergeModal } from './CategoryMergeModal';
 import { AdminDailyChart } from './AdminDailyChart';
+import { GoogleLoginButton } from './GoogleLoginButton';
 
 // ==================== TYPES ====================
 interface Category { id: number; name: string; catord: number; lvl: number; book_count: number; }
@@ -151,6 +152,10 @@ const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
           </form>
+          <div className="hidden xl:block mt-5 pt-5 border-t border-gray-100 space-y-2">
+            <p className="text-xs text-center text-gray-500">Atau masuk sebagai admin menggunakan Google</p>
+            <GoogleLoginButton onSuccess={(r) => { if (r.adminToken) onLogin(r.adminToken); else onClose(); }} />
+          </div>
         </div>
       </div>
     </div>
@@ -1830,6 +1835,16 @@ const AdminDashboard = ({ token, onLogout, onClose }: { token: string, onLogout:
 // ==================== MAIN EXPORT ====================
 export const Admin = ({ onClose }: { onClose: () => void }) => {
   const [token, setToken] = useState(localStorage.getItem('adminToken') || '');
+
+  useEffect(() => {
+    const sync = () => setToken(localStorage.getItem('adminToken') || '');
+    window.addEventListener('userAuthUpdated', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('userAuthUpdated', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
   if (!token) {
     return <LoginForm onLogin={(t) => { setToken(t); localStorage.setItem('adminToken', t); }} onClose={onClose} />;

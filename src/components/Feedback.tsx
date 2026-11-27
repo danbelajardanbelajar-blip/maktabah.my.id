@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
+import { getSavedUser, getUserToken, saveLocalActivity, userAuthHeaders } from '../lib/user-auth';
 
 const API_BASE = '/api';
 
@@ -12,10 +13,20 @@ const StarRating = ({ value, onChange }: { value: number, onChange: (v: number) 
 );
 
 export default function Feedback() {
-  const [form, setForm] = useState({ email: '', name: '', message: '', rating: 0 });
+  const savedUser = getSavedUser();
+  const [form, setForm] = useState({ email: savedUser?.email || '', name: savedUser?.name || '', message: '', rating: 0 });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const sync = () => {
+      const u = getSavedUser();
+      if (u) setForm(p => ({ ...p, email: p.email || u.email, name: p.name || u.name }));
+    };
+    window.addEventListener('userAuthUpdated', sync);
+    return () => window.removeEventListener('userAuthUpdated', sync);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,12 +35,16 @@ export default function Feedback() {
     try {
       const res = await fetch(`${API_BASE}/feedback`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...userAuthHeaders() },
         body: JSON.stringify(form)
       });
       const data = await res.json();
-      if (res.ok) { setSuccess(data.message); setForm({ email: '', name: '', message: '', rating: 0 }); }
-      else setError(data.error || 'Gagal mengirim feedback');
+      if (res.ok) {
+        if (!getUserToken()) saveLocalActivity('maktabah_local_feedback', { message: form.message, rating: form.rating });
+        const u = getSavedUser();
+        setSuccess(data.message);
+        setForm({ email: u?.email || '', name: u?.name || '', message: '', rating: 0 });
+      } else setError(data.error || 'Gagal mengirim feedback');
     } catch { setError('Terjadi kesalahan koneksi'); }
     setLoading(false);
   };

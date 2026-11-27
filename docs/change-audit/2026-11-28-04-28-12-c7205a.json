@@ -1,0 +1,1684 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-28 04:28:12 +07:00",
+  "title": "Fitur login Google untuk admin dan pengunjung (desktop-only) serta penyimpanan aktivitas user",
+  "baseCommit": "2df6d31294b1434fee5d17250f3f1496bc753877",
+  "checks": "20/20 test lulus (google-auth.test.js, authors.test.js, admin-navigation.test.js), npx tsc --noEmit lulus, npm run build sukses",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BgESlTGm.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:27:57 +07:00",
+      "stagedSha256": "caff128108cdaefee37956838c558af1abfac5cc771221c5eda80808e3d05c05",
+      "diffSha256": "266fd2a5aea7413a7d32a669fd624a94b3d9bf87faf12e06f8fd4acb1b0f1ef7",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-BnJ4xNUX.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "37f6eb16c70c2c829a67498727994488736f95540e26d4872c7332edd5a08961",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-3aQeET1G.js",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "939d21ef0d35b53084f3fb7206c86ba597ae0d557e4e9b6b02203e0451c41fd2",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 22
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-B4TRb7sS.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:27:57 +07:00",
+      "stagedSha256": "67a28e5ad116bc1f9c54a34f74bf2bc88784832a6918af48d39478af88cc2b9d",
+      "diffSha256": "0ec1c04d24eee19c9feb6dd9b235c384beca162e08c4fbe649e95f198265ad00",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "it",
+        "ot",
+        "st",
+        "vt",
+        "yt",
+        "St",
+        "Ct",
+        "wt",
+        "Tt",
+        "Ot",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "B",
+        "V",
+        "H",
+        "W",
+        "G",
+        "K",
+        "q",
+        "ie",
+        "oe",
+        "se",
+        "ce",
+        "we",
+        "Oe",
+        "Me",
+        "Ne",
+        "Pe",
+        "Fe",
+        "Ie",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "nt",
+        "rt",
+        "at",
+        "X",
+        "lt",
+        "ut",
+        "mt",
+        "ht",
+        "gt",
+        "_t",
+        "bt",
+        "xt",
+        "Et",
+        "Dt",
+        "kt",
+        "jt",
+        "Mt",
+        "Nt",
+        "Ft",
+        "It",
+        "Lt",
+        "Bt",
+        "Vt",
+        "Ut",
+        "Kt",
+        "Jt",
+        "Yt",
+        "nn",
+        "rn",
+        "an",
+        "on",
+        "sn",
+        "Tn",
+        "En",
+        "zn",
+        "Bn",
+        "Hn",
+        "Un",
+        "Gn",
+        "Kn",
+        "Yn",
+        "Xn",
+        "Zn",
+        "nr",
+        "rr",
+        "ir",
+        "ar",
+        "or",
+        "sr",
+        "cr",
+        "ur",
+        "dr",
+        "fr",
+        "pr",
+        "mr",
+        "hr",
+        "xr",
+        "Sr",
+        "Er",
+        "Ir",
+        "Vr",
+        "Hr",
+        "Ur",
+        "Wr",
+        "Gr",
+        "Kr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ri",
+        "ai",
+        "hi",
+        "gi",
+        "_i",
+        "vi",
+        "yi",
+        "Ti",
+        "Ei",
+        "Di",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Fi",
+        "Ii",
+        "Li",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Yi",
+        "Xi",
+        "ta",
+        "na",
+        "ra",
+        "oa",
+        "sa",
+        "ca",
+        "pa",
+        "ma",
+        "ha",
+        "_a",
+        "va",
+        "xa",
+        "Sa",
+        "Ca",
+        "wa",
+        "u",
+        "f",
+        "h",
+        "Oa",
+        "ka",
+        "Aa",
+        "ja",
+        "Ma",
+        "Na",
+        "Fa",
+        "Ia",
+        "La",
+        "Ra",
+        "Va",
+        "Ha",
+        "Ua",
+        "Ka",
+        "qa",
+        "Ja",
+        "Ya",
+        "Xa",
+        "Qa",
+        "lo",
+        "uo",
+        "fo",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Ms",
+        "Ps",
+        "Fs",
+        "Is",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Js",
+        "Ys",
+        "Xs",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "uc",
+        "dc",
+        "fc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Xc",
+        "Zc",
+        "Qc",
+        "tl",
+        "nl",
+        "rl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "ll",
+        "ul",
+        "dl",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "Sl",
+        "Cl",
+        "wl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "uu",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "td",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "_d",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "Pt",
+        "Rt",
+        "zt",
+        "Ht",
+        "Gt",
+        "qt",
+        "Xt",
+        "Qt",
+        "en",
+        "cn",
+        "pn",
+        "_n",
+        "yn",
+        "bn",
+        "Cn",
+        "wn",
+        "On",
+        "kn",
+        "Mn",
+        "Wn",
+        "qn",
+        "Jn",
+        "er",
+        "_",
+        "gr",
+        "_r",
+        "br",
+        "wr",
+        "Dr",
+        "kr",
+        "Mr",
+        "zr",
+        "Br",
+        "oi",
+        "si",
+        "ci",
+        "li",
+        "ui",
+        "di",
+        "xi",
+        "Q",
+        "Si",
+        "Ci",
+        "wi",
+        "extends",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "Zi",
+        "fa",
+        "ya",
+        "ba",
+        "Ta",
+        "Za",
+        "eo",
+        "no",
+        "ro"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 22
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:27:57 +07:00",
+      "stagedSha256": "68ae28707f99c5be52966cdc343c43daa639de4fbf0b76445c2757d1e1096237",
+      "diffSha256": "67cf2e429436604feba1974ac03b2b3cc29f02e8d12ab42b8df5bb99d1a36cf3",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 38,
+            "count": 2
+          },
+          "after": {
+            "line": 38,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/google-auth.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:25:14 +07:00",
+      "stagedSha256": "88bb9e970ea1281c0745c537650ee6c10533b4ad0190c10ef9322f8e9e93cd76",
+      "diffSha256": "b21279fcbcf027a529805eb080e15e0a468b018d125f92253e3577c062b93f05",
+      "symbols": [
+        "DEFAULT_ADMIN_EMAILS",
+        "parseAdminEmails",
+        "list",
+        "ensureGoogleAuthSchema",
+        "verifyGoogleCredential",
+        "err",
+        "url",
+        "res",
+        "info",
+        "registerGoogleAuth",
+        "getClientId",
+        "getAdminEmails",
+        "resolveUserFromToken",
+        "stateDb",
+        "extractBearer",
+        "header",
+        "optionalUser",
+        "requireUser",
+        "user",
+        "clientId",
+        "profile",
+        "isAdmin",
+        "role",
+        "userToken",
+        "token",
+        "adminToken",
+        "rows",
+        "incoming",
+        "upsert",
+        "bookId",
+        "title",
+        "author",
+        "ts",
+        "uid",
+        "email",
+        "feedback",
+        "book_requests",
+        "book_submissions"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 267
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/google-auth.test.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:27:22 +07:00",
+      "stagedSha256": "b759d480fd348322e8a4f66f59a7522fa3d86c71210f47138063d942d12609d6",
+      "diffSha256": "d03c8997c2943a6882ec0b6388877e00b918eeb7ac5878036b4a6c594fe2a83f",
+      "symbols": [
+        "createFixture",
+        "stateDb",
+        "activeTokens",
+        "app",
+        "idToken",
+        "payload",
+        "user",
+        "server",
+        "adminCred",
+        "userCred",
+        "cfg",
+        "adminRes",
+        "userRes",
+        "login",
+        "headers",
+        "books",
+        "act",
+        "meAfterLogout",
+        "badCred",
+        "f1",
+        "r1",
+        "f2",
+        "r2"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 137
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "server/index.js",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:25:36 +07:00",
+      "stagedSha256": "94c2e70e09070466cdd4c7668245a282fd3fc411e699e3c6e661128025a7c986",
+      "diffSha256": "15a2f5ad80d0f3a93cfe9223dfe7a9d67551eab8c3c0039b855f79808a1f285e",
+      "symbols": [
+        "__filename",
+        "__dirname",
+        "logPath",
+        "stripHarakat",
+        "generateWordVariations",
+        "chars",
+        "alefs",
+        "ya",
+        "ha",
+        "buildFtsMatch",
+        "cleanQuery",
+        "isQuoted",
+        "safeQuery",
+        "words",
+        "getPhraseVariations",
+        "vars",
+        "phrases",
+        "andParts",
+        "buildLikeMatch",
+        "app",
+        "port",
+        "localExportMode",
+        "transferRuntime",
+        "rootDir",
+        "path3",
+        "path1",
+        "tambDbPath",
+        "tafsirDbPath",
+        "askCache",
+        "invalidateLibraryCache",
+        "scheduleSearchPolicyScan",
+        "insert",
+        "safeTambPath",
+        "row",
+        "safeTafsirPath",
+        "logTables",
+        "booksMeta",
+        "libraryActivity",
+        "authorsUnion",
+        "pagesUnion",
+        "titlesUnion",
+        "totalBooks",
+        "totalCategories",
+        "limit",
+        "data",
+        "unique",
+        "result",
+        "q",
+        "activeTokens",
+        "requireAdmin",
+        "authHeader",
+        "token",
+        "googleAuth",
+        "placeholders",
+        "stats",
+        "today",
+        "todayStartSql",
+        "count",
+        "days",
+        "dailyMap",
+        "sevenDaysStartSql",
+        "rows",
+        "visitorMessages",
+        "cats",
+        "id",
+        "info",
+        "page",
+        "offset",
+        "catId",
+        "query",
+        "total",
+        "rowaStore",
+        "authorStore",
+        "authorService",
+        "bookId",
+        "pageNum",
+        "pageId",
+        "uploadDir",
+        "commaIndex",
+        "ext",
+        "base64Str",
+        "buffer",
+        "safeFileName",
+        "user",
+        "status",
+        "scope",
+        "rawQuery",
+        "targetBookId",
+        "excludedBookIds",
+        "results",
+        "bookStmt",
+        "book",
+        "pagesStmt",
+        "pages",
+        "handlePdfExport",
+        "html",
+        "stmt",
+        "countStmt",
+        "totalRow",
+        "currentPageId",
+        "current",
+        "nextPartRow",
+        "prevPartRow",
+        "asMatn",
+        "asSharh",
+        "relations",
+        "surahId",
+        "rowaDb",
+        "rowaId",
+        "rowaExists",
+        "selected",
+        "titleBooks",
+        "url",
+        "response",
+        "dataArray",
+        "archiveQ",
+        "bookSeoService",
+        "directorySeo",
+        "sitemapSeo",
+        "distPath",
+        "httpServer"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 46,
+            "count": 0
+          },
+          "after": {
+            "line": 47,
+            "count": 1
+          },
+          "section": "import {createAuthorService,registerAuthors} from './authors.js';"
+        },
+        {
+          "before": {
+            "line": 164,
+            "count": 1
+          },
+          "after": {
+            "line": 165,
+            "count": 1
+          },
+          "section": "app.use((req, res, next) => {"
+        },
+        {
+          "before": {
+            "line": 360,
+            "count": 0
+          },
+          "after": {
+            "line": 362,
+            "count": 1
+          },
+          "section": "try {"
+        },
+        {
+          "before": {
+            "line": 586,
+            "count": 0
+          },
+          "after": {
+            "line": 589,
+            "count": 6
+          },
+          "section": "app.post('/api/admin/logout', requireAdmin, (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 907,
+            "count": 3
+          },
+          "after": {
+            "line": 915,
+            "count": 4
+          },
+          "section": "app.post('/api/book-submit', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 921,
+            "count": 0
+          },
+          "after": {
+            "line": 931,
+            "count": 1
+          },
+          "section": "app.post('/api/feedback', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 923,
+            "count": 1
+          },
+          "after": {
+            "line": 933,
+            "count": 1
+          },
+          "section": "app.post('/api/feedback', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 931,
+            "count": 0
+          },
+          "after": {
+            "line": 942,
+            "count": 1
+          },
+          "section": "app.post('/api/book-request', (req, res) => {"
+        },
+        {
+          "before": {
+            "line": 933,
+            "count": 1
+          },
+          "after": {
+            "line": 944,
+            "count": 1
+          },
+          "section": "app.post('/api/book-request', (req, res) => {"
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:26:35 +07:00",
+      "stagedSha256": "de1ad1c74deedd2fbc4b737a14adfc85c6d66ae6729679cfebf3bb6d4bb208bc",
+      "diffSha256": "140856efad7cbc5a89fe80be37f4bd85ecbb41f59576524dcdb46bb09fd0abb3",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "syncUserBooks",
+        "token",
+        "local",
+        "res",
+        "data",
+        "limit",
+        "setSearchScope",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "scope",
+        "key",
+        "targetTab",
+        "isAdvanced",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "previous",
+        "known",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 35,
+            "count": 0
+          },
+          "after": {
+            "line": 36,
+            "count": 2
+          },
+          "section": "import { MessageWidget } from './components/MessageWidget';"
+        },
+        {
+          "before": {
+            "line": 118,
+            "count": 0
+          },
+          "after": {
+            "line": 121,
+            "count": 24
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 457,
+            "count": 0
+          },
+          "after": {
+            "line": 484,
+            "count": 1
+          },
+          "section": "function App() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Admin.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:27:08 +07:00",
+      "stagedSha256": "d08db0ecf459e424f47ede3d61ef7c35bd43508e758f49abe09c34efc7c3dbf2",
+      "diffSha256": "d0abdf9c0d4e2560f1396be1c1a5a084c2ca326fb40fbe59571d06f8ca56589d",
+      "symbols": [
+        "downloadCSV",
+        "keys",
+        "csvContent",
+        "blob",
+        "link",
+        "url",
+        "SelectionBar",
+        "adminFetch",
+        "Pagination",
+        "totalPages",
+        "ErrorBanner",
+        "LoginForm",
+        "dialogRef",
+        "handleSubmit",
+        "res",
+        "useDeletionFeedback",
+        "locked",
+        "run",
+        "message",
+        "recoveryCallback",
+        "feedback",
+        "CategoriesView",
+        "toggleAll",
+        "newSel",
+        "toggleOne",
+        "n",
+        "deletion",
+        "current",
+        "load",
+        "filtered",
+        "handleEdit",
+        "handleDelete",
+        "paginated",
+        "handleBulkDelete",
+        "ids",
+        "bookCount",
+        "handleCreateCategory",
+        "BooksView",
+        "handleBulkMove",
+        "handleSearch",
+        "handleCreateBook",
+        "PagesView",
+        "handleDeletePage",
+        "handleCreatePage",
+        "nextPageNum",
+        "EditPageView",
+        "fetch",
+        "handleSave",
+        "FeedbackView",
+        "t",
+        "RequestsView",
+        "handleStatus",
+        "SubmissionsView",
+        "getAskLogStatus",
+        "stage",
+        "stageLabel",
+        "refCount",
+        "resp",
+        "surrenderPhrases",
+        "isSurrender",
+        "LogsView",
+        "filters",
+        "filterKey",
+        "readyPreview",
+        "hasFilter",
+        "timer",
+        "controller",
+        "remove",
+        "count",
+        "choose",
+        "reset",
+        "askStatus",
+        "AdminDashboard",
+        "drawerRef",
+        "requestId",
+        "restoreRef",
+        "route",
+        "nested",
+        "setView",
+        "previous",
+        "category",
+        "book",
+        "page",
+        "old",
+        "hash",
+        "restore",
+        "fetchStats",
+        "inbox",
+        "breadcrumb",
+        "goBack",
+        "Admin",
+        "sync"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 25,
+            "count": 0
+          },
+          "after": {
+            "line": 26,
+            "count": 1
+          },
+          "section": "import { AdminDailyChart } from './AdminDailyChart';"
+        },
+        {
+          "before": {
+            "line": 153,
+            "count": 0
+          },
+          "after": {
+            "line": 155,
+            "count": 4
+          },
+          "section": "const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose"
+        },
+        {
+          "before": {
+            "line": 1833,
+            "count": 0
+          },
+          "after": {
+            "line": 1839,
+            "count": 10
+          },
+          "section": "export const Admin = ({ onClose }: { onClose: () => void }) => {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/BookRequest.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:26:56 +07:00",
+      "stagedSha256": "fd8f5da50ec3ef5790d7a204c9193547729820dc963b992298f2b2848474af42",
+      "diffSha256": "18486346251ed28d4ab4e1a255c716428d76d3f6f21fd3bbf759a07e90888a6d",
+      "symbols": [
+        "API_BASE",
+        "BookRequest",
+        "savedUser",
+        "sync",
+        "u",
+        "handleSubmit",
+        "res",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import { BookPlus, Send } from 'lucide-react';"
+        },
+        {
+          "before": {
+            "line": 7,
+            "count": 1
+          },
+          "after": {
+            "line": 8,
+            "count": 2
+          },
+          "section": "export default function BookRequest() {"
+        },
+        {
+          "before": {
+            "line": 19,
+            "count": 0
+          },
+          "after": {
+            "line": 22,
+            "count": 9
+          },
+          "section": "export default function BookRequest() {"
+        },
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 38,
+            "count": 1
+          },
+          "section": "export default function BookRequest() {"
+        },
+        {
+          "before": {
+            "line": 31,
+            "count": 1
+          },
+          "after": {
+            "line": 42,
+            "count": 6
+          },
+          "section": "export default function BookRequest() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/BookSubmit.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:26:58 +07:00",
+      "stagedSha256": "0495d811835f155ab1cc69963457fb2b41e6be9227cf937922c91b71f0b98859",
+      "diffSha256": "755784b4b689c4b3f42788fe6696c0161adf395f1f8eea165783e18637ce0732",
+      "symbols": [
+        "API_BASE",
+        "BookSubmit",
+        "savedUser",
+        "fileRef",
+        "sync",
+        "u",
+        "handleFileChange",
+        "f",
+        "ext",
+        "toBase64",
+        "reader",
+        "handleSubmit",
+        "payload",
+        "res",
+        "data",
+        "fileSizeStr"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import { Upload, Send, FileText, X } from 'lucide-react';"
+        },
+        {
+          "before": {
+            "line": 7,
+            "count": 1
+          },
+          "after": {
+            "line": 8,
+            "count": 2
+          },
+          "section": "export default function BookSubmit() {"
+        },
+        {
+          "before": {
+            "line": 21,
+            "count": 0
+          },
+          "after": {
+            "line": 24,
+            "count": 9
+          },
+          "section": "export default function BookSubmit() {"
+        },
+        {
+          "before": {
+            "line": 62,
+            "count": 1
+          },
+          "after": {
+            "line": 73,
+            "count": 1
+          },
+          "section": "export default function BookSubmit() {"
+        },
+        {
+          "before": {
+            "line": 66,
+            "count": 0
+          },
+          "after": {
+            "line": 78,
+            "count": 2
+          },
+          "section": "export default function BookSubmit() {"
+        },
+        {
+          "before": {
+            "line": 68,
+            "count": 1
+          },
+          "after": {
+            "line": 81,
+            "count": 1
+          },
+          "section": "export default function BookSubmit() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/DesktopAccountMenu.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:26:07 +07:00",
+      "stagedSha256": "8aaa577e873d050f5e58c04d1a1b3fd853995899e2ad8802f2019cc3bc2ce2e5",
+      "diffSha256": "1d4cbed2d977b8de3e6a558a95d5205af66d9fc8aa14d27caa0c890108c5b520",
+      "symbols": [
+        "DesktopAccountMenu",
+        "menuRef",
+        "sync",
+        "token",
+        "onDown",
+        "loadActivity",
+        "booksData",
+        "actData",
+        "handleLogout",
+        "adminToken"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 255
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/components/Feedback.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:26:55 +07:00",
+      "stagedSha256": "307a0d87da8a98c163d7b2fa7914f2ba44bcc9dd9cb7dc8621e4b0fc1a4067ee",
+      "diffSha256": "401c975c8b1ce955645a5db5dca4127bf707e590a112cbf89ae04186cab0d76a",
+      "symbols": [
+        "API_BASE",
+        "StarRating",
+        "Feedback",
+        "savedUser",
+        "sync",
+        "u",
+        "handleSubmit",
+        "res",
+        "data"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 1
+          },
+          "after": {
+            "line": 1,
+            "count": 1
+          },
+          "section": "module/file"
+        },
+        {
+          "before": {
+            "line": 2,
+            "count": 0
+          },
+          "after": {
+            "line": 3,
+            "count": 1
+          },
+          "section": "import { MessageSquare, Send } from 'lucide-react';"
+        },
+        {
+          "before": {
+            "line": 15,
+            "count": 1
+          },
+          "after": {
+            "line": 16,
+            "count": 2
+          },
+          "section": "export default function Feedback() {"
+        },
+        {
+          "before": {
+            "line": 19,
+            "count": 0
+          },
+          "after": {
+            "line": 22,
+            "count": 9
+          },
+          "section": "export default function Feedback() {"
+        },
+        {
+          "before": {
+            "line": 27,
+            "count": 1
+          },
+          "after": {
+            "line": 38,
+            "count": 1
+          },
+          "section": "export default function Feedback() {"
+        },
+        {
+          "before": {
+            "line": 31,
+            "count": 2
+          },
+          "after": {
+            "line": 42,
+            "count": 6
+          },
+          "section": "export default function Feedback() {"
+        }
+      ]
+    },
+    {
+      "file": "src/components/GoogleLoginButton.tsx",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:26:06 +07:00",
+      "stagedSha256": "aa29c3567c7c59da8f7d66f811b42697d6ca3df60f1f29e385f959359f42c79f",
+      "diffSha256": "7828867dfa3b7128551ba3b7fda25f44be386c4d7f9b93907574be6415ba25dd",
+      "symbols": [
+        "GoogleLoginButton",
+        "containerRef",
+        "handleCredential",
+        "res",
+        "data",
+        "target",
+        "renderButton",
+        "existing",
+        "script"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 122
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/components/ReaderModal.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 04:26:40 +07:00",
+      "stagedSha256": "641867e5ffbe18d0afabf12b3689b7b32d5b5aa901cd78329454444a5dbae778",
+      "diffSha256": "39149298a3bd22949f98b00b0187f51b0d737499607ae71fc19d3010a634998f",
+      "symbols": [
+        "buildArabicRegex",
+        "harakat",
+        "safeWord",
+        "highlightText",
+        "words",
+        "regexStr",
+        "regex",
+        "readingTextRef",
+        "openRowa",
+        "change",
+        "selection",
+        "aiActive",
+        "onAiBusy",
+        "closeAi",
+        "askPage",
+        "text",
+        "loadRequest",
+        "dialogRef",
+        "loadToc",
+        "res",
+        "handleBookSearch",
+        "isFavorite",
+        "toggleFavorite",
+        "isBookmarked",
+        "toggleBookmark",
+        "touchStartX",
+        "touchStartY",
+        "handleTouchStart",
+        "handleTouchEnd",
+        "startX",
+        "direction",
+        "toggleUi",
+        "loadBookAndPage",
+        "request",
+        "data",
+        "userToken",
+        "checkRelations",
+        "rels",
+        "relation",
+        "rPage",
+        "rBook",
+        "nextPage",
+        "prevPage",
+        "firstPage",
+        "lastPage",
+        "nextJuz",
+        "prevJuz",
+        "bm",
+        "isArabicLine",
+        "sectionStyle"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 229,
+            "count": 0
+          },
+          "after": {
+            "line": 230,
+            "count": 10
+          },
+          "section": "const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli"
+        }
+      ]
+    },
+    {
+      "file": "src/lib/user-auth.ts",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 04:26:05 +07:00",
+      "stagedSha256": "981bde100256d4438ae7b9eb886028fa97330d5ef1e0d166eba24627ff7e1338",
+      "diffSha256": "310cb226955104b164d211235fb0461f4fa6f3bf01d8751ca94dd264efca901f",
+      "symbols": [
+        "USER_TOKEN_KEY",
+        "USER_PROFILE_KEY",
+        "ADMIN_TOKEN_KEY",
+        "getUserToken",
+        "getSavedUser",
+        "raw",
+        "userAuthHeaders",
+        "token",
+        "saveUserSession",
+        "clearUserSession",
+        "saveLocalActivity",
+        "existing",
+        "list"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 60
+          },
+          "section": "module/file"
+        }
+      ]
+    }
+  ]
+}

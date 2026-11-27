@@ -3444,3 +3444,57 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-08-51-fdd127.
 | 2026-11-28 04:07:46 +07:00 | `server/index.js` | 784–784 | 784–794 | registerHadithBooks(app,()=>{if(!db)throw Error('Database unavailable');return d | modified |
 | 2026-11-28 04:08:05 +07:00 | `src/components/AuthorReview.tsx` | 3–3 | 3–3 | interface Link {id:number;name:string;status:string;basis:string;evidence:string | modified |
 | 2026-11-28 04:08:05 +07:00 | `src/components/AuthorReview.tsx` | 70–70 | 70–71 | export function AuthorReview({token,onLogout}:{token:string;onLogout:()=>void}) | modified |
+
+## [2026-11-28 04:28:12 +07:00] — Fitur login Google untuk admin dan pengunjung (desktop-only) serta penyimpanan aktivitas user
+
+Waktu pencatatan: **2026-11-28 04:28:12 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2df6d31`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 20/20 test lulus (google-auth.test.js, authors.test.js, admin-navigation.test.js), npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-04-28-12-c7205a.json](docs/change-audit/2026-11-28-04-28-12-c7205a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 04:27:57 +07:00 | `dist/assets/index-BgESlTGm.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-BnJ4xNUX.css` | 1–2 | — | module/file | deleted |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-3aQeET1G.js` | 1–22 | — | module/file | deleted |
+| 2026-11-28 04:27:57 +07:00 | `dist/assets/index.dev-B4TRb7sS.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 04:27:57 +07:00 | `dist/index.dev.html` | 38–39 | 38–39 | module/file | modified |
+| 2026-11-28 04:25:14 +07:00 | `server/google-auth.js` | — | 1–267 | DEFAULT_ADMIN_EMAILS, parseAdminEmails, list, ensureGoogleAuthSchema, verifyGoogleCredential, err, url, res | added |
+| 2026-11-28 04:27:22 +07:00 | `server/google-auth.test.js` | — | 1–137 | createFixture, stateDb, activeTokens, app, idToken, payload, user, server | added |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | — | 47–47 | import {createAuthorService,registerAuthors} from './authors.js'; | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | 164–164 | 165–165 | app.use((req, res, next) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | — | 362–362 | try { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | — | 589–594 | app.post('/api/admin/logout', requireAdmin, (req, res) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | 907–909 | 915–918 | app.post('/api/book-submit', (req, res) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | — | 931–931 | app.post('/api/feedback', (req, res) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | 923–923 | 933–933 | app.post('/api/feedback', (req, res) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | — | 942–942 | app.post('/api/book-request', (req, res) => { | modified |
+| 2026-11-28 04:25:36 +07:00 | `server/index.js` | 933–933 | 944–944 | app.post('/api/book-request', (req, res) => { | modified |
+| 2026-11-28 04:26:35 +07:00 | `src/App.tsx` | — | 36–37 | import { MessageWidget } from './components/MessageWidget'; | modified |
+| 2026-11-28 04:26:35 +07:00 | `src/App.tsx` | — | 121–144 | function App() { | modified |
+| 2026-11-28 04:26:35 +07:00 | `src/App.tsx` | — | 484–484 | function App() { | modified |
+| 2026-11-28 04:27:08 +07:00 | `src/components/Admin.tsx` | — | 26–26 | import { AdminDailyChart } from './AdminDailyChart'; | modified |
+| 2026-11-28 04:27:08 +07:00 | `src/components/Admin.tsx` | — | 155–158 | const LoginForm = ({ onLogin, onClose }: { onLogin: (t: string) => void, onClose | modified |
+| 2026-11-28 04:27:08 +07:00 | `src/components/Admin.tsx` | — | 1839–1848 | export const Admin = ({ onClose }: { onClose: () => void }) => { | modified |
+| 2026-11-28 04:26:56 +07:00 | `src/components/BookRequest.tsx` | — | 3–3 | import { BookPlus, Send } from 'lucide-react'; | modified |
+| 2026-11-28 04:26:56 +07:00 | `src/components/BookRequest.tsx` | 7–7 | 8–9 | export default function BookRequest() { | modified |
+| 2026-11-28 04:26:56 +07:00 | `src/components/BookRequest.tsx` | — | 22–30 | export default function BookRequest() { | modified |
+| 2026-11-28 04:26:56 +07:00 | `src/components/BookRequest.tsx` | 27–27 | 38–38 | export default function BookRequest() { | modified |
+| 2026-11-28 04:26:56 +07:00 | `src/components/BookRequest.tsx` | 31–31 | 42–47 | export default function BookRequest() { | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | — | 3–3 | import { Upload, Send, FileText, X } from 'lucide-react'; | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | 7–7 | 8–9 | export default function BookSubmit() { | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | — | 24–32 | export default function BookSubmit() { | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | 62–62 | 73–73 | export default function BookSubmit() { | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | — | 78–79 | export default function BookSubmit() { | modified |
+| 2026-11-28 04:26:58 +07:00 | `src/components/BookSubmit.tsx` | 68–68 | 81–81 | export default function BookSubmit() { | modified |
+| 2026-11-28 04:26:07 +07:00 | `src/components/DesktopAccountMenu.tsx` | — | 1–255 | DesktopAccountMenu, menuRef, sync, token, onDown, loadActivity, booksData, actData | added |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | 1–1 | 1–1 | API_BASE, StarRating, Feedback, savedUser, sync, u, handleSubmit, res | modified |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | — | 3–3 | import { MessageSquare, Send } from 'lucide-react'; | modified |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | 15–15 | 16–17 | export default function Feedback() { | modified |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | — | 22–30 | export default function Feedback() { | modified |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | 27–27 | 38–38 | export default function Feedback() { | modified |
+| 2026-11-28 04:26:55 +07:00 | `src/components/Feedback.tsx` | 31–32 | 42–47 | export default function Feedback() { | modified |
+| 2026-11-28 04:26:06 +07:00 | `src/components/GoogleLoginButton.tsx` | — | 1–122 | GoogleLoginButton, containerRef, handleCredential, res, data, target, renderButton, existing | added |
+| 2026-11-28 04:26:40 +07:00 | `src/components/ReaderModal.tsx` | — | 230–239 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-28 04:26:05 +07:00 | `src/lib/user-auth.ts` | — | 1–60 | USER_TOKEN_KEY, USER_PROFILE_KEY, ADMIN_TOKEN_KEY, getUserToken, getSavedUser, raw, userAuthHeaders, token | added |
