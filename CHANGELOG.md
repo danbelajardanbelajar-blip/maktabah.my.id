@@ -3624,3 +3624,37 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-12-09-19ce6f.
 | 2026-11-28 16:12:05 +07:00 | `dist/index.dev.html` | — | 68–70 | module/file | modified |
 | 2026-11-28 16:11:15 +07:00 | `index.dev.html` | — | 38–62 | module/file | modified |
 | 2026-11-28 16:11:15 +07:00 | `index.dev.html` | — | 66–68 | module/file | modified |
+
+## [2026-11-28 16:23:28 +07:00] — Gabungkan Lanjutkan Membaca dan Terakhir Dibuka beserta sinkronisasi posisi halaman ke akun
+
+Waktu pencatatan: **2026-11-28 16:23:28 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `a0f0d2a`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: 4/4 test lulus (google-auth.test.js), npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-23-28-40816a.json](docs/change-audit/2026-11-28-16-23-28-40816a.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 16:23:09 +07:00 | `dist/assets/index.dev-BRBffVE2.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 16:23:09 +07:00 | `dist/index.dev.html` | 63–63 | 63–63 | module/file | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | — | 36–38 | export function ensureGoogleAuthSchema(stateDb) { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | — | 43–47 | export function ensureGoogleAuthSchema(stateDb) { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | 311–311 | 319–319 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | 324–325 | 332–333 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | — | 337–339 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | 333–333 | 344–344 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | 337–338 | 348–353 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | 342–342 | 357–357 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:21:22 +07:00 | `server/google-auth.js` | — | 366–373 | export function registerGoogleAuth(app, { | modified |
+| 2026-11-28 16:22:19 +07:00 | `server/google-auth.test.js` | 103–103 | 103–103 | test('logged-in user persists opened books and feedback, and logout invalidates | modified |
+| 2026-11-28 16:22:19 +07:00 | `server/google-auth.test.js` | — | 114–120 | test('logged-in user persists opened books and feedback, and logout invalidates | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 141–141 | 141–151 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 143–143 | 153–153 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 145–145 | 155–155 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | — | 160–170 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 521–521 | 542–542 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 586–590 | 607–654 | function App() { | modified |
+| 2026-11-28 16:22:05 +07:00 | `src/App.tsx` | 721–764 | 785–804 | function App() { | modified |
+| 2026-11-28 16:21:25 +07:00 | `src/components/ReaderModal.tsx` | 179–179 | 179–179 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-28 16:21:25 +07:00 | `src/components/ReaderModal.tsx` | — | 181–190 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
+| 2026-11-28 16:21:24 +07:00 | `src/lib/reading-position.ts` | 1–1 | 1–1 | readingPositions, rememberReadingPosition, swipeDirection | modified |

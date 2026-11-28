@@ -176,8 +176,18 @@ const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli
     if (bookInfo?.bkid !== bookId || !currentPage) return;
     onPageChange?.(bookId,currentPage.id);
     recordVisit(`/read/${bookId}/${currentPage.id}`);
-    rememberReadingPosition(localStorage,{bookId,pageId:currentPage.id,page:currentPage.page,part:currentPage.part,title:bookInfo.bk,updatedAt:Date.now()});
+    rememberReadingPosition(localStorage,{bookId,pageId:currentPage.id,page:currentPage.page,part:currentPage.part,title:bookInfo.bk,author:bookInfo.auth||'',updatedAt:Date.now()});
     window.dispatchEvent(new Event('readingPositionsUpdated'));
+    try {
+      const userToken = localStorage.getItem('userToken');
+      if (userToken) {
+        fetch('/api/user/opened-books', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${userToken}` },
+          body: JSON.stringify({ bkid: bookId, bk: bookInfo.bk, author: bookInfo.auth || '', pageId: currentPage.id, part: currentPage.part, page: currentPage.page, timestamp: Date.now() }),
+        }).catch(() => {});
+      }
+    } catch {}
   },[bookId,bookInfo?.bkid,currentPage?.id]);
 
   useEffect(() => {

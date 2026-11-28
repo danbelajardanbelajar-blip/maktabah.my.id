@@ -33,10 +33,18 @@ export function ensureGoogleAuthSchema(stateDb) {
       book_id INTEGER NOT NULL,
       title TEXT NOT NULL,
       author_name TEXT,
+      page_id INTEGER,
+      part TEXT,
+      page TEXT,
       last_opened_at INTEGER NOT NULL,
       PRIMARY KEY(user_id, book_id)
     );
   `);
+  for (const col of ['page_id INTEGER', 'part TEXT', 'page TEXT']) {
+    try {
+      stateDb.exec(`ALTER TABLE user_opened_books ADD COLUMN ${col};`);
+    } catch {}
+  }
   for (const tbl of ['feedback', 'book_requests', 'book_submissions']) {
     try {
       stateDb.exec(`ALTER TABLE ${tbl} ADD COLUMN user_id INTEGER;`);
@@ -308,7 +316,7 @@ export function registerGoogleAuth(app, {
   app.get('/api/user/opened-books', requireUser, (req, res) => {
     const stateDb = getStateDb();
     const rows = stateDb.prepare(
-      `SELECT book_id AS bkid, title AS bk, author_name AS author, last_opened_at AS timestamp
+      `SELECT book_id AS bkid, title AS bk, author_name AS author, page_id AS pageId, part, page, last_opened_at AS timestamp
        FROM user_opened_books
        WHERE user_id = ?
        ORDER BY last_opened_at DESC
@@ -321,31 +329,46 @@ export function registerGoogleAuth(app, {
     const stateDb = getStateDb();
     const incoming = Array.isArray(req.body?.books) ? req.body.books : [req.body];
     const upsert = stateDb.prepare(
-      `INSERT INTO user_opened_books (user_id, book_id, title, author_name, last_opened_at)
-       VALUES (?, ?, ?, ?, ?)
+      `INSERT INTO user_opened_books (user_id, book_id, title, author_name, page_id, part, page, last_opened_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
        ON CONFLICT(user_id, book_id) DO UPDATE SET
          title = excluded.title,
          author_name = COALESCE(NULLIF(excluded.author_name, ''), user_opened_books.author_name),
+         page_id = CASE WHEN excluded.page_id IS NOT NULL AND excluded.last_opened_at >= user_opened_books.last_opened_at THEN excluded.page_id ELSE COALESCE(user_opened_books.page_id, excluded.page_id) END,
+         part = CASE WHEN excluded.page_id IS NOT NULL AND excluded.last_opened_at >= user_opened_books.last_opened_at THEN excluded.part ELSE COALESCE(user_opened_books.part, excluded.part) END,
+         page = CASE WHEN excluded.page_id IS NOT NULL AND excluded.last_opened_at >= user_opened_books.last_opened_at THEN excluded.page ELSE COALESCE(user_opened_books.page, excluded.page) END,
          last_opened_at = MAX(user_opened_books.last_opened_at, excluded.last_opened_at)`
     );
     stateDb.transaction(() => {
       for (const b of incoming.slice(0, 50)) {
-        const bookId = Number(b?.bkid ?? b?.book_id);
+        const bookId = Number(b?.bkid ?? b?.book_id ?? b?.bookId);
         const title = String(b?.bk ?? b?.title ?? '').trim();
         if (!Number.isSafeInteger(bookId) || bookId < 1 || !title) continue;
         const author = String(b?.author ?? b?.author_name ?? '').trim();
-        const ts = Number(b?.timestamp ?? b?.last_opened_at) || Date.now();
-        upsert.run(req.user.id, bookId, title, author, ts);
+        const rawPageId = b?.pageId ?? b?.page_id;
+        const pageId = Number.isSafeInteger(Number(rawPageId)) && Number(rawPageId) >= 0 ? Number(rawPageId) : null;
+        const part = b?.part !== undefined && b?.part !== null ? String(b.part) : null;
+        const page = b?.page !== undefined && b?.page !== null ? String(b.page) : null;
+        const ts = Number(b?.timestamp ?? b?.updatedAt ?? b?.last_opened_at) || Date.now();
+        upsert.run(req.user.id, bookId, title, author, pageId, part, page, ts);
       }
     })();
     const rows = stateDb.prepare(
-      `SELECT book_id AS bkid, title AS bk, author_name AS author, last_opened_at AS timestamp
+      `SELECT book_id AS bkid, title AS bk, author_name AS author, page_id AS pageId, part, page, last_opened_at AS timestamp
        FROM user_opened_books
        WHERE user_id = ?
        ORDER BY last_opened_at DESC
        LIMIT 50`
     ).all(req.user.id);
     res.json({ data: rows });
+  });
+
+  app.delete('/api/user/opened-books/:bookId', requireUser, (req, res) => {
+    const stateDb = getStateDb();
+    const bookId = Number(req.params.bookId);
+    if (!Number.isSafeInteger(bookId) || bookId < 1) return res.status(400).json({ error: 'ID kitab tidak valid.' });
+    stateDb.prepare('DELETE FROM user_opened_books WHERE user_id = ? AND book_id = ?').run(req.user.id, bookId);
+    res.json({ success: true });
   });
 
   app.get('/api/user/activity', requireUser, (req, res) => {

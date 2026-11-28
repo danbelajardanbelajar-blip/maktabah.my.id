@@ -100,7 +100,7 @@ test('logged-in user persists opened books and feedback, and logout invalidates 
   await fetch(`${base}/api/user/opened-books`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ bkid: 42, bk: 'صحيح البخاري', author: 'البخاري', timestamp: 1700000000000 }),
+    body: JSON.stringify({ bkid: 42, bk: 'صحيح البخاري', author: 'البخاري', pageId: 15, part: 1, page: 12, timestamp: 1700000000000 }),
   });
   await fetch(`${base}/api/test/feedback`, {
     method: 'POST',
@@ -111,6 +111,13 @@ test('logged-in user persists opened books and feedback, and logout invalidates 
   const books = await (await fetch(`${base}/api/user/opened-books`, { headers })).json();
   assert.equal(books.data.length, 1);
   assert.equal(books.data[0].bkid, 42);
+  assert.equal(books.data[0].pageId, 15);
+  assert.equal(books.data[0].part, '1');
+  assert.equal(books.data[0].page, '12');
+
+  await fetch(`${base}/api/user/opened-books/42`, { method: 'DELETE', headers });
+  const booksAfterDelete = await (await fetch(`${base}/api/user/opened-books`, { headers })).json();
+  assert.equal(booksAfterDelete.data.length, 0);
 
   const act = await (await fetch(`${base}/api/user/activity`, { headers })).json();
   assert.equal(act.feedback.length, 1);

@@ -1,4 +1,4 @@
-export type ReadingPosition = {bookId:number;pageId:number;page:number|string|null;part:number|string|null;title:string;updatedAt:number};
+export type ReadingPosition = {bookId:number;pageId:number;page:number|string|null;part:number|string|null;title:string;author?:string;updatedAt:number};
 type StorageLike = {getItem:(key:string)=>string|null;setItem:(key:string,value:string)=>void};
 export function readingPositions(storage: StorageLike): ReadingPosition[] {
   try {

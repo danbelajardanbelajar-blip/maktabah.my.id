@@ -138,15 +138,36 @@ function App() {
       const token = getUserToken();
       if (!token) return;
       try {
-        const local = JSON.parse(localStorage.getItem('recentBooks') || '[]');
+        const localPos = readingPositions(localStorage);
+        const localRecent = JSON.parse(localStorage.getItem('recentBooks') || '[]');
+        const byId = new Map<number, any>();
+        for (const rb of (Array.isArray(localRecent) ? localRecent : [])) {
+          if (rb?.bkid) byId.set(Number(rb.bkid), { bkid: Number(rb.bkid), bk: rb.bk, author: rb.author || '', timestamp: rb.timestamp || 0 });
+        }
+        for (const p of localPos) {
+          const prev = byId.get(p.bookId) || {};
+          byId.set(p.bookId, { ...prev, bkid: p.bookId, bk: p.title, author: p.author || prev.author || '', pageId: p.pageId, part: p.part, page: p.page, timestamp: p.updatedAt });
+        }
+        const mergedLocal = [...byId.values()];
         const res = await fetch('/api/user/opened-books', {
-          method: Array.isArray(local) && local.length ? 'POST' : 'GET',
+          method: mergedLocal.length ? 'POST' : 'GET',
           headers: { 'Content-Type': 'application/json', ...userAuthHeaders() },
-          ...(Array.isArray(local) && local.length ? { body: JSON.stringify({ books: local }) } : {}),
+          ...(mergedLocal.length ? { body: JSON.stringify({ books: mergedLocal }) } : {}),
         });
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data?.data)) {
+          const nextPositions = data.data.map((d: any) => ({
+            bookId: Number(d.bkid),
+            pageId: Number.isSafeInteger(Number(d.pageId)) && Number(d.pageId) >= 0 ? Number(d.pageId) : 0,
+            part: d.part ?? null,
+            page: d.page ?? null,
+            title: String(d.bk || ''),
+            author: d.author || '',
+            updatedAt: Number(d.timestamp) || Date.now(),
+          }));
+          localStorage.setItem('maktabah-reading-positions', JSON.stringify(nextPositions));
+          setPositions(nextPositions);
           localStorage.setItem('recentBooks', JSON.stringify(data.data.slice(0, 10)));
           setRecentBooks(data.data.slice(0, 10));
         }
@@ -518,7 +539,7 @@ function App() {
           <Collection positions={positions} favorites={favorites} bookmarks={bookmarks} readBook={(bookId,pageId)=>openReader({bookId,pageId})}
             removeFavorite={id=>setFavorites((items:any[])=>items.filter(item=>item.bkid!==id))}
             removeBookmark={(id,pageId)=>setBookmarks((items:any[])=>items.filter(item=>item.bkid!==id||item.id!==pageId))}
-            removePosition={id=>{const next=positions.filter(item=>item.bookId!==id);try{localStorage.setItem('maktabah-reading-positions',JSON.stringify(next));}catch{}setPositions(next);}} />
+            removePosition={id=>{const next=positions.filter(item=>item.bookId!==id);try{localStorage.setItem('maktabah-reading-positions',JSON.stringify(next));}catch{}setPositions(next);if(getUserToken()){fetch(`/api/user/opened-books/${id}`,{method:'DELETE',headers:userAuthHeaders()}).catch(()=>{});}}} />
         ) : activeTab === 'about' ? (
           <About onDonate={() => setActiveTab('donation')} />
         ) : activeTab === 'admin' ? (
@@ -583,11 +604,54 @@ function App() {
                  </div>
               )}
               
-              {activeTab === 'home' && <section className="mb-6 rounded-2xl border bg-[var(--reader-bg)] p-5">
-                <div className="flex justify-between gap-3 items-center mb-3"><h2 className="font-bold text-lg">Lanjutkan Membaca</h2><button onClick={()=>setActiveTab('collection')} className="text-sm font-semibold text-[var(--app-primary)]">Koleksi Saya →</button></div>
-                <p className="text-xs text-gray-500 mb-3">Tersimpan di perangkat ini · {favorites.length} favorit · {bookmarks.length} bookmark</p>
-                {positions.length>0?<div className="grid grid-cols-1 md:grid-cols-3 gap-3">{positions.slice(0,3).map(item=><button key={item.bookId} onClick={()=>openReader({bookId:item.bookId,pageId:item.pageId})} className="text-left rounded-xl border p-3 bg-[var(--reader-paper)]"><span className="block font-bold" dir="auto">{item.title}</span><span className="text-xs text-gray-500">Juz {item.part??'—'} · Halaman {item.page??'—'}</span></button>)}</div>:<p className="text-sm text-gray-500">Posisi bacaan akan muncul setelah membuka kitab.</p>}
-              </section>}
+              {activeTab === 'home' && (() => {
+                const authorById = new Map(recentBooks.map((rb: any) => [Number(rb.bkid), rb.author || '']));
+                const mergedItems = positions.length > 0
+                  ? positions.map(p => ({ ...p, author: p.author || authorById.get(p.bookId) || '' }))
+                  : recentBooks.map((rb: any) => ({ bookId: Number(rb.bkid), pageId: 0, part: null, page: null, title: rb.bk, author: rb.author || '', updatedAt: rb.timestamp || 0 }));
+                return (
+                  <section className="mb-6 rounded-2xl border border-black/10 bg-[var(--reader-bg)] p-5 shadow-sm">
+                    <div className="flex flex-wrap justify-between gap-3 items-center mb-1.5">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-8 h-8 rounded-xl bg-[var(--app-primary)]/10 text-[var(--app-primary)] flex items-center justify-center shrink-0">
+                          <BookMarked size={18} />
+                        </span>
+                        <div>
+                          <h2 className="font-bold text-lg leading-tight">Lanjutkan Membaca</h2>
+                          <p className="text-xs text-gray-500">
+                            {authUser ? `Tersinkron ke akun (${authUser.email})` : 'Tersimpan di perangkat ini'} · {favorites.length} favorit · {bookmarks.length} bookmark
+                          </p>
+                        </div>
+                      </div>
+                      <button onClick={()=>setActiveTab('collection')} className="text-sm font-semibold text-[var(--app-primary)] hover:underline">Koleksi Saya →</button>
+                    </div>
+                    {mergedItems.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+                        {mergedItems.slice(0, 6).map(item => (
+                          <button
+                            key={item.bookId}
+                            onClick={() => openReader({ bookId: item.bookId, ...(item.pageId > 0 ? { pageId: item.pageId } : {}) })}
+                            className="group text-right rounded-xl border border-black/10 bg-[var(--reader-paper)] hover:border-[var(--app-primary)] hover:shadow-md transition-all p-3.5 flex flex-col justify-between gap-2.5"
+                          >
+                            <div className="w-full">
+                              <span className="block font-bold text-base leading-snug text-gray-900 group-hover:text-[var(--app-primary)] line-clamp-2" dir="rtl" style={{ fontFamily: 'var(--arabic-font)' }}>{item.title}</span>
+                              {item.author && <span className="block text-xs text-gray-500 mt-1 truncate" dir="rtl">{item.author}</span>}
+                            </div>
+                            <div className="w-full flex items-center justify-between gap-2 pt-2 border-t border-black/5 text-xs">
+                              <span className="px-2 py-0.5 rounded-md bg-[var(--app-primary)]/10 text-[var(--app-primary)] font-semibold">
+                                Juz {item.part ?? '—'} · Hal. {item.page ?? '—'}
+                              </span>
+                              <span className="text-gray-400 group-hover:text-[var(--app-primary)] font-medium">Lanjut →</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 mt-3">Riwayat kitab dan posisi bacaan Anda akan muncul di sini setelah membuka kitab.</p>
+                    )}
+                  </section>
+                );
+              })()}
               {activeTab !== 'home' && <button type="button" onClick={() => setActiveTab(activeTab === 'advanced_search' ? 'search' : 'advanced_search')} aria-expanded={activeTab === 'advanced_search'} className="mb-4 rounded-lg border px-4 py-2 text-sm font-semibold">{activeTab === 'advanced_search' ? 'Tutup pilihan tempat pencarian' : 'Pilih kategori & kitab / Cari lanjut'}</button>}
               {activeTab === 'advanced_search' && <>
                 {searchMode==='pdf'&&<p className="mb-3 text-sm opacity-70">Pilihan kitab berlaku untuk Teks dan Judul Kitab. Pencarian PDF menggunakan sumber eksternal.</p>}
@@ -718,50 +782,26 @@ function App() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Baru Saja Dibuka */}
-                  <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><BookOpen size={18} /> Terakhir Dibuka (Personal)</h3>
-                    {recentBooks.length > 0 ? (
-                      <div className="flex flex-col gap-2">
-                        {recentBooks.slice(0, 5).map((rb: any, idx: number) => (
-                          <div 
-                            key={idx}
-                            onClick={() => openReader({ bookId: rb.bkid })}
-                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center"
-                            dir="auto"
-                          >
-                            <span className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{rb.bk}</span>
-                            <span className="text-xs text-gray-400 ml-2 shrink-0">{rb.author}</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400 italic">Belum ada kitab yang baru saja dibuka.</p>
-                    )}
-                  </div>
-
-                  {/* Paling Sering Dibuka */}
-                  <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><BookOpen size={18} /> Sering Dibuka (Global)</h3>
-                    {popularBooks.length > 0 ? (
-                      <div className="flex flex-col gap-2">
-                        {popularBooks.slice(0, 5).map((rb, idx) => (
-                          <div 
-                            key={idx}
-                            onClick={() => openReader({ bookId: rb.bkid })}
-                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center"
-                            dir="auto"
-                          >
-                            <span className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{rb.bk}</span>
-                            <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-500 ml-2 shrink-0">{rb.count}x</span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-400 italic">Belum ada data kitab paling sering dibuka.</p>
-                    )}
-                  </div>
+                {/* Paling Sering Dibuka */}
+                <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                  <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><BookOpen size={18} /> Sering Dibuka (Global)</h3>
+                  {popularBooks.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {popularBooks.slice(0, 6).map((rb, idx) => (
+                        <div 
+                          key={idx}
+                          onClick={() => openReader({ bookId: rb.bkid })}
+                          className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center"
+                          dir="auto"
+                        >
+                          <span className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{rb.bk}</span>
+                          <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-500 ml-2 shrink-0">{rb.count}x</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic">Belum ada data kitab paling sering dibuka.</p>
+                  )}
                 </div>
 
                 {/* 7. Postingan Terakhir */}
