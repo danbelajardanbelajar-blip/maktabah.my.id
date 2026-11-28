@@ -3673,3 +3673,52 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-28-33-3923e9.
 | 2026-11-28 16:28:31 +07:00 | `dist/index.dev.html` | 63–63 | 63–63 | module/file | modified |
 | 2026-11-28 16:27:47 +07:00 | `src/App.tsx` | 790–790 | 790–790 | function App() { | modified |
 | 2026-11-28 16:27:47 +07:00 | `src/App.tsx` | 814–814 | 814–814 | function App() { | modified |
+
+## [2026-11-28 16:32:53 +07:00] — Atur tata letak Beranda agar lebih compact dan seimbang
+
+Waktu pencatatan: **2026-11-28 16:32:53 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `c0e1c61`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-32-53-e40b30.json](docs/change-audit/2026-11-28-16-32-53-e40b30.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-BuxF_0i8.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 16:32:51 +07:00 | `dist/assets/index-DB1vB36P.css` | — | 1–2 | module/file | added |
+| 2026-11-28 16:32:51 +07:00 | `dist/assets/index.dev-D-3g8Cw5.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 16:32:51 +07:00 | `dist/index.dev.html` | 63–64 | 63–64 | module/file | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 571–571 | 571–571 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 573–574 | 573–574 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 578–579 | 578–579 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 584–584 | 584–584 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 587–588 | 587–588 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 590–591 | 590–591 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 593–594 | 593–594 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 598–599 | 598–599 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 613–617 | 613–617 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 620–621 | 620–621 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 626–626 | 626–626 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 629–629 | 629–629 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 634–634 | 634–634 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 637–638 | 637–638 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 640–641 | 640–641 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 650–650 | 650–650 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 723–723 | 723–723 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 725–725 | 725–725 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 728–729 | 728–729 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 731–731 | 731–731 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 736–736 | 736–736 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 744–744 | 744–744 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 748–749 | 748–749 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 751–751 | 751–751 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 754–754 | 754–754 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 759–759 | 759–759 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 764–765 | 764–765 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 767–767 | 767–767 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 772–772 | 772–772 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 775–775 | 775–775 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 780–780 | 780–780 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 785–805 | 785–807 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 807–827 | 809–833 | function App() { | modified |
+| 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 829–837 | 835–840 | function App() { | modified |

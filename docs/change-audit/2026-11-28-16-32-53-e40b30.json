@@ -1,0 +1,1117 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-28 16:32:53 +07:00",
+  "title": "Atur tata letak Beranda agar lebih compact dan seimbang",
+  "baseCommit": "c0e1c617bbc85b0ec1e2115326163308d101ccd4",
+  "checks": "npx tsc --noEmit lulus, npm run build sukses",
+  "timestampMeaning": "recordedAt adalah waktu pencatatan; lastFileModifiedAt adalah mtime terakhir file. Waktu setiap edit terdahulu tidak direkonstruksi.",
+  "records": [
+    {
+      "file": "dist/assets/index-BuxF_0i8.css",
+      "status": "deleted",
+      "lastFileModifiedAt": null,
+      "stagedSha256": null,
+      "diffSha256": "c0d33d2e9039d56aaeaacba8318eca611b6b5a5020f3a8e03402a65029d36512",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 1,
+            "count": 2
+          },
+          "after": {
+            "line": 0,
+            "count": 0
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index-DB1vB36P.css",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 16:32:51 +07:00",
+      "stagedSha256": "421681f8e415850fb97fb9963123ae69b07ea52caedd8a6a108792b877178863",
+      "diffSha256": "9f1d98df85f60500f7b460715d61bd3d5d32098a1bece68df1a3a72b407e78cb",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/assets/index.dev-D-3g8Cw5.js",
+      "status": "added",
+      "lastFileModifiedAt": "2026-11-28 16:32:51 +07:00",
+      "stagedSha256": "d0b2c727cb42d0a4764cc4dc5885d2ca7ce694a3380c316f5ec768aa106a1beb",
+      "diffSha256": "5a45b953a4e6125c35890c0aa3c88a7f7de271afea9da2a5b9cfaca9b001a6b1",
+      "symbols": [
+        "t",
+        "n",
+        "m",
+        "v",
+        "which",
+        "y",
+        "b",
+        "C",
+        "E",
+        "D",
+        "O",
+        "k",
+        "j",
+        "M",
+        "N",
+        "P",
+        "F",
+        "r",
+        "o",
+        "c",
+        "rt",
+        "at",
+        "ot",
+        "_t",
+        "vt",
+        "xt",
+        "St",
+        "Ct",
+        "wt",
+        "Dt",
+        "i",
+        "x",
+        "a",
+        "s",
+        "l",
+        "d",
+        "p",
+        "B",
+        "V",
+        "H",
+        "W",
+        "G",
+        "K",
+        "q",
+        "ie",
+        "oe",
+        "se",
+        "ce",
+        "Te",
+        "Oe",
+        "Me",
+        "Ne",
+        "Pe",
+        "Fe",
+        "Ie",
+        "Le",
+        "Re",
+        "ze",
+        "Be",
+        "Ve",
+        "He",
+        "Ue",
+        "We",
+        "Ge",
+        "Ke",
+        "tt",
+        "nt",
+        "it",
+        "Z",
+        "ct",
+        "lt",
+        "pt",
+        "mt",
+        "ht",
+        "gt",
+        "yt",
+        "bt",
+        "Tt",
+        "Et",
+        "Ot",
+        "At",
+        "jt",
+        "Mt",
+        "Pt",
+        "Ft",
+        "It",
+        "zt",
+        "Bt",
+        "Ht",
+        "Gt",
+        "qt",
+        "Jt",
+        "tn",
+        "nn",
+        "rn",
+        "an",
+        "on",
+        "wn",
+        "Tn",
+        "Rn",
+        "zn",
+        "Vn",
+        "Hn",
+        "Wn",
+        "Gn",
+        "Jn",
+        "Yn",
+        "Xn",
+        "tr",
+        "nr",
+        "rr",
+        "ir",
+        "ar",
+        "or",
+        "sr",
+        "lr",
+        "ur",
+        "dr",
+        "fr",
+        "pr",
+        "mr",
+        "br",
+        "xr",
+        "Tr",
+        "Fr",
+        "Br",
+        "Vr",
+        "Hr",
+        "Ur",
+        "Wr",
+        "Gr",
+        "qr",
+        "Jr",
+        "Yr",
+        "Xr",
+        "Zr",
+        "Qr",
+        "ei",
+        "ti",
+        "ni",
+        "ii",
+        "mi",
+        "hi",
+        "gi",
+        "_i",
+        "vi",
+        "Ti",
+        "Ei",
+        "Di",
+        "Oi",
+        "ki",
+        "Ai",
+        "ji",
+        "Fi",
+        "Ii",
+        "Li",
+        "Ri",
+        "zi",
+        "Bi",
+        "Vi",
+        "Hi",
+        "Ui",
+        "Wi",
+        "Yi",
+        "Xi",
+        "ta",
+        "na",
+        "ra",
+        "oa",
+        "sa",
+        "ca",
+        "pa",
+        "ma",
+        "ha",
+        "_a",
+        "va",
+        "xa",
+        "Sa",
+        "Ca",
+        "wa",
+        "u",
+        "f",
+        "h",
+        "Oa",
+        "ka",
+        "Aa",
+        "ja",
+        "Ma",
+        "Na",
+        "Fa",
+        "Ia",
+        "La",
+        "Ra",
+        "Va",
+        "Ha",
+        "Ua",
+        "Ka",
+        "qa",
+        "Ja",
+        "Ya",
+        "Xa",
+        "Qa",
+        "lo",
+        "uo",
+        "fo",
+        "po",
+        "mo",
+        "ho",
+        "go",
+        "_o",
+        "vo",
+        "yo",
+        "bo",
+        "xo",
+        "So",
+        "Co",
+        "wo",
+        "To",
+        "Eo",
+        "Do",
+        "Oo",
+        "ko",
+        "Ao",
+        "jo",
+        "Mo",
+        "No",
+        "Po",
+        "Fo",
+        "Io",
+        "Lo",
+        "Ro",
+        "zo",
+        "Bo",
+        "Vo",
+        "Ho",
+        "Uo",
+        "Wo",
+        "Go",
+        "Ko",
+        "qo",
+        "Jo",
+        "Yo",
+        "Xo",
+        "Zo",
+        "Qo",
+        "es",
+        "ts",
+        "ns",
+        "rs",
+        "is",
+        "as",
+        "os",
+        "ss",
+        "cs",
+        "ls",
+        "us",
+        "ds",
+        "fs",
+        "ps",
+        "ms",
+        "hs",
+        "gs",
+        "_s",
+        "vs",
+        "ys",
+        "bs",
+        "xs",
+        "Ss",
+        "Cs",
+        "ws",
+        "Ts",
+        "Es",
+        "Ds",
+        "Ms",
+        "Ps",
+        "Fs",
+        "Is",
+        "Ls",
+        "Rs",
+        "zs",
+        "Bs",
+        "Vs",
+        "Hs",
+        "Us",
+        "Ws",
+        "Gs",
+        "Js",
+        "Ys",
+        "Xs",
+        "Zs",
+        "Qs",
+        "ec",
+        "tc",
+        "nc",
+        "rc",
+        "ic",
+        "ac",
+        "oc",
+        "sc",
+        "cc",
+        "uc",
+        "dc",
+        "fc",
+        "pc",
+        "mc",
+        "hc",
+        "gc",
+        "_c",
+        "vc",
+        "yc",
+        "bc",
+        "xc",
+        "Sc",
+        "Cc",
+        "wc",
+        "Tc",
+        "Ec",
+        "Dc",
+        "Oc",
+        "kc",
+        "Ac",
+        "jc",
+        "Mc",
+        "Nc",
+        "Pc",
+        "Fc",
+        "Ic",
+        "Lc",
+        "Rc",
+        "zc",
+        "Bc",
+        "Vc",
+        "Hc",
+        "Uc",
+        "Wc",
+        "Xc",
+        "Zc",
+        "Qc",
+        "tl",
+        "nl",
+        "rl",
+        "il",
+        "al",
+        "ol",
+        "sl",
+        "ll",
+        "ul",
+        "dl",
+        "fl",
+        "pl",
+        "ml",
+        "hl",
+        "gl",
+        "_l",
+        "vl",
+        "yl",
+        "bl",
+        "Sl",
+        "Cl",
+        "wl",
+        "Tl",
+        "El",
+        "Dl",
+        "Ol",
+        "uu",
+        "du",
+        "fu",
+        "pu",
+        "mu",
+        "hu",
+        "gu",
+        "_u",
+        "vu",
+        "yu",
+        "bu",
+        "xu",
+        "Su",
+        "Cu",
+        "wu",
+        "Tu",
+        "Eu",
+        "Du",
+        "Ou",
+        "ku",
+        "Au",
+        "ju",
+        "Mu",
+        "Nu",
+        "Pu",
+        "Fu",
+        "Iu",
+        "Lu",
+        "Ru",
+        "zu",
+        "Bu",
+        "Vu",
+        "Hu",
+        "Uu",
+        "Wu",
+        "Gu",
+        "Ku",
+        "qu",
+        "Ju",
+        "td",
+        "nd",
+        "rd",
+        "id",
+        "ad",
+        "od",
+        "sd",
+        "cd",
+        "ld",
+        "ud",
+        "dd",
+        "fd",
+        "_d",
+        "vd",
+        "yd",
+        "xd",
+        "Sd",
+        "Cd",
+        "wd",
+        "Td",
+        "Ed",
+        "Dd",
+        "Ad",
+        "jd",
+        "Md",
+        "Nd",
+        "Pd",
+        "Fd",
+        "Id",
+        "Ld",
+        "Bd",
+        "Vd",
+        "Hd",
+        "Ud",
+        "Gd",
+        "Xd",
+        "Zd",
+        "Qd",
+        "ef",
+        "tf",
+        "nf",
+        "rf",
+        "af",
+        "of",
+        "sf",
+        "cf",
+        "uf",
+        "df",
+        "ff",
+        "pf",
+        "gf",
+        "vf",
+        "yf",
+        "xf",
+        "Sf",
+        "Cf",
+        "wf",
+        "Tf",
+        "Ef",
+        "Df",
+        "Of",
+        "kf",
+        "Af",
+        "jf",
+        "Mf",
+        "Nf",
+        "Pf",
+        "Ff",
+        "If",
+        "Lf",
+        "Rf",
+        "zf",
+        "Vf",
+        "Hf",
+        "Uf",
+        "Wf",
+        "Gf",
+        "qf",
+        "Jf",
+        "Xf",
+        "Zf",
+        "ep",
+        "tp",
+        "np",
+        "rp",
+        "ip",
+        "ap",
+        "op",
+        "cp",
+        "lp",
+        "up",
+        "dp",
+        "pp",
+        "mp",
+        "Cp",
+        "wp",
+        "Tp",
+        "Ep",
+        "Dp",
+        "Op",
+        "kp",
+        "Ap",
+        "Mp",
+        "Np",
+        "Pp",
+        "e",
+        "Fp",
+        "Ip",
+        "Nt",
+        "Lt",
+        "Rt",
+        "Vt",
+        "Wt",
+        "Kt",
+        "Yt",
+        "Zt",
+        "Qt",
+        "sn",
+        "fn",
+        "gn",
+        "vn",
+        "yn",
+        "Sn",
+        "Cn",
+        "Dn",
+        "On",
+        "jn",
+        "Un",
+        "Kn",
+        "qn",
+        "_",
+        "hr",
+        "gr",
+        "yr",
+        "Cr",
+        "Er",
+        "Or",
+        "jr",
+        "Rr",
+        "zr",
+        "ai",
+        "oi",
+        "si",
+        "ci",
+        "li",
+        "ui",
+        "bi",
+        "xi",
+        "Si",
+        "Ci",
+        "wi",
+        "extends",
+        "Mi",
+        "Ni",
+        "Pi",
+        "Gi",
+        "Ki",
+        "qi",
+        "Ji",
+        "Zi",
+        "fa",
+        "ya",
+        "ba",
+        "Ta",
+        "Da",
+        "to",
+        "no",
+        "io",
+        "ao"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 0,
+            "count": 0
+          },
+          "after": {
+            "line": 1,
+            "count": 22
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "dist/index.dev.html",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 16:32:51 +07:00",
+      "stagedSha256": "9c38c966f276cf0174edb43efdfd51df1aed7cce085e4d5452debeef5e733583",
+      "diffSha256": "84f1a178074cea352e68fd4e260191be572e29cdeee2a14eaeb3a848dbc2ab3c",
+      "symbols": [],
+      "hunks": [
+        {
+          "before": {
+            "line": 63,
+            "count": 2
+          },
+          "after": {
+            "line": 63,
+            "count": 2
+          },
+          "section": "module/file"
+        }
+      ]
+    },
+    {
+      "file": "src/App.tsx",
+      "status": "modified",
+      "lastFileModifiedAt": "2026-11-28 16:32:10 +07:00",
+      "stagedSha256": "02d4a191f2a705a89dce7169e974aec7331c1abd87719a078634db2460d5b7e8",
+      "diffSha256": "061c7b50e81c34b773ba0908e7aa6c88725c0bd134c6cecb1591e587e2539b47",
+      "symbols": [
+        "App",
+        "navigationHandler",
+        "loadedSearch",
+        "lastTabLocations",
+        "pendingSearch",
+        "searchRequest",
+        "openAiQuestion",
+        "cancelAiRedirect",
+        "q",
+        "update",
+        "handler",
+        "syncAuth",
+        "syncUserBooks",
+        "token",
+        "localPos",
+        "localRecent",
+        "byId",
+        "prev",
+        "mergedLocal",
+        "res",
+        "data",
+        "nextPositions",
+        "limit",
+        "setSearchScope",
+        "setActiveTab",
+        "hash",
+        "goBack",
+        "bookDialogRef",
+        "openReader",
+        "saved",
+        "closeReader",
+        "handlePopState",
+        "parts",
+        "scrollRef",
+        "theme",
+        "root",
+        "homeHistoryVisible",
+        "executeSearch",
+        "detection",
+        "requestId",
+        "scope",
+        "key",
+        "targetTab",
+        "isAdvanced",
+        "combinedResults",
+        "route",
+        "mode",
+        "page",
+        "previous",
+        "known",
+        "handle",
+        "y",
+        "handleSearch",
+        "targetQuery",
+        "resultsEl",
+        "handleNextPage",
+        "handlePrevPage",
+        "openBookInfo",
+        "infoRes",
+        "tocRes",
+        "totalPages",
+        "next",
+        "url",
+        "authorById",
+        "mergedItems"
+      ],
+      "hunks": [
+        {
+          "before": {
+            "line": 571,
+            "count": 1
+          },
+          "after": {
+            "line": 571,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 573,
+            "count": 2
+          },
+          "after": {
+            "line": 573,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 578,
+            "count": 2
+          },
+          "after": {
+            "line": 578,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 584,
+            "count": 1
+          },
+          "after": {
+            "line": 584,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 587,
+            "count": 2
+          },
+          "after": {
+            "line": 587,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 590,
+            "count": 2
+          },
+          "after": {
+            "line": 590,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 593,
+            "count": 2
+          },
+          "after": {
+            "line": 593,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 598,
+            "count": 2
+          },
+          "after": {
+            "line": 598,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 613,
+            "count": 5
+          },
+          "after": {
+            "line": 613,
+            "count": 5
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 620,
+            "count": 2
+          },
+          "after": {
+            "line": 620,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 626,
+            "count": 1
+          },
+          "after": {
+            "line": 626,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 629,
+            "count": 1
+          },
+          "after": {
+            "line": 629,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 634,
+            "count": 1
+          },
+          "after": {
+            "line": 634,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 637,
+            "count": 2
+          },
+          "after": {
+            "line": 637,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 640,
+            "count": 2
+          },
+          "after": {
+            "line": 640,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 650,
+            "count": 1
+          },
+          "after": {
+            "line": 650,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 723,
+            "count": 1
+          },
+          "after": {
+            "line": 723,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 725,
+            "count": 1
+          },
+          "after": {
+            "line": 725,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 728,
+            "count": 2
+          },
+          "after": {
+            "line": 728,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 731,
+            "count": 1
+          },
+          "after": {
+            "line": 731,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 736,
+            "count": 1
+          },
+          "after": {
+            "line": 736,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 744,
+            "count": 1
+          },
+          "after": {
+            "line": 744,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 748,
+            "count": 2
+          },
+          "after": {
+            "line": 748,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 751,
+            "count": 1
+          },
+          "after": {
+            "line": 751,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 754,
+            "count": 1
+          },
+          "after": {
+            "line": 754,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 759,
+            "count": 1
+          },
+          "after": {
+            "line": 759,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 764,
+            "count": 2
+          },
+          "after": {
+            "line": 764,
+            "count": 2
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 767,
+            "count": 1
+          },
+          "after": {
+            "line": 767,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 772,
+            "count": 1
+          },
+          "after": {
+            "line": 772,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 775,
+            "count": 1
+          },
+          "after": {
+            "line": 775,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 780,
+            "count": 1
+          },
+          "after": {
+            "line": 780,
+            "count": 1
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 785,
+            "count": 21
+          },
+          "after": {
+            "line": 785,
+            "count": 23
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 807,
+            "count": 21
+          },
+          "after": {
+            "line": 809,
+            "count": 25
+          },
+          "section": "function App() {"
+        },
+        {
+          "before": {
+            "line": 829,
+            "count": 9
+          },
+          "after": {
+            "line": 835,
+            "count": 6
+          },
+          "section": "function App() {"
+        }
+      ]
+    }
+  ]
+}

@@ -568,35 +568,35 @@ function App() {
         ) : (
           <div className="w-full">
             {activeTab === 'home' && (
-                 <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--app-primary)] to-[#0f3d20] text-white shadow-2xl border border-white/10">
+                 <div className="mb-4 relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--app-primary)] to-[#0f3d20] text-white shadow-lg border border-white/10">
                     <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 50% -20%, rgba(201,162,39,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 100%, rgba(22,101,52,0.4) 0%, transparent 60%)' }}></div>
-                    <div className="relative z-10 px-6 py-12 md:py-20 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-amber-300 text-xs font-semibold tracking-widest uppercase mb-6 shadow-sm backdrop-blur-md">
+                    <div className="relative z-10 px-5 py-6 md:py-9 text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-300 text-[11px] font-semibold tracking-widest uppercase mb-3 shadow-sm backdrop-blur-md">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                           Perpustakaan Digital Islam
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-bold mb-4 drop-shadow-[0_4px_24px_rgba(201,162,39,0.4)] text-amber-300" style={{ fontFamily: 'var(--arabic-font)' }}>المكتبة السنية</h2>
-                        <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide leading-relaxed">
+                        <h2 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-[0_4px_24px_rgba(201,162,39,0.4)] text-amber-300" style={{ fontFamily: 'var(--arabic-font)' }}>المكتبة السنية</h2>
+                        <p className="text-white/90 text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
                           Eksplorasi ribuan literatur klasik dan khazanah keilmuan Islam dalam genggaman Anda.
                         </p>
                         
                         {/* Stats Banner */}
-                        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-sm text-white/90 font-medium">
+                        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-white/90 font-medium">
                           {stats ? (
                             <>
-                              <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 shadow-lg">
-                                <BookOpen size={16} className="text-amber-400" /> {stats.total_books ? stats.total_books.toLocaleString('id-ID') : '...'} Kitab
+                              <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow">
+                                <BookOpen size={14} className="text-amber-400" /> {stats.total_books ? stats.total_books.toLocaleString('id-ID') : '...'} Kitab
                               </span>
-                              <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 shadow-lg">
-                                <Library size={16} className="text-amber-400" /> {stats.total_categories ? stats.total_categories.toLocaleString('id-ID') : '...'} Kategori
+                              <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow">
+                                <Library size={14} className="text-amber-400" /> {stats.total_categories ? stats.total_categories.toLocaleString('id-ID') : '...'} Kategori
                               </span>
-                              <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 shadow-lg">
-                                <Search size={16} className="text-amber-400" /> {stats.total_searches ? stats.total_searches.toLocaleString('id-ID') : '...'} Pencarian
+                              <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow">
+                                <Search size={14} className="text-amber-400" /> {stats.total_searches ? stats.total_searches.toLocaleString('id-ID') : '...'} Pencarian
                               </span>
                             </>
                           ) : (
-                            <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 shadow-lg animate-pulse">
-                              <BookOpen size={16} className="text-amber-400" /> Memuat statistik...
+                            <span className="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow animate-pulse">
+                              <BookOpen size={14} className="text-amber-400" /> Memuat statistik...
                             </span>
                           )}
                         </div>
@@ -610,35 +610,35 @@ function App() {
                   ? positions.map(p => ({ ...p, author: p.author || authorById.get(p.bookId) || '' }))
                   : recentBooks.map((rb: any) => ({ bookId: Number(rb.bkid), pageId: 0, part: null, page: null, title: rb.bk, author: rb.author || '', updatedAt: rb.timestamp || 0 }));
                 return (
-                  <section className="mb-6 rounded-2xl border border-black/10 bg-[var(--reader-bg)] p-5 shadow-sm">
-                    <div className="flex flex-wrap justify-between gap-3 items-center mb-1.5">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-8 h-8 rounded-xl bg-[var(--app-primary)]/10 text-[var(--app-primary)] flex items-center justify-center shrink-0">
-                          <BookMarked size={18} />
+                  <section className="mb-4 rounded-2xl border border-black/10 bg-[var(--reader-bg)] p-4 shadow-sm">
+                    <div className="flex flex-wrap justify-between gap-2 items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-lg bg-[var(--app-primary)]/10 text-[var(--app-primary)] flex items-center justify-center shrink-0">
+                          <BookMarked size={16} />
                         </span>
                         <div>
-                          <h2 className="font-bold text-lg leading-tight">Lanjutkan Membaca</h2>
-                          <p className="text-xs text-gray-500">
+                          <h2 className="font-bold text-base leading-tight">Lanjutkan Membaca</h2>
+                          <p className="text-[11px] text-gray-500">
                             {authUser ? `Tersinkron ke akun (${authUser.email})` : 'Tersimpan di perangkat ini'} · {favorites.length} favorit · {bookmarks.length} bookmark
                           </p>
                         </div>
                       </div>
-                      <button onClick={()=>setActiveTab('collection')} className="text-sm font-semibold text-[var(--app-primary)] hover:underline">Koleksi Saya →</button>
+                      <button onClick={()=>setActiveTab('collection')} className="text-xs font-semibold text-[var(--app-primary)] hover:underline">Koleksi Saya →</button>
                     </div>
                     {mergedItems.length > 0 ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-3">
                         {mergedItems.slice(0, 6).map(item => (
                           <button
                             key={item.bookId}
                             onClick={() => openReader({ bookId: item.bookId, ...(item.pageId > 0 ? { pageId: item.pageId } : {}) })}
-                            className="group text-right rounded-xl border border-black/10 bg-[var(--reader-paper)] hover:border-[var(--app-primary)] hover:shadow-md transition-all p-3.5 flex flex-col justify-between gap-2.5"
+                            className="group text-right rounded-xl border border-black/10 bg-[var(--reader-paper)] hover:border-[var(--app-primary)] hover:shadow transition-all p-3 flex flex-col justify-between gap-2"
                           >
                             <div className="w-full">
-                              <span className="block font-bold text-base leading-snug text-gray-900 group-hover:text-[var(--app-primary)] line-clamp-2" dir="rtl" style={{ fontFamily: 'var(--arabic-font)' }}>{item.title}</span>
-                              {item.author && <span className="block text-xs text-gray-500 mt-1 truncate" dir="rtl">{item.author}</span>}
+                              <span className="block font-bold text-sm leading-snug text-gray-900 group-hover:text-[var(--app-primary)] line-clamp-1" dir="rtl" style={{ fontFamily: 'var(--arabic-font)' }}>{item.title}</span>
+                              {item.author && <span className="block text-[11px] text-gray-500 mt-0.5 truncate" dir="rtl">{item.author}</span>}
                             </div>
-                            <div className="w-full flex items-center justify-between gap-2 pt-2 border-t border-black/5 text-xs">
-                              <span className="px-2 py-0.5 rounded-md bg-[var(--app-primary)]/10 text-[var(--app-primary)] font-semibold">
+                            <div className="w-full flex items-center justify-between gap-2 pt-1.5 border-t border-black/5 text-[11px]">
+                              <span className="px-2 py-0.5 rounded bg-[var(--app-primary)]/10 text-[var(--app-primary)] font-semibold">
                                 Juz {item.part ?? '—'} · Hal. {item.page ?? '—'}
                               </span>
                               <span className="text-gray-400 group-hover:text-[var(--app-primary)] font-medium">Lanjut →</span>
@@ -647,7 +647,7 @@ function App() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500 mt-3">Riwayat kitab dan posisi bacaan Anda akan muncul di sini setelah membuka kitab.</p>
+                      <p className="text-xs text-gray-500 mt-2">Riwayat kitab dan posisi bacaan Anda akan muncul di sini setelah membuka kitab.</p>
                     )}
                   </section>
                 );
@@ -720,20 +720,20 @@ function App() {
               {activeTab !== 'home' && error && <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-r-xl mb-6 shadow-sm">{error}</div>}
 
             {activeTab === 'home' && (
-              <div className="space-y-6 mb-8">
+              <div className="space-y-4 mb-6">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4">
                   {/* Pencarian Terakhir */}
-                  <div className="p-5 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Search size={18} /> Pencarian Terakhir</h3>
+                  <div className="p-4 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold text-sm mb-2.5 flex items-center gap-2"><Search size={16} /> Pencarian Terakhir</h3>
                     {recentSearches.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {recentSearches.slice(0, 5).map((rs, idx) => (
                           <button 
                             key={idx}
                             onClick={() => { setQuery(rs.query); executeSearch(rs.query, 1); }}
-                            className="max-w-full break-words text-left bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-4 py-2 rounded-full text-sm transition-all shadow-sm"
+                            className="max-w-full break-words text-left bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-1.5 rounded-full text-xs transition-all shadow-sm"
                             dir="auto"
                           >
                             {rs.query}
@@ -741,100 +741,103 @@ function App() {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400 italic">Belum ada riwayat pencarian.</p>
+                      <p className="text-xs text-gray-400 italic">Belum ada riwayat pencarian.</p>
                     )}
                   </div>
 
-                  <div className="p-5 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Bot size={18} className="shrink-0" /> Riwayat Tanya AI (Global)</h3>
+                  <div className="p-4 min-w-0 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold text-sm mb-2.5 flex items-center gap-2"><Bot size={16} className="shrink-0" /> Riwayat Tanya AI (Global)</h3>
                     {recentAiQuestions.length > 0 ? (
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-1.5">
                         {recentAiQuestions.slice(0, 5).map((item, idx) => (
                           <button key={idx} type="button" onClick={() => openAiQuestion(item.query,item)}
-                            className="text-left break-words bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-2 rounded-xl text-sm transition-all shadow-sm" dir="auto">
+                            className="text-left break-words bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-1.5 rounded-xl text-xs transition-all shadow-sm truncate" dir="auto">
                             {item.query}
                           </button>
                         ))}
                       </div>
-                    ) : <p className="text-sm text-gray-400 italic">Belum ada riwayat Tanya AI.</p>}
+                    ) : <p className="text-xs text-gray-400 italic">Belum ada riwayat Tanya AI.</p>}
                   </div>
                   </div>
 
                   {/* Pencarian Terbanyak */}
-                  <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                    <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><Search size={18} /> Pencarian Terbanyak (Global)</h3>
+                  <div className="p-4 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold text-sm mb-2.5 flex items-center gap-2"><Search size={16} /> Pencarian Terbanyak (Global)</h3>
                     {popularSearches.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {popularSearches.slice(0, 5).map((rs, idx) => (
                           <button 
                             key={idx}
                             onClick={() => { setQuery(rs.query); executeSearch(rs.query, 1); }}
-                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-4 py-2 rounded-full text-sm transition-all shadow-sm flex items-center gap-2"
+                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-600 px-3 py-1.5 rounded-full text-xs transition-all shadow-sm flex items-center gap-1.5"
                             dir="auto"
                           >
-                            {rs.query} <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-500">{rs.count}x</span>
+                            {rs.query} <span className="bg-gray-100 text-[11px] px-1.5 py-0.5 rounded-full text-gray-500">{rs.count}x</span>
                           </button>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-400 italic">Belum ada data pencarian terbanyak.</p>
+                      <p className="text-xs text-gray-400 italic">Belum ada data pencarian terbanyak.</p>
                     )}
                   </div>
                 </div>
 
-                {/* Paling Sering Dibuka */}
-                <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                  <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><BookOpen size={18} /> Sering Dibuka (Global)</h3>
-                  {popularBooks.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {popularBooks.slice(0, 5).map((rb, idx) => (
-                        <div 
-                          key={idx}
-                          onClick={() => openReader({ bookId: rb.bkid })}
-                          className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center"
-                          dir="auto"
-                        >
-                          <span className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{rb.bk}</span>
-                          <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-500 ml-2 shrink-0">{rb.count}x</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-400 italic">Belum ada data kitab paling sering dibuka.</p>
-                  )}
-                </div>
-
-                {/* 7. Postingan Terakhir */}
-                <div className="p-6 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
-                  <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2">
-                    <BookOpen size={18} className="text-[var(--app-primary)]" /> Postingan Terakhir
-                  </h3>
-                  {latestBooks.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {latestBooks.slice(0, 5).map((lb) => (
-                        <div
-                          key={lb.bkid}
-                          onClick={() => openReader({ bookId: lb.bkid })}
-                          className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-4 py-3 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center gap-3"
-                          dir="auto"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{lb.bk}</div>
-                            {(lb.cat_name || lb.author_name) && (
-                              <div className="text-xs text-gray-400 truncate mt-0.5">
-                                {[lb.cat_name, lb.author_name].filter(Boolean).join(' • ')}
-                              </div>
-                            )}
+                {/* Sering Dibuka & Postingan Terakhir (berdampingan, 5 item) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Paling Sering Dibuka */}
+                  <div className="p-4 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold text-sm mb-2.5 flex items-center gap-2"><BookOpen size={16} /> Sering Dibuka (Global)</h3>
+                    {popularBooks.length > 0 ? (
+                      <div className="flex flex-col gap-2">
+                        {popularBooks.slice(0, 5).map((rb, idx) => (
+                          <div 
+                            key={idx}
+                            onClick={() => openReader({ bookId: rb.bkid })}
+                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-3 py-2 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center"
+                            dir="auto"
+                          >
+                            <span className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{rb.bk}</span>
+                            <span className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-500 ml-2 shrink-0">{rb.count}x</span>
                           </div>
-                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold px-2.5 py-0.5 rounded-full shrink-0">
-                            Baru
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-400 italic">Belum ada postingan terbaru.</p>
-                  )}
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Belum ada data kitab paling sering dibuka.</p>
+                    )}
+                  </div>
+
+                  {/* Postingan Terakhir */}
+                  <div className="p-4 bg-[var(--reader-bg)] rounded-2xl border border-black/5 shadow-sm">
+                    <h3 className="text-gray-500 font-semibold text-sm mb-2.5 flex items-center gap-2">
+                      <BookOpen size={16} className="text-[var(--app-primary)]" /> Postingan Terakhir
+                    </h3>
+                    {latestBooks.length > 0 ? (
+                      <div className="flex flex-col gap-2">
+                        {latestBooks.slice(0, 5).map((lb) => (
+                          <div
+                            key={lb.bkid}
+                            onClick={() => openReader({ bookId: lb.bkid })}
+                            className="bg-white border border-gray-200 hover:border-[var(--app-primary)] hover:text-[var(--app-primary)] text-gray-700 px-3 py-2 rounded-xl text-sm transition-all shadow-sm cursor-pointer flex justify-between items-center gap-2"
+                            dir="auto"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold truncate" style={{ fontFamily: 'var(--arabic-font)' }}>{lb.bk}</div>
+                              {(lb.cat_name || lb.author_name) && (
+                                <div className="text-[11px] text-gray-400 truncate">
+                                  {[lb.cat_name, lb.author_name].filter(Boolean).join(' • ')}
+                                </div>
+                              )}
+                            </div>
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0">
+                              Baru
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-400 italic">Belum ada postingan terbaru.</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Submit, Request, Feedback, Donation Cards */}
