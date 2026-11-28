@@ -3658,3 +3658,18 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-23-28-40816a.
 | 2026-11-28 16:21:25 +07:00 | `src/components/ReaderModal.tsx` | 179–179 | 179–179 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-28 16:21:25 +07:00 | `src/components/ReaderModal.tsx` | — | 181–190 | const ReaderModal: React.FC<ReaderModalProps> = ({ bookId, initialPageId, highli | modified |
 | 2026-11-28 16:21:24 +07:00 | `src/lib/reading-position.ts` | 1–1 | 1–1 | readingPositions, rememberReadingPosition, swipeDirection | modified |
+
+## [2026-11-28 16:28:33 +07:00] — Batasi daftar Sering Dibuka dan Postingan Terakhir di Beranda menjadi 5 item
+
+Waktu pencatatan: **2026-11-28 16:28:33 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `2f723c4`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-28-33-3923e9.json](docs/change-audit/2026-11-28-16-28-33-3923e9.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 16:28:31 +07:00 | `dist/assets/index.dev-DL1EK1k8.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 16:28:31 +07:00 | `dist/index.dev.html` | 63–63 | 63–63 | module/file | modified |
+| 2026-11-28 16:27:47 +07:00 | `src/App.tsx` | 790–790 | 790–790 | function App() { | modified |
+| 2026-11-28 16:27:47 +07:00 | `src/App.tsx` | 814–814 | 814–814 | function App() { | modified |

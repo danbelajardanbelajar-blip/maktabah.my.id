@@ -787,7 +787,7 @@ function App() {
                   <h3 className="text-gray-500 font-semibold mb-4 flex items-center gap-2"><BookOpen size={18} /> Sering Dibuka (Global)</h3>
                   {popularBooks.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {popularBooks.slice(0, 6).map((rb, idx) => (
+                      {popularBooks.slice(0, 5).map((rb, idx) => (
                         <div 
                           key={idx}
                           onClick={() => openReader({ bookId: rb.bkid })}
@@ -811,7 +811,7 @@ function App() {
                   </h3>
                   {latestBooks.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {latestBooks.slice(0, 6).map((lb) => (
+                      {latestBooks.slice(0, 5).map((lb) => (
                         <div
                           key={lb.bkid}
                           onClick={() => openReader({ bookId: lb.bkid })}
