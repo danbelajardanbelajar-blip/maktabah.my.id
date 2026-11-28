@@ -506,7 +506,7 @@ function App() {
               onClick={() => { setActiveTab('advanced_search'); }}
               className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] whitespace-nowrap ${activeTab === 'advanced_search' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
             >
-              <SlidersHorizontal size={18} /> Cari Lanjut
+              <SlidersHorizontal size={18} /> Cari Khusus
             </button>
             <button 
               onClick={() => { setActiveTab('catalog'); }}
@@ -1076,7 +1076,7 @@ function App() {
           className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'advanced_search' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
         >
           <SlidersHorizontal size={22} className="mb-1" />
-          <span className="text-[10px] font-bold whitespace-nowrap">Cari Lanjut</span>
+          <span className="text-[10px] font-bold whitespace-nowrap">Cari Khusus</span>
         </button>
         <button 
           onClick={() => { setActiveTab('catalog'); window.scrollTo(0,0); }} 

@@ -3744,3 +3744,20 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-56-40-05150d.
 | 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 1063–1063 | 1069–1069 | function App() { | modified |
 | 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 1065–1065 | 1071–1071 | function App() { | modified |
 | 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | — | 1074–1080 | function App() { | modified |
+
+## [2026-11-28 17:00:15 +07:00] — Ubah label menu Cari Lanjut menjadi Cari Khusus pada navigasi desktop dan mobile
+
+Waktu pencatatan: **2026-11-28 17:00:15 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `52df930`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-17-00-15-f80266.json](docs/change-audit/2026-11-28-17-00-15-f80266.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| 2026-11-28 17:00:12 +07:00 | `dist/assets/index-CNgGJ3AV.css` | — | 1–2 | module/file | added |
+| waktu penghapusan tidak direkam | `dist/assets/index-DrxVy5V4.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 17:00:12 +07:00 | `dist/assets/index.dev-BgjZsEgQ.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 17:00:12 +07:00 | `dist/index.dev.html` | 63–64 | 63–64 | module/file | modified |
+| 2026-11-28 16:59:39 +07:00 | `src/App.tsx` | 509–509 | 509–509 | function App() { | modified |
+| 2026-11-28 16:59:39 +07:00 | `src/App.tsx` | 1079–1079 | 1079–1079 | function App() { | modified |
