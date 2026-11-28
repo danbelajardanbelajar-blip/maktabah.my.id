@@ -3,7 +3,7 @@ import {HadithBooks} from './components/HadithBooks';
 import type {AiRequest,AiHistoryItem} from './lib/ai-source';
 import { pushLocation, previousLocation, backFallback } from './lib/back-navigation';
 import { useState } from 'react';
-import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest, HeartHandshake, User } from 'lucide-react';
+import { Upload, MessageSquare, Search, FolderSearch, Library, BookOpen, Menu, Info, Download, FileText, Shield, ChevronRight, ChevronLeft, BookMarked, Bot, GitPullRequest, HeartHandshake, User, SlidersHorizontal } from 'lucide-react';
 import './App.css';
 import { webAPI } from './api';
 import ReaderModal from './components/ReaderModal';
@@ -498,9 +498,15 @@ function App() {
             </button>
             <button 
               onClick={() => { setActiveTab('search'); }}
-              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${(activeTab === 'search' || activeTab === 'advanced_search') ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
+              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] ${activeTab === 'search' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
             >
               <FolderSearch size={18} /> Cari
+            </button>
+            <button 
+              onClick={() => { setActiveTab('advanced_search'); }}
+              className={`flex items-center gap-2 text-right md:text-center px-4 py-4 md:py-0 transition-all font-semibold text-sm lg:text-base md:h-full border-b-[3px] whitespace-nowrap ${activeTab === 'advanced_search' ? 'text-white border-b-white bg-white/10 md:bg-transparent' : 'text-white/70 hover:text-white border-b-transparent hover:bg-white/5 md:hover:bg-transparent'}`}
+            >
+              <SlidersHorizontal size={18} /> Cari Lanjut
             </button>
             <button 
               onClick={() => { setActiveTab('catalog'); }}
@@ -1060,10 +1066,17 @@ function App() {
         </button>
         <button 
           onClick={() => { setActiveTab('search'); window.scrollTo(0,0); }}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${(activeTab === 'search' || activeTab === 'advanced_search') ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'search' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
         >
-          <FolderSearch size={24} className="mb-1" />
+          <FolderSearch size={22} className="mb-1" />
           <span className="text-[10px] font-bold">Cari</span>
+        </button>
+        <button 
+          onClick={() => { setActiveTab('advanced_search'); window.scrollTo(0,0); }}
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 ${activeTab === 'advanced_search' ? 'text-[var(--app-primary)] transform -translate-y-1' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          <SlidersHorizontal size={22} className="mb-1" />
+          <span className="text-[10px] font-bold whitespace-nowrap">Cari Lanjut</span>
         </button>
         <button 
           onClick={() => { setActiveTab('catalog'); window.scrollTo(0,0); }} 

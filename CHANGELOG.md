@@ -3722,3 +3722,25 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-32-53-e40b30.
 | 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 785–805 | 785–807 | function App() { | modified |
 | 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 807–827 | 809–833 | function App() { | modified |
 | 2026-11-28 16:32:10 +07:00 | `src/App.tsx` | 829–837 | 835–840 | function App() { | modified |
+
+## [2026-11-28 16:56:40 +07:00] — Pisahkan menu Cari dan Cari Lanjut pada navigasi desktop dan mobile
+
+Waktu pencatatan: **2026-11-28 16:56:40 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `7ef6d35`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: navigation.test.js lulus, npx tsc --noEmit lulus, npm run build sukses
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-56-40-05150d.json](docs/change-audit/2026-11-28-16-56-40-05150d.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-DB1vB36P.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 16:56:36 +07:00 | `dist/assets/index-DrxVy5V4.css` | — | 1–2 | module/file | added |
+| 2026-11-28 16:56:36 +07:00 | `dist/assets/index.dev-CPTe_inu.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| waktu penghapusan tidak direkam | `dist/assets/index.dev-D-3g8Cw5.js` | 1–22 | — | module/file | deleted |
+| 2026-11-28 16:56:36 +07:00 | `dist/index.dev.html` | 63–64 | 63–64 | module/file | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 6–6 | 6–6 | import { useState } from 'react'; | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 501–501 | 501–501 | function App() { | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | — | 505–510 | function App() { | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 1063–1063 | 1069–1069 | function App() { | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | 1065–1065 | 1071–1071 | function App() { | modified |
+| 2026-11-28 16:55:46 +07:00 | `src/App.tsx` | — | 1074–1080 | function App() { | modified |
