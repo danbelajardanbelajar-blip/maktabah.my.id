@@ -35,9 +35,37 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+      #app-boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f4f7f5;
+      }
+      #app-boot-loader img {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        animation: maktabah-pulse 1.4s ease-in-out infinite;
+        filter: drop-shadow(0 8px 20px rgba(22, 101, 52, 0.16));
+      }
+      @keyframes maktabah-pulse {
+        0%, 100% { transform: scale(0.92); opacity: 0.85; }
+        50% { transform: scale(1.06); opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #app-boot-loader img { animation: none; }
+      }
+    </style>
   </head>
   <body>
     <div id="root">
+      <div id="app-boot-loader" aria-hidden="true">
+        <img src="/logo.png" alt="" width="72" height="72" />
+      </div>
       <main>
         <p lang="ar" dir="rtl">المكتبة السنية</p>
         <h1>al Maktabah as Sunniyyah — Perpustakaan Kitab Islam Digital</h1>

@@ -3606,3 +3606,21 @@ Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-06-39-05-060286.
 | Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
 |---|---|---|---|---|---|
 | 2026-11-28 06:38:48 +07:00 | `server/google-auth.js` | 240–240 | 240–242 | export function registerGoogleAuth(app, { | modified |
+
+## [2026-11-28 16:12:09 +07:00] — Tambahkan preloader logo Maktabah beranimasi pulse saat halaman dimuat
+
+Waktu pencatatan: **2026-11-28 16:12:09 +07:00**. Waktu pada tabel adalah modifikasi terakhir file, bukan rekonstruksi setiap edit. Baris sebelum mengacu pada commit `0b41c31`; baris sesudah mengacu pada isi staged commit ini.
+
+Verifikasi: npm run build sukses, test seo-foundation.test.js lulus
+
+Audit terstruktur beserta hash isi staged dan diff: [2026-11-28-16-12-09-19ce6f.json](docs/change-audit/2026-11-28-16-12-09-19ce6f.json).
+
+| Modifikasi terakhir (WIB) | File | Baris sebelum | Baris sesudah | Bagian / simbol | Perubahan |
+|---|---|---|---|---|---|
+| waktu penghapusan tidak direkam | `dist/assets/index-B_V6BpF5.css` | 1–2 | — | module/file | deleted |
+| 2026-11-28 16:12:05 +07:00 | `dist/assets/index-BuxF_0i8.css` | — | 1–2 | module/file | added |
+| 2026-11-28 16:12:05 +07:00 | `dist/assets/index.dev-C1yGZERl.js` | — | 1–22 | t, n, m, v, which, y, b, C | added |
+| 2026-11-28 16:12:05 +07:00 | `dist/index.dev.html` | 38–39 | 38–64 | module/file | modified |
+| 2026-11-28 16:12:05 +07:00 | `dist/index.dev.html` | — | 68–70 | module/file | modified |
+| 2026-11-28 16:11:15 +07:00 | `index.dev.html` | — | 38–62 | module/file | modified |
+| 2026-11-28 16:11:15 +07:00 | `index.dev.html` | — | 66–68 | module/file | modified |
